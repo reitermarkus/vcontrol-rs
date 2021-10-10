@@ -65,6 +65,7 @@ rule %r{#{Regexp.escape(VITOSOFT_DIR)}/(.*)} => VITOSOFT_EXE do |t|
   end
 end
 
+desc 'extract all files'
 task :extract_all => VITOSOFT_DIR/'*'
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_GLOB do |t|
@@ -97,6 +98,7 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_GLOB do |t|
   File.write t.name, translations.sort_by_key.to_yaml
 end
 
+desc 'gather all commands'
 task :commands => DEVICES
 
 file DEVICES => DATAPOINT_TYPES do |t|
@@ -289,7 +291,7 @@ end
 rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
   device = Pathname(t.name).sub_ext('').to_s
 
-  translations = YAML.safe_load(File.read(TRANSLATIONS_RAW))
+  translations = YAML.safe_load(File.read(TRANSLATIONS_UNIQUE), [Symbol])
 
   mappings = YAML.safe_load(File.read(MAPPINGS_UNIQUE), [Symbol])
 
@@ -459,12 +461,15 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
         case conversion
         when 'NoConversion', nil then nil
+        when 'Div2' then 2
         when 'Div10' then 10
+        when 'Div100' then 100
         when 'Div1000' then 1000
         when 'Sec2Hour' then 3600
         when 'Mult2' then 0.5
         when 'Mult5' then 0.2
         when 'Mult10' then 0.1
+        when 'Mult100' then 0.01
         when 'MultOffset' then
           factor.to_f * (10 ** offset.to_f)
         when 'DateBCD' then nil
@@ -475,39 +480,50 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
         when 'HexByte2AsciiByte' then nil
         when 'Estrich' then nil
         when 'FixedStringTerminalZeroes' then nil
+        when 'HexByte2DecimalByte' then nil
         else
           raise "No factor for conversion '#{conversion}'."
         end
       end
       mode = type.fetch(:access_mode)
 
+      byte_length = type.fetch(:byte_length)
       unit = case unit = [type[:sdk_data_type], type[:parameter]]
       when ['DateTime', 'Array']
         'systime'
       when ['Int', 'Byte']
-        'u8'
+        "u8"
       when ['Int', 'Int']
-        'u16'
+        "u16"
       when ['Int', 'Int4']
-        "u#{8 * 4}"
+        "u32"
+      when ['Int', 'SInt']
+        "i16"
+      when ['Int', 'SInt4']
+        "i32"
+      when ['Double', 'IntHighByteFirst']
+        raise type.inspect if byte_length != 1
+        "i#{8 * type.fetch(:byte_length)}"
       when ['Double', 'Byte']
-        "u#{8 * type.fetch(:byte_length)}"
+        "u8"
       when ['Double', 'Int']
-        "u#{8 * type.fetch(:byte_length)}"
-      when ['Double', 'SInt']
-        "i#{8 * type.fetch(:byte_length)}"
+        "u16"
+      when ['Double', 'Int4']
+        "u32"
       when ['Double', 'SByte']
-        "i#{8 * type.fetch(:byte_length)}"
+        "i8"
+      when ['Double', 'SInt']
+        "i16"
       when ['Double', 'Array']
-        "u#{8 * type.fetch(:byte_length)}"
+        "u8"
       when ['ByteArray', 'Array']
-        "u#{8 * type.fetch(:byte_length)}"
+        "u8"
       when ["ByteArray", "Int"]
-        'u32'
+        "u16"
       when ['ByteArray', 'Byte']
         'u8'
       when ['ByteArray', 'String']
-        "u#{8 * type.fetch(:byte_length)}"
+        "u8"
       else
         raise "No unit for #{unit} for #{type_id}."
       end
@@ -525,7 +541,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "  #{id}: # #{type_id}"
       f.puts "    addr: 0x#{addr.to_s(16).rjust(4, '0')}"
       f.puts "    mode: #{mode}"
-      f.puts "    unit: #{unit}" unless unit.nil?
+      f.puts "    unit: #{unit} ##{[type[:sdk_data_type], type[:parameter]]}" unless unit.nil?
       f.puts "    factor: #{factor}" unless factor.nil?
       f.puts "    block_len: #{block_length}"  unless block_length.zero?
       f.puts "    byte_len: #{byte_length}"    unless byte_length.zero?
@@ -534,7 +550,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "    bit_pos: #{bit_position}"    unless bit_position.zero?
 
       if !mapping.empty? || type_id =~ /ecnsysFehlerhistorie\d/
-        translation_id = case type_id
+        mapping_id = case type_id
         when 'ecnsysLONCommunicationModul', 'ecnsysLONCommunicationModulWP'
           'NRF_K76_KonfiKommunikationsmodul'
         when 'ecnsysLONErrorManager'
@@ -545,7 +561,14 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
           type_id
         end
 
-        f.puts "    mapping: #{mappings.fetch(:mapping).fetch(translation_id)}"
+        translation_id = mappings.fetch(:mapping).fetch(mapping_id)
+
+        f.puts "    mapping:"
+
+        mappings.fetch(:translations).fetch(translation_id).each do |k, translation_id|
+          v = translations.fetch(:translations).fetch(translation_id).fetch('en')
+          f.puts "      [0x#{k.to_s(16)}]: #{v.inspect}"
+        end
       end
       f.puts
     end
