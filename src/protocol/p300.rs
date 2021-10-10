@@ -70,14 +70,14 @@ impl P300 {
       }
 
       o.read_exact(&mut buf)?;
-      let message_length: usize = buf[0] as usize;
+      let message_length = buf[0];
 
-      let mut message = vec![0; message_length];
+      let mut message = vec![0; message_length as usize];
       o.read_exact(&mut message)?;
       let message = message;
 
       let checksum: u8 = message.iter().sum();
-      let checksum = checksum + message_length as u8;
+      let checksum = checksum + message_length;
 
       o.read_exact(&mut buf)?;
       if checksum == buf[0] {
