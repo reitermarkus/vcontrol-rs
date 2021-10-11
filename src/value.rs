@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use serde_derive::*;
 
-use crate::types::{SysTime, CycleTime};
+use crate::types::{SysTime, CycleTime, Error};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -15,6 +15,7 @@ pub enum Value {
   String(String),
   SysTime(SysTime),
   CycleTime(CycleTime),
+  Error(Error),
   Empty
 }
 
