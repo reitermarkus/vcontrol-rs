@@ -314,6 +314,10 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
       id = type_id
 
+      # Remove unneeded/wrong commands.
+      next if id.start_with?('Node_')
+      next if id.start_with?('nciNet')
+
       exact_mappings = {
         'BedienBetriebsartA1M1'                         => 'operating_mode_a1m1',
         'BedienBetriebsartM2'                           => 'operating_mode_m2',
@@ -542,7 +546,8 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
       type_translations = translations.fetch(:translations).fetch("viessmann.eventtype.name.#{type_id}", {})
 
-      if type_id =~ /Fehlerhistorie\d$/
+      error_type = case type_id
+      when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'
         f.puts "  #{id}_time: # #{type_id}"
         f.puts "    addr: 0x#{(addr + 1).to_s(16).rjust(4, '0')}"
         f.puts "    mode: #{mode}"
@@ -556,6 +561,10 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
         raw_type = 'u8'
         block_length = 1
         byte_length = 1
+
+        true
+      else
+        false
       end
 
       f.puts "  # #{type.fetch(:description, 'N/A').lines.join("  # ")}"
@@ -571,16 +580,18 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "    bit_len: #{bit_length}"      unless bit_length.zero?
       f.puts "    bit_pos: #{bit_position}"    unless bit_position.zero?
 
-      if !mapping.empty? || type_id =~ /ecnsysFehlerhistorie\d/
-        mapping_ids = case type_id
-        when 'ecnsysLONCommunicationModul', 'ecnsysLONCommunicationModulWP'
-          ['NRF_K76_KonfiKommunikationsmodul']
-        when 'ecnsysLONErrorManager'
-          ['K79_KonfiFehlerManagerV300_V333']
-        when /ecnsysFehlerhistorie\d/
+      if !mapping.empty? || error_type
+        mapping_ids = if error_type
           ["viessmann.errorcode.#{device}", "viessmann.errorcode.Ecotronic"]
         else
-          [type_id]
+          case type_id
+          when 'ecnsysLONCommunicationModul', 'ecnsysLONCommunicationModulWP'
+            ['NRF_K76_KonfiKommunikationsmodul']
+          when 'ecnsysLONErrorManager'
+            ['K79_KonfiFehlerManagerV300_V333']
+          else
+            [type_id]
+          end
         end
 
         mapping_translations = mapping_ids.reduce({}) { |h , id|
@@ -604,7 +615,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
         f.puts "    mapping:"
 
-        mapping_translations.each do |k, v|
+        mapping_translations.sort_by_key.each do |k, v|
           # Remove enum number from text representation if present.
           v = v.downcase.sub(/^#{Regexp.escape(k.to_s)}\s+/, '')
 
