@@ -69,26 +69,29 @@ impl Command {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)))
     }
 
-    let block_len = self.block_len;
-    let byte_len = self.byte_len;
-    let byte_pos = self.byte_pos;
+    let mut block_len = self.block_len;
+    let byte_len = if let Some(raw_size) = self.raw_type.size() {
+      if raw_size > block_len {
+        block_len = raw_size;
+      }
+
+      raw_size
+    } else {
+      self.byte_len
+    };
 
     let mut buf = vec![0; block_len];
     P::get(o, &self.addr(), &mut buf)?;
 
-
-    if let Some(bit_pos) = self.bit_pos {
+    let byte_pos = if let Some(bit_pos) = self.bit_pos {
       let byte = buf[bit_pos / 8];
       let bit_len = self.bit_len.unwrap_or(1);
 
       buf.clear();
       buf.push((byte << (bit_pos % 8)) >> (8 - bit_len));
-    }
-
-    let byte_len = if let Some(raw_size) = self.raw_type.size() {
-      raw_size
+      0
     } else {
-      byte_len
+      self.byte_pos
     };
 
     self.data_type.bytes_to_output(self.raw_type, &buf[byte_pos..(byte_pos + byte_len)], self.factor, &self.mapping)
