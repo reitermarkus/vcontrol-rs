@@ -41,13 +41,13 @@ impl DataType {
       Self::Array => return Ok(Value::Array(bytes.to_vec())),
       t => {
         let n = match raw_type {
-          I8 => i64::from(i8::from_bytes(bytes).to_le()),
-          I16 => i64::from(i16::from_bytes(bytes).to_le()),
-          I32 => i64::from(i32::from_bytes(bytes).to_le()),
-          U8 => i64::from(u8::from_bytes(bytes).to_le()),
-          U16 => i64::from(u16::from_bytes(bytes).to_le()),
-          U32 => i64::from(u32::from_bytes(bytes).to_le()),
-          Array => unreachable!(),
+          RawType::I8 => i64::from(i8::from_bytes(bytes).to_le()),
+          RawType::I16 => i64::from(i16::from_bytes(bytes).to_le()),
+          RawType::I32 => i64::from(i32::from_bytes(bytes).to_le()),
+          RawType::U8 => i64::from(u8::from_bytes(bytes).to_le()),
+          RawType::U16 => i64::from(u16::from_bytes(bytes).to_le()),
+          RawType::U32 => i64::from(u32::from_bytes(bytes).to_le()),
+          RawType::Array => unreachable!(),
         };
 
         match t {

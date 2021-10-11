@@ -5,13 +5,14 @@ use std::path::Path;
 use std::collections::HashMap;
 use std::fmt;
 
-use serde_derive::*;
+use serde::Deserialize;
 use serde_yaml;
 use yaml_merge_keys;
 use phf_codegen;
-use serde::de::{self, Deserialize, Deserializer};
 
-include!("src/raw_type.rs");
+#[path = "src/raw_type.rs"]
+mod raw_type;
+use raw_type::RawType;
 
 #[path = "src/types/mod.rs"]
 mod types;
@@ -121,25 +122,12 @@ impl fmt::Debug for Command {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AccessMode {
   Read,
   Write,
   ReadWrite,
-}
-
-impl<'de> Deserialize<'de> for AccessMode {
-  fn deserialize<D>(deserializer: D) -> Result<AccessMode, D::Error>
-  where
-      D: Deserializer<'de>,
-  {
-    match String::deserialize(deserializer)?.as_str() {
-      "read" => Ok(AccessMode::Read),
-      "write" => Ok(AccessMode::Write),
-      "read_write" => Ok(AccessMode::ReadWrite),
-      variant => Err(de::Error::unknown_variant(&variant, &["read", "write", "read_write"])),
-    }
-  }
 }
 
 #[derive(Debug, Deserialize)]
