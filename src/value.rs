@@ -1,3 +1,4 @@
+use core::convert::Infallible;
 use std::str::FromStr;
 
 use serde_derive::*;
@@ -17,11 +18,8 @@ pub enum Value {
   Empty
 }
 
-#[derive(Debug)]
-pub enum Never {}
-
 impl FromStr for Value {
-  type Err = Never;
+  type Err = Infallible;
 
   fn from_str(s: &str) -> Result<Value, Self::Err> {
     if let Ok(number) = s.parse::<f64>() {
