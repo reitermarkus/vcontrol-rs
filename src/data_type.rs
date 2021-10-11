@@ -1,7 +1,7 @@
 use phf;
 use serde::Deserialize;
 
-use crate::{Error, Value, FromBytes, ToBytes, RawType, types::{self, Bytes, SysTime, CycleTime}};
+use crate::{Error, Value, RawType, types::{self, Bytes, SysTime, CycleTime}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -43,12 +43,12 @@ impl DataType {
       Self::Array => return Ok(Value::Array(bytes.to_vec())),
       t => {
         let n = match raw_type {
-          RawType::I8 => i64::from(i8::from_bytes(bytes).to_le()),
-          RawType::I16 => i64::from(i16::from_bytes(bytes).to_le()),
-          RawType::I32 => i64::from(i32::from_bytes(bytes).to_le()),
-          RawType::U8 => i64::from(u8::from_bytes(bytes).to_le()),
-          RawType::U16 => i64::from(u16::from_bytes(bytes).to_le()),
-          RawType::U32 => i64::from(u32::from_bytes(bytes).to_le()),
+          RawType::I8 => i64::from(i8::from_le_bytes([bytes[0]])),
+          RawType::I16 => i64::from(i16::from_le_bytes([bytes[0], bytes[1]])),
+          RawType::I32 => i64::from(i32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])),
+          RawType::U8 => i64::from(u8::from_le_bytes([bytes[0]])),
+          RawType::U16 => i64::from(u16::from_le_bytes([bytes[0], bytes[1]])),
+          RawType::U32 => i64::from(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])),
           RawType::Array => unreachable!(),
         };
 
@@ -76,14 +76,14 @@ impl DataType {
     Ok(match self {
       Self::SysTime => {
         if let Value::SysTime(systime) = input {
-          systime.to_bytes()
+          systime.to_bytes().to_vec()
         } else {
           return Err(Error::InvalidArgument(format!("expected systime, found {:?}", input)))
         }
       },
       Self::CycleTime => {
         if let Value::CycleTime(cycletime) = input {
-          cycletime.to_bytes()
+          cycletime.to_bytes().to_vec()
         } else {
           return Err(Error::InvalidArgument(format!("expected cycletime, found {:?}", input)))
         }
@@ -93,12 +93,12 @@ impl DataType {
           let n = n * factor.unwrap_or(1.0);
 
           match self {
-            Self::I8  => (n as i8).to_bytes(),
-            Self::I16 => (n as i16).to_bytes(),
-            Self::I32 => (n as i32).to_bytes(),
-            Self::U8  => (n as u8).to_bytes(),
-            Self::U16 => (n as u16).to_bytes(),
-            Self::U32 => (n as u32).to_bytes(),
+            Self::I8  => (n as i8).to_le_bytes().to_vec(),
+            Self::I16 => (n as i16).to_le_bytes().to_vec(),
+            Self::I32 => (n as i32).to_le_bytes().to_vec(),
+            Self::U8  => (n as u8).to_le_bytes().to_vec(),
+            Self::U16 => (n as u16).to_le_bytes().to_vec(),
+            Self::U32 => (n as u32).to_le_bytes().to_vec(),
             _ => unreachable!(),
           }
         } else {

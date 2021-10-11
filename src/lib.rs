@@ -1,10 +1,9 @@
-#![deny(missing_debug_implementations)]
+#![warn(missing_debug_implementations)]
 
 mod error;
 pub use crate::error::Error;
 
 pub mod types;
-use crate::types::{FromBytes, ToBytes};
 
 mod command;
 pub(crate) use crate::command::{AccessMode, Command};

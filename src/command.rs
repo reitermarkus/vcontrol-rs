@@ -1,7 +1,7 @@
 use phf;
 use serde::de::{self, Deserialize, Deserializer};
 
-use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value, ToBytes, types::Bytes};
+use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value, types::Bytes};
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum AccessMode {
@@ -59,7 +59,7 @@ pub struct Command {
 impl Command {
   #[inline]
   fn addr(&self) -> Vec<u8> {
-    self.addr.to_be().to_bytes()
+    self.addr.to_be_bytes().to_vec()
   }
 
   pub fn get<P: Protocol>(&self, o: &mut Optolink) -> Result<Value, Error> {
