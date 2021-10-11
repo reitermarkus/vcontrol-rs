@@ -1,7 +1,7 @@
 use phf;
 use serde::de::{self, Deserialize, Deserializer};
 
-use crate::{Error, Optolink, protocol::Protocol, Unit, Value, ToBytes, types::Bytes};
+use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value, ToBytes, types::Bytes};
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum AccessMode {
@@ -45,13 +45,14 @@ impl<'de> Deserialize<'de> for AccessMode {
 pub struct Command {
   pub(crate) addr: u16,
   pub(crate) mode: AccessMode,
-  pub(crate) unit: Unit,
+  pub(crate) data_type: DataType,
+  pub(crate) raw_type: RawType,
   pub(crate) block_len: usize,
   pub(crate) byte_len: usize,
   pub(crate) byte_pos: usize,
   pub(crate) bit_pos: Option<usize>,
   pub(crate) bit_len: Option<usize>,
-  pub(crate) factor: f64,
+  pub(crate) factor: Option<f64>,
   pub(crate) mapping: Option<phf::map::Map<Bytes, &'static str>>,
 }
 
@@ -75,6 +76,7 @@ impl Command {
     let mut buf = vec![0; block_len];
     P::get(o, &self.addr(), &mut buf)?;
 
+
     if let Some(bit_pos) = self.bit_pos {
       let byte = buf[bit_pos / 8];
       let bit_len = self.bit_len.unwrap_or(1);
@@ -83,7 +85,13 @@ impl Command {
       buf.push((byte << (bit_pos % 8)) >> (8 - bit_len));
     }
 
-    self.unit.bytes_to_output(&buf[byte_pos..(byte_pos + byte_len)], self.factor, &self.mapping)
+    let byte_len = if let Some(raw_size) = self.raw_type.size() {
+      raw_size
+    } else {
+      byte_len
+    };
+
+    self.data_type.bytes_to_output(self.raw_type, &buf[byte_pos..(byte_pos + byte_len)], self.factor, &self.mapping)
   }
 
   pub fn set<P: Protocol>(&self, o: &mut Optolink, input: &Value) -> Result<(), Error> {
@@ -93,6 +101,6 @@ impl Command {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)))
     }
 
-    P::set(o, &self.addr(), &self.unit.input_to_bytes(input, self.factor, &self.mapping)?).map_err(Into::into)
+    P::set(o, &self.addr(), &self.data_type.input_to_bytes(input, self.factor, &self.mapping)?).map_err(Into::into)
   }
 }

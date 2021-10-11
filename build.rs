@@ -11,12 +11,14 @@ use yaml_merge_keys;
 use phf_codegen;
 use serde::de::{self, Deserialize, Deserializer};
 
+include!("src/raw_type.rs");
+
 #[path = "src/types/mod.rs"]
 mod types;
 use self::types::*;
 
 fn main() {
-  let device = "V200KW2_6";
+  let device = "VBC550P";
 
   let config_path = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("config").join(format!("{}.yml", device));
 
@@ -25,7 +27,9 @@ fn main() {
   let mut content = String::new();
   BufReader::new(file).read_to_string(&mut content).unwrap();
 
-  let config: Configuration = serde_yaml::from_value(yaml_merge_keys::merge_keys_serde(serde_yaml::from_str::<serde_yaml::Value>(&content).unwrap()).unwrap()).unwrap();
+  let yaml = serde_yaml::from_str::<serde_yaml::Value>(&content).unwrap();
+  let merged_yaml = yaml_merge_keys::merge_keys_serde(yaml).unwrap();
+  let config: Configuration = serde_yaml::from_value(merged_yaml).unwrap();
 
   let path = Path::new(&env::var("OUT_DIR").unwrap()).join("codegen.rs");
   let mut file = BufWriter::new(File::create(&path).unwrap());
@@ -53,8 +57,6 @@ fn main() {
       }}
     }}
   ", device, device, protocol, device).unwrap();
-
-  write!(&mut file, "pub type V200KW2 = V200KW2_6;").unwrap();
 }
 
 #[derive(Debug, Deserialize)]
@@ -73,7 +75,8 @@ pub struct Device {
 pub struct Command {
   addr: u16,
   mode: AccessMode,
-  unit: Unit,
+  data_type: DataType,
+  raw_type: RawType,
   block_len: Option<usize>,
   byte_len: Option<usize>,
   byte_pos: Option<usize>,
@@ -85,8 +88,9 @@ pub struct Command {
 
 impl fmt::Debug for Command {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    let block_len = self.block_len.unwrap_or_else(|| self.unit.size());
-    let byte_len = self.byte_len.unwrap_or_else(|| self.unit.size());
+    println!("{:0X}", self.addr);
+    let block_len = self.block_len.or_else(|| self.raw_type.size()).unwrap();
+    let byte_len = self.byte_len.or_else(|| self.raw_type.size()).unwrap();
     let byte_pos = self.byte_pos.unwrap_or(0);
 
     let mapping = if let Some(mapping) = &self.mapping {
@@ -104,13 +108,14 @@ impl fmt::Debug for Command {
     f.debug_struct("Command")
        .field("addr", &format_args!("0x{:04X}", self.addr))
        .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
-       .field("unit", &format_args!("crate::Unit::{:?}", self.unit))
+       .field("data_type", &format_args!("crate::DataType::{:?}", self.data_type))
+       .field("raw_type", &format_args!("crate::RawType::{:?}", self.raw_type))
        .field("block_len", &block_len)
        .field("byte_len", &byte_len)
        .field("byte_pos", &byte_pos)
        .field("bit_len", &self.bit_len)
        .field("bit_pos", &self.bit_pos)
-       .field("factor", &self.factor.unwrap_or(1.0))
+       .field("factor", &self.factor)
        .field("mapping", &format_args!("{}", mapping))
        .finish()
   }
@@ -137,48 +142,36 @@ impl<'de> Deserialize<'de> for AccessMode {
   }
 }
 
-#[derive(Debug)]
-pub enum Unit {
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DataType {
   I8,
   I16,
   I32,
   U8,
   U16,
   U32,
+  F32,
+  F64,
+  String,
+  Array,
   SysTime,
   CycleTime,
 }
 
-impl Unit {
+impl DataType {
   pub fn size(&self) -> usize {
     match self {
-      Unit::I8 => std::mem::size_of::<i8>(),
-      Unit::I16 => std::mem::size_of::<i16>(),
-      Unit::I32 => std::mem::size_of::<i32>(),
-      Unit::U8 => std::mem::size_of::<u8>(),
-      Unit::U16 => std::mem::size_of::<u16>(),
-      Unit::U32 => std::mem::size_of::<u32>(),
-      Unit::SysTime => std::mem::size_of::<SysTime>(),
-      Unit::CycleTime => std::mem::size_of::<CycleTime>(),
-    }
-  }
-}
-
-impl<'de> Deserialize<'de> for Unit {
-  fn deserialize<D>(deserializer: D) -> Result<Unit, D::Error>
-  where
-      D: Deserializer<'de>,
-  {
-    match String::deserialize(deserializer)?.as_str() {
-      "i8" => Ok(Unit::I8),
-      "i16" => Ok(Unit::I16),
-      "i32" => Ok(Unit::I32),
-      "u8" => Ok(Unit::U8),
-      "u16" => Ok(Unit::U16),
-      "u32" => Ok(Unit::U32),
-      "systime" => Ok(Unit::SysTime),
-      "cycletime" => Ok(Unit::CycleTime),
-      variant => Err(de::Error::unknown_variant(&variant, &["i8", "i16", "i32", "u8", "u16", "u32", "systime", "cycletime"])),
+      Self::I8 => std::mem::size_of::<i8>(),
+      Self::I16 => std::mem::size_of::<i16>(),
+      Self::I32 => std::mem::size_of::<i32>(),
+      Self::U8 => std::mem::size_of::<u8>(),
+      Self::U16 => std::mem::size_of::<u16>(),
+      Self::U32 => std::mem::size_of::<u32>(),
+      Self::String => std::mem::size_of::<String>(),
+      Self::SysTime => std::mem::size_of::<SysTime>(),
+      Self::CycleTime => std::mem::size_of::<CycleTime>(),
+      _ => panic!("unit has dynamic size: {:?}", self),
     }
   }
 }
