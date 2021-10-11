@@ -120,3 +120,11 @@ impl fmt::Display for CycleTime {
     )
   }
 }
+
+impl fmt::Debug for CycleTime {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "CycleTime(")?;
+    fmt::Display::fmt(self, f)?;
+    write!(f, ")")
+  }
+}

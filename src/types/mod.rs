@@ -64,7 +64,7 @@ to_bytes_le!(u32, [u8; 4]);
 
 macro_rules! byte_type {
   ($t:ident, $len:expr) => {
-    #[derive(Debug, Clone)]
+    #[derive(Clone)]
     pub struct $t([u8; $len]);
 
     impl $crate::FromBytes for $t {
@@ -105,11 +105,12 @@ impl fmt::Debug for Bytes {
 }
 
 impl FromBytes for Bytes {
+  #[track_caller]
   fn from_bytes(bytes: &[u8]) -> Bytes {
     match bytes.len() {
       1 => Bytes::One([bytes[0]]),
       2 => Bytes::Two([bytes[0], bytes[1]]),
-      _ => unreachable!(),
+      _ => unreachable!("from_bytes"),
     }
   }
 }
