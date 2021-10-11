@@ -540,10 +540,23 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       bit_length = type.fetch(:bit_length)
       bit_position = type.fetch(:bit_position)
 
-      type_translations = translations.fetch("viessmann.eventtype.name.#{type_id}", {})
+      type_translations = translations.fetch(:translations).fetch("viessmann.eventtype.name.#{type_id}", {})
 
-      f.puts "  # #{type_translations.fetch('de')}" unless type_translations.empty?
-      f.puts "  # #{type_translations.fetch('en')}" unless type_translations.empty?
+      if type_id =~ /ecnsysFehlerhistorie\d/
+        f.puts "  #{id}_time: # #{type_id}"
+        f.puts "    addr: 0x#{(addr + 1).to_s(16).rjust(4, '0')}"
+        f.puts "    mode: #{mode}"
+        f.puts "    data_type: sys_time"
+        f.puts "    raw_type: array"
+        f.puts "    block_len: 8"
+        f.puts "    byte_len: 8"
+        f.puts
+
+        data_type = 'u8'
+        raw_type = 'u8'
+        byte_length = 1
+      end
+
       f.puts "  #{id}: # #{type_id}"
       f.puts "    addr: 0x#{addr.to_s(16).rjust(4, '0')}"
       f.puts "    mode: #{mode}"

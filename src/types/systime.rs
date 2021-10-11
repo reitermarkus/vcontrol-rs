@@ -117,6 +117,14 @@ impl fmt::Display for SysTime {
   }
 }
 
+impl fmt::Debug for SysTime {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "SysTime(")?;
+    fmt::Display::fmt(self, f)?;
+    write!(f, ")")
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
