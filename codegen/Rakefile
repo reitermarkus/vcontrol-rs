@@ -542,7 +542,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
       type_translations = translations.fetch(:translations).fetch("viessmann.eventtype.name.#{type_id}", {})
 
-      if type_id =~ /ecnsysFehlerhistorie\d/
+      if type_id =~ /Fehlerhistorie\d$/
         f.puts "  #{id}_time: # #{type_id}"
         f.puts "    addr: 0x#{(addr + 1).to_s(16).rjust(4, '0')}"
         f.puts "    mode: #{mode}"
@@ -554,10 +554,11 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
         data_type = 'u8'
         raw_type = 'u8'
+        block_length = 1
         byte_length = 1
       end
 
-      f.puts "  # #{type.fetch(:description, 'N/A')}"
+      f.puts "  # #{type.fetch(:description, 'N/A').lines.join("  # ")}"
       f.puts "  #{id}: # #{type_id}"
       f.puts "    addr: 0x#{addr.to_s(16).rjust(4, '0')}"
       f.puts "    mode: #{mode}"
@@ -571,24 +572,39 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "    bit_pos: #{bit_position}"    unless bit_position.zero?
 
       if !mapping.empty? || type_id =~ /ecnsysFehlerhistorie\d/
-        mapping_id = case type_id
+        mapping_ids = case type_id
         when 'ecnsysLONCommunicationModul', 'ecnsysLONCommunicationModulWP'
-          'NRF_K76_KonfiKommunikationsmodul'
+          ['NRF_K76_KonfiKommunikationsmodul']
         when 'ecnsysLONErrorManager'
-          'K79_KonfiFehlerManagerV300_V333'
+          ['K79_KonfiFehlerManagerV300_V333']
         when /ecnsysFehlerhistorie\d/
-          "viessmann.errorcode.#{device}"
+          ["viessmann.errorcode.#{device}", "viessmann.errorcode.Ecotronic"]
         else
-          type_id
+          [type_id]
         end
 
-        translation_id = mappings.fetch(:mapping).fetch(mapping_id)
+        mapping_translations = mapping_ids.reduce({}) { |h , id|
+          mapping_id = mappings.fetch(:mapping).fetch(id)
+          translated_mappings = mappings.fetch(:translations).fetch(mapping_id)
+            .transform_values { |translation_id|
+              translations.fetch(:translations).fetch(translation_id).fetch('en')
+            }
+
+          translated_mappings.each do |k, v|
+            if (v_old = h[k]) && v_old != v
+              # $stderr.puts "Warning: Value for mapping '#{k}' does not match: #{v} != #{v_old}"
+              next
+            end
+
+            h[k] = v
+          end
+
+          h
+        }
 
         f.puts "    mapping:"
 
-        mappings.fetch(:translations).fetch(translation_id).each do |k, translation_id|
-          v = translations.fetch(:translations).fetch(translation_id).fetch('en')
-
+        mapping_translations.each do |k, v|
           # Remove enum number from text representation if present.
           v = v.downcase.sub(/^#{Regexp.escape(k.to_s)}\s+/, '')
 
