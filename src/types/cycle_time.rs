@@ -5,7 +5,8 @@ use serde::ser::{Serialize, Serializer};
 use serde::de::{self, Deserialize, Deserializer};
 use serde_derive::*;
 
-byte_type!(CycleTime, 8);
+#[derive(Clone)]
+pub struct CycleTime([u8; 8]);
 
 impl CycleTime {
   fn byte_to_time(&self, i: usize) -> Option<(u8, u8)> {
@@ -22,6 +23,16 @@ impl CycleTime {
       TimeSpan { from: self.byte_to_time(4).into(), to: self.byte_to_time(5).into() },
       TimeSpan { from: self.byte_to_time(6).into(), to: self.byte_to_time(7).into() },
     ]
+  }
+
+  pub fn from_bytes(bytes: &[u8]) -> Self {
+    let mut times = [0; 8];
+    times.copy_from_slice(bytes);
+    Self(times)
+  }
+
+  pub fn to_bytes(&self) -> [u8; 8] {
+    self.0
   }
 }
 
@@ -45,7 +56,7 @@ struct Time {
 
 impl fmt::Display for Time {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{}:{}", self.hh, self.mm)
+    write!(f, "{:02}:{:02}", self.hh, self.mm)
   }
 }
 

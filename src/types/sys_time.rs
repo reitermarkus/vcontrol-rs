@@ -15,7 +15,8 @@ fn dec_to_byte(dec: u8) -> u8 {
   dec / 10 * 16 + dec % 10
 }
 
-byte_type!(SysTime, 8);
+#[derive(Clone)]
+pub struct SysTime([u8; 8]);
 
 impl SysTime {
   pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> SysTime {
@@ -48,6 +49,16 @@ impl SysTime {
 
   pub fn second(&self) -> u8 {
     byte_to_dec(self.0[7])
+  }
+
+  pub fn from_bytes(bytes: &[u8]) -> Self {
+    let mut time = [0; 8];
+    time.copy_from_slice(bytes);
+    Self(time)
+  }
+
+  pub fn to_bytes(&self) -> [u8; 8] {
+    self.0
   }
 }
 

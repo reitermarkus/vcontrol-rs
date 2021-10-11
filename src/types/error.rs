@@ -2,7 +2,6 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
-use crate::types::{FromBytes, ToBytes};
 use super::SysTime;
 
 #[derive(Clone, Deserialize, Serialize)]
