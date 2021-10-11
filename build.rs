@@ -145,6 +145,7 @@ pub enum DataType {
   Array,
   SysTime,
   CycleTime,
+  Error,
 }
 
 impl DataType {
@@ -159,6 +160,7 @@ impl DataType {
       Self::String => std::mem::size_of::<String>(),
       Self::SysTime => std::mem::size_of::<SysTime>(),
       Self::CycleTime => std::mem::size_of::<CycleTime>(),
+      Self::Error => std::mem::size_of::<Error>(),
       _ => panic!("unit has dynamic size: {:?}", self),
     }
   }

@@ -86,6 +86,9 @@ macro_rules! byte_type {
 mod cycletime;
 pub use self::cycletime::CycleTime;
 
+mod error;
+pub use self::error::Error;
+
 mod systime;
 pub use self::systime::SysTime;
 

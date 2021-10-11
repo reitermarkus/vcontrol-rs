@@ -1,7 +1,7 @@
 use phf;
 use serde::Deserialize;
 
-use crate::{Error, Value, FromBytes, ToBytes, RawType, types::{Bytes, SysTime, CycleTime}};
+use crate::{Error, Value, FromBytes, ToBytes, RawType, types::{self, Bytes, SysTime, CycleTime}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -18,6 +18,7 @@ pub(crate) enum DataType {
   Array,
   SysTime,
   CycleTime,
+  Error,
 }
 
 impl DataType {
@@ -37,6 +38,7 @@ impl DataType {
     Ok(match self {
       Self::SysTime => return Ok(Value::SysTime(SysTime::from_bytes(bytes))),
       Self::CycleTime => return Ok(Value::CycleTime(CycleTime::from_bytes(bytes))),
+      Self::Error => return Ok(Value::Error(types::Error::from_bytes(bytes))),
       Self::String => return Ok(Value::String(String::from_utf8(bytes.to_vec()).unwrap())),
       Self::Array => return Ok(Value::Array(bytes.to_vec())),
       t => {
