@@ -557,6 +557,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
         byte_length = 1
       end
 
+      f.puts "  # #{type.fetch(:description, 'N/A')}"
       f.puts "  #{id}: # #{type_id}"
       f.puts "    addr: 0x#{addr.to_s(16).rjust(4, '0')}"
       f.puts "    mode: #{mode}"
