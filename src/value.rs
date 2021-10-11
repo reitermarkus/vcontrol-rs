@@ -7,10 +7,14 @@ use crate::types::{SysTime, CycleTime};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
-  Number(f64),
+  I32(i32),
+  U32(u32),
+  F64(f64),
+  Array(Vec<u8>),
+  String(String),
   SysTime(SysTime),
   CycleTime(CycleTime),
-  String(String),
+  Empty
 }
 
 #[derive(Debug)]
@@ -21,7 +25,7 @@ impl FromStr for Value {
 
   fn from_str(s: &str) -> Result<Value, Self::Err> {
     if let Ok(number) = s.parse::<f64>() {
-      return Ok(Value::Number(number))
+      return Ok(Value::F64(number))
     }
 
     if let Ok(systime) = s.parse::<SysTime>() {

@@ -488,42 +488,48 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       mode = type.fetch(:access_mode)
 
       byte_length = type.fetch(:byte_length)
-      unit = case unit = [type[:sdk_data_type], type[:parameter]]
+      data_type, raw_type = case unit = [type[:sdk_data_type], type[:parameter]]
       when ['DateTime', 'Array']
-        'systime'
+        ['sys_time', 'array']
       when ['Int', 'Byte']
-        "u8"
+        ["u8", "u8"]
       when ['Int', 'Int']
-        "u16"
+        ["u16", 'u16']
       when ['Int', 'Int4']
-        "u32"
+        ["u32", "u32"]
       when ['Int', 'SInt']
-        "i16"
+        ["i16", "i16"]
       when ['Int', 'SInt4']
-        "i32"
+        ["i32", "i32"]
       when ['Double', 'IntHighByteFirst']
         raise type.inspect if byte_length != 1
-        "i#{8 * type.fetch(:byte_length)}"
+        ['f32', "i#{8 * type.fetch(:byte_length)}"]
       when ['Double', 'Byte']
-        "u8"
+        ['f32', "u8"]
       when ['Double', 'Int']
-        "u16"
+        ['f32', "u16"]
       when ['Double', 'Int4']
-        "u32"
+        ['f64', "u32"]
       when ['Double', 'SByte']
-        "i8"
+        ['f32', "i8"]
       when ['Double', 'SInt']
-        "i16"
+        ['f32', "i16"]
       when ['Double', 'Array']
-        "u8"
-      when ['ByteArray', 'Array']
-        "u8"
-      when ["ByteArray", "Int"]
-        "u16"
+        bits = byte_length * 8
+
+        if bits <= 16
+          ['f32', "u#{bits}"]
+        else
+          ['f64', "u#{bits}"]
+        end
       when ['ByteArray', 'Byte']
-        'u8'
+        ['array', 'u8']
+      when ["ByteArray", "Int"]
+        ['array', "u16"]
+      when ['ByteArray', 'Array']
+        ["array", 'array']
       when ['ByteArray', 'String']
-        "u8"
+        ['string', 'array']
       else
         raise "No unit for #{unit} for #{type_id}."
       end
@@ -541,7 +547,8 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "  #{id}: # #{type_id}"
       f.puts "    addr: 0x#{addr.to_s(16).rjust(4, '0')}"
       f.puts "    mode: #{mode}"
-      f.puts "    unit: #{unit} ##{[type[:sdk_data_type], type[:parameter]]}" unless unit.nil?
+      f.puts "    data_type: #{data_type}"
+      f.puts "    raw_type: #{raw_type}"
       f.puts "    factor: #{factor}" unless factor.nil?
       f.puts "    block_len: #{block_length}"  unless block_length.zero?
       f.puts "    byte_len: #{byte_length}"    unless byte_length.zero?
@@ -567,7 +574,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
         mappings.fetch(:translations).fetch(translation_id).each do |k, translation_id|
           v = translations.fetch(:translations).fetch(translation_id).fetch('en')
-          f.puts "      [0x#{k.to_s(16)}]: #{v.inspect}"
+          f.puts "      [0x#{k.to_s(16)}]: #{v.downcase.inspect}"
         end
       end
       f.puts

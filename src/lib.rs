@@ -24,5 +24,8 @@ pub use crate::vcontrol::*;
 mod value;
 pub use crate::value::Value;
 
-mod unit;
-pub(crate) use crate::unit::Unit;
+mod data_type;
+pub(crate) use crate::data_type::DataType;
+
+mod raw_type;
+pub(crate) use crate::raw_type::RawType;
