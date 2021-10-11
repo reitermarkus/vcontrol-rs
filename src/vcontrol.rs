@@ -16,7 +16,7 @@ impl<D: Device> VControl<D> {
     Ok(())
   }
 
-  pub fn connect(mut device: Optolink) -> Result<VControl<D>, Error> {
+  pub fn connect(device: Optolink) -> Result<VControl<D>, Error> {
     let mut vcontrol = VControl { device, phantom: std::marker::PhantomData, connected: false };
     vcontrol.renegotiate()?;
     Ok(vcontrol)
