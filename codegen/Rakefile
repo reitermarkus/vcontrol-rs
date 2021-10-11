@@ -98,8 +98,8 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_GLOB do |t|
   File.write t.name, translations.sort_by_key.to_yaml
 end
 
-desc 'gather all commands'
-task :commands => DEVICES
+desc 'gather all device commands'
+task :devices => DEVICES
 
 file DEVICES => DATAPOINT_TYPES do |t|
   devices = {}
@@ -117,9 +117,13 @@ file DEVICES => DATAPOINT_TYPES do |t|
   end
 
   dummy_types = devices.delete('ecnStatusDataPoint')
-  devices = devices.map { |k, v| [k, v - dummy_types] }.to_h
+  devices = devices.transform_values { |v| v - dummy_types }
 
   File.write t.name, devices.to_yaml
+end
+
+def clean_enum_text(id, text)
+  text.sub(/^#{Regexp.escape(id)}\s+/, '').strip
 end
 
 def event_types(path)
@@ -158,7 +162,7 @@ def event_types(path)
         when 'option_list'
           n.text.split(';')
         when 'value_list'
-          n.text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k.to_i, v.strip] }.to_h
+          n.text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k.to_i, clean_enum_text(k, v)] }.to_h
         when /^prefix_(read|write)$/
           n.text.empty? ? nil : n.text.each_char.each_slice(2).map { |c| Integer(c.join, 16) }
         else
@@ -174,6 +178,23 @@ def event_types(path)
       }.compact.to_h,
     ]
   }.compact.to_h
+end
+
+task :event_types => [EVENT_TYPES, SYSTEM_EVENT_TYPES]
+
+task 'commands.yml' => [EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
+  devices = YAML.safe_load(File.read(DEVICES))
+  commands_names = devices.values.reduce(:|).to_set
+
+  event_types = t.sources.map { |source| YAML.safe_load(File.read(source), [Symbol]) }.reduce(:merge)
+
+  commands = event_types.reduce({}) { |h, (command_name, v)|
+    next h unless commands_names.include?(commands_names)
+
+    h[command_name] = v
+  }
+
+  File.write t.name, commands.to_yaml
 end
 
 file EVENT_TYPES => EVENT_TYPES_XML do |t|
@@ -288,6 +309,223 @@ file TRANSLATIONS_UNIQUE => TRANSLATIONS_RAW do |t|
   File.write t.name, create_mapping_to_unique(translations).to_yaml
 end
 
+def map_command_id(id)
+  exact_mappings = {
+    'BedienBetriebsartA1M1'                         => 'operating_mode_a1m1',
+    'BedienBetriebsartM2'                           => 'operating_mode_m2',
+    'Geraetekennung_Diode'                          => 'device_identification',
+    'Gemischte_AT'                                  => 'outside_temperature_adjusted',
+    'TiefpassTemperaturwert_ATS'                    => 'outside_temperature_lowpass',
+    'ADC_IstTemperaturwert_ATS'                     => 'outside_temperature_actual',
+    'ADC_IstTemperaturwert_AGTS'                    => 'exhaust_temperature_actual',
+    'ADC_Isttemperaturwert_KTS'                     => 'boiler_temperature_actual',
+    'TiefpassTemperaturwert_STS1'                   => 'dhw_temperature_lowpass',
+    'ADC_IstTemperaturwert_STS1'                    => 'dhw_temperature_actual',
+    'TemperaturFehler_STS1'                         => 'dhw_temperature_error',
+    'Bedien_WW_Solltemperatur'                      => 'dhw_temperature_desired',
+    'TemperaturFehler_AGTS'                         => 'exhaust_temperature_error',
+    'TiefpassTemperaturwert_AGTS'                   => 'exhaust_temperature_lowpass',
+    'AGTemperaturwertMAXBedienFunktionReset'        => 'exhaust_temperature_max_achieved_reset',
+    'BedienRTSolltemperaturReduziertA1M1'           => 'room_temperature_desired_reduced_a1m1',
+    'BedienRTSolltemperaturReduziertM2'             => 'room_temperature_desired_reduced_m2',
+    'BedienRTSolltemperaturA1M1'                    => 'room_temperature_desired_a1m1',
+    'BedienRTSolltemperaturM2'                      => 'room_temperature_desired_m2',
+    'HK_RaumsolltemperaturaktuellA1M1'              => 'room_temperature_desired_effective_a1m1',
+    'HK_RaumsolltemperaturaktuellM2'                => 'room_temperature_desired_effective_m2',
+    'TiefpassTemperatur_RTS_A1M1'                   => 'room_temperature_lowpass_a1m1',
+    'TiefpassTemperaturwert_RTS_M2'                 => 'room_temperature_lowpass_m2',
+    'TiefpassTemperaturwert_KTS_A1'                 => 'flow_temperature_lowpass_a1m1',
+    'HK_VT_Solltemperatur_A1M1'                     => 'flow_temperature_desired_a1m1',
+    'HK_VT_Solltemperatur_M2'                       => 'flow_temperature_desired_m2',
+    'VorlauftemperaturM2'                           => 'flow_temperature_actual_m2',
+    'TemperaturFehler_17_NR1'                       => 'return_temperature_error_status',
+    'TiefpassTemperaturwert_17_NR1'                 => 'return_temperature_lowpass_nr1',
+    'RuecklauftemperaturM2'                         => 'return_temperature_actual_m2',
+    'TemperaturFehler_2_NR1'                        => 'flow_temperature_error_status',
+    'TiefpassTemperaturwert_2_NR1'                  => 'flow_temperature_lowpass_nr1',
+    'WW_SolltemperaturAktuell'                      => 'dhw_temperature_desired_effective',
+    'Zubringerpumpe'                                => 'feed_pump',
+    'HK_AktuelleBetriebsartA1M1'                    => 'heating_circuit_operating_mode_effective_a1m1',
+    'HK_AktuelleBetriebsartM2'                      => 'heating_circuit_operating_mode_effective_m2',
+    'FerienBeginnA1M1'                              => 'holiday_departure_date_a1m1',
+    'FerienBeginnM2'                                => 'holiday_departure_date_m2',
+    'FerienEndeA1M1'                                => 'holiday_return_date_a1m1',
+    'FerienEndeM2'                                  => 'holiday_return_date_m2',
+    'Brennertyp_aktuell'                            => 'burner_type_effective',
+    'Brennerstarts'                                 => 'burner_starts',
+    'BedienSparbetriebA1M1'                         => 'economy_mode_a1m1',
+    'BedienSparbetriebM2'                           => 'economy_mode_m2',
+    'BedienPartybetriebA1M1'                        => 'party_mode_a1m1',
+    'BedienPartybetriebM2'                          => 'party_mode_m2',
+    'BedienRTSoll_PartyA1M1'                        => 'party_mode_temperature_desired_a1m1',
+    'BedienRTSoll_PartyM2'                          => 'party_mode_temperature_desired_m2',
+    'BedienNiveauA1M1'                              => 'heating_curve_level_a1m1',
+    'BedienNiveauM2'                                => 'heating_curve_level_m2',
+    'BedienNeigungA1M1'                             => 'heating_curve_slope_a1m1',
+    'BedienNeigungM2'                               => 'heating_curve_slope_m2',
+    'TemperaturFehler_KTS'                          => 'boiler_temperature_error_status',
+    'VT_SollKesselA1M1_NR1'                         => 'boiler_temperature_desired_a1m1_nr1',
+    'VT_SollKesselM2_NR1'                           => 'boiler_temperature_desired_m2_nr1',
+    'TiefpassTemperaturwert_KTS'                    => 'boiler_temperature_lowpass',
+    'Absenkzeit_gelerntM2'                          => 'setback_period_experience_based',
+    'AGTemperaturwertMAX'                           => 'exhaust_temperature_max_achieved',
+    'AGTemperaturwertMAXBedien'                     => 'exhaust_temperature_max',
+    'Aufheizgradient_gelerntA1M1'                   => 'heat_up_gradient_experience_based_a1m1',
+    'Aufheizgradient_gelerntM2'                     => 'heat_up_gradient_experience_based_m2',
+    'BetriebsstundenBrenner1Bedienung'              => 'burner_hours_stage_1',
+    'BetriebsstundenBrenner1BedienungFunktionReset' => 'burner_hours_stage_1_reset',
+    'BetriebsstundenBrenner2Bedienung'              => 'burner_hours_stage_2',
+    'BetriebsstundenBrenner2BedienungFunktionReset' => 'burner_hours_stage_2_reset',
+    'BrennerstartsFunktionReset'                    => 'burner_starts_reset',
+    'HK_FerienbetriebA1M1'                          => 'holiday_program_a1m1',
+    'HK_FerienbetriebM2'                            => 'holiday_program_m2',
+    'HK_Frostgefahr_aktivA1M1'                      => 'frost_risk_a1m1',
+    'HK_Frostgefahr_aktivM2'                        => 'frost_risk_m2',
+    'HK_PumpenzustandA1M1'                          => 'heating_circuit_pump_a1m1',
+    'HK_PumpenzustandM2'                            => 'heating_circuit_pump_m2',
+    'HK_ReglervarianteA1M1'                         => 'controller_version_a1m1',
+    'HK_ReglervarianteA1M1_NR1'                     => 'controller_version_a1m1_nr1',
+    'HK_ReglervarianteM2'                           => 'controller_version_m2',
+    'HK_ReglervarianteM2_NR1'                       => 'controller_version_m2_nr1',
+    'Uhrzeit'                                       => 'date_time',
+    'AutomaticFlag_WWA1M1'                          => 'dhw_switching_times_mode_a1m1',
+    'AutomaticFlag_WWM2'                            => 'dhw_switching_times_mode_m2',
+    'AutomaticFlag_ZPA1M1'                          => 'dhw_circulation_pump_switching_times_mode_a1m1',
+    'Schaltzeiten_A1M1_ZP'                          => 'dhw_circulation_pump_switching_times_a1m1',
+    'AutomaticFlag_ZPM2'                            => 'dhw_circulation_pump_switching_times_mode_m2',
+    'Schaltzeiten_M2_ZP'                            => 'dhw_circulation_pump_switching_times_m2',
+    'Schaltzeiten_A1M1_WW'                          => 'dhw_switching_times_a1m1',
+    'Schaltzeiten_M2_WW'                            => 'dhw_switching_times_m2',
+    'Schaltzeiten_A1M1_HK'                          => 'heating_circuit_switching_times_a1m1',
+    'Schaltzeiten_M2_HK'                            => 'heating_circuit_switching_times_m2',
+    'WW_Status_NR1'                                 => 'dhw_status_nr1',
+    'TiefpassTemperaturwert_VTS'                    => 'flow_temperature_adjusted',
+    'DigitalAusgang_Zirkulationspumpe'              => 'circulation_pump_status',
+    'DigitalAusgang_Speicherladepumpe'              => 'storage_tank_charging_pump_status',
+    'DigitalAusgang_Brenner'                        => 'burner_stage_1_status',
+    'DigitalAusgang_Benner2'                        => 'burner_stage_2_status',
+    'DigitalEingang_BrennerStoerung'                => 'burner_fault_status',
+    'HK_AufheiztimerA1M1'                           => 'heating_circuit_heat_up_phase_timer_a1m1',
+    'HK_AufheiztimerM2'                             => 'heating_circuit_heat_up_phase_timer_m2',
+    'HK_PumpenbefehlA1M1'                           => 'heating_circuit_pump_command_status_a1m1',
+    'HK_PumpenbefehlM2'                             => 'heating_circuit_pump_command_status_m2',
+    'HK_SchnellkorrekturA1M1'                       => 'heating_circuit_quick_correction_a1m1',
+    'HK_SchnellkorrekturM2'                         => 'heating_circuit_quick_correction_m2',
+    'TemperaturFehler_ATS'                          => 'outside_temperature_error_status',
+    'SystemIdent_SX'                                => 'device_group',
+    'Sachnummer'                                    => 'part_number',
+    'KesselSolltemperaturwert'                      => 'boiler_temperature_desired',
+    'DigitalAusgang_21'                             => 'digital_output_21',
+    'DigitalAusgang_28'                             => 'digital_output_28',
+    'HK_WW_Freigabe_vonA1M1'                        => 'dhw_release_a1m1',
+    'HK_WW_Freigabe_vonM2'                          => 'dhw_release_m2',
+    'D_Ausgang20_M2'                                => 'digital_output_20_m2',
+    'ecnsysFehlerhistorie0'                         => 'system_error_history_0',
+    'ecnsysFehlerhistorie1'                         => 'system_error_history_1',
+    'ecnsysFehlerhistorie2'                         => 'system_error_history_2',
+    'ecnsysFehlerhistorie3'                         => 'system_error_history_3',
+    'ecnsysFehlerhistorie4'                         => 'system_error_history_4',
+    'ecnsysFehlerhistorie5'                         => 'system_error_history_5',
+    'ecnsysFehlerhistorie6'                         => 'system_error_history_6',
+    'ecnsysFehlerhistorie7'                         => 'system_error_history_7',
+    'ecnsysFehlerhistorie8'                         => 'system_error_history_8',
+    'ecnsysFehlerhistorie9'                         => 'system_error_history_9',
+    'DigitalAusgang_20'                             => 'digital_output_20',
+    'DigitalAusgang_52Auf'                          => 'digital_output_52_open',
+    'DigitalAusgang_52Zu'                           => 'digital_output_52_closed',
+    'FB_A1_SW_Index'                                => 'remote_control_software_index_a1m1',
+    'FB_M2_SW_Index'                                => 'remote_control_software_index_m2',
+    'Oelverbrauch'                                  => 'fuel_consumption',
+    'Oelverbrauch_Reset'                            => 'fuel_consumption_reset',
+    'Nachtkontakt_HKPA1'                            => 'heating_circuit_pump_night_contact_a1m1',
+    'Nachtkontakt_HKPM2'                            => 'heating_circuit_pump_night_contact_m2',
+    'ResetCounter'                                  => 'reset_counter',
+    'RelaistestV200KW2_NR1'                         => 'relay_test_v200kw2_nr1',
+  }
+
+  exact_mappings.fetch(id, id)
+end
+
+def map_data_type(type_id, type)
+  byte_length = type.fetch(:byte_length)
+
+  data_type, raw_type = case unit = [type[:sdk_data_type], type[:parameter]]
+  when ['DateTime', 'Array']
+    ['sys_time', 'array']
+  when ['Int', 'Byte']
+    ["u8", "u8"]
+  when ['Int', 'Int']
+    ["u16", 'u16']
+  when ['Int', 'Int4']
+    ["u32", "u32"]
+  when ['Int', 'SInt']
+    ["i16", "i16"]
+  when ['Int', 'SInt4']
+    ["i32", "i32"]
+  when ['Double', 'IntHighByteFirst']
+    raise type.inspect if byte_length != 1
+    ['f32', "i#{8 * type.fetch(:byte_length)}"]
+  when ['Double', 'Byte']
+    ['f32', "u8"]
+  when ['Double', 'Int']
+    ['f32', "u16"]
+  when ['Double', 'Int4']
+    ['f64', "u32"]
+  when ['Double', 'SByte']
+    ['f32', "i8"]
+  when ['Double', 'SInt']
+    ['f32', "i16"]
+  when ['Double', 'Array']
+    bits = byte_length * 8
+
+    if bits <= 16
+      ['f32', "u#{bits}"]
+    else
+      ['f64', "u#{bits}"]
+    end
+  when ['ByteArray', 'Byte']
+    ['array', 'u8']
+  when ["ByteArray", "Int"]
+    ['array', "u16"]
+  when ['ByteArray', 'Array']
+    ["array", 'array']
+  when ['ByteArray', 'String']
+    ['string', 'array']
+  else
+    raise "No mapping for type #{unit} for #{type_id}."
+  end
+end
+
+def map_factor(type)
+  case type[:conversion]
+  when 'NoConversion', nil then nil
+  when 'Div2' then 2
+  when 'Div10' then 10
+  when 'Div100' then 100
+  when 'Div1000' then 1000
+  when 'Sec2Hour' then 3600
+  when 'Mult2' then 0.5
+  when 'Mult5' then 0.2
+  when 'Mult10' then 0.1
+  when 'Mult100' then 0.01
+  when 'MultOffset' then
+    factor = type.fetch(:conversion_factor)
+    offset = type.fetch(:conversion_offset, 0).to_f
+    factor.to_f * (10 ** offset)
+  when 'DateBCD' then nil
+  when 'DateTimeBCD' then nil
+  when 'RotateBytes' then nil
+  when 'HourDiffSec2Hour' then nil
+  when 'UTCDiff2Month' then nil
+  when 'HexByte2AsciiByte' then nil
+  when 'Estrich' then nil
+  when 'FixedStringTerminalZeroes' then nil
+  when 'HexByte2DecimalByte' then nil
+  else
+    raise "No factor for conversion '#{conversion}'."
+  end
+end
+
 rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
   device = Pathname(t.name).sub_ext('').to_s
 
@@ -310,234 +548,22 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
     f.puts 'commands:'
     types.each do |type_id, type|
-      type_id = type_id.sub(/\~0x[0-9A-F]{4}\Z/, '')
-
-      id = type_id
+      type_id = type_id.sub(/\~0x\h{4}\Z/, '')
 
       # Remove unneeded/wrong commands.
-      next if id.start_with?('Node_')
-      next if id.start_with?('nciNet')
+      next if type_id.start_with?('Node_')
+      next if type_id.start_with?('nciNet')
 
-      exact_mappings = {
-        'BedienBetriebsartA1M1'                         => 'operating_mode_a1m1',
-        'BedienBetriebsartM2'                           => 'operating_mode_m2',
-        'Geraetekennung_Diode'                          => 'device_identification',
-        'Gemischte_AT'                                  => 'outside_temperature_adjusted',
-        'TiefpassTemperaturwert_ATS'                    => 'outside_temperature_lowpass',
-        'ADC_IstTemperaturwert_ATS'                     => 'outside_temperature_actual',
-        'ADC_IstTemperaturwert_AGTS'                    => 'exhaust_temperature_actual',
-        'ADC_Isttemperaturwert_KTS'                     => 'boiler_temperature_actual',
-        'TiefpassTemperaturwert_STS1'                   => 'dhw_temperature_lowpass',
-        'ADC_IstTemperaturwert_STS1'                    => 'dhw_temperature_actual',
-        'TemperaturFehler_STS1'                         => 'dhw_temperature_error',
-        'Bedien_WW_Solltemperatur'                      => 'dhw_temperature_desired',
-        'TemperaturFehler_AGTS'                         => 'exhaust_temperature_error',
-        'TiefpassTemperaturwert_AGTS'                   => 'exhaust_temperature_lowpass',
-        'AGTemperaturwertMAXBedienFunktionReset'        => 'exhaust_temperature_max_achieved_reset',
-        'BedienRTSolltemperaturReduziertA1M1'           => 'room_temperature_desired_reduced_a1m1',
-        'BedienRTSolltemperaturReduziertM2'             => 'room_temperature_desired_reduced_m2',
-        'BedienRTSolltemperaturA1M1'                    => 'room_temperature_desired_a1m1',
-        'BedienRTSolltemperaturM2'                      => 'room_temperature_desired_m2',
-        'HK_RaumsolltemperaturaktuellA1M1'              => 'room_temperature_desired_effective_a1m1',
-        'HK_RaumsolltemperaturaktuellM2'                => 'room_temperature_desired_effective_m2',
-        'TiefpassTemperatur_RTS_A1M1'                   => 'room_temperature_lowpass_a1m1',
-        'TiefpassTemperaturwert_RTS_M2'                 => 'room_temperature_lowpass_m2',
-        'TiefpassTemperaturwert_KTS_A1'                 => 'flow_temperature_lowpass_a1m1',
-        'HK_VT_Solltemperatur_A1M1'                     => 'flow_temperature_desired_a1m1',
-        'HK_VT_Solltemperatur_M2'                       => 'flow_temperature_desired_m2',
-        'VorlauftemperaturM2'                           => 'flow_temperature_actual_m2',
-        'TemperaturFehler_17_NR1'                       => 'return_temperature_error_status',
-        'TiefpassTemperaturwert_17_NR1'                 => 'return_temperature_lowpass_nr1',
-        'RuecklauftemperaturM2'                         => 'return_temperature_actual_m2',
-        'TemperaturFehler_2_NR1'                        => 'flow_temperature_error_status',
-        'TiefpassTemperaturwert_2_NR1'                  => 'flow_temperature_lowpass_nr1',
-        'WW_SolltemperaturAktuell'                      => 'dhw_temperature_desired_effective',
-        'Zubringerpumpe'                                => 'feed_pump',
-        'HK_AktuelleBetriebsartA1M1'                    => 'heating_circuit_operating_mode_effective_a1m1',
-        'HK_AktuelleBetriebsartM2'                      => 'heating_circuit_operating_mode_effective_m2',
-        'FerienBeginnA1M1'                              => 'holiday_departure_date_a1m1',
-        'FerienBeginnM2'                                => 'holiday_departure_date_m2',
-        'FerienEndeA1M1'                                => 'holiday_return_date_a1m1',
-        'FerienEndeM2'                                  => 'holiday_return_date_m2',
-        'Brennertyp_aktuell'                            => 'burner_type_effective',
-        'Brennerstarts'                                 => 'burner_starts',
-        'BedienSparbetriebA1M1'                         => 'economy_mode_a1m1',
-        'BedienSparbetriebM2'                           => 'economy_mode_m2',
-        'BedienPartybetriebA1M1'                        => 'party_mode_a1m1',
-        'BedienPartybetriebM2'                          => 'party_mode_m2',
-        'BedienRTSoll_PartyA1M1'                        => 'party_mode_temperature_desired_a1m1',
-        'BedienRTSoll_PartyM2'                          => 'party_mode_temperature_desired_m2',
-        'BedienNiveauA1M1'                              => 'heating_curve_level_a1m1',
-        'BedienNiveauM2'                                => 'heating_curve_level_m2',
-        'BedienNeigungA1M1'                             => 'heating_curve_slope_a1m1',
-        'BedienNeigungM2'                               => 'heating_curve_slope_m2',
-        'TemperaturFehler_KTS'                          => 'boiler_temperature_error_status',
-        'VT_SollKesselA1M1_NR1'                         => 'boiler_temperature_desired_a1m1_nr1',
-        'VT_SollKesselM2_NR1'                           => 'boiler_temperature_desired_m2_nr1',
-        'TiefpassTemperaturwert_KTS'                    => 'boiler_temperature_lowpass',
-        'Absenkzeit_gelerntM2'                          => 'setback_period_experience_based',
-        'AGTemperaturwertMAX'                           => 'exhaust_temperature_max_achieved',
-        'AGTemperaturwertMAXBedien'                     => 'exhaust_temperature_max',
-        'Aufheizgradient_gelerntA1M1'                   => 'heat_up_gradient_experience_based_a1m1',
-        'Aufheizgradient_gelerntM2'                     => 'heat_up_gradient_experience_based_m2',
-        'BetriebsstundenBrenner1Bedienung'              => 'burner_hours_stage_1',
-        'BetriebsstundenBrenner1BedienungFunktionReset' => 'burner_hours_stage_1_reset',
-        'BetriebsstundenBrenner2Bedienung'              => 'burner_hours_stage_2',
-        'BetriebsstundenBrenner2BedienungFunktionReset' => 'burner_hours_stage_2_reset',
-        'BrennerstartsFunktionReset'                    => 'burner_starts_reset',
-        'HK_FerienbetriebA1M1'                          => 'holiday_program_a1m1',
-        'HK_FerienbetriebM2'                            => 'holiday_program_m2',
-        'HK_Frostgefahr_aktivA1M1'                      => 'frost_risk_a1m1',
-        'HK_Frostgefahr_aktivM2'                        => 'frost_risk_m2',
-        'HK_PumpenzustandA1M1'                          => 'heating_circuit_pump_a1m1',
-        'HK_PumpenzustandM2'                            => 'heating_circuit_pump_m2',
-        'HK_ReglervarianteA1M1'                         => 'controller_version_a1m1',
-        'HK_ReglervarianteA1M1_NR1'                     => 'controller_version_a1m1_nr1',
-        'HK_ReglervarianteM2'                           => 'controller_version_m2',
-        'HK_ReglervarianteM2_NR1'                       => 'controller_version_m2_nr1',
-        'Uhrzeit'                                       => 'date_time',
-        'AutomaticFlag_WWA1M1'                          => 'dhw_switching_times_mode_a1m1',
-        'AutomaticFlag_WWM2'                            => 'dhw_switching_times_mode_m2',
-        'AutomaticFlag_ZPA1M1'                          => 'dhw_circulation_pump_switching_times_mode_a1m1',
-        'Schaltzeiten_A1M1_ZP'                          => 'dhw_circulation_pump_switching_times_a1m1',
-        'AutomaticFlag_ZPM2'                            => 'dhw_circulation_pump_switching_times_mode_m2',
-        'Schaltzeiten_M2_ZP'                            => 'dhw_circulation_pump_switching_times_m2',
-        'Schaltzeiten_A1M1_WW'                          => 'dhw_switching_times_a1m1',
-        'Schaltzeiten_M2_WW'                            => 'dhw_switching_times_m2',
-        'Schaltzeiten_A1M1_HK'                          => 'heating_circuit_switching_times_a1m1',
-        'Schaltzeiten_M2_HK'                            => 'heating_circuit_switching_times_m2',
-        'WW_Status_NR1'                                 => 'dhw_status_nr1',
-        'TiefpassTemperaturwert_VTS'                    => 'flow_temperature_adjusted',
-        'DigitalAusgang_Zirkulationspumpe'              => 'circulation_pump_status',
-        'DigitalAusgang_Speicherladepumpe'              => 'storage_tank_charging_pump_status',
-        'DigitalAusgang_Brenner'                        => 'burner_stage_1_status',
-        'DigitalAusgang_Benner2'                        => 'burner_stage_2_status',
-        'DigitalEingang_BrennerStoerung'                => 'burner_fault_status',
-        'HK_AufheiztimerA1M1'                           => 'heating_circuit_heat_up_phase_timer_a1m1',
-        'HK_AufheiztimerM2'                             => 'heating_circuit_heat_up_phase_timer_m2',
-        'HK_PumpenbefehlA1M1'                           => 'heating_circuit_pump_command_status_a1m1',
-        'HK_PumpenbefehlM2'                             => 'heating_circuit_pump_command_status_m2',
-        'HK_SchnellkorrekturA1M1'                       => 'heating_circuit_quick_correction_a1m1',
-        'HK_SchnellkorrekturM2'                         => 'heating_circuit_quick_correction_m2',
-        'TemperaturFehler_ATS'                          => 'outside_temperature_error_status',
-        'SystemIdent_SX'                                => 'device_group',
-        'Sachnummer'                                    => 'part_number',
-        'KesselSolltemperaturwert'                      => 'boiler_temperature_desired',
-        'DigitalAusgang_21'                             => 'digital_output_21',
-        'DigitalAusgang_28'                             => 'digital_output_28',
-        'HK_WW_Freigabe_vonA1M1'                        => 'dhw_release_a1m1',
-        'HK_WW_Freigabe_vonM2'                          => 'dhw_release_m2',
-        'D_Ausgang20_M2'                                => 'digital_output_20_m2',
-        'ecnsysFehlerhistorie0'                         => 'system_error_history_0',
-        'ecnsysFehlerhistorie1'                         => 'system_error_history_1',
-        'ecnsysFehlerhistorie2'                         => 'system_error_history_2',
-        'ecnsysFehlerhistorie3'                         => 'system_error_history_3',
-        'ecnsysFehlerhistorie4'                         => 'system_error_history_4',
-        'ecnsysFehlerhistorie5'                         => 'system_error_history_5',
-        'ecnsysFehlerhistorie6'                         => 'system_error_history_6',
-        'ecnsysFehlerhistorie7'                         => 'system_error_history_7',
-        'ecnsysFehlerhistorie8'                         => 'system_error_history_8',
-        'ecnsysFehlerhistorie9'                         => 'system_error_history_9',
-        'DigitalAusgang_20'                             => 'digital_output_20',
-        'DigitalAusgang_52Auf'                          => 'digital_output_52_open',
-        'DigitalAusgang_52Zu'                           => 'digital_output_52_closed',
-        'FB_A1_SW_Index'                                => 'remote_control_software_index_a1m1',
-        'FB_M2_SW_Index'                                => 'remote_control_software_index_m2',
-        'Oelverbrauch'                                  => 'fuel_consumption',
-        'Oelverbrauch_Reset'                            => 'fuel_consumption_reset',
-        'Nachtkontakt_HKPA1'                            => 'heating_circuit_pump_night_contact_a1m1',
-        'Nachtkontakt_HKPM2'                            => 'heating_circuit_pump_night_contact_m2',
-        'ResetCounter'                                  => 'reset_counter',
-        'RelaistestV200KW2_NR1'                         => 'relay_test_v200kw2_nr1',
-      }
-
-      id = if exact_mappings.key?(id)
-        exact_mappings.fetch(id)
-      else
-        id
-      end
+      id = type_id
+      id = map_command_id(id)
 
       addr = type.fetch(:address)
-      factor = begin
-        conversion = type[:conversion]
-        factor = type[:conversion_factor]
-        offset = type[:conversion_offset]
-
-        case conversion
-        when 'NoConversion', nil then nil
-        when 'Div2' then 2
-        when 'Div10' then 10
-        when 'Div100' then 100
-        when 'Div1000' then 1000
-        when 'Sec2Hour' then 3600
-        when 'Mult2' then 0.5
-        when 'Mult5' then 0.2
-        when 'Mult10' then 0.1
-        when 'Mult100' then 0.01
-        when 'MultOffset' then
-          factor.to_f * (10 ** offset.to_f)
-        when 'DateBCD' then nil
-        when 'DateTimeBCD' then nil
-        when 'RotateBytes' then nil
-        when 'HourDiffSec2Hour' then nil
-        when 'UTCDiff2Month' then nil
-        when 'HexByte2AsciiByte' then nil
-        when 'Estrich' then nil
-        when 'FixedStringTerminalZeroes' then nil
-        when 'HexByte2DecimalByte' then nil
-        else
-          raise "No factor for conversion '#{conversion}'."
-        end
-      end
+      factor = map_factor(type)
       mode = type.fetch(:access_mode)
 
       byte_length = type.fetch(:byte_length)
-      data_type, raw_type = case unit = [type[:sdk_data_type], type[:parameter]]
-      when ['DateTime', 'Array']
-        ['sys_time', 'array']
-      when ['Int', 'Byte']
-        ["u8", "u8"]
-      when ['Int', 'Int']
-        ["u16", 'u16']
-      when ['Int', 'Int4']
-        ["u32", "u32"]
-      when ['Int', 'SInt']
-        ["i16", "i16"]
-      when ['Int', 'SInt4']
-        ["i32", "i32"]
-      when ['Double', 'IntHighByteFirst']
-        raise type.inspect if byte_length != 1
-        ['f32', "i#{8 * type.fetch(:byte_length)}"]
-      when ['Double', 'Byte']
-        ['f32', "u8"]
-      when ['Double', 'Int']
-        ['f32', "u16"]
-      when ['Double', 'Int4']
-        ['f64', "u32"]
-      when ['Double', 'SByte']
-        ['f32', "i8"]
-      when ['Double', 'SInt']
-        ['f32', "i16"]
-      when ['Double', 'Array']
-        bits = byte_length * 8
-
-        if bits <= 16
-          ['f32', "u#{bits}"]
-        else
-          ['f64', "u#{bits}"]
-        end
-      when ['ByteArray', 'Byte']
-        ['array', 'u8']
-      when ["ByteArray", "Int"]
-        ['array', "u16"]
-      when ['ByteArray', 'Array']
-        ["array", 'array']
-      when ['ByteArray', 'String']
-        ['string', 'array']
-      else
-        raise "No unit for #{unit} for #{type_id}."
-      end
-      mapping = type.fetch(:value_list, {})
+      data_type, raw_type = map_data_type(type_id, type)
+      enum_type = type.fetch(:value_list, {}).any?
       block_length = type.fetch(:block_length)
       byte_length = type.fetch(:byte_length)
       byte_position = type.fetch(:byte_position)
@@ -580,7 +606,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "    bit_len: #{bit_length}"      unless bit_length.zero?
       f.puts "    bit_pos: #{bit_position}"    unless bit_position.zero?
 
-      if !mapping.empty? || error_type
+      if enum_type || error_type
         mapping_ids = if error_type
           ["viessmann.errorcode.#{device}", "viessmann.errorcode.Ecotronic"]
         else
@@ -617,7 +643,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
         mapping_translations.sort_by_key.each do |k, v|
           # Remove enum number from text representation if present.
-          v = v.downcase.sub(/^#{Regexp.escape(k.to_s)}\s+/, '')
+          v = clean_enum_text(k.to_s, v).downcase
 
           f.puts "      [0x#{k.to_s(16)}]: #{v.inspect}"
         end
@@ -645,7 +671,7 @@ file 'conversion.rs' => [EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
 
   all_types = types.merge(sys_types)
 
-  all_types = all_types.delete_if { |_, type|
+  all_types = all_types.delete_if { |type_id, type|
     keep = false
 
     if type[:fc_read] && type[:fc_read] == 'virtual_read'
