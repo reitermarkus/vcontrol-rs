@@ -1,7 +1,7 @@
 use core::convert::Infallible;
 use std::str::FromStr;
 
-use serde_derive::*;
+use serde::{Serialize, Deserialize};
 
 use crate::types::{SysTime, CycleTime, Error};
 

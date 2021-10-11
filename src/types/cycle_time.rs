@@ -1,9 +1,7 @@
 use std::fmt;
 use std::str::FromStr;
 
-use serde::ser::{Serialize, Serializer};
-use serde::de::{self, Deserialize, Deserializer};
-use serde_derive::*;
+use serde::{Serialize, Serializer, Deserialize, Deserializer, de};
 
 #[derive(Clone)]
 pub struct CycleTime([u8; 8]);
