@@ -5,7 +5,7 @@ use std::path::Path;
 use std::collections::HashMap;
 use std::fmt;
 
-use serde::Deserialize;
+use serde::{Deserialize, de::DeserializeOwned};
 use serde_yaml;
 use yaml_merge_keys;
 use phf_codegen;
@@ -18,10 +18,10 @@ use raw_type::RawType;
 mod types;
 use self::types::*;
 
-
-fn load_yaml(file_name: &str) -> serde_yaml::Value {
+#[track_caller]
+fn load_yaml<T: DeserializeOwned>(file_name: &str) -> T {
   let path = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("codegen").join(file_name);
-  let file = BufReader::new(File::open(path).unwrap());
+  let file = BufReader::new(File::open(&path).expect(&format!("Error opening {:?}", path)));
   serde_yaml::from_reader(file).unwrap()
 }
 
@@ -31,47 +31,50 @@ fn output_file(file_name: &str) -> BufWriter<File> {
 }
 
 fn generate_translations() {
-  let translations = load_yaml("used_translations.yml");
+  let translations: HashMap<String, String> = load_yaml("used_translations.yml");
 
   let mut file = output_file("translations.rs");
 
-  for (k, v) in translations.as_mapping().unwrap() {
-    let k = k.as_str().unwrap().to_uppercase();
-    let v = v.as_str().unwrap();
-    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k, v).unwrap();
+  for (k, v) in translations {
+    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k.to_uppercase(), v).unwrap();
   }
 }
 
 fn generate_mappings() {
-  let mappings = load_yaml("used_mappings.yml");
+  let mappings: HashMap<String, HashMap<u8, String>> = load_yaml("used_mappings.yml");
 
   let mut file = output_file("mappings.rs");
 
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/translations.rs"));"#).unwrap();
 
-  for (k, v) in mappings.as_mapping().unwrap() {
-    let k = k.as_str().unwrap().to_uppercase();
-    let mapping = v.as_mapping().unwrap();
-
+  for (k, mapping) in mappings {
     let mut map = phf_codegen::Map::new();
 
     for (k, v) in mapping {
-      eprintln!("{:?}", k);
-
-      let k = k.as_i64().unwrap() as u8;
-      let v = v.as_str().unwrap().to_uppercase();
-
-      map.entry(k, &format!("TRANSLATION_{}", v));
+      map.entry(k, &format!("TRANSLATION_{}", v.to_uppercase()));
     }
 
     // let v = v.as_str().unwrap();
-    writeln!(file, "pub const MAPPING_{}: ::phf::Map<u8, &'static str> = {};", k, map.build()).unwrap();
+    writeln!(file, "pub const MAPPING_{}: ::phf::Map<u8, &'static str> = {};", k.to_uppercase(), map.build()).unwrap();
+  }
+}
+
+fn generate_commands() {
+  let mappings: HashMap<String, Command> = load_yaml("used_commands.yml");
+
+  let mut file = output_file("commands.rs");
+
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
+
+  for (command_name, command) in mappings {
+    writeln!(file, "pub const COMMAND_{}: Command = {:?};", command_name.to_uppercase(), command).unwrap();
   }
 }
 
 fn main() {
   generate_translations();
   generate_mappings();
+  generate_commands();
 
   let device = "VBC550P";
 
@@ -82,17 +85,17 @@ fn main() {
 
   let mut file = output_file("codegen.rs");
 
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
 
   let protocol = config.device.protocol;
 
   let mut map = phf_codegen::Map::<&str>::new();
 
-  for (name, command) in config.commands.iter() {
-    map.entry(name, &format!("{:?}", command));
+  for command_name in config.commands.iter() {
+    map.entry(command_name, &format!("&COMMAND_{}", command_name.to_uppercase()));
   }
 
-  writeln!(&mut file, "static {}_COMMANDS: ::phf::Map<&'static str, Command> = {};", device, map.build()).unwrap();
+  writeln!(&mut file, "static {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", device, map.build()).unwrap();
 
   write!(&mut file, "
     #[derive(Debug)]
@@ -102,7 +105,7 @@ fn main() {
       type Protocol = {};
 
       #[inline(always)]
-      fn map() -> &'static phf::Map<&'static str, Command> {{
+      fn map() -> &'static phf::Map<&'static str, &'static Command> {{
         &{}_COMMANDS
       }}
     }}
@@ -112,7 +115,7 @@ fn main() {
 #[derive(Debug, Deserialize)]
 pub struct Configuration {
   pub device: Device,
-  pub commands: HashMap<String, Command>,
+  pub commands: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
