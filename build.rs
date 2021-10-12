@@ -55,7 +55,7 @@ fn generate_mappings() {
     }
 
     // let v = v.as_str().unwrap();
-    writeln!(file, "pub const MAPPING_{}: ::phf::Map<u8, &'static str> = {};", k.to_uppercase(), map.build()).unwrap();
+    writeln!(file, "const MAPPING_{}: ::phf::Map<u8, &'static str> = {};", k.to_uppercase(), map.build()).unwrap();
   }
 }
 
@@ -67,7 +67,7 @@ fn generate_commands() {
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
 
   for (command_name, command) in mappings {
-    writeln!(file, "pub const COMMAND_{}: Command = {:?};", command_name.to_uppercase(), command).unwrap();
+    writeln!(file, "const COMMAND_{}: Command = {:?};", command_name.to_uppercase(), command).unwrap();
   }
 }
 
