@@ -15,14 +15,14 @@ pub use self::codegen::*;
 pub trait Device {
   type Protocol: Protocol;
 
-  fn map() -> &'static phf::Map<&'static str, Command>;
+  fn map() -> &'static phf::Map<&'static str, &'static Command>;
 
   fn commands() -> Vec<&'static str> {
     Self::map().keys().cloned().collect::<Vec<_>>()
   }
 
-  fn command(name: &str) -> Option<&Command> {
-    Self::map().get(name)
+  fn command(name: &str) -> Option<&'static Command> {
+    Self::map().get(name).map(|c| *c)
   }
 
   fn get(o: &mut Optolink, cmd: &Command) -> Result<Value, Error> {
