@@ -18,22 +18,71 @@ use raw_type::RawType;
 mod types;
 use self::types::*;
 
+
+fn load_yaml(file_name: &str) -> serde_yaml::Value {
+  let path = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("codegen").join(file_name);
+  let file = BufReader::new(File::open(path).unwrap());
+  serde_yaml::from_reader(file).unwrap()
+}
+
+fn output_file(file_name: &str) -> BufWriter<File> {
+  let path = Path::new(&env::var("OUT_DIR").unwrap()).join(file_name);
+  BufWriter::new(File::create(&path).unwrap())
+}
+
+fn generate_translations() {
+  let translations = load_yaml("used_translations.yml");
+
+  let mut file = output_file("translations.rs");
+
+  for (k, v) in translations.as_mapping().unwrap() {
+    let k = k.as_str().unwrap().to_uppercase();
+    let v = v.as_str().unwrap();
+    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k, v).unwrap();
+  }
+}
+
+fn generate_mappings() {
+  let mappings = load_yaml("used_mappings.yml");
+
+  let mut file = output_file("mappings.rs");
+
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/translations.rs"));"#).unwrap();
+
+  for (k, v) in mappings.as_mapping().unwrap() {
+    let k = k.as_str().unwrap().to_uppercase();
+    let mapping = v.as_mapping().unwrap();
+
+    let mut map = phf_codegen::Map::new();
+
+    for (k, v) in mapping {
+      eprintln!("{:?}", k);
+
+      let k = k.as_i64().unwrap() as u8;
+      let v = v.as_str().unwrap().to_uppercase();
+
+      map.entry(k, &format!("TRANSLATION_{}", v));
+    }
+
+    // let v = v.as_str().unwrap();
+    writeln!(file, "pub const MAPPING_{}: ::phf::Map<u8, &'static str> = {};", k, map.build()).unwrap();
+  }
+}
+
 fn main() {
+  generate_translations();
+  generate_mappings();
+
   let device = "VBC550P";
 
-  let config_path = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("config").join(format!("{}.yml", device));
+  let yaml = load_yaml(&format!("{}.yml", device));
 
-  let file = File::open(config_path).unwrap();
-
-  let mut content = String::new();
-  BufReader::new(file).read_to_string(&mut content).unwrap();
-
-  let yaml = serde_yaml::from_str::<serde_yaml::Value>(&content).unwrap();
   let merged_yaml = yaml_merge_keys::merge_keys_serde(yaml).unwrap();
   let config: Configuration = serde_yaml::from_value(merged_yaml).unwrap();
 
-  let path = Path::new(&env::var("OUT_DIR").unwrap()).join("codegen.rs");
-  let mut file = BufWriter::new(File::create(&path).unwrap());
+  let mut file = output_file("codegen.rs");
+
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
 
   let protocol = config.device.protocol;
 
@@ -43,7 +92,7 @@ fn main() {
     map.entry(name, &format!("{:?}", command));
   }
 
-  writeln!(&mut file, "static {}_COMMANDS: phf::Map<&'static str, Command> = {};", device, map.build()).unwrap();
+  writeln!(&mut file, "static {}_COMMANDS: ::phf::Map<&'static str, Command> = {};", device, map.build()).unwrap();
 
   write!(&mut file, "
     #[derive(Debug)]
@@ -84,7 +133,7 @@ pub struct Command {
   bit_pos: Option<usize>,
   bit_len: Option<usize>,
   factor: Option<f64>,
-  mapping: Option<HashMap<u8, String>>,
+  mapping: Option<String>,
 }
 
 impl fmt::Debug for Command {
@@ -95,13 +144,7 @@ impl fmt::Debug for Command {
     let byte_pos = self.byte_pos.unwrap_or(0);
 
     let mapping = if let Some(mapping) = &self.mapping {
-      let mut map = phf_codegen::Map::new();
-
-      for (k, v) in mapping {
-        map.entry(k, &format!("{:?}", v));
-      }
-
-      format!("Some({})", map.build())
+      format!("Some(MAPPING_{})", mapping.to_uppercase())
     } else {
       "None".into()
     };

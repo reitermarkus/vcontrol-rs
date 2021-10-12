@@ -1,6 +1,3 @@
-use std::fmt;
-use std::hash::Hasher;
-
 mod cycle_time;
 pub use self::cycle_time::CycleTime;
 
