@@ -39,6 +39,7 @@ EVENT_TYPES = 'event_types.yml'
 VITOSOFT_VERSION = 'vitosoft_version.yml'
 MAPPINGS_UNIQUE = 'mappings_unique.yml'
 TRANSLATIONS_UNIQUE = 'translations_unique.yml'
+USED_COMMANDS = 'used_commands.yml'
 
 file VITOSOFT_EXE do |t|
   # https://connectivity.viessmann.com/de-de/mp_rt/vitosoft.html
@@ -89,6 +90,10 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_GLOB do |t|
         label = node.attribute('Label')
         value = node.attribute('Value').strip.gsub('##ecnnewline##', "\n").gsub('##ecntab##', "\t").gsub('##ecnsemicolon##', ';').gsub('##nl##', "\n")
 
+        if /~(?<index>\d+)$/ =~ label
+          value = clean_enum_text(index, value)
+        end
+
         translations[label] ||= {}
         translations[label][languages.fetch(language_id)] = value
       end
@@ -111,7 +116,8 @@ file DEVICES => DATAPOINT_TYPES do |t|
       node = Nokogiri::XML(node.outer_xml)
 
       if device = node.at('./DataPointType/ID')&.text&.strip
-        devices[device] = node.at('./DataPointType/EventTypeList')&.text&.strip.split(';')
+        event_types = node.at('./DataPointType/EventTypeList')&.text&.strip&.split(';')
+        devices[device] = event_types.map { |event_type| strip_address(event_type) }
       end
     end
   end
@@ -122,8 +128,10 @@ file DEVICES => DATAPOINT_TYPES do |t|
   File.write t.name, devices.to_yaml
 end
 
+# Remove enum number from text representation if present.
 def clean_enum_text(id, text)
-  text.sub(/^#{Regexp.escape(id)}\s+/, '').strip
+  id = Regexp.escape(id)
+  text.sub(/^(?:#{id}(?::)?\s*|\(0#{id}\))([^\s]+)/, '\^').strip
 end
 
 def event_types(path)
@@ -138,7 +146,7 @@ def event_types(path)
     next unless id = node.at('ID')&.text
 
     [
-      id,
+      strip_address(id),
       node.at('./EventType').children.map { |n|
         value = case name = n.name.underscore
         when 'address', 'vitocom_channel_id'
@@ -203,6 +211,43 @@ end
 
 file SYSTEM_EVENT_TYPES => SYSTEM_EVENT_TYPES_XML do |t|
   File.write t.name, event_types(t.source).to_yaml
+end
+
+file USED_COMMANDS => DEVICES do |t|
+  devices = YAML.safe_load(File.read(t.source), [Symbol])
+
+  File.write t.name, devices.values.reduce(:|).sort.uniq.to_yaml
+end
+
+USED_MAPPINGS = 'used_mappings.yml'
+file USED_MAPPINGS => [USED_COMMANDS, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  used_commands, mappings_unique, translations_unique = t.sources.map { |s| YAML.safe_load(File.read(s), [Symbol]) }
+  used_commands = used_commands.to_set
+
+  used_mappings = mappings_unique.fetch(:mapping)
+    .select { |k, _| used_commands.include?(k) || k.start_with?('viessmann.errorcode.') }
+    .map { |_, k| [k, mappings_unique.fetch(:translations).fetch(k)] }
+    .to_h
+
+  File.write t.name, used_mappings.to_yaml
+end
+
+USED_TRANSLATIONS = 'used_translations.yml'
+file USED_TRANSLATIONS => [USED_MAPPINGS, TRANSLATIONS_UNIQUE] do |t|
+  used_mappings, translations_unique = t.sources.map { |s| YAML.safe_load(File.read(s), [Symbol]) }
+
+  used_translations = used_mappings.flat_map { |_, translations|
+    translations.map { |mapping_index, translation_id|
+      translation = translations_unique.fetch(:translations).fetch(translation_id).fetch('en')
+
+      [
+        translation_id,
+        clean_enum_text(mapping_index.to_s, translation).downcase
+      ]
+    }
+  }.to_h
+
+  File.write t.name, used_translations.to_yaml
 end
 
 task :diff => DEVICES do |t|
@@ -531,6 +576,10 @@ def map_factor(type)
   end
 end
 
+def strip_address(s)
+  s.sub(/\~0x\h{4}\Z/, '')
+end
+
 rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
   device = Pathname(t.name).sub_ext('').to_s
 
@@ -538,7 +587,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
   mappings = YAML.safe_load(File.read(MAPPINGS_UNIQUE), [Symbol])
 
-  commands = YAML.safe_load(File.read(DEVICES)).fetch(device)
+  commands = YAML.safe_load(File.read(DEVICES), [Symbol]).fetch(device)
 
   types = YAML.safe_load(File.read(EVENT_TYPES), [Symbol]).select { |k,| commands.include?(k) }.to_h
   sys_types = YAML.safe_load(File.read(SYSTEM_EVENT_TYPES), [Symbol])
@@ -553,8 +602,6 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
     f.puts 'commands:'
     types.each do |type_id, type|
-      type_id = type_id.sub(/\~0x\h{4}\Z/, '')
-
       # Remove unneeded/wrong commands.
       next if type_id.start_with?('Node_')
       next if type_id.start_with?('nciNet')
@@ -591,7 +638,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "    bit_pos: #{bit_position}"    unless bit_position.zero?
 
       if enum_type || data_type == 'error'
-        mapping_ids = if data_type == 'error'
+        raw_mapping_ids = if data_type == 'error'
           ["viessmann.errorcode.#{device}", "viessmann.errorcode.Ecotronic"]
         else
           case type_id
@@ -604,33 +651,9 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
           end
         end
 
-        mapping_translations = mapping_ids.reduce({}) { |h , id|
-          mapping_id = mappings.fetch(:mapping).fetch(id)
-          translated_mappings = mappings.fetch(:translations).fetch(mapping_id)
-            .transform_values { |translation_id|
-              translations.fetch(:translations).fetch(translation_id).fetch('en')
-            }
+        mapping_ids = raw_mapping_ids.map { |id| mappings.fetch(:mapping).fetch(id) }
 
-          translated_mappings.each do |k, v|
-            if (v_old = h[k]) && v_old != v
-              # $stderr.puts "Warning: Value for mapping '#{k}' does not match: #{v} != #{v_old}"
-              next
-            end
-
-            h[k] = v
-          end
-
-          h
-        }
-
-        f.puts "    mapping:"
-
-        mapping_translations.sort_by_key.each do |k, v|
-          # Remove enum number from text representation if present.
-          v = clean_enum_text(k.to_s, v).downcase
-
-          f.puts "      0x#{k.to_s(16)}: #{v.inspect}"
-        end
+        f.puts "    mapping: #{mapping_ids.first}"
       end
       f.puts
     end
