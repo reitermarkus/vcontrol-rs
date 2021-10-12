@@ -22,15 +22,15 @@ class Hash
   end
 end
 
-VITOSOFT_DIR = Pathname('Vitosoft300SID1_Setup')
 VITOSOFT_EXE = 'Vitosoft300SID1_Setup.exe'
+VITOSOFT_DIR = 'Vitosoft300SID1_Setup'
 
-DEFINITIONS            = VITOSOFT_DIR/'data/OFFLINE/1477A66B/9BDD2692/DPDefinitions.xml'
-DATAPOINT_TYPES        = VITOSOFT_DIR/'data/OFFLINE/3C8BB38F/67C8D997/ecnDataPointType.xml'
-EVENT_TYPES_XML        = VITOSOFT_DIR/'data/OFFLINE/3C8BB38F/67C8D997/ecnEventType.xml'
-SYSTEM_EVENT_TYPES_XML = VITOSOFT_DIR/'data/OFFLINE/3C8BB38F/67C8D997/sysEventType.xml'
-TEXT_RESOURCES_GLOB    = VITOSOFT_DIR/'data/OFFLINE/C6C1A272/BF368101/Textresource_*.xml'
-RELEASE_NOTES          = VITOSOFT_DIR/'data/OFFLINE/C6C1A272/69ADA3A4/ReleaseNotes_en.htm'
+DEFINITIONS            = "#{VITOSOFT_DIR}/data/OFFLINE/1477A66B/9BDD2692/DPDefinitions.xml"
+DATAPOINT_TYPES        = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnDataPointType.xml"
+EVENT_TYPES_XML        = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnEventType.xml"
+SYSTEM_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/sysEventType.xml"
+TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}/data/OFFLINE/C6C1A272/BF368101"
+RELEASE_NOTES          = "#{VITOSOFT_DIR}/data/OFFLINE/C6C1A272/69ADA3A4/ReleaseNotes_en.htm"
 
 TRANSLATIONS_RAW = 'translations_raw.yml'
 DEVICES = 'devices.yml'
@@ -50,6 +50,7 @@ file VITOSOFT_EXE do |t|
      '--remote-time',
      '-L', 'https://connectivity.viessmann.com/content/dam/vi-micro/CONNECTIVITY/Vitosoft/Vitosoft300SID1_Setup.exe/_jcr_content/renditions/original.media_file.download_attachment.file/Vitosoft300SID1_Setup.exe',
      '-o', t.name
+  touch t.name
 end
 
 file VITOSOFT_VERSION => RELEASE_NOTES do |t|
@@ -58,8 +59,6 @@ file VITOSOFT_VERSION => RELEASE_NOTES do |t|
 end
 
 rule %r{#{Regexp.escape(VITOSOFT_DIR)}/(.*)} => VITOSOFT_EXE do |t|
-  next unless Dir.glob(t.name).empty? || t.name == (VITOSOFT_DIR/'*').to_s
-
   sh '7z', 'x', '-y', "-o#{VITOSOFT_DIR}", t.source, Pathname(t.name).relative_path_from(VITOSOFT_DIR)
 
   Dir.glob(t.name).each do |path|
@@ -70,14 +69,11 @@ rule %r{#{Regexp.escape(VITOSOFT_DIR)}/(.*)} => VITOSOFT_EXE do |t|
   touch t.name
 end
 
-desc 'extract all files'
-task :extract_all => VITOSOFT_DIR/'*'
-
-file TRANSLATIONS_RAW => TEXT_RESOURCES_GLOB do |t|
+file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   languages = {}
   translations = {}
 
-  Pathname.glob(t.source).each do |text_resource|
+  Pathname(t.source).glob('Textresource_*.xml').each do |text_resource|
     reader = Nokogiri::XML::Reader(text_resource.open)
 
     reader.each do |node|
@@ -127,7 +123,7 @@ file DEVICES => DATAPOINT_TYPES do |t|
   dummy_types = devices.delete('ecnStatusDataPoint')
   devices = devices.transform_values { |v| v - dummy_types }
 
-  File.write t.name, devices.to_yaml
+  File.write t.name, devices.sort_by_key.to_yaml
 end
 
 # Remove enum number from text representation if present.
@@ -669,26 +665,27 @@ def command_names_to_types(command_names, event_types:, system_event_types:)
   sys_types.merge(types)
 end
 
-rule '.yml' => [DEVICES, EVENT_TYPES, SYSTEM_EVENT_TYPES, TRANSLATIONS_UNIQUE, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
-  devices, event_types, system_event_types, translations, mappings, used_commands =
-    t.sources.map { |source| load_yaml(source) }
+USED_DEVICES = 'used_devices.yml'
+file USED_DEVICES => [DEVICES, USED_COMMANDS] do |t|
+  devices, used_commands = t.sources.map { |source| load_yaml(source) }
 
-  device = Pathname(t.name).sub_ext('').to_s
-  command_names = devices.fetch(device)
+  devices = devices.reduce({}) { |h, (device_id, command_names)|
+    protocol = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
 
-  File.open("#{__dir__}/#{t.name}", 'w+') do |f|
-    f.puts 'device:'
-    f.puts "  protocol: #{device =~ /kw2/i ? 'Kw2' : 'P300'}"
+    h.merge({
+      device_id => {
+        'protocol' => protocol,
+        'commands' => command_names
+          .map { |command_name| map_command_id(command_name) }
+          .select { |id| used_commands.key?(id) }
+      }
+    })
+  }
 
-    f.puts
-
-    f.puts 'commands:'
-    command_names.each do |type_id|
-      id = map_command_id(type_id)
-      f.puts "  - #{id}" if used_commands.key?(id)
-    end
-  end
+  File.write t.name, devices.to_yaml
 end
+
+task :default => [USED_DEVICES, USED_COMMANDS, USED_MAPPINGS, USED_TRANSLATIONS]
 
 def conversion_to_type(conversion, factor, offset)
   return conversion if factor.nil? && offset.nil?

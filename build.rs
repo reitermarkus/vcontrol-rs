@@ -71,56 +71,54 @@ fn generate_commands() {
   }
 }
 
+fn generate_devices() {
+  let mappings: HashMap<String, Device> = load_yaml("used_devices.yml");
+
+  let mut file = output_file("devices.rs");
+
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
+
+  for (device_id, device) in mappings {
+    let mut map = phf_codegen::Map::<&str>::new();
+
+    for command_name in device.commands.iter() {
+      map.entry(command_name, &format!("&COMMAND_{}", command_name.to_uppercase()));
+    }
+
+    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", device_id, map.build()).unwrap();
+
+    writeln!(&mut file, r#"
+      #[derive(Debug)]
+      pub enum {} {{}}
+    "#, device_id).unwrap();
+
+    writeln!(file, r#"
+      impl Device for {} {{
+        type Protocol = {};
+
+        #[inline(always)]
+        fn map() -> &'static phf::Map<&'static str, &'static Command> {{
+          &{}_COMMANDS
+        }}
+      }}
+    "#, device_id, device.protocol, device_id).unwrap();
+  }
+}
+
 fn main() {
   generate_translations();
   generate_mappings();
   generate_commands();
-
-  let device = "VBC550P";
-
-  let yaml = load_yaml(&format!("{}.yml", device));
-
-  let merged_yaml = yaml_merge_keys::merge_keys_serde(yaml).unwrap();
-  let config: Configuration = serde_yaml::from_value(merged_yaml).unwrap();
+  generate_devices();
 
   let mut file = output_file("codegen.rs");
-
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
-
-  let protocol = config.device.protocol;
-
-  let mut map = phf_codegen::Map::<&str>::new();
-
-  for command_name in config.commands.iter() {
-    map.entry(command_name, &format!("&COMMAND_{}", command_name.to_uppercase()));
-  }
-
-  writeln!(&mut file, "static {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", device, map.build()).unwrap();
-
-  write!(&mut file, "
-    #[derive(Debug)]
-    pub enum {} {{}}
-
-    impl Device for {} {{
-      type Protocol = {};
-
-      #[inline(always)]
-      fn map() -> &'static phf::Map<&'static str, &'static Command> {{
-        &{}_COMMANDS
-      }}
-    }}
-  ", device, device, protocol, device).unwrap();
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Configuration {
-  pub device: Device,
-  pub commands: Vec<String>,
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/devices.rs"));"#).unwrap();
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Device {
-  protocol: String
+  pub protocol: String,
+  pub commands: Vec<String>,
 }
 
 /// A command which can be executed on an Optolink connection.
