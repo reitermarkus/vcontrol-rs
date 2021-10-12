@@ -5,7 +5,6 @@ use crate::{Error, Command, Optolink, Protocol, Value};
 #[allow(clippy::unreadable_literal)]
 mod codegen {
   use super::*;
-  use crate::types::Bytes;
   use crate::protocol::*;
 
   include!(concat!(env!("OUT_DIR"), "/codegen.rs"));

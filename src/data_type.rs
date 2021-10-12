@@ -1,7 +1,7 @@
 use phf;
 use serde::Deserialize;
 
-use crate::{Error, Value, RawType, types::{self, Bytes, SysTime, CycleTime}};
+use crate::{Error, Value, RawType, types::{self, SysTime, CycleTime}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -22,13 +22,13 @@ pub(crate) enum DataType {
 }
 
 impl DataType {
-  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, mapping: &Option<phf::map::Map<Bytes, &'static str>>) -> Result<Value, Error> {
+  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, mapping: &Option<phf::map::Map<u8, &'static str>>) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty)
     }
 
     if let Some(mapping) = mapping {
-      if let Some(text) = mapping.get(&Bytes::from_bytes(bytes)) {
+      if let Some(text) = mapping.get(&bytes[0]) {
         return Ok(Value::String((*text).to_string()))
       }
 
@@ -62,11 +62,11 @@ impl DataType {
     })
   }
 
-  pub fn input_to_bytes(&self, input: &Value, factor: Option<f64>, mapping: &Option<phf::map::Map<Bytes, &'static str>>) -> Result<Vec<u8>, Error> {
+  pub fn input_to_bytes(&self, input: &Value, factor: Option<f64>, mapping: &Option<phf::map::Map<u8, &'static str>>) -> Result<Vec<u8>, Error> {
     if let Some(mapping) = mapping {
       if let Value::String(s) = input {
         return mapping.entries()
-                 .find_map(|(key, value)| if value == s { Some(key.to_bytes()) } else { None })
+                 .find_map(|(key, value)| if value == s { Some(key.to_le_bytes().to_vec()) } else { None })
                  .ok_or_else(|| Error::InvalidArgument(format!("no mapping found for {:?}", s)))
       } else {
         return Err(Error::InvalidArgument(format!("expected string, found {:?}", input)))

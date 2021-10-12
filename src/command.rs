@@ -1,7 +1,7 @@
 use phf;
 use serde::de::{self, Deserialize, Deserializer};
 
-use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value, types::Bytes};
+use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value};
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum AccessMode {
@@ -53,7 +53,7 @@ pub struct Command {
   pub(crate) bit_pos: Option<usize>,
   pub(crate) bit_len: Option<usize>,
   pub(crate) factor: Option<f64>,
-  pub(crate) mapping: Option<phf::map::Map<Bytes, &'static str>>,
+  pub(crate) mapping: Option<phf::map::Map<u8, &'static str>>,
 }
 
 impl Command {
