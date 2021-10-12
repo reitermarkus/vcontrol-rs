@@ -84,7 +84,7 @@ pub struct Command {
   bit_pos: Option<usize>,
   bit_len: Option<usize>,
   factor: Option<f64>,
-  mapping: Option<HashMap<Vec<u8>, String>>,
+  mapping: Option<HashMap<u8, String>>,
 }
 
 impl fmt::Debug for Command {
@@ -98,7 +98,7 @@ impl fmt::Debug for Command {
       let mut map = phf_codegen::Map::new();
 
       for (k, v) in mapping {
-        map.entry(Bytes::from_bytes(k), &format!("{:?}", v));
+        map.entry(k, &format!("{:?}", v));
       }
 
       format!("Some({})", map.build())

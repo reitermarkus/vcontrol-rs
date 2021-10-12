@@ -645,7 +645,7 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
           # Remove enum number from text representation if present.
           v = clean_enum_text(k.to_s, v).downcase
 
-          f.puts "      [0x#{k.to_s(16)}]: #{v.inspect}"
+          f.puts "      0x#{k.to_s(16)}: #{v.inspect}"
         end
       end
       f.puts
