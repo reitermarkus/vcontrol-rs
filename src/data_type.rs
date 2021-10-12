@@ -6,14 +6,8 @@ use crate::{Error, Value, RawType, types::{self, SysTime, CycleTime}};
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum DataType {
-  I8,
-  I16,
-  I32,
-  U8,
-  U16,
-  U32,
-  F32,
-  F64,
+  Int,
+  Double,
   String,
   Array,
   SysTime,
@@ -27,13 +21,13 @@ impl DataType {
       return Ok(Value::Empty)
     }
 
-    if let Some(mapping) = mapping {
-      if let Some(text) = mapping.get(&bytes[0]) {
-        return Ok(Value::String((*text).to_string()))
-      }
-
-      return Err(Error::UnknownEnumVariant(format!("No enum mapping found for [{}].", bytes.iter().map(|byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(", "))))
-    }
+    // if let Some(mapping) = mapping {
+    //   if let Some(text) = mapping.get(&bytes[0]) {
+    //     return Ok(Value::String((*text).to_string()))
+    //   }
+    //
+    //   return Err(Error::UnknownEnumVariant(format!("No enum mapping found for [{}].", bytes.iter().map(|byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(", "))))
+    // }
 
     Ok(match self {
       Self::SysTime => return Ok(Value::SysTime(SysTime::from_bytes(bytes))),
@@ -53,25 +47,24 @@ impl DataType {
         };
 
         match t {
-          Self::I8 | Self::I16 | Self::I32 => Value::I32(n as i32),
-          Self::U8 | Self::U16 | Self::U32 => Value::U32(n as u32),
-          Self::F32 | Self::F64 => Value::F64(n as f64 / factor.unwrap_or(1.0)),
+          Self::Int => Value::Int(n),
+          Self::Double => Value::Double(n as f64 / factor.unwrap_or(1.0)),
           _ => unreachable!(),
         }
       }
     })
   }
 
-  pub fn input_to_bytes(&self, input: &Value, factor: Option<f64>, mapping: &Option<phf::map::Map<u8, &'static str>>) -> Result<Vec<u8>, Error> {
-    if let Some(mapping) = mapping {
-      if let Value::String(s) = input {
-        return mapping.entries()
-                 .find_map(|(key, value)| if value == s { Some(key.to_le_bytes().to_vec()) } else { None })
-                 .ok_or_else(|| Error::InvalidArgument(format!("no mapping found for {:?}", s)))
-      } else {
-        return Err(Error::InvalidArgument(format!("expected string, found {:?}", input)))
-      }
-    }
+  pub fn input_to_bytes(&self, input: &Value, raw_type: RawType, factor: Option<f64>, mapping: &Option<phf::map::Map<u8, &'static str>>) -> Result<Vec<u8>, Error> {
+    // if let Some(mapping) = mapping {
+    //   if let Value::String(s) = input {
+    //     return mapping.entries()
+    //              .find_map(|(key, value)| if value == s { Some(key.to_le_bytes().to_vec()) } else { None })
+    //              .ok_or_else(|| Error::InvalidArgument(format!("no mapping found for {:?}", s)))
+    //   } else {
+    //     return Err(Error::InvalidArgument(format!("expected string, found {:?}", input)))
+    //   }
+    // }
 
     Ok(match self {
       Self::SysTime => {
@@ -89,16 +82,16 @@ impl DataType {
         }
       },
       _ => {
-        if let Value::F64(n) = input {
+        if let Value::Double(n) = input {
           let n = n * factor.unwrap_or(1.0);
 
-          match self {
-            Self::I8  => (n as i8).to_le_bytes().to_vec(),
-            Self::I16 => (n as i16).to_le_bytes().to_vec(),
-            Self::I32 => (n as i32).to_le_bytes().to_vec(),
-            Self::U8  => (n as u8).to_le_bytes().to_vec(),
-            Self::U16 => (n as u16).to_le_bytes().to_vec(),
-            Self::U32 => (n as u32).to_le_bytes().to_vec(),
+          match raw_type {
+            RawType::I8  => (n as i8).to_le_bytes().to_vec(),
+            RawType::I16 => (n as i16).to_le_bytes().to_vec(),
+            RawType::I32 => (n as i32).to_le_bytes().to_vec(),
+            RawType::U8  => (n as u8).to_le_bytes().to_vec(),
+            RawType::U16 => (n as u16).to_le_bytes().to_vec(),
+            RawType::U32 => (n as u32).to_le_bytes().to_vec(),
             _ => unreachable!(),
           }
         } else {

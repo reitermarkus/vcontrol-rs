@@ -133,35 +133,11 @@ pub enum AccessMode {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DataType {
-  I8,
-  I16,
-  I32,
-  U8,
-  U16,
-  U32,
-  F32,
-  F64,
+  Int,
+  Double,
   String,
   Array,
   SysTime,
   CycleTime,
   Error,
-}
-
-impl DataType {
-  pub fn size(&self) -> usize {
-    match self {
-      Self::I8 => std::mem::size_of::<i8>(),
-      Self::I16 => std::mem::size_of::<i16>(),
-      Self::I32 => std::mem::size_of::<i32>(),
-      Self::U8 => std::mem::size_of::<u8>(),
-      Self::U16 => std::mem::size_of::<u16>(),
-      Self::U32 => std::mem::size_of::<u32>(),
-      Self::String => std::mem::size_of::<String>(),
-      Self::SysTime => std::mem::size_of::<SysTime>(),
-      Self::CycleTime => std::mem::size_of::<CycleTime>(),
-      Self::Error => std::mem::size_of::<Error>(),
-      _ => panic!("unit has dynamic size: {:?}", self),
-    }
-  }
 }

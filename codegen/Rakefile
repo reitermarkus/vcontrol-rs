@@ -453,42 +453,47 @@ def map_data_type(type_id, type)
   when ['DateTime', 'Array']
     ['sys_time', 'array']
   when ['Int', 'Byte']
-    ["u8", "u8"]
+    ["int", "u8"]
   when ['Int', 'Int']
-    ["u16", 'u16']
+    ["int", 'u16']
   when ['Int', 'Int4']
-    ["u32", "u32"]
+    ["int", "u32"]
   when ['Int', 'SInt']
-    ["i16", "i16"]
+    ["int", "i16"]
   when ['Int', 'SInt4']
-    ["i32", "i32"]
+    ["int", "i32"]
   when ['Double', 'IntHighByteFirst']
     raise type.inspect if byte_length != 1
-    ['f32', "i#{8 * type.fetch(:byte_length)}"]
+    ['double', "i#{8 * type.fetch(:byte_length)}"]
   when ['Double', 'Byte']
-    ['f32', "u8"]
+    ['double', "u8"]
   when ['Double', 'Int']
-    ['f32', "u16"]
+    ['double', "u16"]
   when ['Double', 'Int4']
-    ['f64', "u32"]
+    ['double', "u32"]
   when ['Double', 'SByte']
-    ['f32', "i8"]
+    ['double', "i8"]
   when ['Double', 'SInt']
-    ['f32', "i16"]
+    ['double', "i16"]
   when ['Double', 'Array']
     bits = byte_length * 8
 
     if bits <= 16
-      ['f32', "u#{bits}"]
+      ['double', "u#{bits}"]
     else
-      ['f64', "u#{bits}"]
+      ['double', "u#{bits}"]
     end
   when ['ByteArray', 'Byte']
     ['array', 'u8']
   when ["ByteArray", "Int"]
     ['array', "u16"]
   when ['ByteArray', 'Array']
-    ["array", 'array']
+    case type_id
+    when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'
+      ['error', 'array']
+    else
+      ["array", 'array']
+    end
   when ['ByteArray', 'String']
     ['string', 'array']
   else
@@ -572,27 +577,6 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
 
       type_translations = translations.fetch(:translations).fetch("viessmann.eventtype.name.#{type_id}", {})
 
-      error_type = case type_id
-      when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'
-        f.puts "  #{id}_time: # #{type_id}"
-        f.puts "    addr: 0x#{(addr + 1).to_s(16).rjust(4, '0')}"
-        f.puts "    mode: #{mode}"
-        f.puts "    data_type: sys_time"
-        f.puts "    raw_type: array"
-        f.puts "    block_len: 8"
-        f.puts "    byte_len: 8"
-        f.puts
-
-        data_type = 'u8'
-        raw_type = 'u8'
-        block_length = 1
-        byte_length = 1
-
-        true
-      else
-        false
-      end
-
       f.puts "  # #{type.fetch(:description, 'N/A').lines.join("  # ")}"
       f.puts "  #{id}: # #{type_id}"
       f.puts "    addr: 0x#{addr.to_s(16).rjust(4, '0')}"
@@ -606,8 +590,8 @@ rule '.yml' => [TRANSLATIONS_RAW, DEVICES, MAPPINGS_UNIQUE, DEFINITIONS, EVENT_T
       f.puts "    bit_len: #{bit_length}"      unless bit_length.zero?
       f.puts "    bit_pos: #{bit_position}"    unless bit_position.zero?
 
-      if enum_type || error_type
-        mapping_ids = if error_type
+      if enum_type || data_type == 'error'
+        mapping_ids = if data_type == 'error'
           ["viessmann.errorcode.#{device}", "viessmann.errorcode.Ecotronic"]
         else
           case type_id
@@ -663,66 +647,4 @@ def conversion_to_type(conversion, factor, offset)
   end
 
   raise "Conversion #{[conversion, factor, offset]} is not implemented."
-end
-
-file 'conversion.rs' => [EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
-  types = YAML.safe_load(File.read(EVENT_TYPES), [Symbol])
-  sys_types = YAML.safe_load(File.read(SYSTEM_EVENT_TYPES), [Symbol])
-
-  all_types = types.merge(sys_types)
-
-  all_types = all_types.delete_if { |type_id, type|
-    keep = false
-
-    if type[:fc_read] && type[:fc_read] == 'virtual_read'
-      keep = true
-    end
-
-    if type[:fc_write] && type[:fc_write] == 'virtual_write'
-      keep = true
-    end
-
-    !keep
-  }
-
-  conversions = all_types.map { |_, type|
-    conversion_to_type(
-      type.fetch(:conversion, 'NoConversion'),
-      type.fetch(:conversion_factor, nil),
-      type.fetch(:conversion_offset, nil),
-    )
-  }.uniq.sort
-
-  conversion_factors = all_types.map { |_, type| type.fetch(:conversion_factor, 'NoConversionFactor') }.uniq.sort_by(&:to_s)
-  conversion_offsets = all_types.map { |_, type| type.fetch(:conversion_offset, 0.0) }.uniq.sort_by(&:to_s)
-
-  File.open(t.name, 'w+') do |f|
-    conversions.each do |conversion|
-      f.puts "pub struct #{conversion};"
-    end
-  end
-end
-
-file 'sdk_data_types.rs' => [EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
-  types = YAML.safe_load(File.read(EVENT_TYPES), [Symbol])
-  sys_types = YAML.safe_load(File.read(SYSTEM_EVENT_TYPES), [Symbol])
-
-  all_types = types.merge(sys_types)
-  all_types = all_types.delete_if { |_, type|
-    keep = false
-
-    if type[:fc_read] && type[:fc_read] == 'virtual_read'
-      keep = true
-    end
-
-    if type[:fc_write] && type[:fc_write] == 'virtual_write'
-      keep = true
-    end
-
-    !keep
-  }
-
-  sdk_data_types = all_types.map { |_, type| [type[:sdk_data_type], type[:parameter]].compact.join('_') }.compact.uniq.sort
-
-  puts sdk_data_types
 end

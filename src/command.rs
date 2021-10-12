@@ -104,6 +104,6 @@ impl Command {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)))
     }
 
-    P::set(o, &self.addr(), &self.data_type.input_to_bytes(input, self.factor, &self.mapping)?).map_err(Into::into)
+    P::set(o, &self.addr(), &self.data_type.input_to_bytes(input, self.raw_type, self.factor, &self.mapping)?).map_err(Into::into)
   }
 }
