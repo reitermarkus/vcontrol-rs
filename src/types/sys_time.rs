@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use std::fmt;
 use std::str::FromStr;
 
@@ -52,9 +53,7 @@ impl SysTime {
   }
 
   pub fn from_bytes(bytes: &[u8]) -> Self {
-    let mut time = [0; 8];
-    time.copy_from_slice(bytes);
-    Self(time)
+    Self(bytes[..8].try_into().unwrap())
   }
 
   pub fn to_bytes(&self) -> [u8; 8] {

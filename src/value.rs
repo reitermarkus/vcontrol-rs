@@ -8,9 +8,8 @@ use crate::types::{SysTime, CycleTime, Error};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
-  I32(i32),
-  U32(u32),
-  F64(f64),
+  Int(i64),
+  Double(f64),
   Array(Vec<u8>),
   String(String),
   SysTime(SysTime),
@@ -23,8 +22,12 @@ impl FromStr for Value {
   type Err = Infallible;
 
   fn from_str(s: &str) -> Result<Value, Self::Err> {
+    if let Ok(number) = s.parse::<i64>() {
+      return Ok(Value::Int(number))
+    }
+
     if let Ok(number) = s.parse::<f64>() {
-      return Ok(Value::F64(number))
+      return Ok(Value::Double(number))
     }
 
     if let Ok(systime) = s.parse::<SysTime>() {
