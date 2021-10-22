@@ -5,7 +5,7 @@ use crate::{Error, Value, RawType, types::{self, SysTime, CycleTime}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub(crate) enum DataType {
+pub enum DataType {
   Int,
   Double,
   String,

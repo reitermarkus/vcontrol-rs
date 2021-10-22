@@ -6,7 +6,7 @@ pub use crate::error::Error;
 pub mod types;
 
 mod command;
-pub(crate) use crate::command::{AccessMode, Command};
+pub use crate::command::{AccessMode, Command};
 
 mod optolink;
 pub use crate::optolink::Optolink;
@@ -24,7 +24,7 @@ mod value;
 pub use crate::value::Value;
 
 mod data_type;
-pub(crate) use crate::data_type::DataType;
+pub use crate::data_type::DataType;
 
 mod raw_type;
-pub(crate) use crate::raw_type::RawType;
+pub use crate::raw_type::RawType;
