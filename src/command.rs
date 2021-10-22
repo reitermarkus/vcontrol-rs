@@ -4,7 +4,7 @@ use serde::de::{self, Deserialize, Deserializer};
 use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value};
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum AccessMode {
+pub enum AccessMode {
   Read,
   Write,
   ReadWrite,
@@ -43,17 +43,17 @@ impl<'de> Deserialize<'de> for AccessMode {
 /// A command which can be executed on an Optolink connection.
 #[derive(Debug)]
 pub struct Command {
-  pub(crate) addr: u16,
-  pub(crate) mode: AccessMode,
-  pub(crate) data_type: DataType,
-  pub(crate) raw_type: RawType,
-  pub(crate) block_len: usize,
-  pub(crate) byte_len: usize,
-  pub(crate) byte_pos: usize,
-  pub(crate) bit_pos: Option<usize>,
-  pub(crate) bit_len: Option<usize>,
-  pub(crate) factor: Option<f64>,
-  pub(crate) mapping: Option<phf::map::Map<u8, &'static str>>,
+  pub addr: u16,
+  pub mode: AccessMode,
+  pub data_type: DataType,
+  pub raw_type: RawType,
+  pub block_len: usize,
+  pub byte_len: usize,
+  pub byte_pos: usize,
+  pub bit_pos: Option<usize>,
+  pub bit_len: Option<usize>,
+  pub factor: Option<f64>,
+  pub mapping: Option<phf::map::Map<u8, &'static str>>,
 }
 
 impl Command {

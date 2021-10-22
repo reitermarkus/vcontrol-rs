@@ -39,11 +39,16 @@ serial = "0.4"
 serial-core = "0.4"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
+serde_yaml = { version = "0.8", optional = true }
 env_logger = { version = "0.9.0", optional = true }
 
 [[example]]
 name = "cat"
 required-features = ["env_logger"]
+
+[[example]]
+name = "brute"
+required-features = ["serde_yaml"]
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
