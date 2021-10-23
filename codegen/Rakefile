@@ -27,116 +27,24 @@ VITOSOFT_EXE = 'Vitosoft300SID1_Setup.exe'
 VITOSOFT_DIR = 'Vitosoft300SID1_Setup'
 
 DEFINITIONS            = "#{VITOSOFT_DIR}/data/OFFLINE/1477A66B/9BDD2692/DPDefinitions.xml"
-DATAPOINT_TYPES        = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnDataPointType.xml"
+DATAPOINT_TYPES_XML    = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnDataPointType.xml"
 EVENT_TYPES_XML        = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnEventType.xml"
 SYSTEM_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/sysEventType.xml"
 TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}/data/OFFLINE/C6C1A272/BF368101"
 RELEASE_NOTES          = "#{VITOSOFT_DIR}/data/OFFLINE/C6C1A272/69ADA3A4/ReleaseNotes_en.htm"
 
 TRANSLATIONS_RAW = 'translations_raw.yml'
+DEVICES_RAW = 'devices_raw.yml'
 DEVICES = 'devices.yml'
-SYSTEM_EVENT_TYPES = 'system_event_types.yml'
-EVENT_TYPES = 'event_types.yml'
+SYSTEM_EVENT_TYPES_RAW = 'system_event_types_raw.yml'
+EVENT_TYPES_RAW = 'event_types_raw.yml'
 VITOSOFT_VERSION = 'vitosoft_version.yml'
 MAPPINGS_UNIQUE = 'mappings_unique.yml'
 TRANSLATIONS_UNIQUE = 'translations_unique.yml'
 USED_COMMANDS = 'used_commands.yml'
 USED_MAPPINGS = 'used_mappings.yml'
 USED_TRANSLATIONS = 'used_translations.yml'
-
-# https://github.com/sarnau/InsideViessmannVitosoft/blob/main/VitosoftSoftware.md
-file VITOSOFT_EXE do |t|
-  endpoint = 'https://update-vitosoft.viessmann.com/vrimaster/VRIMasterWebService.asmx'
-
-
-  out, err, status = Open3.capture3('curl', '-sSfL', endpoint,
-    '--header', 'Content-Type: text/xml; charset=utf-8',
-    '--header', 'SOAPAction: "http://www.e-controlnet.de/services/VRIMasterWebService/CheckSoftwareVersion"',
-    '--data', <<~XML)
-      <?xml version="1.0" encoding="utf-8"?>
-        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-          <soap:Body><CheckSoftwareVersion xmlns="http://www.e-controlnet.de/services/VRIMasterWebService">
-            <client>
-              <CustomerId>90 Tage Testlizenz</CustomerId>
-              <MaintenanceContractEndTime>0001-01-01T00:00:00</MaintenanceContractEndTime>
-            </client>
-            <licenceInfo>
-              <LicenceId>1063</LicenceId>
-              <LicenceHash>B25913BD9D042609498C93AC6DA797D8</LicenceHash>
-              <CustMajorVersion />
-              <CID>008785F19C4F1A485EAFF715026860E2</CID>
-            </licenceInfo>
-            <softwareVersion>
-              <ClientSoftwareVersion>6.1.0.2</ClientSoftwareVersion>
-            </softwareVersion>
-          </CheckSoftwareVersion>
-        </soap:Body>
-      </soap:Envelope>
-    XML
-
-  xml = Nokogiri::XML(out)
-  xml.remove_namespaces!
-
-  version = xml.xpath('/Envelope/Body/CheckSoftwareVersionResponse/CheckSoftwareVersionResult/SoftwareVersion/MasterCurrentSoftwareVersion').text
-
-
-  out, err, status = Open3.capture3('curl', '-sSfL', endpoint,
-    '--header', 'Content-Type: text/xml; charset=utf-8',
-    '--data', <<~XML)
-      <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-        <soap:Body>
-          <RequestDownload xmlns="http://www.e-controlnet.de/services/VRIMasterWebService">
-            <client>
-              <CustomerId>90 Tage Testlizenz</CustomerId>
-              <MaintenanceContractEndTime>0001-01-01T00:00:00</MaintenanceContractEndTime>
-            </client>
-            <licenceInfo>
-              <LicenceId>1063</LicenceId>
-              <LicenceHash>B25913BD9D042609498C93AC6DA797D8</LicenceHash>
-              <CustMajorVersion />
-              <CID>008785F19C4F1A485EAFF715026860E2</CID>
-            </licenceInfo>
-            <downloadType>Software</downloadType>
-          </RequestDownload>
-        </soap:Body>
-      </soap:Envelope>
-    XML
-
-  xml = Nokogiri::XML(out)
-  xml.remove_namespaces!
-
-  token = xml.xpath('/Envelope/Body/RequestDownloadResponse/RequestDownloadResult/Token/Value').text
-
-
-  out, err, status = Open3.capture3('curl', '-sSfL', endpoint,
-    '--header', 'Content-Type: text/xml; charset=utf-8',
-    '--data', <<~XML)
-      <?xml version="1.0" encoding="utf-8"?>
-      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-        <soap:Body>
-          <DownloadSoftware xmlns="http://www.e-controlnet.de/services/VRIMasterWebService">
-            <token>
-              <Value>#{token}</Value>
-              <CreationTime>2021-01-01T12:00:00.0000000+02:00</CreationTime>
-              <ValidTime>2021-01-02T12:00:00.0000000+02:00</ValidTime>
-            </token>
-            <softwareVersion>
-              <ClientRequestSoftwareVersion>#{version}</ClientRequestSoftwareVersion>
-            </softwareVersion>
-          </DownloadSoftware>
-        </soap:Body>
-      </soap:Envelope>
-    XML
-
-  xml = Nokogiri::XML(out)
-  xml.remove_namespaces!
-
-  url = xml.xpath('/Envelope/Body/DownloadSoftwareResponse/DownloadSoftwareResult/URL').text
-
-  sh 'curl', '-sSfL', url, '-o', t.name
-  touch t.name
-end
+USED_DEVICES = 'used_devices.yml'
 
 file VITOSOFT_VERSION => RELEASE_NOTES do |t|
   /Release\s+(?<version>\d+\.\d+\.\d+\.\d+)\s+\((?<day>\d+)\.(?<month>\d+)\.(?<year>\d+)\)/ =~ File.read(t.source)
@@ -186,27 +94,50 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   File.write t.name, translations.sort_by_key.to_yaml
 end
 
-desc 'gather all device commands'
-task :devices => DEVICES
+file DEVICES => [DEVICES_RAW, EVENT_TYPES_RAW, SYSTEM_EVENT_TYPES_RAW] do |t|
+  devices_raw, event_types_raw, system_event_types_raw =
+    t.sources.map { |source| load_yaml(source) }
 
-file DEVICES => DATAPOINT_TYPES do |t|
-  devices = {}
+  types = event_types_raw.merge(system_event_types_raw)
 
-  reader = Nokogiri::XML::Reader(File.open(t.source))
+  devices = devices_raw.map { |device_id, v|
+    v[:protocol] = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
+    v[:event_types] = v[:event_types].select { |type_id|
+      # Remove unneeded/unsupported event types.
+      next if type_id.start_with?('Node_')
+      next if type_id.start_with?('nciNet')
 
-  reader.each do |node|
-    if node.name == 'DataPointType'
-      node = Nokogiri::XML(node.outer_xml)
+      type = types.fetch(type_id)
+      fc_read = type[:fc_read]
+      fc_write = type[:fc_write]
+      next if fc_read.nil? && fc_write.nil?
+      next unless fc_read == 'virtual_read' || fc_write == 'virtual_write'
 
-      if device = node.at('./DataPointType/ID')&.text&.strip
-        event_types = node.at('./DataPointType/EventTypeList')&.text&.strip&.split(';')
-        devices[device] = event_types.map { |event_type| strip_address(event_type) }
-      end
-    end
-  end
+      true
+    }
+    [device_id, v]
+  }.to_h
 
-  dummy_types = devices.delete('ecnStatusDataPoint')
-  devices = devices.transform_values { |v| v - dummy_types }
+  DUMMY_TYPES = ['ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
+  devices.delete_if { |k, v|
+    # Remove unsupported devices.
+    next true if k.start_with?('DEKATEL_')
+    next true if k.start_with?('Dekamatik_')
+    next true if k.start_with?('Solartrol_')
+    next true if k.start_with?('GWG_')
+    next true if k.start_with?('MBus_')
+    next true if k.start_with?('HV_')
+    next true if k.start_with?('HV_')
+    next true if k.start_with?('Vitocom')
+    next true if k.start_with?('Vitogate')
+    next true if k.start_with?('WILO')
+    next true if k.start_with?('_VITODATA')
+
+    # Remove devices without any supported event types.
+    next true if (v[:event_types] - DUMMY_TYPES).empty?
+
+    false
+  }
 
   File.write t.name, devices.sort_by_key.to_yaml
 end
@@ -217,87 +148,21 @@ def clean_enum_text(id, text)
   text.sub(/^(?:#{id}(?::)?\s+|\(0#{id}\))([^\s]+)/, '\1').strip
 end
 
-def event_types(path)
-  reader = Nokogiri::XML::Reader(File.open(path))
-
-  reader.map { |node|
-    next if node.empty_element?
-    next unless node.name == 'EventType'
-
-    node = Nokogiri::XML(node.outer_xml)
-
-    next unless id = node.at('ID')&.text
-
-    [
-      strip_address(id),
-      node.at('./EventType').children.map { |n|
-        value = case name = n.name.underscore
-        when 'address', 'vitocom_channel_id'
-          n.text.empty? ? nil : Integer(n.text, 16)
-        when /^(block|byte|bit)_(length|position)$/
-          Integer(n.text)
-        when /^conversion_(factor|offset)$/
-          v = Float(n.text)
-          v == 0.0 ? nil : v
-        when /^((lower|upper)_border|stepping)$/
-          Float(n.text)
-        when 'access_mode'
-          n.text.empty? ? nil : n.text.underscore
-        when /^fc_(read|write)$/
-          {
-            ''                           => nil,
-            'undefined'                  => nil,
-            'Virtual_MarktManager_READ'  => 'virtual_market_manager_read',
-            'Virtual_MarktManager_WRITE' => 'virtual_market_manager_write',
-          }.fetch(n.text, n.text.underscore)
-        when 'option_list'
-          n.text.split(';')
-        when 'value_list'
-          n.text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k.to_i, clean_enum_text(k, v)] }.to_h
-        when /^prefix_(read|write)$/
-          n.text.empty? ? nil : n.text.each_char.each_slice(2).map { |c| Integer(c.join, 16) }
-        else
-          n.text
-        end
-
-        name = name.to_sym
-
-        next if name.in?([:text, :id])
-        next if value.nil?
-
-        [name, value]
-      }.compact.to_h,
-    ]
-  }.compact.to_h
-end
-
-file EVENT_TYPES => EVENT_TYPES_XML do |t|
-  File.write t.name, event_types(t.source).to_yaml
-end
-
-file SYSTEM_EVENT_TYPES => SYSTEM_EVENT_TYPES_XML do |t|
-  File.write t.name, event_types(t.source).to_yaml
-end
-
-file USED_COMMANDS => [DEVICES, EVENT_TYPES, SYSTEM_EVENT_TYPES, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  devices, event_types, system_event_types, mappings_unique, translations_unique =
+file USED_COMMANDS => [DEVICES, EVENT_TYPES_RAW, SYSTEM_EVENT_TYPES_RAW, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  devices, event_types_raw, system_event_types_raw, mappings_unique, translations_unique =
     t.sources.map { |source| load_yaml(source) }
-  used_commands = devices.values.reduce(:|).sort.uniq
+  used_event_type_ids = devices.each_value.reduce(Set.new) { |s, v| s | v[:event_types].to_set }
+
+  used_event_types = system_event_types_raw.merge(event_types_raw.keep_if { |type_id,|
+    used_event_type_ids.include?(type_id)
+  })
+
+  printed_ids = Set.new
 
   File.open(t.name, 'w+') do |f|
-    used_commands = command_names_to_types(used_commands, event_types: event_types, system_event_types: system_event_types)
-    used_commands.each do |type_id, type|
-      # Remove unneeded/unsupported commands.
-      next if type_id.start_with?('Mapping~')
-      next if type_id.start_with?('vlogVS')
-      next if type_id.start_with?('vcLan')
-      next if type_id.start_with?('Node_')
-      next if type_id.start_with?('nciNet')
-
-      fc_read = type[:fc_read]
-      fc_write = type[:fc_write]
-      raise "#{type_id} => #{type.inspect}" if fc_read.nil? && fc_write.nil?
-      next unless fc_read == 'virtual_read' || fc_write == 'virtual_write'
+    used_event_types.each do |type_id, type|
+      # TODO: Merge duplicate comands.
+      next unless printed_ids.add?(map_command_id(type_id))
 
       f.puts type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
     end
@@ -331,33 +196,6 @@ file USED_TRANSLATIONS => [USED_MAPPINGS, TRANSLATIONS_UNIQUE] do |t|
   }.to_h
 
   File.write t.name, used_translations.to_yaml
-end
-
-task :diff => DEVICES do |t|
-  devices = load_yaml(t.source)
-
-  v200kw2 = devices.fetch('V200KW2')
-  v200kw2_6 = devices.fetch('V200KW2_6')
-
-  puts "Devices:"
-  puts devices.keys
-  puts
-
-
-  puts "V200KW2 only:"
-  puts v200kw2 - v200kw2_6
-
-  puts
-
-
-  puts "V200KW2_6 only:"
-  puts v200kw2_6 - v200kw2
-
-  puts
-
-  puts "Both V200KW2 & V200KW2_6"
-  puts v200kw2 & v200kw2_6
-
 end
 
 file MAPPINGS_UNIQUE => TRANSLATIONS_UNIQUE do |t|
@@ -439,10 +277,29 @@ end
 
 def map_command_id(id)
   exact_mappings = {
+    'NRF_TiefpassTemperaturwert_PTSO'               => 'buffer_temperature_actual_1',
+    'NRF_TiefpassTemperaturwert_PTSU'               => 'buffer_temperature_actual_2',
+    'NRF_Temperaturanstieg_STSSOL'                  => 'buffer_temperature_desired',
+    'NRF_Temperaturanstieg_PTSU'                    => 'buffer_temperature_actual_3',
+    'NRF_Temperaturanstieg_VTSM2'                   => 'buffer_temperature_average',
+    'SC100_KesselIsttemperatur'                     => 'boiler_temperature_actual',
+    'SC100_Flammtemperatur'                         => 'flame_temperature_actual',
+    'SC100_Einschubtemperatur'                      => 'slot_temperature_actual',
+    'VT_SolltemperaturA1M1'                         => 'flow_temperature_desired_a1m1',
+    'Ausgang52_Mischerposition_M1'                  => 'mixer_position_m1',
+    'HK_Mischerposition_akt_M1'                     => 'mixer_position_m1',
+    'VorlauftemperaturM1'                           => 'flow_temperature_actual_m1',
+    'ADC_Isttemperaturwert_2'                       => 'flow_temperature_actual_m1',
+    'Temperatur_2_M1'                               => 'flow_temperature_actual_m1',
+    'VT_SolltemperaturM2'                           => 'flow_temperature_desired_m1',
+    'VorlauftemperaturM2'                           => 'flow_temperature_actual_m2',
+    'Temperatur_2_M2'                               => 'flow_temperature_actual_m2',
+    'K90_KonfiZeitkonstAussentemperatur'            => 'outside_temperature_damping_time_constant',
+    'Gemischte_AT'                                  => 'outside_temperature_damped',
+
     'BedienBetriebsartA1M1'                         => 'operating_mode_a1m1',
     'BedienBetriebsartM2'                           => 'operating_mode_m2',
     'Geraetekennung_Diode'                          => 'device_identification',
-    'Gemischte_AT'                                  => 'outside_temperature_adjusted',
     'TiefpassTemperaturwert_ATS'                    => 'outside_temperature_lowpass',
     'ADC_IstTemperaturwert_ATS'                     => 'outside_temperature_actual',
     'ADC_IstTemperaturwert_AGTS'                    => 'exhaust_temperature_actual',
@@ -465,7 +322,6 @@ def map_command_id(id)
     'TiefpassTemperaturwert_KTS_A1'                 => 'flow_temperature_lowpass_a1m1',
     'HK_VT_Solltemperatur_A1M1'                     => 'flow_temperature_desired_a1m1',
     'HK_VT_Solltemperatur_M2'                       => 'flow_temperature_desired_m2',
-    'VorlauftemperaturM2'                           => 'flow_temperature_actual_m2',
     'TemperaturFehler_17_NR1'                       => 'return_temperature_error_status',
     'TiefpassTemperaturwert_17_NR1'                 => 'return_temperature_lowpass_nr1',
     'RuecklauftemperaturM2'                         => 'return_temperature_actual_m2',
@@ -685,8 +541,7 @@ end
 def type_to_command(type_id, type, mappings:, translations:)
   f = StringIO.new
 
-  id = type_id
-  id = map_command_id(id)
+  id = map_command_id(type_id)
 
   addr = type.fetch(:address)
   factor = map_factor(type)
@@ -710,7 +565,7 @@ def type_to_command(type_id, type, mappings:, translations:)
   f.puts "  mode: #{mode}"
   f.puts "  data_type: #{data_type}"
   f.puts "  raw_type: #{raw_type}"
-  f.puts "  factor: #{factor}" unless factor.nil?
+  f.puts "  factor: #{factor}"           unless factor.nil?
   f.puts "  block_len: #{block_length}"  unless block_length.zero?
   f.puts "  byte_len: #{byte_length}"    unless byte_length.zero?
   f.puts "  byte_pos: #{byte_position}"  unless byte_position.zero?
@@ -742,27 +597,18 @@ def type_to_command(type_id, type, mappings:, translations:)
   f.string
 end
 
-def command_names_to_types(command_names, event_types:, system_event_types:)
-  command_names = command_names.to_set
-
-  types = event_types.select { |k,| command_names.include?(k) }.to_h
-  sys_types = system_event_types
-  sys_types.merge(types)
-end
-
-USED_DEVICES = 'used_devices.yml'
 file USED_DEVICES => [DEVICES, USED_COMMANDS] do |t|
   devices, used_commands = t.sources.map { |source| load_yaml(source) }
 
-  devices = devices.reduce({}) { |h, (device_id, command_names)|
-    protocol = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
-
+  devices = devices.reduce({}) { |h, (device_id, device)|
     h.merge({
       device_id => {
-        'protocol' => protocol,
-        'commands' => command_names
+        'protocol' => device[:protocol],
+        'id' => device[:id],
+        'commands' => device[:event_types]
           .map { |command_name| map_command_id(command_name) }
           .select { |id| used_commands.key?(id) }
+          .uniq
       }
     })
   }
