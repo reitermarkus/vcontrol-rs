@@ -47,7 +47,7 @@ name = "cat"
 required-features = ["env_logger"]
 
 [[example]]
-name = "brute"
+name = "scan"
 required-features = ["serde_yaml"]
 
 [target.'cfg(unix)'.dependencies]

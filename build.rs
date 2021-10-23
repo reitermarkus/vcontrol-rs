@@ -2,7 +2,7 @@ use std::env;
 use std::fs::File;
 use std::io::{Read, BufReader, BufWriter, Write};
 use std::path::Path;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fmt;
 
 use serde::{Deserialize, de::DeserializeOwned};
@@ -31,7 +31,7 @@ fn output_file(file_name: &str) -> BufWriter<File> {
 }
 
 fn generate_translations() {
-  let translations: HashMap<String, String> = load_yaml("used_translations.yml");
+  let translations: BTreeMap<String, String> = load_yaml("used_translations.yml");
 
   let mut file = output_file("translations.rs");
 
@@ -41,7 +41,7 @@ fn generate_translations() {
 }
 
 fn generate_mappings() {
-  let mappings: HashMap<String, HashMap<u8, String>> = load_yaml("used_mappings.yml");
+  let mappings: BTreeMap<String, BTreeMap<u8, String>> = load_yaml("used_mappings.yml");
 
   let mut file = output_file("mappings.rs");
 
@@ -60,7 +60,7 @@ fn generate_mappings() {
 }
 
 fn generate_commands() {
-  let mappings: HashMap<String, Command> = load_yaml("used_commands.yml");
+  let mappings: BTreeMap<String, Command> = load_yaml("used_commands.yml");
 
   let mut file = output_file("commands.rs");
 
@@ -72,7 +72,7 @@ fn generate_commands() {
 }
 
 fn generate_devices() {
-  let mappings: HashMap<String, Device> = load_yaml("used_devices.yml");
+  let mappings: BTreeMap<String, Device> = load_yaml("used_devices.yml");
 
   let mut file = output_file("devices.rs");
 
