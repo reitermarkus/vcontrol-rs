@@ -175,7 +175,8 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           assert_company_id(n.text.strip)
           next
         else
-          n.text.strip
+          v = n.text.strip
+          v.empty? ? nil : v
         end
 
         [name, value]
@@ -194,7 +195,8 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           assert_company_id(n.text.strip)
           next
         else
-          n.text.strip
+          v = n.text.strip
+          v.empty? ? nil : v
         end
 
         [name, value]
