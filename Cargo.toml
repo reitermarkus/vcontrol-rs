@@ -2,7 +2,7 @@
 name = "vcontrol"
 description = "A library for communication with Viessmann heating controllers."
 version = "0.3.4"
-edition = "2018"
+edition = "2021"
 authors = ["Markus Reiter <me@reitermark.us>"]
 documentation = "https://docs.rs/vcontrol"
 repository = "https://github.com/reitermarkus/vcontrol-rs"

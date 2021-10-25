@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use serde::{Serialize, Deserialize};
 
-use crate::types::{SysTime, CycleTime, Error};
+use crate::types::{SysTime, CycleTimes, Error};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -13,7 +13,7 @@ pub enum Value {
   Array(Vec<u8>),
   String(String),
   SysTime(SysTime),
-  CycleTime(CycleTime),
+  CycleTimes(CycleTimes),
   Error(Error),
   Empty
 }
@@ -34,9 +34,9 @@ impl FromStr for Value {
       return Ok(Value::SysTime(systime))
     }
 
-    if let Ok(cycletime) = s.parse::<CycleTime>() {
-      return Ok(Value::CycleTime(cycletime))
-    }
+    // if let Ok(cycletime) = s.parse::<[CycleTime; 4]>() {
+    //   return Ok(Value::CycleTimes(cycletime))
+    // }
 
     Ok(Value::String(s.to_owned()))
   }

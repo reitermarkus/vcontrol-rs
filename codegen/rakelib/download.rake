@@ -1,3 +1,4 @@
+VITOSOFT_EXE = 'Vitosoft300SID1_Setup.exe'
 
 # https://github.com/sarnau/InsideViessmannVitosoft/blob/main/VitosoftSoftware.md
 file VITOSOFT_EXE do |t|

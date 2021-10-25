@@ -18,6 +18,10 @@ use raw_type::RawType;
 mod types;
 use self::types::*;
 
+fn escape_const_name(s: &str) -> String {
+  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("%", "PERCENT")
+}
+
 #[track_caller]
 fn load_yaml<T: DeserializeOwned>(file_name: &str) -> T {
   let path = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("codegen").join(file_name);
@@ -31,17 +35,21 @@ fn output_file(file_name: &str) -> BufWriter<File> {
 }
 
 fn generate_translations() {
+  println!("Generating translations.");
+
   let translations: BTreeMap<String, String> = load_yaml("used_translations.yml");
 
   let mut file = output_file("translations.rs");
 
   for (k, v) in translations {
-    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k.to_uppercase(), v).unwrap();
+    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", escape_const_name(&k), v).unwrap();
   }
 }
 
 fn generate_mappings() {
-  let mappings: BTreeMap<String, BTreeMap<u8, String>> = load_yaml("used_mappings.yml");
+  println!("Generating mappings.");
+
+  let mappings: BTreeMap<String, BTreeMap<i32, String>> = load_yaml("used_mappings.yml");
 
   let mut file = output_file("mappings.rs");
 
@@ -51,15 +59,17 @@ fn generate_mappings() {
     let mut map = phf_codegen::Map::new();
 
     for (k, v) in mapping {
-      map.entry(k, &format!("TRANSLATION_{}", v.to_uppercase()));
+      map.entry(k, &format!("TRANSLATION_{}", escape_const_name(&v)));
     }
 
     // let v = v.as_str().unwrap();
-    writeln!(file, "const MAPPING_{}: ::phf::Map<u8, &'static str> = {};", k.to_uppercase(), map.build()).unwrap();
+    writeln!(file, "const MAPPING_{}: ::phf::Map<i32, &'static str> = {};", escape_const_name(&k), map.build()).unwrap();
   }
 }
 
 fn generate_commands() {
+  println!("Generating commands.");
+
   let mappings: BTreeMap<String, Command> = load_yaml("used_commands.yml");
 
   let mut file = output_file("commands.rs");
@@ -67,11 +77,13 @@ fn generate_commands() {
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
 
   for (command_name, command) in mappings {
-    writeln!(file, "const COMMAND_{}: Command = {:?};", command_name.to_uppercase(), command).unwrap();
+    writeln!(file, "const COMMAND_{}: Command = {:?};", escape_const_name(&command_name), command).unwrap();
   }
 }
 
 fn generate_devices() {
+  println!("Generating devices.");
+
   let mappings: BTreeMap<String, Device> = load_yaml("used_devices.yml");
 
   let mut file = output_file("devices.rs");
@@ -82,15 +94,15 @@ fn generate_devices() {
     let mut map = phf_codegen::Map::<&str>::new();
 
     for command_name in device.commands.iter() {
-      map.entry(command_name, &format!("&COMMAND_{}", command_name.to_uppercase()));
+      map.entry(command_name, &format!("&COMMAND_{}", escape_const_name(&command_name)));
     }
 
-    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", device_id, map.build()).unwrap();
+    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
 
     writeln!(&mut file, r#"
       #[derive(Debug)]
       pub enum {} {{}}
-    "#, device_id).unwrap();
+    "#, escape_const_name(&device_id)).unwrap();
 
     writeln!(file, r#"
       impl Device for {} {{
@@ -101,7 +113,7 @@ fn generate_devices() {
           &{}_COMMANDS
         }}
       }}
-    "#, device_id, device.protocol, device_id).unwrap();
+    "#, escape_const_name(&device_id), device.protocol, escape_const_name(&device_id)).unwrap();
   }
 }
 
@@ -131,21 +143,20 @@ pub struct Command {
   block_len: Option<usize>,
   byte_len: Option<usize>,
   byte_pos: Option<usize>,
-  bit_pos: Option<usize>,
-  bit_len: Option<usize>,
+  bit_pos: usize,
+  bit_len: usize,
   factor: Option<f64>,
   mapping: Option<String>,
 }
 
 impl fmt::Debug for Command {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    println!("{:0X}", self.addr);
     let block_len = self.block_len.or_else(|| self.raw_type.size()).unwrap();
     let byte_len = self.byte_len.or_else(|| self.raw_type.size()).unwrap();
     let byte_pos = self.byte_pos.unwrap_or(0);
 
     let mapping = if let Some(mapping) = &self.mapping {
-      format!("Some(MAPPING_{})", mapping.to_uppercase())
+      format!("Some(MAPPING_{})", escape_const_name(&mapping))
     } else {
       "None".into()
     };
@@ -182,6 +193,6 @@ pub enum DataType {
   String,
   Array,
   SysTime,
-  CycleTime,
+  CycleTimes,
   Error,
 }

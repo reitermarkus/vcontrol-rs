@@ -49,8 +49,6 @@ impl fmt::Debug for Error {
 mod tests {
   use super::*;
 
-  use crate::types::{FromBytes, ToBytes};
-
   #[test]
   fn new() {
     let time = SysTime::new(2018, 12, 23, 17, 49, 31);
