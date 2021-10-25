@@ -4,6 +4,52 @@ use std::str::FromStr;
 
 use serde::{Serialize, Serializer, Deserialize, Deserializer, de};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CycleTimes {
+  mon: CycleTime,
+  tue: CycleTime,
+  wed: CycleTime,
+  thu: CycleTime,
+  fri: CycleTime,
+  sat: CycleTime,
+  sun: CycleTime,
+}
+
+impl CycleTimes {
+  pub fn from_bytes(bytes: &[u8]) -> Self {
+    Self {
+      mon: CycleTime::from_bytes(&bytes[0..8]),
+      tue: CycleTime::from_bytes(&bytes[8..16]),
+      wed: CycleTime::from_bytes(&bytes[16..24]),
+      thu: CycleTime::from_bytes(&bytes[24..32]),
+      fri: CycleTime::from_bytes(&bytes[32..40]),
+      sat: CycleTime::from_bytes(&bytes[40..48]),
+      sun: CycleTime::from_bytes(&bytes[48..56]),
+    }
+  }
+
+  pub fn to_bytes(&self) -> [u8; 56] {
+    let mon = self.mon.to_bytes();
+    let tue = self.tue.to_bytes();
+    let wed = self.wed.to_bytes();
+    let thu = self.thu.to_bytes();
+    let fri = self.fri.to_bytes();
+    let sat = self.sat.to_bytes();
+    let sun = self.sun.to_bytes();
+
+
+    [
+      mon[0], mon[1], mon[2], mon[3], mon[4], mon[5], mon[6], mon[7],
+      tue[0], tue[1], tue[2], tue[3], tue[4], tue[5], tue[6], tue[7],
+      wed[0], wed[1], wed[2], wed[3], wed[4], wed[5], wed[6], wed[7],
+      thu[0], thu[1], thu[2], thu[3], thu[4], thu[5], thu[6], thu[7],
+      fri[0], fri[1], fri[2], fri[3], fri[4], fri[5], fri[6], fri[7],
+      sat[0], sat[1], sat[2], sat[3], sat[4], sat[5], sat[6], sat[7],
+      sun[0], sun[1], sun[2], sun[3], sun[4], sun[5], sun[6], sun[7],
+    ]
+  }
+}
+
 #[derive(Clone)]
 pub struct CycleTime([u8; 8]);
 

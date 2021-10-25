@@ -50,10 +50,10 @@ pub struct Command {
   pub block_len: usize,
   pub byte_len: usize,
   pub byte_pos: usize,
-  pub bit_pos: Option<usize>,
-  pub bit_len: Option<usize>,
+  pub bit_pos: usize,
+  pub bit_len: usize,
   pub factor: Option<f64>,
-  pub mapping: Option<phf::map::Map<u8, &'static str>>,
+  pub mapping: Option<phf::map::Map<i32, &'static str>>,
 }
 
 impl Command {
@@ -69,32 +69,10 @@ impl Command {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)))
     }
 
-    let mut block_len = self.block_len;
-    let byte_len = if let Some(raw_size) = self.raw_type.size() {
-      if raw_size > block_len {
-        block_len = raw_size;
-      }
-
-      raw_size
-    } else {
-      self.byte_len
-    };
-
-    let mut buf = vec![0; block_len];
+    let mut buf = vec![0; self.block_len];
     P::get(o, &self.addr(), &mut buf)?;
 
-    let byte_pos = if let Some(bit_pos) = self.bit_pos {
-      let byte = buf[bit_pos / 8];
-      let bit_len = self.bit_len.unwrap_or(1);
-
-      buf.clear();
-      buf.push((byte << (bit_pos % 8)) >> (8 - bit_len));
-      0
-    } else {
-      self.byte_pos
-    };
-
-    self.data_type.bytes_to_output(self.raw_type, &buf[byte_pos..(byte_pos + byte_len)], self.factor, &self.mapping)
+    self.data_type.bytes_to_output(self.raw_type, &buf[self.byte_pos..(self.byte_pos + self.byte_len)], self.factor, &self.mapping, self.bit_pos, self.bit_len)
   }
 
   pub fn set<P: Protocol>(&self, o: &mut Optolink, input: &Value) -> Result<(), Error> {

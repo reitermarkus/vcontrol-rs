@@ -1,7 +1,10 @@
+use std::mem;
+use std::ffi::CStr;
+
 use phf;
 use serde::Deserialize;
 
-use crate::{Error, Value, RawType, types::{self, SysTime, CycleTime}};
+use crate::{Error, Value, RawType, types::{self, SysTime, CycleTimes}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -11,43 +14,65 @@ pub enum DataType {
   String,
   Array,
   SysTime,
-  CycleTime,
+  CycleTimes,
   Error,
 }
 
 impl DataType {
-  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, mapping: &Option<phf::map::Map<u8, &'static str>>) -> Result<Value, Error> {
+  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, mapping: &Option<phf::map::Map<i32, &'static str>>, bit_pos: usize, bit_len: usize) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty)
     }
 
-    // if let Some(mapping) = mapping {
-    //   if let Some(text) = mapping.get(&bytes[0]) {
-    //     return Ok(Value::String((*text).to_string()))
-    //   }
-    //
-    //   return Err(Error::UnknownEnumVariant(format!("No enum mapping found for [{}].", bytes.iter().map(|byte| format!("0x{:02X}", byte)).collect::<Vec<String>>().join(", "))))
-    // }
-
     Ok(match self {
-      Self::SysTime => return Ok(Value::SysTime(SysTime::from_bytes(bytes))),
-      Self::CycleTime => return Ok(Value::CycleTime(CycleTime::from_bytes(bytes))),
-      Self::Error => return Ok(Value::Error(types::Error::from_bytes(bytes))),
-      Self::String => return Ok(Value::String(String::from_utf8(bytes.to_vec()).unwrap())),
-      Self::Array => return Ok(Value::Array(bytes.to_vec())),
+      Self::SysTime => Value::SysTime(SysTime::from_bytes(bytes)),
+      Self::CycleTimes => Value::CycleTimes(CycleTimes::from_bytes(bytes)),
+      Self::Error => Value::Error(types::Error::from_bytes(bytes)),
+      Self::String => {
+        let end = bytes.iter().position(|&c| c == b'\0').unwrap_or(bytes.len());
+        Value::String(String::from_utf8(bytes[..end].to_vec()).unwrap().to_owned())
+      },
+      Self::Array => Value::Array(bytes.to_vec()),
       t => {
+        macro_rules! int_from_bytes {
+          ($ty:ty) => {{
+            let mut n: $ty = 0;
+
+            #[allow(arithmetic_overflow)]
+            for (i, &b) in bytes.into_iter().rev().enumerate() {
+              n = (n << 8) | (b as $ty);
+            }
+
+            if bit_len > 0 {
+              n = ((n << bit_pos) >> (mem::size_of::<$ty>() - bit_len))
+            }
+
+            n as i64
+          }}
+        }
+
         let n = match raw_type {
-          RawType::I8 => i64::from(i8::from_le_bytes([bytes[0]])),
-          RawType::I16 => i64::from(i16::from_le_bytes([bytes[0], bytes[1]])),
-          RawType::I32 => i64::from(i32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])),
-          RawType::U8 => i64::from(u8::from_le_bytes([bytes[0]])),
-          RawType::U16 => i64::from(u16::from_le_bytes([bytes[0], bytes[1]])),
-          RawType::U32 => i64::from(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])),
+          RawType::I8 =>  int_from_bytes!(i8),
+          RawType::I16 => int_from_bytes!(i16),
+          RawType::I32 => int_from_bytes!(i32),
+          RawType::U8 =>  int_from_bytes!(u8),
+          RawType::U16 => int_from_bytes!(u16),
+          RawType::U32 => int_from_bytes!(u32),
           RawType::Array => unreachable!(),
         };
 
         match t {
-          Self::Int => Value::Int(n),
+          Self::Int => {
+            if let Some(mapping) = mapping {
+              if let Some(text) = mapping.get(&(n as i32)) {
+                return Ok(Value::String((*text).to_string()))
+              }
+
+              return Err(Error::UnknownEnumVariant(format!("No enum mapping found for {}.", n)))
+            }
+
+            Value::Int(n)
+          },
           Self::Double => Value::Double(n as f64 / factor.unwrap_or(1.0)),
           _ => unreachable!(),
         }
@@ -55,7 +80,7 @@ impl DataType {
     })
   }
 
-  pub fn input_to_bytes(&self, input: &Value, raw_type: RawType, factor: Option<f64>, mapping: &Option<phf::map::Map<u8, &'static str>>) -> Result<Vec<u8>, Error> {
+  pub fn input_to_bytes(&self, input: &Value, raw_type: RawType, factor: Option<f64>, mapping: &Option<phf::map::Map<i32, &'static str>>) -> Result<Vec<u8>, Error> {
     // if let Some(mapping) = mapping {
     //   if let Value::String(s) = input {
     //     return mapping.entries()
@@ -74,9 +99,9 @@ impl DataType {
           return Err(Error::InvalidArgument(format!("expected systime, found {:?}", input)))
         }
       },
-      Self::CycleTime => {
-        if let Value::CycleTime(cycletime) = input {
-          cycletime.to_bytes().to_vec()
+      Self::CycleTimes => {
+        if let Value::CycleTimes(cycletimes) = input {
+          cycletimes.to_bytes().to_vec()
         } else {
           return Err(Error::InvalidArgument(format!("expected cycletime, found {:?}", input)))
         }

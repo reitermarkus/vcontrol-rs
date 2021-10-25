@@ -23,21 +23,30 @@ class Hash
   end
 end
 
-VITOSOFT_EXE = 'Vitosoft300SID1_Setup.exe'
-VITOSOFT_DIR = 'Vitosoft300SID1_Setup'
+VITOSOFT_DIR = 'src'
 
-DEFINITIONS            = "#{VITOSOFT_DIR}/data/OFFLINE/1477A66B/9BDD2692/DPDefinitions.xml"
-DATAPOINT_TYPES_XML    = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnDataPointType.xml"
-EVENT_TYPES_XML        = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/ecnEventType.xml"
-SYSTEM_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/data/OFFLINE/3C8BB38F/67C8D997/sysEventType.xml"
-TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}/data/OFFLINE/C6C1A272/BF368101"
-RELEASE_NOTES          = "#{VITOSOFT_DIR}/data/OFFLINE/C6C1A272/69ADA3A4/ReleaseNotes_en.htm"
+DATAPOINT_DEFINITIONS_XML                         = "#{VITOSOFT_DIR}/DPDefinitions.xml"
+DATAPOINT_TYPES_XML                               = "#{VITOSOFT_DIR}/ecnDataPointType.xml"
+EVENT_TYPES_XML                                   = "#{VITOSOFT_DIR}/ecnEventType.xml"
+SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceIdent.xml"
+SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
+SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
 
+
+
+
+TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}"
+
+DATAPOINT_DEFINITIONS_RAW = 'datapoint_definitions_raw.yml'
+DATAPOINT_TYPES_RAW = 'datapoint_types_raw.yml'
 TRANSLATIONS_RAW = 'translations_raw.yml'
-DEVICES_RAW = 'devices_raw.yml'
-DEVICES = 'devices.yml'
-SYSTEM_EVENT_TYPES_RAW = 'system_event_types_raw.yml'
 EVENT_TYPES_RAW = 'event_types_raw.yml'
+SYSTEM_EVENT_TYPES_RAW = 'system_event_types_raw.yml'
+SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW = 'system_device_identifier_event_types_raw.yml'
+SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types_raw.yml'
+
+EVENT_TYPES = 'event_types.yml'
+DEVICES = 'devices.yml'
 VITOSOFT_VERSION = 'vitosoft_version.yml'
 MAPPINGS_UNIQUE = 'mappings_unique.yml'
 TRANSLATIONS_UNIQUE = 'translations_unique.yml'
@@ -46,86 +55,260 @@ USED_MAPPINGS = 'used_mappings.yml'
 USED_TRANSLATIONS = 'used_translations.yml'
 USED_DEVICES = 'used_devices.yml'
 
-file VITOSOFT_VERSION => RELEASE_NOTES do |t|
-  /Release\s+(?<version>\d+\.\d+\.\d+\.\d+)\s+\((?<day>\d+)\.(?<month>\d+)\.(?<year>\d+)\)/ =~ File.read(t.source)
-  File.write t.name, {version: version, release_date: "#{year}-#{month}-#{day}"}.to_yaml
-end
+EVENT_TYPE_REPLACEMENTS = {
+  '@@viessmann.eventtype.GWG_Kennung.description' => 'GWG_Kennung',
+  '@@viessmann.eventtype.name.WPR_WO1H_Guelt_Bedarf_HK1' => 'WPR_WO1H_Guelt_Bedarf_HK1',
+  'WPR_WO1H_Guelt_Solltemp_Schwimmbad+0x1186' => 'WPR_WO1H_Guelt_Solltemp_Schwimmbad',
+}
 
-rule %r{#{Regexp.escape(VITOSOFT_DIR)}/(.*)} => VITOSOFT_EXE do |t|
-  sh '7z', 'x', '-y', "-o#{VITOSOFT_DIR}", t.source, Pathname(t.name).relative_path_from(VITOSOFT_DIR)
+DATAPOINT_DEFINITIONS = 'datapoint_definitions.yml'
+file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
+  datapoint_definitions_raw = load_yaml(t.source)
 
-  Dir.glob(t.name).each do |path|
-    next unless File.extname(path) == '.xml'
-    sh 'xmllint', '--format', path, '--output', path
-  end
+  datapoints = datapoint_definitions_raw.fetch('datapoints')
+  event_types = datapoint_definitions_raw.fetch('event_types')
 
-  touch t.name
-end
+  id_by_address = ->(address) {
+    id, = event_types.find { |k, v| v.fetch('address') == address }
+    id
+  }
 
-file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
-  languages = {}
-  translations = {}
+  replacements = EVENT_TYPE_REPLACEMENTS.each do |from, to|
+    from_id = id_by_address.call(from)
+    to_id = id_by_address.call(to)
 
-  Pathname(t.source).glob('Textresource_*.xml').each do |text_resource|
-    reader = Nokogiri::XML::Reader(text_resource.open)
-
-    reader.each do |node|
-      case node.name
-      when 'Culture'
-        id = node.attribute('Id')
-        name = node.attribute('Name')
-
-        languages[id] ||= name
-      when 'TextResource'
-        language_id = node.attribute('CultureId')
-        label = node.attribute('Label')
-        value = node.attribute('Value').strip.gsub('##ecnnewline##', "\n").gsub('##ecntab##', "\t").gsub('##ecnsemicolon##', ';').gsub('##nl##', "\n")
-
-        if /~(?<index>\d+)$/ =~ label
-          value = clean_enum_text(index, value)
-        end
-
-        translations[label] ||= {}
-        translations[label][languages.fetch(language_id)] = value
-      end
+    if to_id.nil?
+      event_types[from_id]['address'] = to
+    else
+      event_types.delete(from_id)
+      datapoints.transform_values { |v|
+        v['event_types'].delete(from_id)
+        v['event_types'].push(to_id)
+        v['event_types'].sort!
+        v['event_types'].uniq!
+      }
     end
   end
 
-  File.write t.name, translations.sort_by_key.to_yaml
+  File.write t.name, datapoint_definitions_raw.to_yaml
 end
 
-file DEVICES => [DEVICES_RAW, EVENT_TYPES_RAW, SYSTEM_EVENT_TYPES_RAW] do |t|
-  devices_raw, event_types_raw, system_event_types_raw =
+TRANSLATION_FIXES = {
+  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0'        => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0',
+  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~1'        => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~1',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~0'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~0',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~1'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~1',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~2'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~2',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~3'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~3',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~2' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~3' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0' => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~2' => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~3' => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~3',
+  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~2' => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3' => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
+
+}
+
+EMPTY_VALUE_TRANSLATION = '@@viessmann-ess.eventvaluetype.ModulBetriebsart~3'
+
+VALUE_LIST_FIXES = {
+  '@@viessmann.eventvaluetype.name.HO2B_Geraetetyp~8'                          => '@@viessmann.eventvaluetype.HO2B_Geraetetyp~8',
+  '@@viessmann.eventvaluetype..SC100_SoftwareIndex~14'                         => '@@viessmann.eventvaluetype.SC100_SoftwareIndex~14',
+  '@@viessmann.eventvaluetype.name.SR13_FktDrehzahlPumpe~3'                    => '@@viessmann.eventvaluetype.SR13_FktDrehzahlPumpe~3',
+  '@@viessmann.eventvaluetype.Vitotwin_Fuehlereingang~15'                      => '@@viessmann.eventvaluetype.Vitotwin_Fuehlereingang~3', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0'    => '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
+  '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper/shortLWT~3'    => '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
+  '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper/shortLWT~2'    => '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
+  '@@viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0'               => '@@viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
+  '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortIRT~2'               => '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
+  '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortIRT~3'               => '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
+  '@@viessmann.eventvaluetype.name.K4F_Protectionreason_0~4'                   => '@@viessmann.eventvaluetype.K4F_Protectionreason_0~4',
+  '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~5'              => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~4', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~2'  => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~2', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_modevariant_diagnostics~0'   => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~0', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~16' => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~3', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~1'  => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~1', # Translation does not exist.
+  '@@viessmann.eventvaluetype.name.WPR3_Split.KC5_Protection_code~3'           => '@@viessmann.eventvaluetype.WPR3_Split.KC5_Protection_code~3',
+  '@@viessmann.eventvaluetype.WPR3_Split.KE1_IFeel_mode_status~1'              => '@@viessmann.eventvaluetype.WPR3_Split.KE1_IFeel_mode_status~2', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.KE4_Reset_NLOAD~1'                    => '@@viessmann.eventvaluetype.name.WPR3_Split.KE4_Reset_NLOAD~1',
+  '@@viessmann.eventvaluetype.name.WPR3_Split.KEF_On_Off_Status~1'             => '@@viessmann.eventvaluetype.WPR3_Split.KEF_On_Off_Status~1',
+  '@@viessmann.eventvaluetype.WPR3_Split.KF1_self_test_jumper_1~1'             => '@@viessmann.eventtype.name.WPR3_Split.KF1_self_test_jumper_1~1',
+  '@@viessmann.eventvaluetype.WPR3_Split.KF10_jumper_10~0'                     => 'viessmann.eventvaluetype.WPR3_Split.KF2_jumper_10~0', # Translation does not exist.
+  '@@viessmann.eventvaluetype.WPR3_Split.KF10_jumper_10~1'                     => 'viessmann.eventvaluetype.WPR3_Split.KF2_jumper_10~1', # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.nciNetConfig~0'                              => '@@viessmann.eventvaluetype.nciNetConfig~0',
+  '@@viessmann-ess.eventvaluetype.nciNetConfig~1'                              => '@@viessmann.eventvaluetype.nciNetConfig~1',
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~0'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~1'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~2'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~4'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~5'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~6'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~7'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~8'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~9'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~10'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~11'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~12'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~13'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~14'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~15'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-1'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-2'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-3'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-4'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-5'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-6'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-10'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-11'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-12'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-13'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~-1'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~0'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~1'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~2'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~3'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~4'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~5'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~8'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~7'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~9'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~10'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~11'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+}
+
+file EVENT_TYPES => [DATAPOINT_DEFINITIONS, EVENT_TYPES_RAW] do |t|
+  datapoint_definitions_raw, event_types_raw =
     t.sources.map { |source| load_yaml(source) }
 
-  types = event_types_raw.merge(system_event_types_raw)
+  event_types = {}
 
-  devices = devices_raw.map { |device_id, v|
-    v[:protocol] = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
-    v[:event_types] = v[:event_types].select { |type_id|
+  datapoint_definitions_raw.fetch('event_types').each do |id, event_type|
+    event_type.delete('id')
+
+    address = event_type.delete('address')
+    next if event_types.key?(address)
+
+    reverse_address = EVENT_TYPE_REPLACEMENTS.invert.fetch(address, address)
+    if (event_type_raw = event_types_raw.delete(address) || event_types_raw.delete(reverse_address)).nil?
+      raise "No raw event type found for '#{address}'."
+    end
+
+    event_type_raw['value_list']&.transform_values! { |v|
+      VALUE_LIST_FIXES.fetch(v, v)
+    }
+
+    ['name', 'description', 'conversion', 'default_value', 'priority', 'text', 'url', 'reportingcriterion', 'filtercriterion', 'config_set_id', 'config_set', 'config_set_parameter_id', 'access_mode'].each do |k|
+      raw_value = event_type_raw[k]
+      value = event_type.delete(k)
+
+      if value.nil?
+        next
+      elsif raw_value.nil?
+        event_type_raw[k] = value
+      elsif raw_value != value
+        regex = /@@viessmann(:?\-ess)?\.eventtype(:?\.name)?\.#{Regexp.escape(address)}\.description/
+
+        if raw_value.match?(regex)
+          next
+        elsif value.match?(regex)
+          event_type_raw[k] = value
+        else
+          raise "#{k} differs: #{raw_value.inspect} != #{value.inspect}"
+        end
+      end
+    end
+
+    raise 'enum_type differs' if event_type.delete('enum_type') != !event_type_raw.fetch('value_list', {}).empty?
+
+    raise "unhandled fields: #{event_type}" unless event_type.empty?
+
+    # sdk_data_type = event_type_raw['sdk_data_type']
+    # parameter = event_type_raw['parameter']
+    # byte_length = event_type_raw['byte_length']
+    #
+    # conversions = {
+    #   'Int4' => {
+    #     2 => 'Int',
+    #     1 => 'Byte',
+    #   },
+    #   'Int' => {
+    #     1 => 'Byte'
+    #   },
+    #   'Byte' => {
+    #     4 => 'Int4',
+    #     2 => 'Int',
+    #   },
+    #   'SInt4' => {
+    #     2 => 'SInt',
+    #     1 => 'SByte',
+    #   },
+    #   'SInt' => {
+    #     1 => 'SByte',
+    #   },
+    #   'SByte' => {
+    #     4 => 'SInt4',
+    #     2 => 'SInt',
+    #   }
+    # }
+    #
+    # if (sdk_data_type == 'Binary' || sdk_data_type == 'ByteArray') && parameter == 'Byte'
+    #   event_type_raw['parameter'] = 'ByteArray'
+    # end
+    #
+    # if fixed_paramter = conversions.dig(parameter, byte_length)
+    #   event_type_raw['parameter'] = fixed_paramter
+    # end
+    #
+    # if event_type_raw['parameter'] == 'Byte' && byte_length != 1
+    #   puts "Wrong type: #{event_type_raw}"
+    # end
+
+    event_types[address] = event_type_raw
+  end
+
+  File.write t.name, event_types.to_yaml
+end
+
+file DEVICES => [DATAPOINT_DEFINITIONS, EVENT_TYPES] do |t|
+  datapoint_definitions_raw, event_types = t.sources.map { |source| load_yaml(source) }
+
+  datapoints = datapoint_definitions_raw.delete('datapoints')
+  event_type_ids = datapoint_definitions_raw.delete('event_types')
+
+  devices = datapoints.map { |_, v|
+    device_id = v.delete('address')
+
+    v['protocol'] = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
+    v['event_types'] = v['event_types'].map { |id|
+      type_id = event_type_ids.fetch(id).fetch('address')
+
       # Remove unneeded/unsupported event types.
       next if type_id.start_with?('Node_')
       next if type_id.start_with?('nciNet')
 
-      type = types.fetch(type_id)
-      fc_read = type[:fc_read]
-      fc_write = type[:fc_write]
+      type = event_types.fetch(type_id)
+      fc_read = type['fc_read']
+      fc_write = type['fc_write']
       next if fc_read.nil? && fc_write.nil?
       next unless fc_read == 'virtual_read' || fc_write == 'virtual_write'
 
-      true
-    }
+      type_id
+    }.compact
+
     [device_id, v]
   }.to_h
 
   DUMMY_TYPES = ['ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
   devices.delete_if { |k, v|
     # Remove unsupported devices.
+    next true if k.start_with?('BESS')
     next true if k.start_with?('DEKATEL_')
     next true if k.start_with?('Dekamatik_')
     next true if k.start_with?('Solartrol_')
     next true if k.start_with?('GWG_')
-    next true if k.start_with?('MBus_')
+    next true if k.start_with?('MBus')
     next true if k.start_with?('HV_')
     next true if k.start_with?('HV_')
     next true if k.start_with?('Vitocom')
@@ -134,7 +317,7 @@ file DEVICES => [DEVICES_RAW, EVENT_TYPES_RAW, SYSTEM_EVENT_TYPES_RAW] do |t|
     next true if k.start_with?('_VITODATA')
 
     # Remove devices without any supported event types.
-    next true if (v[:event_types] - DUMMY_TYPES).empty?
+    next true if (v['event_types'] - DUMMY_TYPES).empty?
 
     false
   }
@@ -148,25 +331,21 @@ def clean_enum_text(id, text)
   text.sub(/^(?:#{id}(?::)?\s+|\(0#{id}\))([^\s]+)/, '\1').strip
 end
 
-file USED_COMMANDS => [DEVICES, EVENT_TYPES_RAW, SYSTEM_EVENT_TYPES_RAW, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  devices, event_types_raw, system_event_types_raw, mappings_unique, translations_unique =
+file USED_COMMANDS => [DEVICES, EVENT_TYPES, SYSTEM_EVENT_TYPES_RAW, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  devices, event_types, system_event_types_raw, mappings_unique, translations_unique =
     t.sources.map { |source| load_yaml(source) }
-  used_event_type_ids = devices.each_value.reduce(Set.new) { |s, v| s | v[:event_types].to_set }
+  used_event_type_ids = devices.each_value.reduce(Set.new) { |s, v| s | v['event_types'].to_set }
 
-  used_event_types = system_event_types_raw.merge(event_types_raw.keep_if { |type_id,|
+  used_event_types = system_event_types_raw.merge(event_types.keep_if { |type_id,|
     used_event_type_ids.include?(type_id)
   })
 
-  printed_ids = Set.new
+  used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
+    command = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
+    h.merge({ command.delete('id') => command })
+  }
 
-  File.open(t.name, 'w+') do |f|
-    used_event_types.each do |type_id, type|
-      # TODO: Merge duplicate comands.
-      next unless printed_ids.add?(map_command_id(type_id))
-
-      f.puts type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
-    end
-  end
+  File.write t.name, used_commands.to_yaml
 end
 
 file USED_MAPPINGS => [USED_COMMANDS, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
@@ -174,8 +353,14 @@ file USED_MAPPINGS => [USED_COMMANDS, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |
   used_commands = used_commands.map { |_, v| v.fetch('type_id') }.to_set
 
   used_mappings = mappings_unique.fetch(:mapping)
-    .select { |k, _| used_commands.include?(k) || k.start_with?('viessmann.errorcode.') }
-    .map { |_, k| [k, mappings_unique.fetch(:translations).fetch(k)] }
+    .select { |k, _| used_commands.include?(k) || k.match?(/\Aviessmann\.errorcode(?:\.|$)/) }
+    .map { |_, k|
+      [
+        k,
+        mappings_unique.fetch(:translations).fetch(k)
+          .transform_values { |v| translations_unique.fetch(:mapping).fetch(v.delete_prefix('@@')) }
+      ]
+    }
     .to_h
 
   File.write t.name, used_mappings.to_yaml
@@ -198,22 +383,44 @@ file USED_TRANSLATIONS => [USED_MAPPINGS, TRANSLATIONS_UNIQUE] do |t|
   File.write t.name, used_translations.to_yaml
 end
 
-file MAPPINGS_UNIQUE => TRANSLATIONS_UNIQUE do |t|
-  translations = load_yaml(t.sources.first).fetch(:mapping)
+SYSTEM_EVENT_TYPES = 'system_event_types.yml'
+file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
+  syste_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
-  mappings = {}
+  reverse_translations = translations_raw.map { |k, v| [v.fetch('de'), k] }.to_h
 
-  translations.each do |k, translation|
-    if /^viessmann\.eventvaluetype\.(?<id>.*)~(?<value>.*)$/ =~ k
-      mappings[id] ||= {}
-      mappings[id][value.to_i] = translation
-    elsif /^(?<id>viessmann\.errorcode\.[^.]+)\.(?<value>..)$/ =~ k
-      mappings[id] ||= {}
-      mappings[id][value.to_i(16)] = translation
+  syste_event_types = syste_event_types_raw.map { |k, v|
+    v['value_list']&.transform_values! { |v| "@@#{reverse_translations.fetch(v)}" }
+
+
+
+    [k, v]
+  }.compact.to_h
+
+  File.write t.name, syste_event_types.to_yaml
+end
+
+file MAPPINGS_UNIQUE => [EVENT_TYPES, SYSTEM_EVENT_TYPES, TRANSLATIONS_RAW] do |t|
+  event_types, system_event_types, translations = t.sources.map { |source| load_yaml(source) }
+
+  error_mappings = translations.each_key.reduce({}) { |h, translation_id|
+    if /^(?<id>viessmann\.errorcode(?:\.SMS
+      )?(?:\.[^.]+)?)\.(?<value>\h{2})$/ =~ translation_id
+      h[id] ||= {}
+      h[id][value.to_i(16)] = translation_id
     end
-  end
 
-  File.write t.name, create_mapping_to_unique(mappings).to_yaml
+    h
+  }
+
+  mappings = system_event_types.merge(event_types).map { |event_type_id, event_type|
+    value_list = event_type.fetch('value_list', {})
+    next if value_list.empty?
+
+    [event_type_id, value_list]
+  }.compact.to_h
+
+  File.write t.name, create_mapping_to_unique(mappings.merge(error_mappings)).to_yaml
 end
 
 task :check_error_mappings => MAPPINGS_UNIQUE do |t|
@@ -272,6 +479,11 @@ end
 
 file TRANSLATIONS_UNIQUE => TRANSLATIONS_RAW do |t|
   translations = load_yaml(t.sources.first)
+
+  translations = translations.transform_keys { |k|
+    TRANSLATION_FIXES.fetch(k, k)
+  }
+
   File.write t.name, create_mapping_to_unique(translations).to_yaml
 end
 
@@ -431,13 +643,13 @@ def map_command_id(id)
 end
 
 def map_data_type(type_id, type)
-  byte_length = type.fetch(:byte_length)
+  byte_length = type.fetch('byte_length')
   bits = byte_length * 8
 
-  data_type, raw_type = case unit = [type[:sdk_data_type], type[:parameter]]
+  data_type, raw_type = case unit = [type['sdk_data_type'], type['parameter']]
   when ['DateTime', 'Array']
     ['sys_time', 'array']
-  when ['Int', 'Byte']
+  when ['Byte', 'Byte'], ['Int', 'Byte'], ['Byte', 'Int']
     ["int", "u8"]
   when ['Int', 'Int']
     ["int", 'u16']
@@ -483,16 +695,24 @@ def map_data_type(type_id, type)
     ['array', 'u8']
   when ["ByteArray", "Int"]
     ['array', "u16"]
+  when ["ByteArray", "Int4"]
+    ['array', "u32"]
   when ["ByteArray", "SInt"]
     ['array', "i16"]
-  when ['ByteArray', 'Array']
-    case type_id
-    when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'
-      ['error', 'array']
+  when ['Binary', 'Byte']
+    ['string', 'array']
+  when ['ByteArray', 'Array'], ['ByteArray', 'String']
+    if type['url'] == "~/Service/DeviceCircuitTimes.aspx"
+      ['cycle_times', 'array']
     else
-      ["array", 'array']
+      case type_id
+      when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'
+        ['error', 'array']
+      else
+        ["array", 'array']
+      end
     end
-  when ['ByteArray', 'String']
+  when ['Byte', 'String'], ['String', 'String'], ['String', 'Int4']
     ['string', 'array']
   else
     raise "No mapping for type #{unit} for #{type_id}."
@@ -500,7 +720,7 @@ def map_data_type(type_id, type)
 end
 
 def map_factor(type)
-  case conversion = type[:conversion]
+  case conversion = type['conversion']
   when 'NoConversion', nil then nil
   when 'Div2' then 2
   when 'Div10' then 10
@@ -512,8 +732,8 @@ def map_factor(type)
   when 'Mult10' then 0.1
   when 'Mult100' then 0.01
   when 'MultOffset' then
-    factor = type.fetch(:conversion_factor)
-    offset = type.fetch(:conversion_offset, 0).to_f
+    factor = type.fetch('conversion_factor')
+    offset = type.fetch('conversion_offset', 0).to_f
     factor.to_f * (10 ** offset)
   when 'DateBCD' then nil
   when 'DateTimeBCD' then nil
@@ -525,13 +745,20 @@ def map_factor(type)
   when 'FixedStringTerminalZeroes' then nil
   when 'HexByte2DecimalByte' then nil
   when 'Sec2Minute' then nil
+  when 'LastBurnerCheck' then nil
+  when 'LastCheckInterval' then nil
+  when 'DayToDate' then nil
+  when 'HexByte2UTF16Byte' then nil
+  when 'DayMonthBCD' then nil
+  when 'HexByte2Version' then nil
+  when 'IPAddress' then nil
   else
     raise "No factor for conversion '#{conversion}'."
   end
 end
 
 def strip_address(s)
-  s.sub(/\~0x\h{4}\Z/, '')
+  s.sub(/\~(:?0x)?\h{4}\Z/, '')
 end
 
 def load_yaml(path)
@@ -539,62 +766,45 @@ def load_yaml(path)
 end
 
 def type_to_command(type_id, type, mappings:, translations:)
-  f = StringIO.new
+  command = {}
 
   id = map_command_id(type_id)
+  command['id'] = id
+  command['type_id'] = type_id
+  command['description'] = type.fetch('description', 'N/A')
 
-  addr = type.fetch(:address)
-  factor = map_factor(type)
-  mode = type.fetch(:access_mode)
+  command['addr'] = type.fetch('address')
+  command['mode'] = type.fetch('access_mode')
 
-  byte_length = type.fetch(:byte_length)
   data_type, raw_type = map_data_type(type_id, type)
-  enum_type = type.fetch(:value_list, {}).any?
-  block_length = type.fetch(:block_length)
-  byte_length = type.fetch(:byte_length)
-  byte_position = type.fetch(:byte_position)
-  bit_length = type.fetch(:bit_length)
-  bit_position = type.fetch(:bit_position)
+  command['data_type'] = data_type
+  command['raw_type'] = raw_type
+  command['factor'] = map_factor(type)
+  command['block_len'] = type.fetch('block_length')
+  command['byte_len'] = type.fetch('byte_length')
+  command['byte_pos'] = type.fetch('byte_position')
+  command['bit_len'] = type.fetch('bit_length')
+  command['bit_pos'] = type.fetch('bit_position')
 
-  # type_translations = translations.fetch(:translations).fetch("viessmann.eventtype.name.#{type_id}", {})
-
-  f.puts "# #{type.fetch(:description, 'N/A').lines.join("  # ")}"
-  f.puts "#{id}:"
-  f.puts "  type_id: #{type_id}"
-  f.puts "  addr: 0x#{addr.to_s(16).rjust(4, '0')}"
-  f.puts "  mode: #{mode}"
-  f.puts "  data_type: #{data_type}"
-  f.puts "  raw_type: #{raw_type}"
-  f.puts "  factor: #{factor}"           unless factor.nil?
-  f.puts "  block_len: #{block_length}"  unless block_length.zero?
-  f.puts "  byte_len: #{byte_length}"    unless byte_length.zero?
-  f.puts "  byte_pos: #{byte_position}"  unless byte_position.zero?
-  f.puts "  bit_len: #{bit_length}"      unless bit_length.zero?
-  f.puts "  bit_pos: #{bit_position}"    unless bit_position.zero?
+  value_list = type.fetch('value_list', {})
+  enum_type = value_list.any?
 
   if enum_type || data_type == 'error'
     raw_mapping_ids = if data_type == 'error'
       [
-        # "viessmann.errorcode.#{device}",
+        "viessmann.errorcode",
         "viessmann.errorcode.Ecotronic",
       ]
     else
-      case type_id
-      when 'ecnsysLONCommunicationModul', 'ecnsysLONCommunicationModulWP'
-        ['NRF_K76_KonfiKommunikationsmodul']
-      when 'ecnsysLONErrorManager'
-        ['K79_KonfiFehlerManagerV300_V333']
-      else
-        [type_id]
-      end
+      [type_id]
     end
 
     mapping_ids = raw_mapping_ids.map { |id| mappings.fetch(:mapping).fetch(id) }
 
-    f.puts "  mapping: #{mapping_ids.first}"
+    command['mapping'] = mapping_ids.first
   end
 
-  f.string
+  command
 end
 
 file USED_DEVICES => [DEVICES, USED_COMMANDS] do |t|
@@ -603,9 +813,9 @@ file USED_DEVICES => [DEVICES, USED_COMMANDS] do |t|
   devices = devices.reduce({}) { |h, (device_id, device)|
     h.merge({
       device_id => {
-        'protocol' => device[:protocol],
-        'id' => device[:id],
-        'commands' => device[:event_types]
+        'protocol' => device['protocol'],
+        'id' => device['id'],
+        'commands' => device['event_types']
           .map { |command_name| map_command_id(command_name) }
           .select { |id| used_commands.key?(id) }
           .uniq

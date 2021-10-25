@@ -1,6 +1,6 @@
 use std::env;
 
-use vcontrol::{Device, Optolink, VControl, device::VBC550P, Value};
+use vcontrol::{Device, Optolink, VControl, device::ECOTRONIC, Value};
 
 fn main() {
   env_logger::init();
@@ -12,25 +12,34 @@ fn main() {
     Optolink::open(optolink_port)
   }.unwrap();
 
-  let mut vcontrol = VControl::<VBC550P>::connect(optolink).unwrap();
+  let mut vcontrol = VControl::<ECOTRONIC>::connect(optolink).unwrap();
 
-  let map = VBC550P::map();
+  let map = ECOTRONIC::map();
 
-  dbg!(vcontrol.get("date_time")).unwrap();
-  dbg!(vcontrol.get("SC100_KesselsollEffektiv")).unwrap();
-  dbg!(vcontrol.get("SC100_GefoerdertesMaterialPellet")).unwrap();
-  dbg!(vcontrol.get("NRF_Brennstoffverbrauch_Bedien")).unwrap();
-  dbg!(vcontrol.get("NRF_K2F_KonfiKorrfaktorPelletverbrauch")).unwrap();
+  dbg!(vcontrol.get("NRF_Uhrzeit")).unwrap();
+  dbg!(vcontrol.get("Ecotronic_DA_Absperrschieber").unwrap());
+  dbg!(vcontrol.get("Ecotronic_Abgas_Minimaltemperatur").unwrap());
+  dbg!(vcontrol.get("Ecotronic_LAN_Proxy_Passwort").unwrap());
+  dbg!(vcontrol.get("KennungCodierkarte").unwrap());
+  dbg!(vcontrol.get("Ecotronic_Abgastemperatur").unwrap());
+  dbg!(vcontrol.get("NRF_ResetUrsache").unwrap());
+  dbg!(vcontrol.get("Ecotronic_Schaltzeiten_FT").unwrap());
+
+  // dbg!(vcontrol.get("SC100_KesselsollEffektiv")).unwrap();
+  // dbg!(vcontrol.get("SC100_GefoerdertesMaterialPellet")).unwrap();
+  // dbg!(vcontrol.get("NRF_Brennstoffverbrauch_Bedien")).unwrap();
+  // dbg!(vcontrol.get("NRF_K2F_KonfiKorrfaktorPelletverbrauch")).unwrap();
 
   let mut keys = map.keys().collect::<Vec<_>>();
   keys.sort();
 
   for key in keys {
+    eprintln!("{}:", key);
+
     let res = vcontrol.get(key);
 
     match res {
       Ok(value) => {
-        eprintln!("{}:", key);
         if !matches!(value, Value::Empty) {
           eprintln!("  {:?}", value);
         }

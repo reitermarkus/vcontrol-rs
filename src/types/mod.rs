@@ -1,5 +1,5 @@
 mod cycle_time;
-pub use self::cycle_time::CycleTime;
+pub use self::cycle_time::{CycleTime, CycleTimes};
 
 mod error;
 pub use self::error::Error;
