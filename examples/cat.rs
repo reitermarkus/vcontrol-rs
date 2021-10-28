@@ -1,6 +1,6 @@
 use std::env;
 
-use vcontrol::{Device, Optolink, VControl, device::ECOTRONIC, Value};
+use vcontrol::{Device, Optolink, VControl, device::{ECOTRONIC, DEVICES, DeviceType}, Value};
 
 fn main() {
   env_logger::init();
@@ -15,6 +15,40 @@ fn main() {
   let mut vcontrol = VControl::<ECOTRONIC>::connect(optolink).unwrap();
 
   let map = ECOTRONIC::map();
+
+  let device_id = vcontrol.device_id().unwrap();
+  eprintln!("Device ID: {:04X}", device_id);
+  let device_id = ((device_id as u64) << 32) + (0 << 16) + (0 << 0);
+  eprintln!("Device Type: {:?}", DEVICES.get(&device_id));
+
+
+  dbg!(vcontrol.get("SystemIdent_GKlasse"));
+  dbg!(vcontrol.get("SystemIdent_GG"));
+  dbg!(vcontrol.get("SystemIdent_GK"));
+  dbg!(vcontrol.get("SystemIdent_HX"));
+  dbg!(vcontrol.get("SystemIdent_SX"));
+  dbg!(vcontrol.get("SystemIdent_LDA"));
+  dbg!(vcontrol.get("SystemIdent_RDA"));
+  dbg!(vcontrol.get("SystemIdent_SW1"));
+  dbg!(vcontrol.get("SystemIdent_SW2"));
+
+
+  dbg!(vcontrol.get("NRF_SystemIdent_SW1"));
+  dbg!(vcontrol.get("NRF_SystemIdent_SW2"));
+
+dbg!(vcontrol.get("geraetegruppe~hx00F8"));
+dbg!(vcontrol.get("geraetekennung"));
+dbg!(vcontrol.get("hardewareindex"));
+dbg!(vcontrol.get("softwareindex"));
+dbg!(vcontrol.get("highbyteentwversion"));
+dbg!(vcontrol.get("lowbyteentwversion"));
+dbg!(vcontrol.get("protokollversion-lda"));
+dbg!(vcontrol.get("protokollversion-rda"));
+
+return;
+
+
+
 
   dbg!(vcontrol.get("NRF_Uhrzeit")).unwrap();
   dbg!(vcontrol.get("Ecotronic_DA_Absperrschieber").unwrap());

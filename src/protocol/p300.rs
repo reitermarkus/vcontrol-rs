@@ -138,8 +138,10 @@ impl Protocol for P300 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "negotiate timed out"))
   }
 
-  fn get(o: &mut Optolink, addr: &[u8], buf: &mut [u8]) -> Result<(), io::Error> {
+  fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("P300::get(…)");
+
+    let addr = addr.to_be_bytes();
 
     let mut read_request = Vec::new();
     read_request.extend(&[REQUEST, READDATA]);
@@ -157,7 +159,7 @@ impl Protocol for P300 {
     if read_response[0..2] != [RESPONSE, READDATA] {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid read data response"))
     }
-    if read_response[2..4] != *addr {
+    if read_response[2..4] != addr {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "wrong address"))
     }
     if read_response[4] != buf.len() as u8 {
@@ -169,8 +171,10 @@ impl Protocol for P300 {
     Ok(())
   }
 
-  fn set(o: &mut Optolink, addr: &[u8], value: &[u8]) -> Result<(), io::Error> {
+  fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("P300::set(…)");
+
+    let addr = addr.to_be_bytes();
 
     let mut write_request = Vec::new();
     write_request.extend(&[REQUEST, WRITEDATA]);
@@ -189,7 +193,7 @@ impl Protocol for P300 {
     if write_response[0..2] != [RESPONSE, WRITEDATA] {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "invalid write data response"))
     }
-    if write_response[2..4] != *addr {
+    if write_response[2..4] != addr {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "wrong address"))
     }
     if write_response[4] != value.len() as u8 {

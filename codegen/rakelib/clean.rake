@@ -9,7 +9,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     id
   }
 
-  replacements = EVENT_TYPE_REPLACEMENTS.each do |from, to|
+  EVENT_TYPE_REPLACEMENTS.each do |from, to|
     from_id = id_by_address.call(from)
     to_id = id_by_address.call(to)
 
@@ -27,6 +27,18 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
   end
 
   File.write t.name, datapoint_definitions_raw.to_yaml
+end
+
+file DATAPOINT_TYPES => DATAPOINT_TYPES_RAW do |t|
+  datapoint_types_raw = load_yaml(t.source)
+
+  EVENT_TYPE_REPLACEMENTS.each do |from, to|
+    next if datapoint_types_raw.key?(to)
+
+    datapoint_types_raw[to] = datapoint_types_raw.delete(from)
+  end
+
+  File.write t.name, datapoint_types_raw.to_yaml
 end
 
 file EVENT_TYPES => [DATAPOINT_DEFINITIONS, EVENT_TYPES_RAW] do |t|
@@ -93,8 +105,10 @@ file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   File.write t.name, syste_event_types.to_yaml
 end
 
-file DEVICES => [DATAPOINT_DEFINITIONS, EVENT_TYPES] do |t|
-  datapoint_definitions_raw, event_types = t.sources.map { |source| load_yaml(source) }
+DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
+
+file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
+  datapoint_definitions_raw, datapoint_types, event_types = t.sources.map { |source| load_yaml(source) }
 
   datapoints = datapoint_definitions_raw.delete('datapoints')
   event_type_ids = datapoint_definitions_raw.delete('event_types')
@@ -102,6 +116,32 @@ file DEVICES => [DATAPOINT_DEFINITIONS, EVENT_TYPES] do |t|
   devices = datapoints.map { |_, v|
     device_id = v.delete('address')
 
+    # Remove unsupported devices.
+    next if device_id == 'ecnStatusDataPoint'
+    next if device_id.start_with?('BESS')
+    next if device_id.start_with?('CU401B')
+    next if device_id == 'EA2'
+    next if device_id == 'VCaldens'
+    next if device_id.start_with?('DEKATEL_')
+    next if device_id.start_with?('Dekamatik_')
+    next if device_id.start_with?('Solartrol_')
+    next if device_id.start_with?('GWG_')
+    next if device_id.start_with?('MBus')
+    next if device_id.start_with?('HV_')
+    next if device_id.start_with?('HV_')
+    next if device_id.start_with?('VBlock')
+    next if device_id.start_with?('Vitocom')
+    next if device_id.start_with?('Vitogate')
+    next if device_id.start_with?('WILO')
+    next if device_id.start_with?('_VITODATA')
+
+    # TODO: Handle with `identification_extension` etc.
+    next if device_id.match?(/_\d+$/)
+
+    datapoint_type = datapoint_types.fetch(device_id)
+    v['identification'] = Integer(datapoint_type.fetch('identification'), 16)
+    v['identification_extension'] = Integer(datapoint_type.fetch('identification_extension', '0'), 16)
+    v['identification_extension_till'] = Integer(datapoint_type.fetch('identification_extension_till', '0'), 16)
     v['protocol'] = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
     v['event_types'] = v['event_types'].map { |id|
       type_id = event_type_ids.fetch(id).fetch('address')
@@ -119,31 +159,11 @@ file DEVICES => [DATAPOINT_DEFINITIONS, EVENT_TYPES] do |t|
       type_id
     }.compact
 
-    [device_id, v]
-  }.to_h
-
-  DUMMY_TYPES = ['ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
-  devices.delete_if { |k, v|
-    # Remove unsupported devices.
-    next true if k.start_with?('BESS')
-    next true if k.start_with?('DEKATEL_')
-    next true if k.start_with?('Dekamatik_')
-    next true if k.start_with?('Solartrol_')
-    next true if k.start_with?('GWG_')
-    next true if k.start_with?('MBus')
-    next true if k.start_with?('HV_')
-    next true if k.start_with?('HV_')
-    next true if k.start_with?('VBlock')
-    next true if k.start_with?('Vitocom')
-    next true if k.start_with?('Vitogate')
-    next true if k.start_with?('WILO')
-    next true if k.start_with?('_VITODATA')
-
     # Remove devices without any supported event types.
-    next true if (v['event_types'] - DUMMY_TYPES).empty?
+    next if (v['event_types'] - DUMMY_EVENT_TYPES).empty?
 
-    false
-  }
+    [device_id, v]
+  }.compact.to_h
 
   File.write t.name, devices.sort_by_key.to_yaml
 end

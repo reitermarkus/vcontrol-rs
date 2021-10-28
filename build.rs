@@ -90,8 +90,27 @@ fn generate_devices() {
 
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
 
+  let mut device_map = phf_codegen::Map::<u64>::new();
+
+  writeln!(&mut file, r#"
+  #[derive(Debug, Clone)]
+  pub enum DeviceType {{
+  "#).unwrap();
+  for (device_id, device) in &mappings {
+    writeln!(&mut file, "{},", device_id).unwrap();
+
+    let id = ((device.id as u64) << 32) + ((device.id_ext as u64) << 16) + (device.id_ext_till as u64);
+    device_map.entry(id, &format!("DeviceType::{}", device_id));
+
+  }
+  writeln!(&mut file, "}}").unwrap();
+
+  writeln!(&mut file, "pub const DEVICES: ::phf::Map<u64, DeviceType> = {};", device_map.build()).unwrap();
+
+
   for (device_id, device) in mappings {
     let mut map = phf_codegen::Map::<&str>::new();
+
 
     for command_name in device.commands.iter() {
       map.entry(command_name, &format!("&COMMAND_{}", escape_const_name(&command_name)));
@@ -129,6 +148,9 @@ fn main() {
 
 #[derive(Debug, Deserialize)]
 pub struct Device {
+  pub id: u16,
+  pub id_ext: u16,
+  pub id_ext_till: u16,
   pub protocol: String,
   pub commands: Vec<String>,
 }
