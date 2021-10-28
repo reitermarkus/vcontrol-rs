@@ -133,6 +133,7 @@ file DEVICES => [DATAPOINT_DEFINITIONS, EVENT_TYPES] do |t|
     next true if k.start_with?('MBus')
     next true if k.start_with?('HV_')
     next true if k.start_with?('HV_')
+    next true if k.start_with?('VBlock')
     next true if k.start_with?('Vitocom')
     next true if k.start_with?('Vitogate')
     next true if k.start_with?('WILO')

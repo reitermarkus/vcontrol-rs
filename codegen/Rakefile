@@ -538,7 +538,7 @@ def map_factor(type)
 end
 
 def strip_address(s)
-  s.sub(/\~(:?0x)?\h{4}\Z/, '')
+  s.sub(/\~(:?0x|hx)?\h{4}\Z/, '')
 end
 
 def load_yaml(path)
