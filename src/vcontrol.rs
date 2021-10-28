@@ -22,6 +22,14 @@ impl<D: Device> VControl<D> {
     Ok(vcontrol)
   }
 
+  pub fn device_id(&mut self) -> Result<u16, Error> {
+    self.renegotiate()?;
+
+    let mut buf = [0; 2];
+    D::Protocol::get(&mut self.device, 0x00f8, &mut buf)?;
+    Ok(u16::from_be_bytes(buf))
+  }
+
   /// Gets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.

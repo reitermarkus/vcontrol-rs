@@ -52,12 +52,12 @@ impl Protocol for Kw2 {
     Ok(())
   }
 
-  fn get(o: &mut Optolink, addr: &[u8], buf: &mut [u8]) -> Result<(), io::Error> {
+  fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Kw2::get(…)");
 
     let mut vec = Vec::new();
     vec.extend(&[0x01, 0xf7]);
-    vec.extend(addr);
+    vec.extend(addr.to_be_bytes());
     vec.extend(&[buf.len() as u8]);
 
     let start = Instant::now();
@@ -103,12 +103,12 @@ impl Protocol for Kw2 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "get timed out"))
   }
 
-  fn set(o: &mut Optolink, addr: &[u8], value: &[u8]) -> Result<(), io::Error> {
+  fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Kw2::set(…)");
 
     let mut vec = Vec::new();
     vec.extend(&[0x01, 0xf4]);
-    vec.extend(addr);
+    vec.extend(addr.to_be_bytes());
     vec.extend(&[value.len() as u8]);
     vec.extend(value);
 
