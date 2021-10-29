@@ -3,8 +3,6 @@ use std::time::{Instant, Duration};
 
 use crate::Optolink;
 
-use super::Protocol;
-
 const RESET: u8 = 0x04;
 const SYNC: u8  = 0x05;
 

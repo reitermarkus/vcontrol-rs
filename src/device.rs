@@ -1,11 +1,10 @@
 use phf;
 
-use crate::{Error, Command, Optolink, Protocol, Value};
+use crate::{Command};
 
 #[allow(clippy::unreadable_literal)]
 mod codegen {
   use super::*;
-  use crate::protocol::*;
 
   include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }

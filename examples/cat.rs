@@ -1,7 +1,7 @@
 use std::env;
 use std::error::Error;
 
-use vcontrol::{Device, Optolink, VControl, Value};
+use vcontrol::{Optolink, VControl, Value};
 
 fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
   env_logger::init();

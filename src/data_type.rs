@@ -1,5 +1,4 @@
 use std::mem;
-use std::ffi::CStr;
 
 use phf;
 use serde::Deserialize;
