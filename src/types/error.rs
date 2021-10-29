@@ -15,6 +15,14 @@ impl Error {
     Self { index, time }
   }
 
+  pub fn index(&self) -> u8 {
+    self.index
+  }
+
+  pub fn time(&self) -> &SysTime {
+    &self.time
+  }
+
   pub fn from_bytes(bytes: &[u8]) -> Self {
     let index = bytes[0];
     let time = SysTime::from_bytes(&bytes[1..]);

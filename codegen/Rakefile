@@ -153,12 +153,12 @@ def clean_enum_text(id, text)
   text.sub(/^(?:#{id}(?::)?\s+|\(0#{id}\))([^\s]+)/, '\1').strip
 end
 
-file USED_COMMANDS => [DEVICES, EVENT_TYPES, SYSTEM_EVENT_TYPES_RAW, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  devices, event_types, system_event_types_raw, mappings_unique, translations_unique =
+file USED_COMMANDS => [DEVICES, EVENT_TYPES, SYSTEM_EVENT_TYPES, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  devices, event_types, system_event_types, mappings_unique, translations_unique =
     t.sources.map { |source| load_yaml(source) }
   used_event_type_ids = devices.each_value.reduce(Set.new) { |s, v| s | v['event_types'].to_set }
 
-  used_event_types = system_event_types_raw.merge(event_types.keep_if { |type_id,|
+  used_event_types = system_event_types.merge(event_types.keep_if { |type_id,|
     used_event_type_ids.include?(type_id)
   })
 
@@ -209,8 +209,7 @@ file MAPPINGS_UNIQUE => [EVENT_TYPES, SYSTEM_EVENT_TYPES, TRANSLATIONS_RAW] do |
   event_types, system_event_types, translations = t.sources.map { |source| load_yaml(source) }
 
   error_mappings = translations.each_key.reduce({}) { |h, translation_id|
-    if /^(?<id>viessmann\.errorcode(?:\.SMS
-      )?(?:\.[^.]+)?)\.(?<value>\h{2})$/ =~ translation_id
+    if /^(?<id>viessmann\.errorcode(?:\.SMS)?(?:\.[^.]+)?)\.(?<value>\h{2})$/ =~ translation_id
       h[id] ||= {}
       h[id][value.to_i(16)] = translation_id
     end
@@ -420,7 +419,7 @@ def map_command_id(id)
     'RelaistestV200KW2_NR1'                         => 'relay_test_v200kw2_nr1',
   }
 
-  exact_mappings.fetch(id, id.gsub('~', '_'))
+  mapped_id = exact_mappings.fetch(id, id.gsub('~', '_'))
 end
 
 def map_data_type(type_id, type)
@@ -570,38 +569,29 @@ def type_to_command(type_id, type, mappings:, translations:)
   value_list = type.fetch('value_list', {})
   enum_type = value_list.any?
 
-  if enum_type || data_type == 'error'
-    raw_mapping_ids = if data_type == 'error'
-      [
-        "viessmann.errorcode",
-        "viessmann.errorcode.Ecotronic",
-      ]
-    else
-      [type_id]
-    end
-
-    mapping_ids = raw_mapping_ids.map { |id| mappings.fetch(:mapping).fetch(id) }
-
-    command['mapping'] = mapping_ids.first
+  if enum_type
+    command['mapping'] = mappings.fetch(:mapping).fetch(type_id)
   end
 
   command
 end
 
-file USED_DEVICES => [DEVICES, USED_COMMANDS] do |t|
-  devices, used_commands = t.sources.map { |source| load_yaml(source) }
+file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
+  devices, mappings_unique, used_commands = t.sources.map { |source| load_yaml(source) }
+
+  default_error_mapping = mappings_unique.fetch(:mapping).fetch('viessmann.errorcode')
 
   devices = devices.reduce({}) { |h, (device_id, device)|
     h.merge({
       device_id => {
-        'protocol' => device.fetch('protocol'),
         'id' => device.fetch('identification'),
         'id_ext' => device.fetch('identification_extension'),
         'id_ext_till' => device.fetch('identification_extension_till'),
         'commands' => device['event_types']
           .map { |command_name| map_command_id(command_name) }
           .select { |id| used_commands.key?(id) }
-          .uniq
+          .uniq,
+          'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
       }
     })
   }

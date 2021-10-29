@@ -17,6 +17,7 @@ pub use self::codegen::*;
 pub struct Device {
   name: &'static str,
   commands: &'static phf::Map<&'static str, &'static Command>,
+  errors: &'static phf::Map<i32, &'static str>,
 }
 
 impl Device {
@@ -33,5 +34,9 @@ impl Device {
   /// Get a specific command for the device, if it is supported.
   pub fn command(&self, name: &str) -> Option<&'static Command> {
     self.commands.get(name).map(|c| *c)
+  }
+
+  pub fn errors(&self) -> &'static phf::Map<i32, &'static str> {
+    self.errors
   }
 }
