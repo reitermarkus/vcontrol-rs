@@ -11,7 +11,7 @@ pub use crate::command::{AccessMode, Command};
 mod optolink;
 pub use crate::optolink::Optolink;
 
-pub mod protocol;
+mod protocol;
 pub use crate::protocol::Protocol;
 
 pub mod device;

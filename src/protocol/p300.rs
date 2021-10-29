@@ -19,7 +19,7 @@ const READDATA: u8  = 0x01;
 const WRITEDATA: u8 = 0x02;
 
 #[derive(Debug)]
-pub struct P300;
+pub enum P300 {}
 
 impl P300 {
   fn write_telegram(o: &mut Optolink, message: &[u8]) -> Result<(), std::io::Error> {
@@ -98,10 +98,8 @@ impl P300 {
 
     Err(io::Error::new(io::ErrorKind::TimedOut, "send telegram timed out"))
   }
-}
 
-impl Protocol for P300 {
-  fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("P300::negotiate(…)");
 
     o.write_all(&[RESET])?;
@@ -138,7 +136,7 @@ impl Protocol for P300 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "negotiate timed out"))
   }
 
-  fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("P300::get(…)");
 
     let addr = addr.to_be_bytes();
@@ -171,7 +169,7 @@ impl Protocol for P300 {
     Ok(())
   }
 
-  fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("P300::set(…)");
 
     let addr = addr.to_be_bytes();

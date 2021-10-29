@@ -12,28 +12,26 @@ mod codegen {
 
 pub use self::codegen::*;
 
-pub trait Device {
-  type Protocol: Protocol;
+/// Representation of a heating system device.
+#[derive(Debug)]
+pub struct Device {
+  name: &'static str,
+  commands: &'static phf::Map<&'static str, &'static Command>,
+}
 
-  fn map() -> &'static phf::Map<&'static str, &'static Command>;
-
-  fn commands() -> Vec<&'static str> {
-    Self::map().keys().cloned().collect::<Vec<_>>()
+impl Device {
+  /// Get the name of the device.
+  pub fn name(&self) -> &'static str {
+    self.name
   }
 
-  fn command(name: &str) -> Option<&'static Command> {
-    Self::map().get(name).map(|c| *c)
+  /// Get all supported commands for the device.
+  pub fn commands(&self) -> &'static phf::Map<&'static str, &'static Command> {
+    self.commands
   }
 
-  fn get(o: &mut Optolink, cmd: &Command) -> Result<Value, Error> {
-    log::trace!("Device::get(…)");
-
-    cmd.get::<Self::Protocol>(o)
-  }
-
-  fn set(o: &mut Optolink, cmd: &Command, input: &Value) -> Result<(), Error> {
-    log::trace!("Device::set(…)");
-
-    cmd.set::<Self::Protocol>(o, input)
+  /// Get a specific command for the device, if it is supported.
+  pub fn command(&self, name: &str) -> Option<&'static Command> {
+    self.commands.get(name).map(|c| *c)
   }
 }

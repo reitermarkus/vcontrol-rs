@@ -57,7 +57,7 @@ pub struct Command {
 }
 
 impl Command {
-  pub fn get<P: Protocol>(&self, o: &mut Optolink) -> Result<Value, Error> {
+  pub fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
     log::trace!("Command::get(…)");
 
     if !self.mode.is_read() {
@@ -65,18 +65,18 @@ impl Command {
     }
 
     let mut buf = vec![0; self.block_len];
-    P::get(o, self.addr, &mut buf)?;
+    protocol.get(o, self.addr, &mut buf)?;
 
     self.data_type.bytes_to_output(self.raw_type, &buf[self.byte_pos..(self.byte_pos + self.byte_len)], self.factor, &self.mapping, self.bit_pos, self.bit_len)
   }
 
-  pub fn set<P: Protocol>(&self, o: &mut Optolink, input: &Value) -> Result<(), Error> {
+  pub fn set(&self, o: &mut Optolink, protocol: Protocol, input: &Value) -> Result<(), Error> {
     log::trace!("Command::set(…)");
 
     if !self.mode.is_write() {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)))
     }
 
-    P::set(o, self.addr, &self.data_type.input_to_bytes(input, self.raw_type, self.factor, &self.mapping)?).map_err(Into::into)
+    protocol.set(o, self.addr, &self.data_type.input_to_bytes(input, self.raw_type, self.factor, &self.mapping)?).map_err(Into::into)
   }
 }

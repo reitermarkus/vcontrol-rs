@@ -142,7 +142,6 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
     v['identification'] = Integer(datapoint_type.fetch('identification'), 16)
     v['identification_extension'] = Integer(datapoint_type.fetch('identification_extension', '0'), 16)
     v['identification_extension_till'] = Integer(datapoint_type.fetch('identification_extension_till', '0'), 16)
-    v['protocol'] = device_id.match?(/kw2/i) ? 'Kw2' : 'P300'
     v['event_types'] = v['event_types'].map { |id|
       type_id = event_type_ids.fetch(id).fetch('address')
 
