@@ -26,8 +26,8 @@ impl P300 {
     log::trace!("P300::write_telegram(…)");
 
     let message_length = message.len() as u8;
-    let checksum: u8 = message.iter().sum();
-    let checksum = checksum + message_length;
+    let checksum: u8 = message.iter().fold(0u8, |acc, &x| acc.wrapping_add(x));
+    let checksum = message_length.wrapping_add(checksum);
 
     let start = Instant::now();
 
@@ -76,8 +76,8 @@ impl P300 {
       o.read_exact(&mut message)?;
       let message = message;
 
-      let checksum: u8 = message.iter().sum();
-      let checksum = checksum + message_length;
+      let checksum: u8 = message.iter().fold(0u8, |acc, &x| acc.wrapping_add(x));
+      let checksum = message_length.wrapping_add(checksum);
 
       o.read_exact(&mut buf)?;
       if checksum == buf[0] {
