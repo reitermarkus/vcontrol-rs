@@ -62,11 +62,20 @@ impl VControl {
     self.renegotiate()?;
 
     if let Some(command) = self.device.command(command) {
-      let res = command.get(&mut self.optolink, self.protocol);
-      if res.is_err() {
-        self.connected = false
+      match command.get(&mut self.optolink, self.protocol) {
+        Ok(ok) => {
+          if let Value::Error(ref error) = ok {
+            let error_string = self.device.errors().get(&(error.index() as i32));
+            eprintln!("Device Error: {:?}", error_string);
+          }
+
+          Ok(ok)
+        },
+        Err(err) => {
+          self.connected = false;
+          Err(err)
+        }
       }
-      res
     } else {
       Err(Error::UnsupportedCommand(command.to_owned()))
     }

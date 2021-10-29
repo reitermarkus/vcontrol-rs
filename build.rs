@@ -107,8 +107,8 @@ fn generate_devices() {
     writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
 
     writeln!(file, r#"
-      const {}: Device = Device {{ name: {}, commands: &{}_COMMANDS }};
-    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id)).unwrap();
+      const {}: Device = Device {{ name: {}, commands: &{}_COMMANDS, errors: &MAPPING_{} }};
+    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), escape_const_name(&device.error_mapping)).unwrap();
   }
 }
 
@@ -128,6 +128,7 @@ pub struct Device {
   id_ext: u16,
   id_ext_till: u16,
   commands: Vec<String>,
+  error_mapping: String
 }
 
 /// A command which can be executed on an Optolink connection.

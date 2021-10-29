@@ -107,8 +107,8 @@ end
 
 DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
 
-file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
-  datapoint_definitions_raw, datapoint_types, event_types = t.sources.map { |source| load_yaml(source) }
+file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES, SYSTEM_EVENT_TYPES] do |t|
+  datapoint_definitions_raw, datapoint_types, event_types, system_event_types = t.sources.map { |source| load_yaml(source) }
 
   datapoints = datapoint_definitions_raw.delete('datapoints')
   event_type_ids = datapoint_definitions_raw.delete('event_types')
@@ -122,6 +122,8 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
     next if device_id.start_with?('CU401B')
     next if device_id == 'EA2'
     next if device_id == 'VCaldens'
+    next if device_id == 'VirtualHydraulicCalibration'
+    next if device_id == 'puffermgm'
     next if device_id.start_with?('DEKATEL_')
     next if device_id.start_with?('Dekamatik_')
     next if device_id.start_with?('Solartrol_')
@@ -130,6 +132,7 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
     next if device_id.start_with?('HV_')
     next if device_id.start_with?('HV_')
     next if device_id.start_with?('VBlock')
+    next if device_id.start_with?('VCOM')
     next if device_id.start_with?('Vitocom')
     next if device_id.start_with?('Vitogate')
     next if device_id.start_with?('WILO')
@@ -142,7 +145,8 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
     v['identification'] = Integer(datapoint_type.fetch('identification'), 16)
     v['identification_extension'] = Integer(datapoint_type.fetch('identification_extension', '0'), 16)
     v['identification_extension_till'] = Integer(datapoint_type.fetch('identification_extension_till', '0'), 16)
-    v['event_types'] = v['event_types'].map { |id|
+
+    device_event_types = v['event_types'].map { |id|
       type_id = event_type_ids.fetch(id).fetch('address')
 
       # Remove unneeded/unsupported event types.
@@ -150,6 +154,11 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES] do |t|
       next if type_id.start_with?('nciNet')
 
       type = event_types.fetch(type_id)
+
+      [type_id, type]
+    }.compact.to_h
+
+    v['event_types'] = device_event_types.merge(system_event_types).map { |type_id, type|
       fc_read = type['fc_read']
       fc_write = type['fc_write']
       next if fc_read.nil? && fc_write.nil?
