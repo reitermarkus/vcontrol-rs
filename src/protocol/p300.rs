@@ -3,8 +3,6 @@ use std::time::Instant;
 
 use crate::Optolink;
 
-use super::Protocol;
-
 const LEADIN: u8    = 0x41;
 
 const RESET: u8     = 0x04;
