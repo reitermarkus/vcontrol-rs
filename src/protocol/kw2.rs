@@ -9,7 +9,7 @@ const RESET: u8 = 0x04;
 const SYNC: u8  = 0x05;
 
 #[derive(Debug)]
-pub struct Kw2;
+pub enum Kw2 {}
 
 impl Kw2 {
   fn sync(o: &mut Optolink) -> Result<(), std::io::Error> {
@@ -19,7 +19,7 @@ impl Kw2 {
 
     let start = Instant::now();
 
-    // Reset the Optolink connection to get a faster SYNC (`0x05`).
+    // Reset the Optolink connection to get a faster `SYNC` (`0x05`).
     Self::negotiate(o)?;
 
     loop {
@@ -39,10 +39,8 @@ impl Kw2 {
 
     Err(io::Error::new(io::ErrorKind::TimedOut, "sync timed out"))
   }
-}
 
-impl Protocol for Kw2 {
-  fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Kw2::negotiate(…)");
 
     o.purge()?;
@@ -52,7 +50,7 @@ impl Protocol for Kw2 {
     Ok(())
   }
 
-  fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Kw2::get(…)");
 
     let mut vec = Vec::new();
@@ -103,7 +101,7 @@ impl Protocol for Kw2 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "get timed out"))
   }
 
-  fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Kw2::set(…)");
 
     let mut vec = Vec::new();

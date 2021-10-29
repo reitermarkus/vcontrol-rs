@@ -1,25 +1,20 @@
 use std::env;
 use std::fs::File;
-use std::io::{Read, BufReader, BufWriter, Write};
+use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 use std::collections::BTreeMap;
 use std::fmt;
 
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_yaml;
-use yaml_merge_keys;
 use phf_codegen;
 
 #[path = "src/raw_type.rs"]
 mod raw_type;
 use raw_type::RawType;
 
-#[path = "src/types/mod.rs"]
-mod types;
-use self::types::*;
-
 fn escape_const_name(s: &str) -> String {
-  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("%", "PERCENT")
+  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_")
 }
 
 #[track_caller]
@@ -91,21 +86,14 @@ fn generate_devices() {
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
 
   let mut device_map = phf_codegen::Map::<u64>::new();
-
-  writeln!(&mut file, r#"
-  #[derive(Debug, Clone)]
-  pub enum DeviceType {{
-  "#).unwrap();
   for (device_id, device) in &mappings {
-    writeln!(&mut file, "{},", device_id).unwrap();
-
     let id = ((device.id as u64) << 32) + ((device.id_ext as u64) << 16) + (device.id_ext_till as u64);
-    device_map.entry(id, &format!("DeviceType::{}", device_id));
-
+    device_map.entry(id, &format!("&{}", escape_const_name(&device_id)));
   }
-  writeln!(&mut file, "}}").unwrap();
-
-  writeln!(&mut file, "pub const DEVICES: ::phf::Map<u64, DeviceType> = {};", device_map.build()).unwrap();
+  writeln!(&mut file, r#"
+    /// A map of all supported devices.
+    pub const DEVICES: ::phf::Map<u64, &'static Device> = {};
+  "#, device_map.build()).unwrap();
 
 
   for (device_id, device) in mappings {
@@ -118,21 +106,9 @@ fn generate_devices() {
 
     writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
 
-    writeln!(&mut file, r#"
-      #[derive(Debug)]
-      pub enum {} {{}}
-    "#, escape_const_name(&device_id)).unwrap();
-
     writeln!(file, r#"
-      impl Device for {} {{
-        type Protocol = {};
-
-        #[inline(always)]
-        fn map() -> &'static phf::Map<&'static str, &'static Command> {{
-          &{}_COMMANDS
-        }}
-      }}
-    "#, escape_const_name(&device_id), device.protocol, escape_const_name(&device_id)).unwrap();
+      const {}: Device = Device {{ name: {}, commands: &{}_COMMANDS }};
+    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id)).unwrap();
   }
 }
 
@@ -148,11 +124,10 @@ fn main() {
 
 #[derive(Debug, Deserialize)]
 pub struct Device {
-  pub id: u16,
-  pub id_ext: u16,
-  pub id_ext_till: u16,
-  pub protocol: String,
-  pub commands: Vec<String>,
+  id: u16,
+  id_ext: u16,
+  id_ext_till: u16,
+  commands: Vec<String>,
 }
 
 /// A command which can be executed on an Optolink connection.
