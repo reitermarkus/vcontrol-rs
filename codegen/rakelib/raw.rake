@@ -1,4 +1,16 @@
+VITOSOFT_DIR = 'src'
+DATAPOINT_DEFINITION_VERSION_XML                  = "#{VITOSOFT_DIR}/ecnVersion.xml"
+DATAPOINT_DEFINITIONS_XML                         = "#{VITOSOFT_DIR}/DPDefinitions.xml"
+DATAPOINT_TYPES_XML                               = "#{VITOSOFT_DIR}/ecnDataPointType.xml"
+EVENT_TYPES_XML                                   = "#{VITOSOFT_DIR}/ecnEventType.xml"
+SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceIdent.xml"
+SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
+SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
+TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}"
+
+desc 'convert XML files to raw YAML files'
 task :raw => [
+  DATAPOINT_DEFINITION_VERSION_RAW,
   EVENT_TYPES_RAW,
   SYSTEM_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW,
@@ -7,6 +19,15 @@ task :raw => [
   DATAPOINT_DEFINITIONS_RAW,
   TRANSLATIONS_RAW,
 ]
+
+file DATAPOINT_DEFINITION_VERSION_RAW => DATAPOINT_DEFINITION_VERSION_XML do |t|
+  doc = Nokogiri::XML::Document.parse(File.open(t.source))
+  doc.remove_namespaces!
+
+  version = doc.at('/IEDataSet/Version/DataPointDefinitionVersion').text
+
+  File.write t.name, version.to_yaml
+end
 
 # Only one company ID is used.
 def assert_company_id(text)
