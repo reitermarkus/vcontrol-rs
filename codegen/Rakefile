@@ -23,30 +23,19 @@ class Hash
   end
 end
 
-VITOSOFT_DIR = 'src'
-
-DATAPOINT_DEFINITIONS_XML                         = "#{VITOSOFT_DIR}/DPDefinitions.xml"
-DATAPOINT_TYPES_XML                               = "#{VITOSOFT_DIR}/ecnDataPointType.xml"
-EVENT_TYPES_XML                                   = "#{VITOSOFT_DIR}/ecnEventType.xml"
-SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceIdent.xml"
-SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
-SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
-
-TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}"
-
+DATAPOINT_DEFINITION_VERSION_RAW                  = 'datapoint_definition_version_raw.yml'
 DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions_raw.yml'
 DATAPOINT_TYPES_RAW                               = 'datapoint_types_raw.yml'
+DATAPOINT_TYPES                                   = 'datapoint_types.yml'
 TRANSLATIONS_RAW                                  = 'translations_raw.yml'
 EVENT_TYPES_RAW                                   = 'event_types_raw.yml'
+EVENT_TYPES                                       = 'event_types.yml'
 SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types_raw.yml'
 SYSTEM_EVENT_TYPES                                = 'system_event_types.yml'
 SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types_raw.yml'
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types_raw.yml'
 
-DATAPOINT_TYPES     = 'datapoint_types.yml'
-EVENT_TYPES         = 'event_types.yml'
 DEVICES             = 'devices.yml'
-VITOSOFT_VERSION    = 'vitosoft_version.yml'
 MAPPINGS_UNIQUE     = 'mappings_unique.yml'
 TRANSLATIONS_UNIQUE = 'translations_unique.yml'
 USED_COMMANDS       = 'used_commands.yml'
@@ -57,27 +46,25 @@ USED_DEVICES        = 'used_devices.yml'
 EVENT_TYPE_REPLACEMENTS = {
   '@@viessmann.eventtype.GWG_Kennung.description' => 'GWG_Kennung',
   '@@viessmann.eventtype.name.WPR_WO1H_Guelt_Bedarf_HK1' => 'WPR_WO1H_Guelt_Bedarf_HK1',
-  'WPR_WO1H_Guelt_Solltemp_Schwimmbad+0x1186' => 'WPR_WO1H_Guelt_Solltemp_Schwimmbad',
 }
 
 DATAPOINT_DEFINITIONS = 'datapoint_definitions.yml'
 
 TRANSLATION_FIXES = {
-  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0'        => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0',
-  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~1'        => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~1',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~0'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~0',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~1'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~1',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~2'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~2',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~3'    => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~3',
+  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0',
+  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~1'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~1',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~0'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~0',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~1'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~1',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~2'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~2',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~3'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~3',
   'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
   'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~2' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
   'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~3' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
-  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0' => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
-  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~2' => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~2',
-  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~3' => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~3',
-  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~2' => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
-  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3' => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
-
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~2'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~3'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~3',
+  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~2'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
 }
 
 EMPTY_VALUE_TRANSLATION = '@@viessmann-ess.eventvaluetype.ModulBetriebsart~3'
@@ -538,7 +525,7 @@ def map_factor(type)
 end
 
 def strip_address(s)
-  s.sub(/\~(:?0x|hx)?\h{4}\Z/, '')
+  s.sub(/[~+](:?0x|hx)?\h{4}\Z/, '')
 end
 
 def load_yaml(path)
