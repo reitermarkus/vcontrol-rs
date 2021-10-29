@@ -3,7 +3,7 @@ use std::process::exit;
 use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp};
 use serde_json;
 
-use vcontrol::{Optolink, VControl, device::V200KW2, Value};
+use vcontrol::{Optolink, VControl, Value};
 
 fn main() {
   let app = App::new("vcontrol")
@@ -47,7 +47,7 @@ fn main() {
 
   let mut vcontrol = if let Some(device) = matches.value_of("device") {
     Optolink::open(device)
-      .map(|device| VControl::<V200KW2>::connect(device).unwrap())
+      .map(|device| VControl::connect(device).unwrap())
   } else if let Some(port) = matches.value_of("port") {
     let host = matches.value_of("host").unwrap_or("localhost");
     let port = port.parse().unwrap_or_else(|_| {
@@ -56,7 +56,7 @@ fn main() {
     });
 
     Optolink::connect((host, port))
-      .map(|device| VControl::<V200KW2>::connect(device).unwrap())
+      .map(|device| VControl::connect(device).unwrap())
   } else {
     unreachable!()
   }.unwrap_or_else(|err| {
