@@ -7,44 +7,23 @@ task :cleaned => [
   DEVICES,
 ]
 
-file EVENT_TYPES => [DATAPOINT_DEFINITIONS, EVENT_TYPES_RAW] do |t|
-  datapoint_definitions, event_types_raw =
-    t.sources.map { |source| load_yaml(source) }
+file EVENT_TYPES => EVENT_TYPES_RAW do |t|
+  event_types_raw = load_yaml(t.source)
 
-  event_types = {}
-
-  datapoint_definitions.fetch('event_types').each do |event_type_id, event_type|
-    reverse_event_type_id = EVENT_TYPE_REPLACEMENTS.invert.fetch(event_type_id, event_type_id)
-    event_type_raw = event_types_raw.delete(event_type_id) || event_types_raw.delete(reverse_event_type_id)
-
-    event_type_raw['value_list']&.transform_values! { |v|
+  event_types = event_types_raw.map { |event_type_id, event_type|
+    event_type['value_list']&.transform_values! { |v|
       VALUE_LIST_FIXES.fetch(v, v)
     }
 
-    ['name', 'description', 'conversion', 'default_value', 'url', 'access_mode'].each do |k|
-      raw_value = event_type_raw[k]
-      value = event_type.delete(k)
+    [event_type_id, event_type]
+  }.to_h
 
-      if value.nil?
-        next
-      elsif raw_value.nil?
-        event_type_raw[k] = value
-      elsif raw_value != value
-        regex = /@@viessmann(:?\-ess)?\.eventtype(:?\.name)?\.#{Regexp.escape(address)}\.description/
-
-        if raw_value.match?(regex)
-          next
-        elsif value.match?(regex)
-          event_type_raw[k] = value
-        else
-          raise "#{k} differs: #{raw_value.inspect} != #{value.inspect}"
-        end
-      end
+  EVENT_TYPE_REPLACEMENTS.each do |from, to|
+    if event_types.key?(to)
+      event_types.delete(from)
+    else
+      event_types[to] = event_types.delete(from)
     end
-
-    raise 'enum_type differs' if event_type.delete('enum_type') != !event_type_raw.fetch('value_list', {}).empty?
-
-    event_types[event_type_id] = event_type_raw
   end
 
   File.write t.name, event_types.to_yaml
@@ -81,8 +60,13 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
   event_types = event_types.map { |_, v|
     event_type_id = v.delete('address')
+
+    # Remove unneeded/unsupported event types.
+    next if event_type_id.start_with?('Node_')
+    next if event_type_id.start_with?('nciNet')
+
     [event_type_id, v]
-  }.to_h
+  }.compact.to_h
 
   EVENT_TYPE_REPLACEMENTS.each do |from, to |
     if event_types.key?(to)
@@ -156,10 +140,6 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES, SYSTEM_EVE
     v['identification_extension_till'] = datapoint_type.fetch('identification_extension_till')
 
     device_event_types = v['event_types'].map { |event_type_id|
-      # Remove unneeded/unsupported event types.
-      next if event_type_id.start_with?('Node_')
-      next if event_type_id.start_with?('nciNet')
-
       event_type = event_types.fetch(event_type_id)
 
       [event_type_id, event_type]
