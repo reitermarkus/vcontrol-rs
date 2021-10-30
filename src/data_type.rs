@@ -38,7 +38,7 @@ impl DataType {
             let mut n: $ty = 0;
 
             #[allow(arithmetic_overflow)]
-            for (i, &b) in bytes.into_iter().rev().enumerate() {
+            for (_i, &b) in bytes.into_iter().rev().enumerate() {
               n = (n << 8) | (b as $ty);
             }
 
