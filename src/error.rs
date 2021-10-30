@@ -1,10 +1,11 @@
+use crate::types::DeviceIdent;
 use std::io;
 use std::fmt;
 use std::error::Error as StdError;
 
 #[derive(Debug)]
 pub enum Error {
-  UnsupportedDevice(u16),
+  UnsupportedDevice(DeviceIdent),
   UnsupportedCommand(String),
   UnsupportedMode(String),
   InvalidArgument(String),
@@ -21,7 +22,7 @@ impl From<io::Error> for Error {
 impl fmt::Display for Error {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
-      Error::UnsupportedDevice(device_id) => write!(f, "Device ID 0x{:04X} not supported.", device_id),
+      Error::UnsupportedDevice(device_ident) => write!(f, "Device ID 0x{:04X} HX {} SW {} not supported.", device_ident.id, device_ident.hardware_index, device_ident.software_index),
       Error::UnsupportedCommand(command) => write!(f, "command {} is not supported", command),
       Error::UnsupportedMode(description) => description.fmt(f),
       Error::InvalidArgument(description) => description.fmt(f),

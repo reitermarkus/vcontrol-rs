@@ -1,3 +1,4 @@
+use crate::types::DeviceIdent;
 use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value};
 
 /// Representation of an `Optolink` connection to a specific `Device` using a specific `Protocol`.
@@ -30,16 +31,17 @@ impl VControl {
       (false, protocol)
     };
 
-    let mut buf = [0; 2];
+    let mut buf = [0; 8];
     protocol.get(&mut optolink, 0x00f8, &mut buf)?;
-    let device_id = u16::from_be_bytes(buf);
-    let device_id_full = ((device_id as u64) << 48);
+
+    let device_ident = DeviceIdent::from_bytes(&buf);
+    let device_id_full = ((device_ident.id as u64) << 48);
 
     let device = if let Some(device) = DEVICES.get(&device_id_full) {
       log::debug!("Device detected: {}", device.name());
       *device
     } else {
-      return Err(Error::UnsupportedDevice(device_id))
+      return Err(Error::UnsupportedDevice(device_ident))
     };
 
     let mut vcontrol = VControl { optolink, device, connected, protocol };
