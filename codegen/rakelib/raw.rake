@@ -122,7 +122,7 @@ def event_types(path)
     }.compact.to_h
 
     [
-      event_type.fetch('id'),
+      event_type.delete('id'),
       event_type,
     ]
   }.compact.to_h
@@ -169,7 +169,7 @@ file DATAPOINT_TYPES_RAW => DATAPOINT_TYPES_XML do |t|
     }.compact.to_h
 
     [
-      datapoint_type.fetch('id'),
+      datapoint_type.delete('id'),
       datapoint_type,
     ]
   }.compact.to_h
@@ -203,7 +203,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.compact.to_h
 
-      datapoint_definitions[datapoint_type.fetch('id')] = datapoint_type
+      datapoint_definitions[datapoint_type.delete('id')] = datapoint_type
     when 'ecnDataPointTypeEventTypeLink'
       fragment = Nokogiri::XML.fragment(node.inner_xml)
       next if fragment.children.empty?
@@ -266,7 +266,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.compact.to_h
 
-      event_type_definitions[event_type.fetch('id')] = event_type
+      event_type_definitions[event_type.delete('id')] = event_type
     end
   end
 
