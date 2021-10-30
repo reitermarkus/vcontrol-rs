@@ -1,13 +1,15 @@
 use std::env;
+use std::error::Error;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::io::Seek;
 use std::collections::BTreeMap;
 
-use vcontrol::{Device, Optolink, AccessMode, Command, DataType, RawType, VControl, device::VBC550P, Value};
-use vcontrol::Protocol;
+use vcontrol::{Device, Optolink, AccessMode, Command, DataType, RawType, Protocol, Value};
 
-fn main() {
+// Scan all possible addresses and save their values in `scan-cache.yml`.
+// Helpful for finding addresses for undocumented event types.
+fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
   env_logger::init();
 
   let optolink_port = env::args().nth(1).expect("no serial port specified");
@@ -15,64 +17,36 @@ fn main() {
     Optolink::connect(optolink_port)
   } else {
     Optolink::open(optolink_port)
-  }.unwrap();
-
+  }?;
 
   let mut file = OpenOptions::new()
             .read(true)
             .append(true)
             .create(true)
-            .open("scan.yml").unwrap();
+            .open("scan-cache.yml")?;
   let cache: BTreeMap<u16, u8> = serde_yaml::from_reader(&mut file).unwrap_or_default();
 
-  <VBC550P as Device>::Protocol::negotiate(&mut optolink).unwrap();
+  let protocol = Protocol::detect(&mut optolink).unwrap();
 
   for i in 0..u16::MAX {
-    let previous_value = if let Some(previous_value) = cache.get(&i) {
-      if *previous_value == 255 {
-        continue
-      }
+    print!("\r{}/{}", i, u16::MAX);
+    std::io::stdout().flush()?;
 
-      Some(*previous_value)
-    } else {
-      None
-    };
-
-    let command = Command {
-      addr: i,
-      mode: AccessMode::Read,
-      data_type: DataType::Int,
-      raw_type: RawType::U8,
-      block_len: 1,
-      byte_len: 1,
-      byte_pos: 0,
-      bit_pos: None,
-      bit_len: None,
-      factor: None,
-      mapping: None,
-    };
+    if cache.contains_key(&i) {
+      continue
+    }
 
     loop {
-      match VBC550P::get(&mut optolink, &command) {
-        Ok(Value::Empty) => {
-          eprintln!("0x{:04X}: {}", command.addr, 255);
-          writeln!(file, "0x{:04X}: {}", command.addr, 255);
+      let addr = i as u16;
+      let mut buf = [0];
+      match protocol.get(&mut optolink, addr, &mut buf) {
+        Ok(()) => {
+          let value = buf[0];
+          writeln!(file, "0x{:04X}: {}", addr, value)?;
         },
-        Ok(Value::Int(n)) => {
-          if let Some(ref previous_value) = previous_value {
-            // Don't record new value when it is the same as before.
-            if n as u8 == *previous_value {
-              break
-            }
-          }
-
-          eprintln!("0x{:04X}: {}", command.addr, n);
-          writeln!(file, "0x{:04X}: {}", command.addr, n);
-        },
-        Ok(_) => unreachable!(),
         Err(e) => {
           eprintln!("Error: {}", e);
-          <VBC550P as Device>::Protocol::negotiate(&mut optolink).unwrap();
+          protocol.negotiate(&mut optolink)?;
           continue
         }
       }
@@ -80,4 +54,8 @@ fn main() {
       break
     }
   }
+
+  println!();
+
+  Ok(())
 }
