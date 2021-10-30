@@ -13,16 +13,9 @@ file EVENT_TYPES => [DATAPOINT_DEFINITIONS, EVENT_TYPES_RAW] do |t|
 
   event_types = {}
 
-  datapoint_definitions.fetch('event_types').each do |id, event_type|
-    event_type.delete('id')
-
-    address = event_type.delete('address')
-    next if event_types.key?(address)
-
-    reverse_address = EVENT_TYPE_REPLACEMENTS.invert.fetch(address, address)
-    if (event_type_raw = event_types_raw.delete(address) || event_types_raw.delete(reverse_address)).nil?
-      raise "No raw event type found for '#{address}'."
-    end
+  datapoint_definitions.fetch('event_types').each do |event_type_id, event_type|
+    reverse_event_type_id = EVENT_TYPE_REPLACEMENTS.invert.fetch(event_type_id, event_type_id)
+    event_type_raw = event_types_raw.delete(event_type_id) || event_types_raw.delete(reverse_event_type_id)
 
     event_type_raw['value_list']&.transform_values! { |v|
       VALUE_LIST_FIXES.fetch(v, v)
@@ -51,7 +44,7 @@ file EVENT_TYPES => [DATAPOINT_DEFINITIONS, EVENT_TYPES_RAW] do |t|
 
     raise 'enum_type differs' if event_type.delete('enum_type') != !event_type_raw.fetch('value_list', {}).empty?
 
-    event_types[address] = event_type_raw
+    event_types[event_type_id] = event_type_raw
   end
 
   File.write t.name, event_types.to_yaml
@@ -77,29 +70,34 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
   datapoints = datapoint_definitions_raw.fetch('datapoints')
   event_types = datapoint_definitions_raw.fetch('event_types')
 
-  id_by_address = ->(address) {
-    id, = event_types.find { |k, v| v.fetch('address') == address }
-    id
-  }
+  datapoints = datapoints.map { |_, v|
+    datapoint_type_id = v.delete('address')
+    v['event_types'] = v['event_types'].map { |id|
+      event_type_id = event_types.fetch(id).fetch('address')
+      EVENT_TYPE_REPLACEMENTS.fetch(event_type_id, event_type_id)
+    }
+    [datapoint_type_id, v]
+  }.to_h
 
-  EVENT_TYPE_REPLACEMENTS.each do |from, to|
-    from_id = id_by_address.call(from)
-    to_id = id_by_address.call(to)
+  event_types = event_types.map { |_, v|
+    event_type_id = v.delete('address')
+    [event_type_id, v]
+  }.to_h
 
-    if to_id.nil?
-      event_types[from_id]['address'] = to
+  EVENT_TYPE_REPLACEMENTS.each do |from, to |
+    if event_types.key?(to)
+      event_types.delete(from)
     else
-      event_types.delete(from_id)
-      datapoints.transform_values { |v|
-        v['event_types'].delete(from_id)
-        v['event_types'].push(to_id)
-        v['event_types'].sort!
-        v['event_types'].uniq!
-      }
+      event_types[to] = event_types.delete(from)
     end
   end
 
-  File.write t.name, datapoint_definitions_raw.to_yaml
+  datapoint_definitions = {
+    'datapoints' => datapoints,
+    'event_types' => event_types,
+  }
+
+  File.write t.name, datapoint_definitions.to_yaml
 end
 
 file DATAPOINT_TYPES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES_RAW] do |t|
@@ -148,11 +146,8 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES, SYSTEM_EVE
   datapoint_definitions, datapoint_types, event_types, system_event_types = t.sources.map { |source| load_yaml(source) }
 
   datapoints = datapoint_definitions.delete('datapoints')
-  event_type_ids = datapoint_definitions.delete('event_types')
 
-  devices = datapoints.map { |_, v|
-    device_id = v.delete('address')
-
+  devices = datapoints.map { |device_id, v|
     datapoint_type = datapoint_types[device_id]
     next if datapoint_type.nil?
 
@@ -160,16 +155,14 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES, SYSTEM_EVE
     v['identification_extension'] = datapoint_type.fetch('identification_extension')
     v['identification_extension_till'] = datapoint_type.fetch('identification_extension_till')
 
-    device_event_types = v['event_types'].map { |id|
-      type_id = event_type_ids.fetch(id).fetch('address')
-
+    device_event_types = v['event_types'].map { |event_type_id|
       # Remove unneeded/unsupported event types.
-      next if type_id.start_with?('Node_')
-      next if type_id.start_with?('nciNet')
+      next if event_type_id.start_with?('Node_')
+      next if event_type_id.start_with?('nciNet')
 
-      type = event_types.fetch(type_id)
+      event_type = event_types.fetch(event_type_id)
 
-      [type_id, type]
+      [event_type_id, event_type]
     }.compact.to_h
 
     v['event_types'] = device_event_types.merge(system_event_types).map { |type_id, type|
