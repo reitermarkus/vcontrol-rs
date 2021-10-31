@@ -33,7 +33,7 @@ impl VControl {
     let mut buf = [0; 2];
     protocol.get(&mut optolink, 0x00f8, &mut buf)?;
     let device_id = u16::from_be_bytes(buf);
-    let device_id_full = ((device_id as u64) << 32) + (0 << 16) + (0 << 0);
+    let device_id_full = ((device_id as u64) << 48);
 
     let device = if let Some(device) = DEVICES.get(&device_id_full) {
       log::debug!("Device detected: {}", device.name());

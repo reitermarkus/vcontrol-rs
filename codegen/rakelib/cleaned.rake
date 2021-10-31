@@ -109,12 +109,11 @@ file DATAPOINT_TYPES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES_RAW] do |t|
     next if device_id.start_with?('WILO')
     next if device_id.start_with?('_VITODATA')
 
-    # TODO: Handle with `identification_extension` etc.
-    next if device_id.match?(/_\d+$/)
-
     v['identification'] = Integer(v.fetch('identification'), 16)
     v['identification_extension'] = Integer(v.fetch('identification_extension', '0'), 16)
     v['identification_extension_till'] = Integer(v.fetch('identification_extension_till', '0'), 16)
+    v['f0'] = Integer(v.fetch('f0', '0'), 16)
+    v['f0_till'] = Integer(v.fetch('f0_till', '0'), 16)
 
     device_id = EVENT_TYPE_REPLACEMENTS.fetch(device_id, device_id)
 
@@ -138,6 +137,8 @@ file DEVICES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES, EVENT_TYPES, SYSTEM_EVE
     v['identification'] = datapoint_type.fetch('identification')
     v['identification_extension'] = datapoint_type.fetch('identification_extension')
     v['identification_extension_till'] = datapoint_type.fetch('identification_extension_till')
+    v['f0'] = datapoint_type.fetch('f0')
+    v['f0_till'] = datapoint_type.fetch('f0_till')
 
     device_event_types = v['event_types'].map { |event_type_id|
       event_type = event_types.fetch(event_type_id)
