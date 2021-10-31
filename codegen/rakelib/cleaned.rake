@@ -110,10 +110,10 @@ file DATAPOINT_TYPES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES_RAW] do |t|
     next if device_id.start_with?('_VITODATA')
 
     v['identification'] = Integer(v.fetch('identification'), 16)
-    v['identification_extension'] = Integer(v.fetch('identification_extension', '0'), 16)
-    v['identification_extension_till'] = Integer(v.fetch('identification_extension_till', '0'), 16)
-    v['f0'] = Integer(v.fetch('f0', '0'), 16)
-    v['f0_till'] = Integer(v.fetch('f0_till', '0'), 16)
+    v['identification_extension'] = Integer(v.fetch('identification_extension', '0000'), 16)
+    v['identification_extension_till'] = Integer(v.fetch('identification_extension_till', 'FFFF'), 16)
+    v['f0'] = Integer(v.fetch('f0', '0000'), 16)
+    v['f0_till'] = Integer(v.fetch('f0_till', 'FFFF'), 16)
 
     device_id = EVENT_TYPE_REPLACEMENTS.fetch(device_id, device_id)
 
