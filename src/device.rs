@@ -1,6 +1,7 @@
 use phf;
 
 use crate::{Command};
+use crate::DeviceIdentRange;
 
 #[allow(clippy::unreadable_literal)]
 mod codegen {

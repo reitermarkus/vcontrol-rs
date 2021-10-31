@@ -31,17 +31,44 @@ impl VControl {
       (false, protocol)
     };
 
+    let mut buf = [0; 2];
+    protocol.get(&mut optolink, 0x00f0, &mut buf)?;
+    let f0 = u16::from_be_bytes(buf);
+
     let mut buf = [0; 8];
     protocol.get(&mut optolink, 0x00f8, &mut buf)?;
-
     let device_ident = DeviceIdent::from_bytes(&buf);
+
     let device_id_full = ((device_ident.id as u64) << 48);
 
-    let device = if let Some(device) = DEVICES.get(&device_id_full) {
+    let mut device = None;
+
+    for (device_ident_range, device_spec) in DEVICES.entries() {
+      if device_ident_range.id != device_ident.id {
+       continue
+      }
+
+      if !device_ident_range.hardware_index_range.contains(&device_ident.hardware_index) {
+        continue
+      }
+
+      if !device_ident_range.software_index_range.contains(&device_ident.software_index) {
+        continue
+      }
+
+      if !device_ident_range.f0_range.contains(&f0) {
+        continue
+      }
+
+      device = Some(device_spec);
+      break
+    }
+
+    let device = if let Some(device) = device {
       log::debug!("Device detected: {}", device.name());
       *device
     } else {
-      return Err(Error::UnsupportedDevice(device_ident))
+      return Err(Error::UnsupportedDevice(device_ident, f0))
     };
 
     let mut vcontrol = VControl { optolink, device, connected, protocol };

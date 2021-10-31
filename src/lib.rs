@@ -14,6 +14,9 @@ pub use crate::optolink::Optolink;
 mod protocol;
 pub use crate::protocol::Protocol;
 
+mod device_ident_range;
+pub use crate::device_ident_range::DeviceIdentRange;
+
 pub mod device;
 pub use crate::device::Device;
 

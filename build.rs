@@ -13,6 +13,10 @@ use phf_codegen;
 mod raw_type;
 use raw_type::RawType;
 
+#[path = "src/device_ident_range.rs"]
+mod device_ident_range;
+use device_ident_range::DeviceIdentRange;
+
 fn escape_const_name(s: &str) -> String {
   s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("%", "PROZENT")
 }
@@ -85,14 +89,15 @@ fn generate_devices() {
 
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
 
-  let mut device_map = phf_codegen::Map::<u64>::new();
+  let mut device_map = phf_codegen::Map::<DeviceIdentRange>::new();
   for (device_id, device) in &mappings {
-    let mut id = device.id as u64;
-    id = (id << 16) | device.id_ext as u64;
-    id = (id << 16) | device.id_ext_till as u64;
-    id = (id << 8) | device.f0 as u64;
-    id = (id << 8) | device.f0_till as u64;
-    device_map.entry(id, &format!("&{}", escape_const_name(&device_id)));
+    let id_range = DeviceIdentRange {
+      id: device.id,
+      hardware_index_range: ((device.id_ext >> 8) as u8)..=((device.id_ext_till >> 8) as u8),
+      software_index_range: ((device.id_ext & 0xff) as u8)..=((device.id_ext_till & 0xff) as u8),
+      f0_range: (device.f0)..=(device.f0_till),
+    };
+    device_map.entry(id_range, &format!("&{}", escape_const_name(&device_id)));
 
     let mut map = phf_codegen::Map::<&str>::new();
     for command_name in device.commands.iter() {
@@ -110,7 +115,7 @@ fn generate_devices() {
   }
   writeln!(&mut file, r#"
     /// A map of all supported devices.
-    pub const DEVICES: ::phf::Map<u64, &'static Device> = {};
+    pub const DEVICES: ::phf::Map<DeviceIdentRange, &'static Device> = {};
   "#, device_map.build()).unwrap();
 }
 
@@ -129,8 +134,8 @@ pub struct Device {
   id: u16,
   id_ext: u16,
   id_ext_till: u16,
-  f0: u8,
-  f0_till: u8,
+  f0: u16,
+  f0_till: u16,
   commands: Vec<String>,
   error_mapping: String
 }
