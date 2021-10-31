@@ -14,7 +14,7 @@ mod raw_type;
 use raw_type::RawType;
 
 fn escape_const_name(s: &str) -> String {
-  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_")
+  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("%", "PROZENT")
 }
 
 #[track_caller]
@@ -87,29 +87,31 @@ fn generate_devices() {
 
   let mut device_map = phf_codegen::Map::<u64>::new();
   for (device_id, device) in &mappings {
-    let id = ((device.id as u64) << 32) + ((device.id_ext as u64) << 16) + (device.id_ext_till as u64);
+    let mut id = device.id as u64;
+    id = (id << 16) | device.id_ext as u64;
+    id = (id << 16) | device.id_ext_till as u64;
+    id = (id << 8) | device.f0 as u64;
+    id = (id << 8) | device.f0_till as u64;
     device_map.entry(id, &format!("&{}", escape_const_name(&device_id)));
+
+    let mut map = phf_codegen::Map::<&str>::new();
+    for command_name in device.commands.iter() {
+      map.entry(command_name, &format!("&COMMAND_{}", escape_const_name(&command_name)));
+    }
+    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
+
+    writeln!(file, r#"
+      const {}: Device = Device {{
+        name: {},
+        commands: &{}_COMMANDS,
+        errors: &MAPPING_{},
+      }};
+    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), escape_const_name(&device.error_mapping)).unwrap();
   }
   writeln!(&mut file, r#"
     /// A map of all supported devices.
     pub const DEVICES: ::phf::Map<u64, &'static Device> = {};
   "#, device_map.build()).unwrap();
-
-
-  for (device_id, device) in mappings {
-    let mut map = phf_codegen::Map::<&str>::new();
-
-
-    for command_name in device.commands.iter() {
-      map.entry(command_name, &format!("&COMMAND_{}", escape_const_name(&command_name)));
-    }
-
-    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
-
-    writeln!(file, r#"
-      const {}: Device = Device {{ name: {}, commands: &{}_COMMANDS, errors: &MAPPING_{} }};
-    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), escape_const_name(&device.error_mapping)).unwrap();
-  }
 }
 
 fn main() {
@@ -127,6 +129,8 @@ pub struct Device {
   id: u16,
   id_ext: u16,
   id_ext_till: u16,
+  f0: u8,
+  f0_till: u8,
   commands: Vec<String>,
   error_mapping: String
 }
