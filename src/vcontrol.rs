@@ -32,14 +32,18 @@ impl VControl {
     };
 
     let mut buf = [0; 2];
-    protocol.get(&mut optolink, 0x00f0, &mut buf)?;
-    let f0 = u16::from_be_bytes(buf);
+    let f0 = match protocol.get(&mut optolink, 0x00f0, &mut buf) {
+      Ok(()) => u16::from_be_bytes(buf),
+      Err(e) => 0u16,
+    };
 
     let mut buf = [0; 8];
-    protocol.get(&mut optolink, 0x00f8, &mut buf)?;
-    let device_ident = DeviceIdent::from_bytes(&buf);
-
-    let device_id_full = ((device_ident.id as u64) << 48);
+    let device_ident = match protocol.get(&mut optolink, 0x00f8, &mut buf) {
+      Ok(()) => DeviceIdent::from_bytes(&buf),
+      Err(e) => {
+        panic!("unsupported command ecnsysDeviceIdent");
+      } 
+    };
 
     let mut device = None;
 
