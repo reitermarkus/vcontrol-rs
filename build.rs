@@ -153,6 +153,7 @@ pub struct Command {
   bit_pos: usize,
   bit_len: usize,
   factor: Option<f64>,
+  unit: Option<String>,
   mapping: Option<String>,
 }
 
@@ -179,6 +180,7 @@ impl fmt::Debug for Command {
        .field("bit_len", &self.bit_len)
        .field("bit_pos", &self.bit_pos)
        .field("factor", &self.factor)
+       .field("unit", &self.unit)
        .field("mapping", &format_args!("{}", mapping))
        .finish()
   }

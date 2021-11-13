@@ -18,6 +18,13 @@ pub enum Value {
   Empty
 }
 
+#[derive(Debug)]
+pub enum ValueMeta {
+  None,
+  Unit(&'static str),
+  Mapping(&'static phf::map::Map<i32, &'static str>),
+}
+
 impl FromStr for Value {
   type Err = Infallible;
 

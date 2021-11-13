@@ -18,7 +18,7 @@ pub enum DataType {
 }
 
 impl DataType {
-  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, mapping: &Option<phf::map::Map<i32, &'static str>>, bit_pos: usize, bit_len: usize) -> Result<Value, Error> {
+  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, bit_pos: usize, bit_len: usize) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty)
     }
@@ -38,12 +38,12 @@ impl DataType {
             let mut n: $ty = 0;
 
             #[allow(arithmetic_overflow)]
-            for (_i, &b) in bytes.into_iter().rev().enumerate() {
+            for (i, &b) in bytes.into_iter().rev().enumerate() {
               n = (n << 8) | (b as $ty);
             }
 
             if bit_len > 0 {
-              n = ((n << bit_pos) >> (mem::size_of::<$ty>() - bit_len))
+              n = ((n << bit_pos) >> (bytes.len() * 8 - bit_len))
             }
 
             n as i64
@@ -61,17 +61,7 @@ impl DataType {
         };
 
         match t {
-          Self::Int => {
-            if let Some(mapping) = mapping {
-              if let Some(text) = mapping.get(&(n as i32)) {
-                return Ok(Value::String((*text).to_string()))
-              }
-
-              return Err(Error::UnknownEnumVariant(format!("No enum mapping found for {}.", n)))
-            }
-
-            Value::Int(n)
-          },
+          Self::Int => Value::Int(n),
           Self::Double => Value::Double(n as f64 / factor.unwrap_or(1.0)),
           _ => unreachable!(),
         }
@@ -79,17 +69,7 @@ impl DataType {
     })
   }
 
-  pub fn input_to_bytes(&self, input: &Value, raw_type: RawType, factor: Option<f64>, mapping: &Option<phf::map::Map<i32, &'static str>>) -> Result<Vec<u8>, Error> {
-    // if let Some(mapping) = mapping {
-    //   if let Value::String(s) = input {
-    //     return mapping.entries()
-    //              .find_map(|(key, value)| if value == s { Some(key.to_le_bytes().to_vec()) } else { None })
-    //              .ok_or_else(|| Error::InvalidArgument(format!("no mapping found for {:?}", s)))
-    //   } else {
-    //     return Err(Error::InvalidArgument(format!("expected string, found {:?}", input)))
-    //   }
-    // }
-
+  pub fn input_to_bytes(&self, input: &Value, raw_type: RawType, factor: Option<f64>) -> Result<Vec<u8>, Error> {
     Ok(match self {
       Self::SysTime => {
         if let Value::SysTime(systime) = input {

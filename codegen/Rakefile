@@ -546,6 +546,7 @@ def type_to_command(type_id, type, mappings:, translations:)
   data_type, raw_type = map_data_type(type_id, type)
   command['data_type'] = data_type
   command['raw_type'] = raw_type
+  command['unit'] = type['unit']
   command['factor'] = map_factor(type)
   command['block_len'] = type.fetch('block_length')
   command['byte_len'] = type.fetch('byte_length')

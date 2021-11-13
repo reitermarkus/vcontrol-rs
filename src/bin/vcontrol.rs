@@ -68,7 +68,7 @@ fn main() {
     let command = matches.value_of("command").unwrap();
 
     match vcontrol.get(command) {
-      Ok(output) => {
+      Ok((output, _)) => {
         println!("{}", serde_json::to_string(&output).unwrap());
       },
       Err(err) => {

@@ -1,5 +1,5 @@
 use crate::types::DeviceIdent;
-use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value};
+use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value, ValueMeta};
 
 /// Representation of an `Optolink` connection to a specific `Device` using a specific `Protocol`.
 #[derive(Debug)]
@@ -87,18 +87,30 @@ impl VControl {
   /// Gets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
-  pub fn get(&mut self, command: &str) -> Result<Value, Error> {
+  pub fn get(&mut self, command: &str) -> Result<(Value, ValueMeta), Error> {
     self.renegotiate()?;
 
     if let Some(command) = self.device.command(command) {
       match command.get(&mut self.optolink, self.protocol) {
-        Ok(ok) => {
-          if let Value::Error(ref error) = ok {
-            let error_string = self.device.errors().get(&(error.index() as i32));
-            eprintln!("Device Error: {:?}", error_string);
+        Ok(value) => {
+          let value_meta = if let Value::Error(ref error) = value {
+            ValueMeta::Mapping(self.device.errors())
+          } else if let Some(unit) = command.unit {
+            ValueMeta::Unit(unit)
+          } else if let Some(ref mapping) = command.mapping {
+            ValueMeta::Mapping(mapping)
+          } else {
+            ValueMeta::None
+          };
+
+          if let (Value::Int(value), Some(mapping)) = (&value, command.mapping.as_ref()) {
+            let n = *value as i32;
+            if !mapping.contains_key(&n) {
+              return Err(Error::UnknownEnumVariant(format!("No enum mapping found for {}.", n)))
+            }
           }
 
-          Ok(ok)
+          Ok((value, value_meta))
         },
         Err(err) => {
           self.connected = false;

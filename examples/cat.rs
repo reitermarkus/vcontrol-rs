@@ -1,7 +1,7 @@
 use std::env;
 use std::error::Error;
 
-use vcontrol::{Optolink, VControl, Value};
+use vcontrol::{Optolink, VControl, Value, ValueMeta};
 
 fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
   env_logger::init();
@@ -28,10 +28,21 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
     let res = vcontrol.get(key);
 
     match res {
-      Ok(value) => {
+      Ok((value, value_meta)) => {
         if !matches!(value, Value::Empty) {
           println!("{}:", key);
-          println!("  {:?}", value);
+
+          print!("  {:?}", value);
+
+          match value_meta {
+            ValueMeta::None => (),
+            ValueMeta::Unit(unit) => print!(" {}", unit),
+            ValueMeta::Mapping(mapping) => if let Value::Int(value) = value {
+              print!(": {:?}", mapping.get(&(value as i32)));
+            }
+          }
+
+          println!();
         }
       },
       Err(err) => {

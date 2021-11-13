@@ -7,6 +7,113 @@ task :cleaned => [
   DEVICES,
 ]
 
+def map_unit(unit)
+  case unit.delete_prefix('ecnUnit.')
+  when 'Minuten'
+    'min'
+  when 'Grad C'
+    '°C'
+  when 'Prozent'
+    '%'
+  when 'K'
+    'K'
+  when 'Sekunden', 'Sek.'
+    's'
+  when 'Stunden'
+    'h'
+  when 'Prozent pro K'
+    '%/K'
+  when 'Bar'
+    'bar'
+  when 'Ohm'
+    'Ω'
+  when 'K Sec'
+    'K/s'
+  when 'K Min'
+    'K/min'
+  when 'K pro h'
+    'K/h'
+  when 'Monate'
+    'mo'
+  when 'kW', 'KW', 'kW_10'
+    'kW'
+  when 'MWh'
+    'MWh'
+  when 'kWh'
+    'kWh'
+  when 'l pro min'
+    'l/min'
+  when 'l pro h'
+    'l/h'
+  when 'm3 pro h', 'cbm pro h'
+    'm³/h'
+  when 'm3'
+    'm³'
+  when 'kWh pro m3'
+    'kWh/m³'
+  when 'Tage'
+    'd'
+  when 'Liter'
+    'l'
+  when 'kg'
+    'kg'
+  when 'rps'
+    'rev/s'
+  when 'rps pro s'
+    'rev/s²'
+  when 'U pro min'
+    'rev/min'
+  when 'Grad C pro Min'
+    '°C/min'
+  when 'Tonnen'
+    't'
+  when 'mBar'
+    'mbar'
+  when 'dBm'
+    'dBm'
+  when 'Bar (absolut)'
+    'bara'
+  when 'ct_pro_kwh'
+    'c/kWh'
+  when 'g_pro_sec'
+    'g/s'
+  when 'kg_pro_h'
+    'kg/h'
+  when 'h'
+    'h'
+  when 'V'
+    'V'
+  when 'mV'
+    'mV'
+  when 'A'
+    'A'
+  when 'Hz'
+    'Hz'
+  when 'W'
+    'W'
+  when 'Wh'
+    'Wh'
+  when 'VA'
+    'VA'
+  when 'VAr'
+    'VAr'
+  when 'Ah'
+    'Ah'
+  when 'kJ'
+    'kJ'
+  when 'MJ'
+    'MJ'
+  when 'GJ'
+    'GJ'
+  when 'ppm'
+    'ppm'
+  when 'Minus', 'Pts', 'Pkt', 'sech'
+    nil
+  else
+    raise "Unknown unit: #{unit}"
+  end
+end
+
 file EVENT_TYPES => EVENT_TYPES_RAW do |t|
   event_types_raw = load_yaml(t.source)
 
@@ -14,6 +121,11 @@ file EVENT_TYPES => EVENT_TYPES_RAW do |t|
     event_type['value_list']&.transform_values! { |v|
       VALUE_LIST_FIXES.fetch(v, v)
     }
+
+    if (unit = event_type.delete('unit'))
+      unit = map_unit(unit)
+      event_type['unit'] = unit if unit
+    end
 
     [event_type_id, event_type]
   }.to_h
@@ -51,7 +163,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
   datapoints = datapoints.map { |_, v|
     datapoint_type_id = v.delete('address')
-    v['event_types'] = v['event_types'].map { |id|
+    v['event_types'] = v.delete('event_types').map { |id|
       event_type_id = event_types.fetch(id).fetch('address')
       EVENT_TYPE_REPLACEMENTS.fetch(event_type_id, event_type_id)
     }
