@@ -1,3 +1,12 @@
+require 'open3'
+require 'tempfile'
+require 'base64'
+require 'stringio'
+
+require 'pycall/import'
+include PyCall::Import
+pyimport :io
+
 VITOSOFT_DIR = 'src'
 DATAPOINT_DEFINITION_VERSION_XML                  = "#{VITOSOFT_DIR}/ecnVersion.xml"
 DATAPOINT_DEFINITIONS_XML                         = "#{VITOSOFT_DIR}/DPDefinitions.xml"
@@ -6,12 +15,57 @@ EVENT_TYPES_XML                                   = "#{VITOSOFT_DIR}/ecnEventTyp
 SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceIdent.xml"
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
 SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
-TEXT_RESOURCES_DIR     = "#{VITOSOFT_DIR}"
+TEXT_RESOURCES_DIR                                = "#{VITOSOFT_DIR}"
+
+desc 'download program for decoding .NET Remoting Binary Format data'
+file 'nrbf.py' do |t|
+  sh 'pip3', 'install', 'namedlist'
+  sh 'curl', '-sSfL', 'https://github.com/gurnec/Undo_FFG/raw/HEAD/nrbf.py', '-o', t.name
+  chmod '+x', t.name
+end
+
+
+task :import_nrbf => 'nrbf.py' do
+  PyCall.sys.path.append Dir.pwd
+  pyimport :nrbf
+end
+
+NRBF_CACHE = Pathname('nrbf-cache.json')
+
+at_exit do
+  next unless defined?(@dotnet_decode_cache)
+
+  NRBF_CACHE.write JSON.pretty_generate(@dotnet_decode_cache)
+end
+
+def dotnet_decode(base64_string)
+  @dotnet_decode_cache ||= NRBF_CACHE.exist? ? JSON.parse(NRBF_CACHE.read) : {}
+
+  if @dotnet_decode_cache.key?(base64_string)
+    return @dotnet_decode_cache[base64_string]
+  end
+
+  Rake::Task[:import_nrbf].invoke
+
+  binary_string = Base64.strict_decode64(base64_string)
+  bytes = io.BytesIO.new(binary_string)
+  value = nrbf.read_stream(bytes)
+
+  @dotnet_decode_cache[base64_string] = if value.respond_to?(:__class__)
+    case class_name = value.__class__.__name__
+    when 'System_Boolean', 'System_Int32', 'System_Double'
+      value.m_value
+    else
+      raise "Uknown class: #{class_name}"
+    end
+  else
+    value
+  end
+end
 
 desc 'convert XML files to raw YAML files'
 task :raw => [
   DATAPOINT_DEFINITION_VERSION_RAW,
-  EVENT_TYPES_RAW,
   SYSTEM_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW,
@@ -27,6 +81,11 @@ file DATAPOINT_DEFINITION_VERSION_RAW => DATAPOINT_DEFINITION_VERSION_XML do |t|
   version = doc.at('/IEDataSet/Version/DataPointDefinitionVersion').text
 
   File.write t.name, version.to_yaml
+end
+
+def value_if_non_empty(node)
+  v = node.text.strip
+  v.empty? ? nil : v
 end
 
 # Only one company ID is used.
@@ -47,11 +106,19 @@ def parse_bool(text)
   end
 end
 
+def parse_value_list(text)
+  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k.to_i, clean_enum_text(k, v)] }.to_h
+end
+
+def parse_options_value(text)
+  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k, v] }.to_h
+end
+
 def parse_byte_array(text)
   text.empty? ? nil : text.delete_prefix('0x').each_char.each_slice(2).map { |c| Integer(c.join, 16) }
 end
 
-def parse_default_value(text)
+def parse_value(text)
   case text
   when /\A0x\h{2}+\Z/
     parse_byte_array(text)
@@ -70,6 +137,15 @@ def parse_default_value(text)
   else
     text
   end
+end
+
+def parse_fc(text)
+  {
+    ''                           => nil,
+    'undefined'                  => nil,
+    'Virtual_MarktManager_READ'  => 'virtual_market_manager_read',
+    'Virtual_MarktManager_WRITE' => 'virtual_market_manager_write',
+  }.fetch(text, text.underscore)
 end
 
 def event_types(path)
@@ -91,7 +167,7 @@ def event_types(path)
         n.text.empty? ? nil : Integer(n.text, 16) rescue Float(n.text)
       when 'alz'
         name = 'default_value'
-        parse_default_value(n.text.strip)
+        parse_value(n.text.strip)
       when /^(block|byte|bit)_(length|position|factor)$/, 'mapping_type', 'rpc_handler', 'priority'
         Integer(n.text)
       when /^conversion_(factor|offset)$/
@@ -101,35 +177,25 @@ def event_types(path)
       when 'access_mode'
         n.text.empty? ? nil : n.text.underscore
       when /^fc_(read|write)$/
-        {
-          ''                           => nil,
-          'undefined'                  => nil,
-          'Virtual_MarktManager_READ'  => 'virtual_market_manager_read',
-          'Virtual_MarktManager_WRITE' => 'virtual_market_manager_write',
-        }.fetch(n.text, n.text.underscore)
+        parse_fc(n.text)
       when 'option_list'
         n.text.split(';')
       when 'value_list'
-        n.text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k.to_i, clean_enum_text(k, v)] }.to_h
+        parse_value_list(n.text)
       when /^prefix_(read|write)$/
         n.text.empty? ? nil : n.text.delete_prefix('0x').each_char.each_slice(2).map { |c| Integer(c.join, 16) }
       else
-        v = n.text.strip
-        v.empty? ? nil : v
+        value_if_non_empty(n)
       end
 
       [name, value]
-    }.compact.to_h
+    }.to_h.compact
 
     [
       event_type.delete('id'),
       event_type,
     ]
   }.compact.to_h
-end
-
-file EVENT_TYPES_RAW => EVENT_TYPES_XML do |t|
-  File.write t.name, event_types(t.source).to_yaml
 end
 
 file SYSTEM_EVENT_TYPES_RAW => SYSTEM_EVENT_TYPES_XML do |t|
@@ -161,12 +227,11 @@ file DATAPOINT_TYPES_RAW => DATAPOINT_TYPES_XML do |t|
           'undefined' => nil,
         }.fetch(n.text, n.text)
       else
-        v = n.text.strip
-        v.empty? ? nil : v
+        value_if_non_empty(n)
       end
 
       [name, value]
-    }.compact.to_h
+    }.to_h.compact
 
     [
       datapoint_type.delete('id'),
@@ -180,6 +245,9 @@ end
 file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
   datapoint_definitions = {}
   event_type_definitions = {}
+  event_value_type_definitions = {}
+  table_extensions = {}
+  table_extension_values = {}
 
   reader = Nokogiri::XML::Reader(File.open(t.source))
   reader.each do |node|
@@ -194,14 +262,13 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           Integer(n.text.strip)
         when 'company_id'
           assert_company_id(n.text.strip)
-          next
+          nil
         else
-          v = n.text.strip
-          v.empty? ? nil : v
+          value_if_non_empty(n)
         end
 
         [name, value]
-      end.compact.to_h
+      end.to_h.compact
 
       datapoint_definitions[datapoint_type.delete('id')] = datapoint_type
     when 'ecnDataPointTypeEventTypeLink'
@@ -214,14 +281,13 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           Integer(n.text.strip)
         when 'company_id'
           assert_company_id(n.text.strip)
-          next
+          nil
         else
-          v = n.text.strip
-          v.empty? ? nil : v
+          value_if_non_empty(n)
         end
 
         [name, value]
-      end.compact.to_h
+      end.to_h.compact
 
       data_point_type = datapoint_definitions.fetch(link.fetch('data_point_type_id'))
       data_point_type['event_types'] ||= []
@@ -237,7 +303,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           Integer(n.text.strip)
         when 'company_id'
           assert_company_id(n.text.strip)
-          next
+          nil
         when 'enum_type', 'filtercriterion', 'reportingcriterion'
           parse_bool(n.text)
         when 'address'
@@ -245,7 +311,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         when 'conversion'
           n.text.strip
         when 'default_value'
-          parse_default_value(n.text.strip)
+          parse_value(n.text.strip)
         when 'type'
           name = 'access_mode'
           case Integer(n.text.strip)
@@ -259,20 +325,114 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
             raise
           end
         else
-          v = n.text.strip
-          v.empty? ? nil : v
+          value_if_non_empty(n)
         end
 
         [name, value]
-      end.compact.to_h
+      end.to_h.compact
 
       event_type_definitions[event_type.delete('id')] = event_type
+    when 'ecnEventValueType'
+      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      next if fragment.children.empty?
+
+      event_value_type = fragment.children.map do |n|
+        value = case name = n.name.underscore
+        when 'id', 'enum_address_value', 'status_type_id', 'value_precision', 'length'
+          Integer(n.text.strip)
+        when 'lower_border', 'upper_border', 'stepping'
+          Float(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value]
+      end.to_h.compact
+
+      event_value_type_definitions[event_value_type.delete('id')] = event_value_type
+    when 'ecnEventTypeEventValueTypeLink'
+      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      next if fragment.children.empty?
+
+      event_type_event_value_type_link = fragment.children.map do |n|
+        value = case name = n.name.underscore
+        when 'event_type_id', 'event_value_id'
+          Integer(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value]
+      end.to_h.compact
+
+      event_type = event_type_definitions.fetch(event_type_event_value_type_link.fetch('event_type_id'))
+      event_type['value_types'] ||= []
+      event_type['value_types'].push(event_type_event_value_type_link.fetch('event_value_id'))
+    when 'ecnTableExtension'
+      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      next if fragment.children.empty?
+
+      table_extension = fragment.children.map do |n|
+        value = case name = n.name.underscore
+        when 'id', 'internal_data_type'
+          Integer(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        when 'pk_fields'
+          n.text.split(';').map { |f| f.underscore }
+        when 'internal_default_value'
+          dotnet_decode(n.text)
+        when 'options_value'
+          parse_options_value(n.text)
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value]
+      end.to_h.compact
+
+      table_extensions[table_extension.delete('id')] = table_extension
+    when 'ecnTableExtensionValue'
+      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      next if fragment.children.empty?
+
+      table_extension_value = fragment.children.map do |n|
+        value = case name = n.name.underscore
+        when 'id', 'ref_id'
+          Integer(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        when 'pk_value'
+          n.text.split(';').map { |v| Integer(v) }
+        when 'internal_value'
+          dotnet_decode(n.text)
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value]
+      end.to_h.compact
+
+      table_extension_values[table_extension_value.delete('id')] = table_extension_value
+    when 'ecnEventTypeGroup'
+      next
     end
   end
 
   definitions = {
     'datapoints' => datapoint_definitions,
     'event_types' => event_type_definitions,
+    'event_value_types' => event_value_type_definitions,
+    'table_extensions' => table_extensions,
+    'table_extension_values' => table_extension_values,
   }
 
   File.write t.name, definitions.sort_by_key.to_yaml

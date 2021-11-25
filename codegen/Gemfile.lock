@@ -17,6 +17,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.12.5-arm64-darwin)
       racc (~> 1.4)
+    pycall (1.4.1)
     racc (1.6.0)
     rake (13.0.6)
     tzinfo (2.0.4)
@@ -30,6 +31,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   nokogiri
+  pycall
   rake
 
 BUNDLED WITH

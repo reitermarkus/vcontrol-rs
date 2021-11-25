@@ -7,3 +7,4 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 gem "activesupport", require: false
 gem "nokogiri", require: false
 gem "rake"
+gem 'pycall', require: false

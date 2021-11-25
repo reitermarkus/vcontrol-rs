@@ -24,6 +24,10 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
   keys.sort();
 
   for key in keys {
+    let readable = commands.get(key).map(|c| c.mode.is_read()).unwrap_or(false);
+    if !readable {
+      continue;
+    }
 
     let res = vcontrol.get(key);
 
@@ -32,7 +36,12 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
         if !matches!(value, Value::Empty) {
           println!("{}:", key);
 
-          print!("  {:?}", value);
+          match &value {
+            Value::Int(n) => print!("{}", n),
+            Value::Double(n) => print!("{}", n),
+            Value::Array(array) => print!("{:?}", array),
+            value => print!("{:?}", value),
+          }
 
           match value_meta {
             ValueMeta::None => (),

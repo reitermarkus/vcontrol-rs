@@ -1,8 +1,11 @@
 /target
 Cargo.lock
 
+codegen/.bundle
 codegen/*.yml
 codegen/Vitosoft300SID1_Setup
 codegen/Vitosoft300SID1_Setup.exe
 codegen/src
+codegen/nrbf-cache.json
+codegen/nrbf.py
 scan-cache.yml
