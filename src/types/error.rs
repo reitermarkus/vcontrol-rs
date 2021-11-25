@@ -2,6 +2,7 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
+use crate::Device;
 use super::SysTime;
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -17,6 +18,10 @@ impl Error {
 
   pub fn index(&self) -> u8 {
     self.index
+  }
+
+  pub fn to_str(&self, device: &Device) -> Option<&'static str> {
+    device.errors().get(&(self.index as i32)).cloned()
   }
 
   pub fn time(&self) -> &SysTime {

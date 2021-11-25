@@ -40,14 +40,18 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
             Value::Int(n) => print!("{}", n),
             Value::Double(n) => print!("{}", n),
             Value::Array(array) => print!("{:?}", array),
-            value => print!("{:?}", value),
+            Value::SysTime(time) => print!("{}", time),
+            Value::Error(error) => print!("{} - {}", error.time(), error.to_str(vcontrol.device()).unwrap()),
+            Value::CycleTimes(cycle_times) => print!("{:#?}", cycle_times),
+            Value::String(string) => print!("{}", string),
+            Value::Empty => (),
           }
 
           match value_meta {
             ValueMeta::None => (),
             ValueMeta::Unit(unit) => print!(" {}", unit),
             ValueMeta::Mapping(mapping) => if let Value::Int(value) = value {
-              print!(": {:?}", mapping.get(&(value as i32)));
+              print!(": {}", mapping.get(&(value as i32)).unwrap());
             }
           }
 

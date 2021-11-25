@@ -417,42 +417,18 @@ def map_data_type(type_id, type)
   end
 end
 
-def map_factor(type)
-  case conversion = type['conversion']
-  when 'NoConversion', nil then nil
-  when 'Div2' then 2
-  when 'Div10' then 10
-  when 'Div100' then 100
-  when 'Div1000' then 1000
-  when 'Sec2Hour' then 3600
-  when 'Mult2' then 0.5
-  when 'Mult5' then 0.2
-  when 'Mult10' then 0.1
-  when 'Mult100' then 0.01
-  when 'MultOffset' then
-    factor = type.fetch('conversion_factor')
-    offset = type.fetch('conversion_offset', 0).to_f
-    factor.to_f * (10 ** offset)
-  when 'DateBCD' then nil
-  when 'DateTimeBCD' then nil
-  when 'RotateBytes' then nil
-  when 'HourDiffSec2Hour' then nil
-  when 'UTCDiff2Month' then nil
-  when 'HexByte2AsciiByte' then nil
-  when 'Estrich' then nil
-  when 'FixedStringTerminalZeroes' then nil
-  when 'HexByte2DecimalByte' then nil
-  when 'Sec2Minute' then nil
-  when 'LastBurnerCheck' then nil
-  when 'LastCheckInterval' then nil
-  when 'DayToDate' then nil
-  when 'HexByte2UTF16Byte' then nil
-  when 'DayMonthBCD' then nil
-  when 'HexByte2Version' then nil
-  when 'IPAddress' then nil
-  when 'GWG_2010_Kennung~0x00F9' then nil
+def map_conversion(conversion)
+  case conversion
+  when 'NoConversion', 'GWG_2010_Kennung~0x00F9', nil
+    'None'
+  when 'IPAddress'
+    'IpAddress'
+  when /\AMult/
+    conversion.sub(/\AMult/, 'Mul')
+  when 'HexByte2UTF16Byte'
+    'HexByte2Utf16Byte'
   else
-    raise "No factor for conversion '#{conversion}'."
+    conversion
   end
 end
 
@@ -479,7 +455,9 @@ def type_to_command(type_id, type, mappings:, translations:)
   command['data_type'] = data_type
   command['raw_type'] = raw_type
   command['unit'] = type['unit']
-  command['factor'] = map_factor(type)
+  command['conversion'] = map_conversion(type['conversion'])
+  command['conversion_factor'] = type['conversion_factor']
+  command['conversion_offset'] = type['conversion_offset']
   command['block_len'] = type.fetch('block_length')
   command['byte_len'] = type.fetch('byte_length')
   command['byte_pos'] = type.fetch('byte_position')
@@ -525,16 +503,4 @@ task :default => [USED_DEVICES, USED_COMMANDS, USED_MAPPINGS, USED_TRANSLATIONS]
 
 task :clean do
   rm Dir.glob('*.yml')
-end
-
-def conversion_to_type(conversion, factor, offset)
-  return conversion if factor.nil? && offset.nil?
-
-  if conversion == 'MultOffset' && !factor.nil? && offset.nil?
-    if factor == (integer_factor = Integer(factor))
-      return "Mult#{integer_factor}"
-    end
-  end
-
-  raise "Conversion #{[conversion, factor, offset]} is not implemented."
 end

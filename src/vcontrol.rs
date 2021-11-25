@@ -125,7 +125,7 @@ impl VControl {
   /// Sets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
-  pub fn set(&mut self, command: &str, input: &Value) -> Result<(), Error> {
+  pub fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
     self.renegotiate()?;
 
     if let Some(command) = self.device.command(command) {

@@ -240,7 +240,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
         else
           value
         end
-      when  /^fc_(read|write)$/
+      when /^fc_(read|write)$/
         parse_fc(value)
       else
         value
@@ -257,7 +257,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     v['event_types'] = v.fetch('event_types').map { |id|
       map_event_type_name(event_types.fetch(id).fetch('name'))
     }
-    [datapoint_type_id, v]
+    [datapoint_type_id, v.compact]
   }.to_h
 
   event_value_types = event_value_types.map { |k, v|
@@ -312,13 +312,13 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     next if event_type_id.start_with?('Node_')
     next if event_type_id.start_with?('nciNet')
 
-    value_types = v.fetch('value_types')&.reduce({}) { |h, value_type|
+    value_types = v.delete('value_types')&.reduce({}) { |h, value_type|
       h.deep_merge!(event_value_types.fetch(value_type).deep_dup)
     }
 
     v.merge!(value_types) if value_types
 
-    [event_type_id, v]
+    [event_type_id, v.compact]
   }.compact.to_h.compact
 
   datapoint_definitions = {
@@ -338,7 +338,6 @@ file DATAPOINT_TYPES => [DATAPOINT_DEFINITIONS, DATAPOINT_TYPES_RAW] do |t|
     next if device_id.start_with?('BESS')
     next if device_id.start_with?('CU401B')
     next if device_id == 'EA2'
-    next if device_id == 'VCaldens'
     next if device_id == 'VirtualHydraulicCalibration'
     next if device_id == 'puffermgm'
     next if device_id.start_with?('DEKATEL_')

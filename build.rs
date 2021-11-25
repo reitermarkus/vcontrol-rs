@@ -152,7 +152,9 @@ pub struct Command {
   byte_pos: Option<usize>,
   bit_pos: usize,
   bit_len: usize,
-  factor: Option<f64>,
+  conversion: String,
+  conversion_factor: Option<f64>,
+  conversion_offset: Option<f64>,
   unit: Option<String>,
   mapping: Option<String>,
 }
@@ -169,6 +171,18 @@ impl fmt::Debug for Command {
       "None".into()
     };
 
+    let conversion = if self.conversion == "MulOffset" {
+      #[derive(Debug)]
+      struct MulOffset {
+        factor: f64,
+        offset: f64,
+      }
+
+      format!("{:?}", MulOffset { factor: self.conversion_factor.unwrap_or(1.0), offset: self.conversion_offset.unwrap_or(0.0) })
+    } else {
+      self.conversion.to_owned()
+    };
+
     f.debug_struct("Command")
        .field("addr", &format_args!("0x{:04X}", self.addr))
        .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
@@ -179,7 +193,7 @@ impl fmt::Debug for Command {
        .field("byte_pos", &byte_pos)
        .field("bit_len", &self.bit_len)
        .field("bit_pos", &self.bit_pos)
-       .field("factor", &self.factor)
+       .field("conversion", &format_args!("crate::Conversion::{}", conversion))
        .field("unit", &self.unit)
        .field("mapping", &format_args!("{}", mapping))
        .finish()

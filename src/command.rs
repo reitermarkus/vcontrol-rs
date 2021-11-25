@@ -1,7 +1,7 @@
 use phf;
 use serde::de::{self, Deserialize, Deserializer};
 
-use crate::{Error, Optolink, protocol::Protocol, DataType, RawType, Value};
+use crate::{Conversion, Error, Optolink, protocol::Protocol, DataType, RawType, Value};
 
 #[derive(Debug, Clone, Copy)]
 pub enum AccessMode {
@@ -52,7 +52,7 @@ pub struct Command {
   pub byte_pos: usize,
   pub bit_pos: usize,
   pub bit_len: usize,
-  pub factor: Option<f64>,
+  pub conversion: Conversion,
   pub unit: Option<&'static str>,
   pub mapping: Option<phf::map::Map<i32, &'static str>>,
 }
@@ -68,16 +68,16 @@ impl Command {
     let mut buf = vec![0; self.block_len];
     protocol.get(o, self.addr, &mut buf)?;
 
-    self.data_type.bytes_to_output(self.raw_type, &buf[self.byte_pos..(self.byte_pos + self.byte_len)], self.factor, self.bit_pos, self.bit_len)
+    self.data_type.bytes_to_output(self.raw_type, &buf[self.byte_pos..(self.byte_pos + self.byte_len)], &self.conversion, self.bit_pos, self.bit_len)
   }
 
-  pub fn set(&self, o: &mut Optolink, protocol: Protocol, input: &Value) -> Result<(), Error> {
+  pub fn set(&self, o: &mut Optolink, protocol: Protocol, input: Value) -> Result<(), Error> {
     log::trace!("Command::set(…)");
 
     if !self.mode.is_write() {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)))
     }
 
-    protocol.set(o, self.addr, &self.data_type.input_to_bytes(input, self.raw_type, self.factor)?).map_err(Into::into)
+    protocol.set(o, self.addr, &self.data_type.input_to_bytes(input, self.raw_type, &self.conversion)?).map_err(Into::into)
   }
 }

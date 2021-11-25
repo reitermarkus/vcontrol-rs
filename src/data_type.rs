@@ -3,7 +3,7 @@ use std::mem;
 use phf;
 use serde::Deserialize;
 
-use crate::{Error, Value, RawType, types::{self, SysTime, CycleTimes}};
+use crate::{Conversion, Error, Value, RawType, types::{self, SysTime, CycleTimes}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -18,12 +18,12 @@ pub enum DataType {
 }
 
 impl DataType {
-  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], factor: Option<f64>, bit_pos: usize, bit_len: usize) -> Result<Value, Error> {
+  pub fn bytes_to_output(&self, raw_type: RawType, bytes: &[u8], conversion: &Conversion, bit_pos: usize, bit_len: usize) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty)
     }
 
-    Ok(match self {
+    let mut value = match self {
       Self::SysTime => Value::SysTime(SysTime::from_bytes(bytes)),
       Self::CycleTimes => Value::CycleTimes(CycleTimes::from_bytes(bytes)),
       Self::Error => Value::Error(types::Error::from_bytes(bytes)),
@@ -62,14 +62,20 @@ impl DataType {
 
         match t {
           Self::Int => Value::Int(n),
-          Self::Double => Value::Double(n as f64 / factor.unwrap_or(1.0)),
+          Self::Double => Value::Double(n as f64),
           _ => unreachable!(),
         }
       }
-    })
+    };
+
+    conversion.convert(&mut value);
+
+    Ok(value)
   }
 
-  pub fn input_to_bytes(&self, input: &Value, raw_type: RawType, factor: Option<f64>) -> Result<Vec<u8>, Error> {
+  pub fn input_to_bytes(&self, mut input: Value, raw_type: RawType, conversion: &Conversion) -> Result<Vec<u8>, Error> {
+    conversion.convert_back(&mut input);
+
     Ok(match self {
       Self::SysTime => {
         if let Value::SysTime(systime) = input {
@@ -87,8 +93,6 @@ impl DataType {
       },
       _ => {
         if let Value::Double(n) = input {
-          let n = n * factor.unwrap_or(1.0);
-
           match raw_type {
             RawType::I8  => (n as i8).to_le_bytes().to_vec(),
             RawType::I16 => (n as i16).to_le_bytes().to_vec(),

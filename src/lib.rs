@@ -31,3 +31,6 @@ pub use crate::data_type::DataType;
 
 mod raw_type;
 pub use crate::raw_type::RawType;
+
+mod conversion;
+pub use crate::conversion::Conversion;
