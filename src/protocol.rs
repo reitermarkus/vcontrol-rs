@@ -1,3 +1,4 @@
+use std::fmt;
 use std::io;
 
 use crate::Optolink;
@@ -50,5 +51,14 @@ impl Protocol {
       Self::Vs1 => Vs1::set(o, addr, value),
       Self::Vs2 => Vs2::set(o, addr, value),
     }
+  }
+}
+
+impl fmt::Display for Protocol {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    match self {
+      Self::Vs1 => "VS1",
+      Self::Vs2 => "VS2",
+    }.fmt(f)
   }
 }

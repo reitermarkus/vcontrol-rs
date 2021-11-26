@@ -15,9 +15,7 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
 
   let mut vcontrol = VControl::connect(optolink)?;
 
-  println!("Protocol: {:?}", vcontrol.protocol());
-  println!("Device: {:?}", vcontrol.device().name());
-  println!();
+  log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
 
   let commands = vcontrol.device().commands();
   let mut keys = commands.keys().collect::<Vec<_>>();
