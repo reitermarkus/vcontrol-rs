@@ -16,19 +16,6 @@ readme = "ReadMe.md"
 [features]
 cli = ["clap", "serde_json", "env_logger"]
 
-[[bin]]
-name = "vcontrol"
-path = "src/bin/vcontrol.rs"
-required-features = ["cli"]
-
-[[bin]]
-name = "vclient"
-path = "src/bin/vclient.rs"
-required-features = ["cli"]
-
-[lib]
-name = "vcontrol"
-
 [dependencies]
 clap = { version = "2.33", optional = true }
 chrono = "0.4"
