@@ -6,6 +6,8 @@ use serde_json;
 use vcontrol::{Optolink, VControl, Value};
 
 fn main() {
+  env_logger::init();
+
   let app = App::new("vcontrol")
               .version(crate_version!())
               .setting(ArgRequiredElseHelp)
@@ -84,7 +86,7 @@ fn main() {
 
     let value: Value = serde_json::from_str(&value).unwrap_or(Value::String(value.to_string()));
 
-    match vcontrol.set(command, &value) {
+    match vcontrol.set(command, value) {
       Ok(()) => {},
       Err(err) => {
         eprintln!("Error: {}", err);

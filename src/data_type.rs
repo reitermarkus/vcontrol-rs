@@ -33,35 +33,28 @@ impl DataType {
       },
       Self::Array => Value::Array(bytes.to_vec()),
       t => {
-        macro_rules! int_from_bytes {
-          ($ty:ty) => {{
-            let mut n: $ty = 0;
+        let mut n: i32 = 0;
+        #[allow(arithmetic_overflow)]
+        for (i, &b) in bytes.into_iter().rev().enumerate() {
+          n = (n << 8) | (b as i32);
+        }
 
-            #[allow(arithmetic_overflow)]
-            for (i, &b) in bytes.into_iter().rev().enumerate() {
-              n = (n << 8) | (b as $ty);
-            }
-
-            if bit_len > 0 {
-              n = ((n << bit_pos) >> (bytes.len() * 8 - bit_len))
-            }
-
-            n as i64
-          }}
+        if bit_len > 0 {
+          n = ((n << bit_pos) >> (bytes.len() * 8 - bit_len))
         }
 
         let n = match raw_type {
-          RawType::I8 =>  int_from_bytes!(i8),
-          RawType::I16 => int_from_bytes!(i16),
-          RawType::I32 => int_from_bytes!(i32),
-          RawType::U8 =>  int_from_bytes!(u8),
-          RawType::U16 => int_from_bytes!(u16),
-          RawType::U32 => int_from_bytes!(u32),
+          RawType::I8 =>  n as i8 as i64,
+          RawType::I16 => n as i16 as i64,
+          RawType::I32 => n as i32 as i64,
+          RawType::U8 =>  n as u8 as i64,
+          RawType::U16 => n as u16 as i64,
+          RawType::U32 => n as u32 as i64,
           RawType::Array => unreachable!(),
         };
 
         match t {
-          Self::Int => Value::Int(n),
+          Self::Int => Value::Int(n as i64),
           Self::Double => Value::Double(n as f64),
           _ => unreachable!(),
         }

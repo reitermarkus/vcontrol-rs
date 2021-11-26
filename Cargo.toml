@@ -14,7 +14,7 @@ license = "MIT OR Apache-2.0"
 readme = "ReadMe.md"
 
 [features]
-cli = ["clap", "serde_json"]
+cli = ["clap", "serde_json", "env_logger"]
 
 [[bin]]
 name = "vcontrol"
