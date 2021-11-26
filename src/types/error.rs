@@ -3,16 +3,16 @@ use std::fmt;
 use serde::{Serialize, Deserialize};
 
 use crate::Device;
-use super::SysTime;
+use super::DateTime;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Error {
   index: u8,
-  time: SysTime,
+  time: DateTime,
 }
 
 impl Error {
-  pub fn new(index: u8, time: SysTime) -> Self {
+  pub fn new(index: u8, time: DateTime) -> Self {
     Self { index, time }
   }
 
@@ -24,13 +24,13 @@ impl Error {
     device.errors().get(&(self.index as i32)).cloned()
   }
 
-  pub fn time(&self) -> &SysTime {
+  pub fn time(&self) -> &DateTime {
     &self.time
   }
 
   pub fn from_bytes(bytes: &[u8]) -> Self {
     let index = bytes[0];
-    let time = SysTime::from_bytes(&bytes[1..]);
+    let time = DateTime::from_bytes(&bytes[1..]);
 
     Self { index, time }
   }
@@ -64,7 +64,7 @@ mod tests {
 
   #[test]
   fn new() {
-    let time = SysTime::new(2018, 12, 23, 17, 49, 31);
+    let time = DateTime::new(2018, 12, 23, 17, 49, 31);
     let error = Error::new(0xAC, time.clone());
 
     assert_eq!(error.index, 0xAC);
@@ -93,7 +93,7 @@ mod tests {
 
   #[test]
   fn to_bytes() {
-    let time = SysTime::new(2018, 12, 23, 17, 49, 31);
+    let time = DateTime::new(2018, 12, 23, 17, 49, 31);
     let error = Error::new(0xAC, time);
 
     assert_eq!(error.to_bytes(), [0xAC, 0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);

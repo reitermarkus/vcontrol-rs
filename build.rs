@@ -211,11 +211,11 @@ pub enum AccessMode {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DataType {
+  String,
   Int,
   Double,
-  String,
   Array,
-  SysTime,
+  DateTime,
   CycleTimes,
   Error,
 }

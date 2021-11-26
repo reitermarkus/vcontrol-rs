@@ -346,7 +346,7 @@ def map_data_type(type_id, type)
 
   data_type, raw_type = case unit = [type['sdk_data_type'], type['parameter']]
   when ['DateTime', 'Array']
-    ['sys_time', 'array']
+    ['date_time', 'array']
   when ['Byte', 'Byte'], ['Int', 'Byte'], ['Byte', 'Int']
     ["int", "u8"]
   when ['Int', 'Int']
@@ -425,6 +425,8 @@ def map_conversion(conversion)
     'IpAddress'
   when /\AMult/
     conversion.sub(/\AMult/, 'Mul')
+  when /BCD\Z/
+    conversion.sub(/BCD\Z/, 'Bcd')
   when 'HexByte2UTF16Byte'
     'HexByte2Utf16Byte'
   else

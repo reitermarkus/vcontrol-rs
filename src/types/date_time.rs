@@ -17,10 +17,10 @@ fn dec_to_byte(dec: u8) -> u8 {
 }
 
 #[derive(Clone)]
-pub struct SysTime([u8; 8]);
+pub struct DateTime([u8; 8]);
 
-impl SysTime {
-  pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> SysTime {
+impl DateTime {
+  pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> DateTime {
     NaiveDate::from_ymd(year.into(), month.into(), day.into()).and_hms(hour.into(), minute.into(), second.into()).into()
   }
 
@@ -61,60 +61,60 @@ impl SysTime {
   }
 }
 
-impl From<SysTime> for NaiveDateTime {
-  fn from(systime: SysTime) -> NaiveDateTime {
+impl From<DateTime> for NaiveDateTime {
+  fn from(date_time: DateTime) -> NaiveDateTime {
     NaiveDate::from_ymd(
-      systime.year().into(),
-      systime.month().into(),
-      systime.day().into(),
+      date_time.year().into(),
+      date_time.month().into(),
+      date_time.day().into(),
     ).and_hms(
-      systime.hour().into(),
-      systime.minute().into(),
-      systime.second().into(),
+      date_time.hour().into(),
+      date_time.minute().into(),
+      date_time.second().into(),
     )
   }
 }
 
-impl From<NaiveDateTime> for SysTime {
-  fn from(datetime: NaiveDateTime) -> SysTime {
-    SysTime([
-      dec_to_byte((datetime.year() / 100) as u8),
-      dec_to_byte((datetime.year() % 100) as u8),
-      dec_to_byte(datetime.month() as u8),
-      dec_to_byte(datetime.day() as u8),
-      datetime.weekday().number_from_monday() as u8,
-      dec_to_byte(datetime.hour() as u8),
-      dec_to_byte(datetime.minute() as u8),
-      dec_to_byte(datetime.second() as u8),
+impl From<NaiveDateTime> for DateTime {
+  fn from(date_time: NaiveDateTime) -> DateTime {
+    DateTime([
+      dec_to_byte((date_time.year() / 100) as u8),
+      dec_to_byte((date_time.year() % 100) as u8),
+      dec_to_byte(date_time.month() as u8),
+      dec_to_byte(date_time.day() as u8),
+      date_time.weekday().number_from_monday() as u8,
+      dec_to_byte(date_time.hour() as u8),
+      dec_to_byte(date_time.minute() as u8),
+      dec_to_byte(date_time.second() as u8),
     ])
   }
 }
 
-impl FromStr for SysTime {
+impl FromStr for DateTime {
   type Err = chrono::format::ParseError;
 
-  fn from_str(s: &str) -> Result<SysTime, Self::Err> {
+  fn from_str(s: &str) -> Result<DateTime, Self::Err> {
     NaiveDateTime::from_str(s).map(Into::into)
   }
 }
 
-impl<'de> Deserialize<'de> for SysTime {
-  fn deserialize<D>(deserializer: D) -> Result<SysTime, D::Error>
+impl<'de> Deserialize<'de> for DateTime {
+  fn deserialize<D>(deserializer: D) -> Result<DateTime, D::Error>
   where
       D: Deserializer<'de>,
   {
     let string = String::deserialize(deserializer)?;
-    SysTime::from_str(&string).map_err(de::Error::custom)
+    DateTime::from_str(&string).map_err(de::Error::custom)
   }
 }
 
-impl Serialize for SysTime {
+impl Serialize for DateTime {
   fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
     serializer.serialize_str(&self.to_string())
   }
 }
 
-impl fmt::Display for SysTime {
+impl fmt::Display for DateTime {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}",
       self.year(),
@@ -127,9 +127,9 @@ impl fmt::Display for SysTime {
   }
 }
 
-impl fmt::Debug for SysTime {
+impl fmt::Debug for DateTime {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "SysTime(")?;
+    write!(f, "DateTime(")?;
     fmt::Display::fmt(self, f)?;
     write!(f, ")")
   }
@@ -141,7 +141,7 @@ mod tests {
 
   #[test]
   fn new() {
-    let time = SysTime::new(2018, 12, 23, 17, 49, 31);
+    let time = DateTime::new(2018, 12, 23, 17, 49, 31);
 
     assert_eq!(time.year(), 2018);
     assert_eq!(time.month(), 12);
@@ -154,7 +154,7 @@ mod tests {
 
   #[test]
   fn from_str() {
-    let time = SysTime::from_str("2018-12-23T17:49:31").unwrap();
+    let time = DateTime::from_str("2018-12-23T17:49:31").unwrap();
 
     assert_eq!(time.year(), 2018);
     assert_eq!(time.month(), 12);
@@ -167,7 +167,7 @@ mod tests {
 
   #[test]
   fn from_bytes() {
-    let time = SysTime::from_bytes(&[0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);
+    let time = DateTime::from_bytes(&[0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);
 
     assert_eq!(time.year(), 2018);
     assert_eq!(time.month(), 12);
@@ -180,7 +180,7 @@ mod tests {
 
   #[test]
   fn to_bytes() {
-    let time = SysTime::new(2018, 12, 23, 17, 49, 31);
+    let time = DateTime::new(2018, 12, 23, 17, 49, 31);
     assert_eq!(time.to_bytes(), [0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);
   }
 }

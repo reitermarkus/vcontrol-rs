@@ -55,9 +55,9 @@ pub enum Conversion {
   HexByte2DecimalByte,
   HexByte2Version,
   FixedStringTerminalZeroes,
-  DateBCD,
-  DateTimeBCD,
-  DayMonthBCD,
+  DateBcd,
+  DateTimeBcd,
+  DayMonthBcd,
   DayToDate,
   Estrich,
   RotateBytes,
@@ -117,21 +117,21 @@ impl Conversion {
           _ => unimplemented!(),
         }
       },
-      Self::DateBCD => {
+      Self::DateBcd => {
         match value {
-          Value::SysTime(sys_time) => {
-            let year = sys_time.year();
-            let month = sys_time.month();
-            let day = sys_time.day();
+          Value::DateTime(date_time) => {
+            let year = date_time.year();
+            let month = date_time.month();
+            let day = date_time.day();
 
             *value = Value::String(format!("{:04}-{:02}-{:02}", year, month, day));
           },
           _ => unimplemented!(),
         }
       },
-      Self::DateTimeBCD => {
+      Self::DateTimeBcd => {
         match value {
-          Value::SysTime(_) => (),
+          Value::DateTime(_) => (),
           _ => unimplemented!(),
         }
       },

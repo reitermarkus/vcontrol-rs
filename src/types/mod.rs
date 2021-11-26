@@ -7,5 +7,5 @@ pub use self::device_ident::DeviceIdent;
 mod error;
 pub use self::error::Error;
 
-mod sys_time;
-pub use self::sys_time::SysTime;
+mod date_time;
+pub use self::date_time::DateTime;
