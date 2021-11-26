@@ -267,13 +267,13 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
     v = case data_type = v.fetch('data_type')
     when 'DateTime'
-      { 'value_type' => 'sys_time' }
+      { 'value_type' => 'date_time' }
     when 'Binary'
       case v.fetch('name')
       when 'ecnsysEventType~Error'
         { 'value_type' => 'error' }
       when 'Mapping~Schaltzeiten'
-        { 'value_type' => 'cycle_times' }
+        { 'value_type' => 'circuit_times' }
       else
         { 'value_type' => 'array' }
       end
