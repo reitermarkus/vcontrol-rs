@@ -6,12 +6,23 @@ use crate::Optolink;
 const RESET: u8 = 0x04;
 const SYNC: u8  = 0x05;
 
-#[derive(Debug)]
-pub enum Kw2 {}
+#[non_exhaustive]
+#[repr(u8)]
+enum Function {
+  VirtualRead = 247,
+  VirtualWrite = 244,
+  GfaRead = 107,
+  GfaWrite = 104,
+  ProcessRead = 123,
+  ProcessWrite = 120,
+}
 
-impl Kw2 {
+#[derive(Debug)]
+pub enum Vs1 {}
+
+impl Vs1 {
   fn sync(o: &mut Optolink) -> Result<(), std::io::Error> {
-    log::trace!("Kw2::sync(…)");
+    log::trace!("Vs1::sync(…)");
 
     let mut buf = [0xff];
 
@@ -21,7 +32,7 @@ impl Kw2 {
     Self::negotiate(o)?;
 
     loop {
-      log::trace!("Kw2::sync(…) loop");
+      log::trace!("Vs1::sync(…) loop");
 
       if o.read_exact(&mut buf).is_ok() && buf == [SYNC] {
         o.purge()?;
@@ -39,7 +50,7 @@ impl Kw2 {
   }
 
   pub fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
-    log::trace!("Kw2::negotiate(…)");
+    log::trace!("Vs1::negotiate(…)");
 
     o.purge()?;
     o.write_all(&[RESET])?;
@@ -49,10 +60,10 @@ impl Kw2 {
   }
 
   pub fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
-    log::trace!("Kw2::get(…)");
+    log::trace!("Vs1::get(…)");
 
     let mut vec = Vec::new();
-    vec.extend(&[0x01, 0xf7]);
+    vec.extend(&[0x01, Function::VirtualRead as u8]);
     vec.extend(addr.to_be_bytes());
     vec.extend(&[buf.len() as u8]);
 
@@ -61,7 +72,7 @@ impl Kw2 {
     Self::sync(o)?;
 
     loop {
-      log::trace!("Kw2::get(…) loop");
+      log::trace!("Vs1::get(…) loop");
 
       o.write_all(&vec)?;
       o.flush()?;
@@ -77,8 +88,8 @@ impl Kw2 {
       if buf.iter().any(|byte| *byte == SYNC) {
         let read_time = stop - read_start;
 
-        log::debug!("Kw2::get(…) buf = {}", buf.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" "));
-        log::debug!("Kw2::get(…) read_time = {:?}", read_time);
+        log::debug!("Vs1::get(…) buf = {}", buf.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" "));
+        log::debug!("Vs1::get(…) read_time = {:?}", read_time);
 
         // Return `Ok` if the response was received in a short amount of time,
         // since then they most likely are not synchronization bytes.
@@ -100,10 +111,10 @@ impl Kw2 {
   }
 
   pub fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
-    log::trace!("Kw2::set(…)");
+    log::trace!("Vs1::set(…)");
 
     let mut vec = Vec::new();
-    vec.extend(&[0x01, 0xf4]);
+    vec.extend(&[0x01, Function::VirtualWrite as u8]);
     vec.extend(addr.to_be_bytes());
     vec.extend(&[value.len() as u8]);
     vec.extend(value);

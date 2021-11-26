@@ -26,7 +26,7 @@ impl VControl {
       log::debug!("Protocol detected: {:?}", protocol);
       (true, protocol)
     } else {
-      let protocol = Protocol::Kw2;
+      let protocol = Protocol::Vs1;
       log::warn!("No protocol detected, defaulting to {:?}.", protocol);
       (false, protocol)
     };
