@@ -34,13 +34,24 @@ impl DataType {
       Self::Array => Value::Array(bytes.to_vec()),
       t => {
         let mut n: i32 = 0;
-        #[allow(arithmetic_overflow)]
-        for (i, &b) in bytes.into_iter().rev().enumerate() {
-          n = (n << 8) | (b as i32);
-        }
 
         if bit_len > 0 {
-          n = ((n << bit_pos) >> (bytes.len() * 8 - bit_len))
+          for i in 0..bit_len {
+            let byte = (bit_pos + i) / 8;
+            let bit = (bit_pos + i) % 8;
+            let bit_mask = 1 << (8 - bit);
+
+            if (bytes[byte] & bit_mask) == 0 {
+              n <<= 1;
+            } else {
+              n = (n << 1) | 0b1;
+            }
+          }
+        } else {
+          #[allow(arithmetic_overflow)]
+          for &b in bytes.into_iter().rev() {
+            n = (n << 8) | (b as i32);
+          }
         }
 
         let n = match raw_type {
