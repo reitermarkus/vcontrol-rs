@@ -9,13 +9,21 @@ use serde::{Deserialize, de::DeserializeOwned};
 use serde_yaml;
 use phf_codegen;
 
-#[path = "src/raw_type.rs"]
-mod raw_type;
-use raw_type::RawType;
+#[path = "src/access_mode.rs"]
+mod access_mode;
+use access_mode::AccessMode;
 
 #[path = "src/device_ident_range.rs"]
 mod device_ident_range;
 use device_ident_range::DeviceIdentRange;
+
+#[path = "src/data_type.rs"]
+mod data_type;
+use data_type::DataType;
+
+#[path = "src/parameter.rs"]
+mod parameter;
+use parameter::Parameter;
 
 fn escape_const_name(s: &str) -> String {
   s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("%", "PROZENT")
@@ -146,10 +154,10 @@ pub struct Command {
   addr: u16,
   mode: AccessMode,
   data_type: DataType,
-  raw_type: RawType,
-  block_len: Option<usize>,
-  byte_len: Option<usize>,
-  byte_pos: Option<usize>,
+  parameter: Parameter,
+  block_len: usize,
+  byte_len: usize,
+  byte_pos: usize,
   bit_pos: usize,
   bit_len: usize,
   conversion: String,
@@ -161,10 +169,6 @@ pub struct Command {
 
 impl fmt::Debug for Command {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    let block_len = self.block_len.or_else(|| self.raw_type.size()).unwrap();
-    let byte_len = self.byte_len.or_else(|| self.raw_type.size()).unwrap();
-    let byte_pos = self.byte_pos.unwrap_or(0);
-
     let mapping = if let Some(mapping) = &self.mapping {
       format!("Some(MAPPING_{})", escape_const_name(&mapping))
     } else {
@@ -187,10 +191,10 @@ impl fmt::Debug for Command {
        .field("addr", &format_args!("0x{:04X}", self.addr))
        .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
        .field("data_type", &format_args!("crate::DataType::{:?}", self.data_type))
-       .field("raw_type", &format_args!("crate::RawType::{:?}", self.raw_type))
-       .field("block_len", &block_len)
-       .field("byte_len", &byte_len)
-       .field("byte_pos", &byte_pos)
+       .field("parameter", &format_args!("crate::Parameter::{:?}", self.parameter))
+       .field("block_len", &self.block_len)
+       .field("byte_len", &self.byte_len)
+       .field("byte_pos", &self.byte_pos)
        .field("bit_len", &self.bit_len)
        .field("bit_pos", &self.bit_pos)
        .field("conversion", &format_args!("crate::Conversion::{}", conversion))
@@ -198,24 +202,4 @@ impl fmt::Debug for Command {
        .field("mapping", &format_args!("{}", mapping))
        .finish()
   }
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AccessMode {
-  Read,
-  Write,
-  ReadWrite,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum DataType {
-  String,
-  Int,
-  Double,
-  Array,
-  DateTime,
-  CircuitTimes,
-  Error,
 }

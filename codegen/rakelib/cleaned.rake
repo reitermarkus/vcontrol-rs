@@ -267,32 +267,33 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
     v = case data_type = v.fetch('data_type')
     when 'DateTime'
-      { 'value_type' => 'date_time' }
+      { 'value_type' => 'DateTime' }
     when 'Binary'
       case v.fetch('name')
       when 'ecnsysEventType~Error'
-        { 'value_type' => 'error' }
+        { 'value_type' => 'Error' }
       when 'Mapping~Schaltzeiten'
-        { 'value_type' => 'circuit_times' }
+        { 'value_type' => 'CircuitTimes' }
       else
-        { 'value_type' => 'array' }
+        { 'value_type' => 'ByteArray' }
       end
     when 'VarChar', 'NText'
       if v.key?('enum_address_value')
         enum_replace_value = v.fetch('enum_replace_value')
 
         {
-          'value_type' => 'enum',
           'value_list' => {
             v.fetch('enum_address_value') => VALUE_LIST_FIXES.fetch(enum_replace_value, enum_replace_value)
           }
         }
       else
-        { 'value_type' => 'string' }
+        { 'value_type' => 'String' }
       end
     when 'Int', 'Float', 'Bit'
+      data_type = 'Double' if data_type == 'Float'
+
       {
-        'value_type' => data_type.underscore,
+        'value_type' => data_type,
         'lower_border' => v.delete('lower_border'),
         'upper_border' => v.delete('upper_border'),
         'stepping' => v.delete('stepping'),

@@ -340,80 +340,14 @@ def map_command_id(id)
   id.gsub('~', '_')
 end
 
-def map_data_type(type_id, type)
-  byte_length = type.fetch('byte_length')
-  bits = byte_length * 8
-
-  data_type, raw_type = case unit = [type['sdk_data_type'], type['parameter']]
-  when ['DateTime', 'Array']
-    ['date_time', 'array']
-  when ['Byte', 'Byte'], ['Int', 'Byte'], ['Byte', 'Int']
-    ["int", "u8"]
-  when ['Int', 'Int']
-    ["int", 'u16']
-  when ['Int', 'Int4']
-    ["int", "u32"]
-  when ['Int', 'IntHighByteFirst']
-    raise type.inspect if bits != 8
-    ["int", "u8"]
-  when ['Int', 'SByte']
-    ["int", "i8"]
-  when ['Int', 'SInt']
-    ["int", "i16"]
-  when ['Int', 'SInt4']
-    ["int", "i32"]
-  when ['Int', 'SIntHighByteFirst']
-    raise type.inspect if bits != 8
-    ["int", "i8"]
-  when ['Int', 'Array']
-    ['int', "u#{bits}"]
-  when ['Double', 'Byte']
-    ['double', "u8"]
-  when ['Double', 'Int']
-    ['double', "u16"]
-  when ['Double', 'Int4']
-    ['double', "u32"]
-  when ['Double', 'IntHighByteFirst']
-    raise type.inspect if bits != 8
-    ['double', "u8"]
-  when ['Double', 'SByte']
-    ['double', "i8"]
-  when ['Double', 'SInt']
-    ['double', "i16"]
-  when ['Double', 'SIntHighByteFirst']
-    raise type.inspect if bits != 8
-    ['double', "i8"]
-  when ['Double', 'Array']
-    if bits <= 16
-      ['double', "u#{bits}"]
-    else
-      ['double', "u#{bits}"]
-    end
-  when ['ByteArray', 'Byte']
-    ['array', 'u8']
-  when ["ByteArray", "Int"]
-    ['array', "u16"]
-  when ["ByteArray", "Int4"]
-    ['array', "u32"]
-  when ["ByteArray", "SInt"]
-    ['array', "i16"]
-  when ['Binary', 'Byte']
-    ['string', 'array']
-  when ['ByteArray', 'Array'], ['ByteArray', 'String']
-    if type['url'] == "~/Service/DeviceCircuitTimes.aspx"
-      ['circuit_times', 'array']
-    else
-      case type_id
-      when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'
-        ['error', 'array']
-      else
-        ["array", 'array']
-      end
-    end
-  when ['Byte', 'String'], ['String', 'String'], ['String', 'Int4']
-    ['string', 'array']
+def map_parameter(parameter)
+  case parameter
+  when 'StringCR'
+    'StringCr'
+  when 'StringNR'
+    'StringNt'
   else
-    raise "No mapping for type #{unit} for #{type_id}."
+    parameter
   end
 end
 
@@ -453,9 +387,8 @@ def type_to_command(type_id, type, mappings:, translations:)
   command['addr'] = type.fetch('address')
   command['mode'] = type.fetch('access_mode')
 
-  data_type, raw_type = map_data_type(type_id, type)
-  command['data_type'] = data_type
-  command['raw_type'] = raw_type
+  command['data_type'] = type.fetch('value_type', type['sdk_data_type'])
+  command['parameter'] = map_parameter(type['parameter'])
   command['unit'] = type['unit']
   command['conversion'] = map_conversion(type['conversion'])
   command['conversion_factor'] = type['conversion_factor']
