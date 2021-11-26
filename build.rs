@@ -216,6 +216,6 @@ pub enum DataType {
   Double,
   Array,
   DateTime,
-  CycleTimes,
+  CircuitTimes,
   Error,
 }

@@ -3,7 +3,7 @@ use std::mem;
 use phf;
 use serde::Deserialize;
 
-use crate::{Conversion, Error, Value, RawType, types::{self, DateTime, CycleTimes}};
+use crate::{Conversion, Error, Value, RawType, types::{self, DateTime, CircuitTimes}};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -12,7 +12,7 @@ pub enum DataType {
   Int,
   Double,
   DateTime,
-  CycleTimes,
+  CircuitTimes,
   Error,
   Array,
 }
@@ -25,7 +25,7 @@ impl DataType {
 
     let mut value = match self {
       Self::DateTime => Value::DateTime(DateTime::from_bytes(bytes)),
-      Self::CycleTimes => Value::CycleTimes(CycleTimes::from_bytes(bytes)),
+      Self::CircuitTimes => Value::CircuitTimes(CircuitTimes::from_bytes(bytes)),
       Self::Error => Value::Error(types::Error::from_bytes(bytes)),
       Self::String => {
         let end = bytes.iter().position(|&c| c == b'\0').unwrap_or(bytes.len());
@@ -88,11 +88,11 @@ impl DataType {
           return Err(Error::InvalidArgument(format!("expected DateTime, found {:?}", input)))
         }
       },
-      Self::CycleTimes => {
-        if let Value::CycleTimes(cycletimes) = input {
+      Self::CircuitTimes => {
+        if let Value::CircuitTimes(cycletimes) = input {
           cycletimes.to_bytes().to_vec()
         } else {
-          return Err(Error::InvalidArgument(format!("expected CycleTimes, found {:?}", input)))
+          return Err(Error::InvalidArgument(format!("expected CircuitTimes, found {:?}", input)))
         }
       },
       _ => {

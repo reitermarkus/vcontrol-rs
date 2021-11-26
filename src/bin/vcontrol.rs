@@ -71,7 +71,7 @@ fn main() {
 
     match vcontrol.get(command) {
       Ok((output, _)) => {
-        println!("{}", serde_json::to_string(&output).unwrap());
+        println!("{}", serde_json::to_string_pretty(&output).unwrap());
       },
       Err(err) => {
         eprintln!("Error: {}", err);

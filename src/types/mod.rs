@@ -1,5 +1,5 @@
-mod cycle_time;
-pub use self::cycle_time::{CycleTime, CycleTimes};
+mod circuit_time;
+pub use self::circuit_time::{CircuitTime, CircuitTimes};
 
 mod device_ident;
 pub use self::device_ident::DeviceIdent;

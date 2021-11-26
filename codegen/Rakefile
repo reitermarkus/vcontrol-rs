@@ -401,7 +401,7 @@ def map_data_type(type_id, type)
     ['string', 'array']
   when ['ByteArray', 'Array'], ['ByteArray', 'String']
     if type['url'] == "~/Service/DeviceCircuitTimes.aspx"
-      ['cycle_times', 'array']
+      ['circuit_times', 'array']
     else
       case type_id
       when /Fehlerhistorie\d$/, 'ecnsysErrorBuffer', 'ecnsysEventType~ErrorIndex'

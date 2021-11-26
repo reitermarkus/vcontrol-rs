@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
             Value::Array(array) => print!("{:?}", array),
             Value::DateTime(date_time) => print!("{}", date_time),
             Value::Error(error) => print!("{} - {}", error.time(), error.to_str(vcontrol.device()).unwrap()),
-            Value::CycleTimes(cycle_times) => print!("{:#?}", cycle_times),
+            Value::CircuitTimes(cycle_times) => print!("{:#?}", cycle_times),
             Value::String(string) => print!("{}", string),
             Value::Empty => (),
           }
