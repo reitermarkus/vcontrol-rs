@@ -144,12 +144,12 @@ impl Command {
       _ => {
         if let Value::Double(n) = input {
           match self.parameter {
-            Parameter::Byte  => (n as u8).to_le_bytes().to_vec(),
+            Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
             Parameter::Int => (n as u16).to_le_bytes().to_vec(),
             Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
             Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
             Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
-            Parameter::SByte  => (n as i8).to_le_bytes().to_vec(),
+            Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
             Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
             Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
             Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),

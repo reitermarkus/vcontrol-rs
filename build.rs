@@ -163,6 +163,8 @@ pub struct Command {
   conversion: String,
   conversion_factor: Option<f64>,
   conversion_offset: Option<f64>,
+  lower_border: Option<f64>,
+  upper_border: Option<f64>,
   unit: Option<String>,
   mapping: Option<String>,
 }
@@ -182,7 +184,10 @@ impl fmt::Debug for Command {
         offset: f64,
       }
 
-      format!("{:?}", MulOffset { factor: self.conversion_factor.unwrap_or(1.0), offset: self.conversion_offset.unwrap_or(0.0) })
+      format!("{:?}", MulOffset {
+        factor: self.conversion_factor.unwrap_or(1.0),
+        offset: self.conversion_offset.unwrap_or(0.0),
+      })
     } else {
       self.conversion.to_owned()
     };
