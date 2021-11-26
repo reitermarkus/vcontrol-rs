@@ -82,7 +82,7 @@ impl fmt::Display for CircuitTime {
     let mut comma = false;
     for timespan in self.0 {
       if comma {
-        write!(f, ", ");
+        write!(f, ", ")?;
       }
 
       if let Some(timespan) = timespan {
