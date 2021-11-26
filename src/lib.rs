@@ -27,7 +27,7 @@ mod vcontrol;
 pub use crate::vcontrol::*;
 
 mod value;
-pub use crate::value::{Value, ValueMeta};
+pub use crate::value::{Value, OutputValue};
 
 mod data_type;
 pub use crate::data_type::DataType;

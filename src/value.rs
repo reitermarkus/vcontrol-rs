@@ -1,5 +1,6 @@
 use core::convert::Infallible;
 use std::str::FromStr;
+use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
@@ -18,11 +19,42 @@ pub enum Value {
   Empty
 }
 
-#[derive(Debug)]
-pub enum ValueMeta {
-  None,
-  Unit(&'static str),
-  Mapping(&'static phf::map::Map<i32, &'static str>),
+#[derive(Debug, Serialize)]
+pub struct OutputValue {
+  pub value: Value,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub unit: Option<&'static str>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub mapping: Option<&'static phf::map::Map<i32, &'static str>>,
+}
+
+impl fmt::Display for OutputValue {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match &self.value {
+      Value::Int(n) => {
+        if let Some(mapping) = self.mapping {
+          write!(f, "{}", mapping.get(&(*n as i32)).unwrap())?;
+        } else {
+          write!(f, "{}", n)?;
+        }
+      },
+      Value::Double(n) => write!(f, "{}", n)?,
+      Value::Array(array) => write!(f, "{:?}", array)?,
+      Value::DateTime(date_time) => write!(f, "{}", date_time)?,
+      Value::Error(error) => {
+        write!(f, "{}", self.mapping.unwrap().get(&(error.index() as i32)).unwrap())?;
+      },
+      Value::CircuitTimes(cycle_times) => write!(f, "{:#?}", cycle_times)?,
+      Value::String(string) => write!(f, "{}", string)?,
+      Value::Empty => return Ok(()),
+    }
+
+    if let Some(unit) = self.unit {
+      write!(f, " {}", unit)?;
+    }
+
+    Ok(())
+  }
 }
 
 impl FromStr for Value {

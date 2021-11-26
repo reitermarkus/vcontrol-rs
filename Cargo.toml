@@ -33,8 +33,8 @@ name = "vcontrol"
 clap = { version = "2.33", optional = true }
 chrono = "0.4"
 log = "0.4"
-phf = "0.8"
-phf_shared = "0.8"
+phf = { version = "0.10", features = ["serde"] }
+phf_shared = "0.10"
 serial = "0.4"
 serial-core = "0.4"
 serde = { version = "1", features = ["derive"] }
@@ -55,7 +55,11 @@ libc = "0.2"
 
 [build-dependencies]
 chrono = "0.4"
-phf_shared = "0.8"
-phf_codegen = "0.8"
+phf_shared = "0.10"
+phf_codegen = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.8"
+
+[patch.crates-io]
+# phf = { path = "./rust-phf/phf" }
+phf = { git = "https://github.com/reitermarkus/rust-phf", branch = "serialize-map" }

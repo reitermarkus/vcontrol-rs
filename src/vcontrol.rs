@@ -1,5 +1,5 @@
 use crate::types::DeviceIdent;
-use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value, ValueMeta};
+use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value, OutputValue};
 
 /// Representation of an `Optolink` connection to a specific `Device` using a specific `Protocol`.
 #[derive(Debug)]
@@ -87,20 +87,18 @@ impl VControl {
   /// Gets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
-  pub fn get(&mut self, command: &str) -> Result<(Value, ValueMeta), Error> {
+  pub fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
     self.renegotiate()?;
 
     if let Some(command) = self.device.command(command) {
       match command.get(&mut self.optolink, self.protocol) {
         Ok(value) => {
-          let value_meta = if let Value::Error(ref error) = value {
-            ValueMeta::Mapping(self.device.errors())
-          } else if let Some(unit) = command.unit {
-            ValueMeta::Unit(unit)
+          let mapping = if let Value::Error(ref error) = value {
+            Some(self.device.errors())
           } else if let Some(ref mapping) = command.mapping {
-            ValueMeta::Mapping(mapping)
+            Some(mapping)
           } else {
-            ValueMeta::None
+            None
           };
 
           if let (Value::Int(value), Some(mapping)) = (&value, command.mapping.as_ref()) {
@@ -110,7 +108,11 @@ impl VControl {
             }
           }
 
-          Ok((value, value_meta))
+          Ok(OutputValue {
+            value,
+            unit: command.unit,
+            mapping,
+          })
         },
         Err(err) => {
           self.connected = false;
