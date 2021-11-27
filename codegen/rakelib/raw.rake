@@ -8,10 +8,7 @@ include PyCall::Import
 pyimport :io
 
 VITOSOFT_DIR = 'src'
-DATAPOINT_DEFINITION_VERSION_XML                  = "#{VITOSOFT_DIR}/ecnVersion.xml"
 DATAPOINT_DEFINITIONS_XML                         = "#{VITOSOFT_DIR}/DPDefinitions.xml"
-DATAPOINT_TYPES_XML                               = "#{VITOSOFT_DIR}/ecnDataPointType.xml"
-EVENT_TYPES_XML                                   = "#{VITOSOFT_DIR}/ecnEventType.xml"
 SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceIdent.xml"
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
 SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
@@ -23,7 +20,6 @@ file 'nrbf.py' do |t|
   sh 'curl', '-sSfL', 'https://github.com/gurnec/Undo_FFG/raw/HEAD/nrbf.py', '-o', t.name
   chmod '+x', t.name
 end
-
 
 task :import_nrbf => 'nrbf.py' do
   PyCall.sys.path.append Dir.pwd
@@ -65,23 +61,12 @@ end
 
 desc 'convert XML files to raw YAML files'
 task :raw => [
-  DATAPOINT_DEFINITION_VERSION_RAW,
   SYSTEM_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW,
-  DATAPOINT_TYPES_RAW,
   DATAPOINT_DEFINITIONS_RAW,
   TRANSLATIONS_RAW,
 ]
-
-file DATAPOINT_DEFINITION_VERSION_RAW => DATAPOINT_DEFINITION_VERSION_XML do |t|
-  doc = Nokogiri::XML::Document.parse(File.open(t.source))
-  doc.remove_namespaces!
-
-  version = doc.at('/IEDataSet/Version/DataPointDefinitionVersion').text
-
-  File.write t.name, version.to_yaml
-end
 
 def value_if_non_empty(node)
   v = node.text.strip
@@ -210,48 +195,38 @@ file SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW => SYSTEM_DEVICE_IDENTIFI
   File.write t.name, event_types(t.source).to_yaml
 end
 
-file DATAPOINT_TYPES_RAW => DATAPOINT_TYPES_XML do |t|
-  reader = Nokogiri::XML::Reader(File.open(t.source))
-  datapoint_types = reader.map { |node|
-    next unless node.name == 'DataPointType'
-
-    fragment = Nokogiri::XML.fragment(node.inner_xml)
-    next if fragment.children.empty?
-
-    datapoint_type = fragment.children.map { |n|
-      value = case name = n.name.underscore
-      when 'controller_type', 'error_type', 'event_optimisation'
-        Integer(n.text)
-      when 'options'
-        {
-          'undefined' => nil,
-        }.fetch(n.text, n.text)
-      else
-        value_if_non_empty(n)
-      end
-
-      [name, value]
-    }.to_h.compact
-
-    [
-      datapoint_type.delete('id'),
-      datapoint_type,
-    ]
-  }.compact.to_h
-
-  File.write t.name, datapoint_types.sort_by_key.to_yaml
-end
-
 file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
   datapoint_definitions = {}
   event_type_definitions = {}
   event_value_type_definitions = {}
   table_extensions = {}
   table_extension_values = {}
+  versions = {}
 
   reader = Nokogiri::XML::Reader(File.open(t.source))
   reader.each do |node|
     case node.name
+    when 'ecnVersion'
+      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      next if fragment.children.empty?
+
+      version = fragment.children.map do |n|
+        value = case name = n.name.underscore
+        when 'id'
+          Integer(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        when 'name'
+          n.text.strip.underscore
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value]
+      end.to_h.compact
+
+      versions[version.delete('name')] = version.fetch('value')
     when 'ecnDatapointType'
       fragment = Nokogiri::XML.fragment(node.inner_xml)
       next if fragment.children.empty?
@@ -436,6 +411,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
     'event_value_types' => event_value_type_definitions,
     'table_extensions' => table_extensions,
     'table_extension_values' => table_extension_values,
+    'versions' => versions,
   }
 
   File.write t.name, definitions.sort_by_key.to_yaml
