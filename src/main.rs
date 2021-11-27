@@ -3,9 +3,10 @@ use std::process::exit;
 use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp};
 use serde_json;
 
-use vcontrol::{Optolink, VControl, Value};
+use vcontrol::{Optolink, VControl, Value, Server};
 
-fn main() {
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
   env_logger::init();
 
   let app = App::new("vcontrol")
@@ -43,7 +44,9 @@ fn main() {
                   .required(true))
                 .arg(Arg::with_name("value")
                   .help("value")
-                  .required(true)));
+                  .required(true)))
+              .subcommand(SubCommand::with_name("server")
+                .about("start web server"));
 
   let matches = app.get_matches();
 
@@ -65,6 +68,8 @@ fn main() {
     eprintln!("Error: {}", err);
     exit(1);
   });
+
+  log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
 
   if let Some(matches) = matches.subcommand_matches("get") {
     let command = matches.value_of("command").unwrap();
@@ -94,4 +99,11 @@ fn main() {
       }
     }
   }
+
+  if let Some(_matches) = matches.subcommand_matches("server") {
+    let server = Server::new();
+    server.start(vcontrol).await;
+  }
+
+  Ok(())
 }

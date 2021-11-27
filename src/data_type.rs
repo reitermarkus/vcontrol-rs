@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub enum DataType {
   String,
   Int,

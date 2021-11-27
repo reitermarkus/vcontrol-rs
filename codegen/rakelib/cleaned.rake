@@ -190,17 +190,22 @@ def map_event_type_name(name)
 end
 
 file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
-  syste_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
+  system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
   reverse_translations = translations_raw.map { |k, v| [v.fetch('de'), k] }.to_h
 
-  syste_event_types = syste_event_types_raw.map { |k, v|
+  system_event_types = system_event_types_raw.map { |k, v|
+    case k
+    when /\AecnsysFehlerhistorie\d+\Z/
+      v['value_type'] = 'Error'
+    end
+
     v['value_list']&.transform_values! { |v| "@@#{reverse_translations.fetch(v)}" }
 
     [k, v]
   }.compact.to_h
 
-  File.write t.name, syste_event_types.to_yaml
+  File.write t.name, system_event_types.to_yaml
 end
 
 file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|

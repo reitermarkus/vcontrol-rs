@@ -139,7 +139,7 @@ def parse_value(text)
   end
 end
 
-def parse_fc(text)
+def parse_function(text)
   {
     ''                           => nil,
     'undefined'                  => nil,
@@ -177,7 +177,7 @@ def event_types(path)
       when 'access_mode'
         n.text.empty? ? nil : n.text.underscore
       when /^fc_(read|write)$/
-        parse_fc(n.text)
+        parse_function(n.text)
       when 'option_list'
         n.text.split(';')
       when 'value_list'
@@ -306,6 +306,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           nil
         when 'enum_type', 'filtercriterion', 'reportingcriterion'
           parse_bool(n.text)
+        when 'option'
+          name = 'option_list'
+          n.text.strip.split(',')
         when 'address'
           strip_address(n.text.strip)
         when 'conversion'

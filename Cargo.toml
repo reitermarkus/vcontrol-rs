@@ -14,9 +14,10 @@ license = "MIT OR Apache-2.0"
 readme = "ReadMe.md"
 
 [features]
-cli = ["clap", "serde_json", "env_logger"]
+cli = ["actix-rt", "clap", "serde_json", "env_logger", "webthing"]
 
 [dependencies]
+actix-rt = { version = "1.1", optional = true }
 clap = { version = "2.33", optional = true }
 chrono = "0.4"
 log = "0.4"
@@ -28,6 +29,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
 serde_yaml = { version = "0.8", optional = true }
 env_logger = { version = "0.9.0", optional = true }
+webthing = { version = "0.14.0", optional = true }
 
 [[example]]
 name = "cat"
