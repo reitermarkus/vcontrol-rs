@@ -2,6 +2,7 @@ require 'open3'
 require 'tempfile'
 require 'base64'
 require 'stringio'
+require 'parallel'
 
 require 'pycall/import'
 include PyCall::Import
@@ -60,7 +61,7 @@ def dotnet_decode(base64_string)
 end
 
 desc 'convert XML files to raw YAML files'
-task :raw => [
+multitask :raw => [
   SYSTEM_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW,
   SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW,
@@ -99,6 +100,10 @@ def parse_options_value(text)
   text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k, v] }.to_h
 end
 
+def parse_option_list(text)
+  text.split(';').map(&:underscore)
+end
+
 def parse_byte_array(text)
   text.empty? ? nil : text.delete_prefix('0x').each_char.each_slice(2).map { |c| Integer(c.join, 16) }
 end
@@ -134,12 +139,10 @@ def parse_function(text)
 end
 
 def event_types(path)
-  reader = Nokogiri::XML::Reader(File.open(path))
+  document = Nokogiri::XML.parse(File.read(path))
+  document.remove_namespaces!
 
-  reader.map { |node|
-    next unless node.name == 'EventType'
-
-    fragment = Nokogiri::XML.fragment(node.inner_xml)
+  document.xpath('.//EventTypes/EventType').map { |fragment|
     next if fragment.children.empty?
 
     event_type = fragment.children.map { |n|
@@ -164,7 +167,7 @@ def event_types(path)
       when /^fc_(read|write)$/
         parse_function(n.text)
       when 'option_list'
-        n.text.split(';')
+        parse_option_list(n.text)
       when 'value_list'
         parse_value_list(n.text)
       when /^prefix_(read|write)$/
@@ -203,11 +206,13 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
   table_extension_values = {}
   versions = {}
 
-  reader = Nokogiri::XML::Reader(File.open(t.source))
-  reader.each do |node|
-    case node.name
-    when 'ecnVersion'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+  document = Nokogiri::XML.parse(File.read(t.source))
+  document.remove_namespaces!
+
+  dataset = document.at_xpath('.//ImportExportDataHolder/ECNDataSet/diffgram/ECNDataSet')
+
+  definitions = Parallel.map({
+    ['ecnVersion', 'version'] => ->(fragment) {
       next if fragment.children.empty?
 
       version = fragment.children.map do |n|
@@ -226,9 +231,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      versions[version.delete('name')] = version.fetch('value')
-    when 'ecnDatapointType'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { version.delete('name') => version.fetch('value') }
+    },
+    ['ecnDatapointType', 'datapoints'] => ->(fragment) {
       next if fragment.children.empty?
 
       datapoint_type = fragment.children.map do |n|
@@ -245,9 +250,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      datapoint_definitions[datapoint_type.delete('id')] = datapoint_type
-    when 'ecnDataPointTypeEventTypeLink'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { datapoint_type.delete('id') => datapoint_type }
+    },
+    ['ecnDataPointTypeEventTypeLink', 'datapoint_type_event_type_links'] => ->(fragment) {
       next if fragment.children.empty?
 
       link = fragment.children.map do |n|
@@ -264,12 +269,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      data_point_type = datapoint_definitions.fetch(link.fetch('data_point_type_id'))
-      data_point_type['event_types'] ||= []
-      data_point_type['event_types'].push(link.fetch('event_type_id'))
-      data_point_type['event_types'].sort!
-    when 'ecnEventType'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { fragment['id'] => link }
+    },
+    ['ecnEventType', 'event_types'] => ->(fragment) {
       next if fragment.children.empty?
 
       event_type = fragment.children.map do |n|
@@ -280,10 +282,8 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           assert_company_id(n.text.strip)
           nil
         when 'enum_type', 'filtercriterion', 'reportingcriterion'
+          name = name.sub(/(criterion)/, '_\1')
           parse_bool(n.text)
-        when 'option'
-          name = 'option_list'
-          n.text.strip.split(',')
         when 'address'
           strip_address(n.text.strip)
         when 'conversion'
@@ -309,9 +309,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      event_type_definitions[event_type.delete('id')] = event_type
-    when 'ecnEventValueType'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { event_type.delete('id') => event_type }
+    },
+    ['ecnEventValueType', 'event_value_types'] => ->(fragment) {
       next if fragment.children.empty?
 
       event_value_type = fragment.children.map do |n|
@@ -330,12 +330,12 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      event_value_type_definitions[event_value_type.delete('id')] = event_value_type
-    when 'ecnEventTypeEventValueTypeLink'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { event_value_type.delete('id') => event_value_type }
+    },
+    ['ecnEventTypeEventValueTypeLink', 'event_type_event_value_type_links'] => ->(fragment) {
       next if fragment.children.empty?
 
-      event_type_event_value_type_link = fragment.children.map do |n|
+      link = fragment.children.map do |n|
         value = case name = n.name.underscore
         when 'event_type_id', 'event_value_id'
           Integer(n.text.strip)
@@ -349,11 +349,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      event_type = event_type_definitions.fetch(event_type_event_value_type_link.fetch('event_type_id'))
-      event_type['value_types'] ||= []
-      event_type['value_types'].push(event_type_event_value_type_link.fetch('event_value_id'))
-    when 'ecnTableExtension'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { fragment['id'] => link }
+    },
+    ['ecnTableExtension', 'table_extensions'] => ->(fragment) {
       next if fragment.children.empty?
 
       table_extension = fragment.children.map do |n|
@@ -376,9 +374,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      table_extensions[table_extension.delete('id')] = table_extension
-    when 'ecnTableExtensionValue'
-      fragment = Nokogiri::XML.fragment(node.inner_xml)
+      { table_extension.delete('id') => table_extension }
+    },
+    ['ecnTableExtensionValue', 'table_extension_values'] => ->(fragment) {
       next if fragment.children.empty?
 
       table_extension_value = fragment.children.map do |n|
@@ -399,20 +397,28 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         [name, value]
       end.to_h.compact
 
-      table_extension_values[table_extension_value.delete('id')] = table_extension_value
-    when 'ecnEventTypeGroup'
-      next
-    end
+      { table_extension_value.delete('id') => table_extension_value }
+    },
+  }) { |(tag, key), parse_fragment|
+    {
+      key => (dataset > tag).reduce({}) { |h, fragment|
+        h.merge!(parse_fragment.call(fragment))
+      }
+    }
+  }.reduce({}) { |h, v| h.merge!(v) }
+
+  definitions.delete('datapoint_type_event_type_links').each do |_, link|
+    data_point_type = definitions.fetch('datapoints').fetch(link.fetch('data_point_type_id'))
+    data_point_type['event_types'] ||= []
+    data_point_type['event_types'].push(link.fetch('event_type_id'))
+    data_point_type['event_types'].sort!
   end
 
-  definitions = {
-    'datapoints' => datapoint_definitions,
-    'event_types' => event_type_definitions,
-    'event_value_types' => event_value_type_definitions,
-    'table_extensions' => table_extensions,
-    'table_extension_values' => table_extension_values,
-    'versions' => versions,
-  }
+  definitions.delete('event_type_event_value_type_links').each do |_, link|
+    event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
+    event_type['value_types'] ||= []
+    event_type['value_types'].push(link.fetch('event_value_id'))
+  end
 
   File.write t.name, definitions.sort_by_key.to_yaml
 end

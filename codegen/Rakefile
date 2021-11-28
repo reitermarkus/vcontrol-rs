@@ -426,7 +426,7 @@ file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
           .map { |command_name| map_command_id(command_name) }
           .select { |id| used_commands.key?(id) }
           .uniq,
-          'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
+        'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
       }
     })
   }
@@ -434,7 +434,7 @@ file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
   File.write t.name, devices.to_yaml
 end
 
-task :default => [USED_DEVICES, USED_COMMANDS, USED_MAPPINGS, USED_TRANSLATIONS]
+multitask :default => [USED_DEVICES, USED_COMMANDS, USED_MAPPINGS, USED_TRANSLATIONS]
 
 task :clean do
   rm Dir.glob('*.yml')

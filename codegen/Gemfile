@@ -8,3 +8,4 @@ gem "activesupport", require: false
 gem "nokogiri", require: false
 gem "rake"
 gem 'pycall', require: false
+gem 'parallel', require: false

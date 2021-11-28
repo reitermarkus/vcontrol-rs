@@ -228,7 +228,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
       field_name = table_extension.fetch('field_name').delete_prefix('label.tableextension.ecnDatapointType.').underscore
       value = v.fetch('internal_value')
 
-      datapoint[field_name] = case field_name
+      value = case field_name
       when 'identification', 'identification_extension', 'identification_extension_till'
         case value
         when /\A\h{4}\Z/i
@@ -241,13 +241,14 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
       else
         value
       end
+      datapoint[field_name] = value
     when 'ecnEventType'
       next unless event_type = event_types[id]
 
       field_name = table_extension.fetch('field_name').delete_prefix('label.tableextension.ecnEventType.').underscore
       value = v.fetch('internal_value')
 
-      event_type[field_name] = case field_name
+      value = case field_name
       when 'address'
         case value
         when /\A0x\h+\Z/
@@ -257,9 +258,13 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
         end
       when /^fc_(read|write)$/
         parse_function(value)
+      when 'option'
+        field_name = 'option_list'
+        parse_option_list(value)
       else
         value
       end
+      event_type[field_name] = value
     when 'ecnEventTypeGroup'
       next
     else
@@ -293,7 +298,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     v['event_types'] = v.fetch('event_types').map { |id|
       map_event_type_name(event_types.fetch(id).fetch('name'))
     }
-    [datapoint_type_id, v.compact]
+    [datapoint_type_id, v.compact.sort_by_key]
   }.compact.to_h
 
   event_value_types = event_value_types.map { |k, v|
@@ -355,8 +360,8 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
     v.merge!(value_types) if value_types
 
-    [event_type_id, v.compact]
-  }.compact.to_h.compact
+    [event_type_id, v.compact.sort_by_key]
+  }.compact.to_h.compact.sort_by_key
 
   datapoint_definitions = {
     'datapoints' => datapoints,
