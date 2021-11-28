@@ -424,33 +424,43 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
 end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
-  languages = {}
-  translations = {}
+  text_resources = Pathname(t.source).glob('Textresource_*.xml')
 
-  Pathname(t.source).glob('Textresource_*.xml').each do |text_resource|
-    reader = Nokogiri::XML::Reader(text_resource.open)
+  translations = Parallel.map(text_resources) { |text_resource|
+    document = Nokogiri::XML.parse(text_resource.read)
+    document.remove_namespaces!
 
-    reader.each do |node|
-      case node.name
-      when 'Culture'
-        id = node.attribute('Id')
-        name = node.attribute('Name')
+    document = document.at_xpath('.//DocumentElement')
+    cultures = document.xpath('.//Cultures/Culture')
+    translations = document.xpath('.//TextResources/TextResource')
 
-        languages[id] ||= name
-      when 'TextResource'
-        language_id = node.attribute('CultureId')
-        label = node.attribute('Label')
-        value = node.attribute('Value').strip.gsub('##ecnnewline##', "\n").gsub('##ecntab##', "\t").gsub('##ecnsemicolon##', ';').gsub('##nl##', "\n")
+    languages = cultures.reduce({}) { |h, node|
+      id = node.attribute('Id').text
+      name = node.attribute('Name').text
 
-        if /~(?<index>\d+)$/ =~ label
-          value = clean_enum_text(index, value)
-        end
+      h[id] = name
+      h
+    }
 
-        translations[label] ||= {}
-        translations[label][languages.fetch(language_id)] = value
+    translations.reduce({}) { |h, node|
+      language_id = node.attribute('CultureId').text
+      label = node.attribute('Label').text
+      value = node.attribute('Value').text.strip
+        .gsub('##ecnnewline##', "\n")
+        .gsub('##ecntab##', "\t")
+        .gsub('##ecnsemicolon##', ';')
+        .gsub('##nl##', "\n")
+
+      if /~(?<index>\d+)$/ =~ label
+        value = clean_enum_text(index, value)
       end
-    end
-  end
+
+      h[label] = { languages.fetch(language_id) => value }
+      h
+    }
+  }.reduce({}) { |h, translations|
+    h.deep_merge!(translations)
+  }
 
   File.write t.name, translations.sort_by_key.to_yaml
 end

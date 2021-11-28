@@ -134,12 +134,13 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, TRANSLATIONS
     h
   }
 
-  mappings = system_event_types.merge(event_types).map { |event_type_id, event_type|
+  mappings = system_event_types.merge(event_types).reduce({}) { |h, (event_type_id, event_type)|
     value_list = event_type.fetch('value_list', {})
-    next if value_list.empty?
 
-    [event_type_id, value_list]
-  }.compact.to_h
+    h[event_type_id] = value_list unless value_list.empty?
+
+    h
+  }
 
   File.write t.name, create_mapping_to_unique(mappings.merge(error_mappings)).to_yaml
 end
