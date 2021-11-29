@@ -159,6 +159,26 @@ def parse_function(text)
   }.fetch(text, text.underscore)
 end
 
+def parse_conversion(text)
+  @conversion_cache ||= {}
+
+  if conversion = @conversion_cache.key?(text)
+    return @conversion_cache.fetch(text)
+  end
+
+  conversion = case text
+  when 'NoConversion', '', nil, 'GWG_2010_Kennung~0x00F9'
+    nil
+  else
+    text.sub(/(\A|[a-z])Mult([A-Z]|\Z)/, '\1Mul\2')
+        .sub(/(\A|[a-z])MBus([A-Z]|\Z)/, '\1Mbus\2')
+        .sub(/(\A|[a-z])2([A-Z]|\Z)/, '\1To\2')
+        .underscore
+  end
+
+  @conversion_cache[text] = conversion
+end
+
 def event_types(path)
   document = Nokogiri::XML.parse(File.read(path))
   document.remove_namespaces!
@@ -179,6 +199,8 @@ def event_types(path)
         parse_value(n.text.strip)
       when /^(block|byte|bit)_(length|position|factor)$/, 'mapping_type', 'rpc_handler', 'priority'
         Integer(n.text)
+      when 'conversion'
+        parse_conversion(n.text)
       when /^conversion_(factor|offset)$/
         Float(n.text)
       when /^((lower|upper)_border|stepping)$/
@@ -308,7 +330,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         when 'address'
           strip_address(n.text.strip)
         when 'conversion'
-          n.text.strip
+          parse_conversion(n.text)
         when 'default_value'
           parse_value(n.text.strip)
         when 'type'

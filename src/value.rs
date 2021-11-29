@@ -4,7 +4,7 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
-use crate::types::{DateTime, CircuitTimes, Error};
+use crate::{Conversion, types::{DateTime, CircuitTimes, Error}};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -17,6 +17,99 @@ pub enum Value {
   CircuitTimes(CircuitTimes),
   Error(Error),
   Empty
+}
+
+macro_rules! convert_double {
+  ($value:expr, $op:tt, $n:literal) => {
+    if let Value::Double(n) = $value {
+      *n = *n $op $n;
+      return
+    }
+  }
+}
+
+impl Value {
+  pub fn convert(&mut self, conversion: &Conversion) {
+    match conversion {
+      Conversion::Div2 => convert_double!(self, /, 2.0),
+      Conversion::Div5 => convert_double!(self, /, 5.0),
+      Conversion::Div10 => convert_double!(self, /, 10.0),
+      Conversion::Div100 => convert_double!(self, /, 100.0),
+      Conversion::Div1000 => convert_double!(self, /, 1000.0),
+      Conversion::Mul2 => convert_double!(self, *, 2.0),
+      Conversion::Mul5 => convert_double!(self, *, 5.0),
+      Conversion::Mul10 => convert_double!(self, *, 10.0),
+      Conversion::Mul100 => convert_double!(self, *, 100.0),
+      Conversion::MulOffset { factor, offset } => {
+        if let Value::Double(n) = self {
+          *n = *n * factor + offset;
+          return
+        }
+      },
+      Conversion::SecToMinute => convert_double!(self, /, 60.0),
+      Conversion::SecToHour => convert_double!(self, /, 3600.0),
+      Conversion::HexByteToAsciiByte => {
+        if let Value::Array(bytes) = self {
+          let s = bytes.iter().filter(|b| **b != b'0').map(|b| char::from(*b)).collect::<String>();
+          *self = Value::String(s);
+          return
+        }
+      },
+      Conversion::HexByteToVersion => {
+        if let Value::Array(bytes) = self {
+          *self = Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join("."));
+          return
+        }
+      },
+      Conversion::DateBcd => {
+        if let Value::DateTime(date_time) = self {
+          let year = date_time.year();
+          let month = date_time.month();
+          let day = date_time.day();
+
+          *self = Value::String(format!("{:04}-{:02}-{:02}", year, month, day));
+          return
+        }
+      },
+      Conversion::DateTimeBcd => {
+        if let Value::DateTime(_) = self {
+          return
+        }
+      },
+      Conversion::RotateBytes => {
+        if let Value::Array(array) = self {
+          array.reverse();
+          return
+        }
+      },
+      _ => ()
+    }
+
+    log::warn!("Conversion {:?} not applicable to value {:?}.", conversion, self);
+  }
+
+  pub fn convert_back(&mut self, conversion: &Conversion) {
+    match conversion {
+      Conversion::Div2 => convert_double!(self, *, 2.0),
+      Conversion::Div5 => convert_double!(self, *, 5.0),
+      Conversion::Div10 => convert_double!(self, *, 10.0),
+      Conversion::Div100 => convert_double!(self, *, 100.0),
+      Conversion::Div1000 => convert_double!(self, *, 1000.0),
+      Conversion::Mul2 => convert_double!(self, /, 2.0),
+      Conversion::Mul5 => convert_double!(self, /, 5.0),
+      Conversion::Mul10 => convert_double!(self, /, 10.0),
+      Conversion::Mul100 => convert_double!(self, /, 100.0),
+      Conversion::MulOffset { factor, offset } => {
+        if let Value::Double(n) = self {
+          *n = (*n - offset) / factor;
+          return
+        }
+      },
+      _ => ()
+    }
+
+    unimplemented!("{:?}", self);
+  }
 }
 
 #[derive(Debug, Serialize)]

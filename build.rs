@@ -25,6 +25,10 @@ use data_type::DataType;
 mod parameter;
 use parameter::Parameter;
 
+#[path = "src/conversion.rs"]
+mod conversion;
+use conversion::Conversion;
+
 fn escape_const_name(s: &str) -> String {
   s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("~", "_").replace("%", "PERCENT")
 }
@@ -160,9 +164,8 @@ pub struct Command {
   byte_pos: usize,
   bit_pos: usize,
   bit_len: usize,
-  conversion: String,
-  conversion_factor: Option<f64>,
-  conversion_offset: Option<f64>,
+  #[serde(flatten)]
+  conversion: Option<Conversion>,
   lower_border: Option<f64>,
   upper_border: Option<f64>,
   unit: Option<String>,
@@ -177,19 +180,10 @@ impl fmt::Debug for Command {
       "None".into()
     };
 
-    let conversion = if self.conversion == "MulOffset" {
-      #[derive(Debug)]
-      struct MulOffset {
-        factor: f64,
-        offset: f64,
-      }
-
-      format!("{:?}", MulOffset {
-        factor: self.conversion_factor.unwrap_or(1.0),
-        offset: self.conversion_offset.unwrap_or(0.0),
-      })
+    let conversion = if let Some(conversion) = &self.conversion {
+      format!("Some(crate::Conversion::{:?})", conversion)
     } else {
-      self.conversion.to_owned()
+      "None".into()
     };
 
     f.debug_struct("Command")
@@ -202,7 +196,7 @@ impl fmt::Debug for Command {
        .field("byte_pos", &self.byte_pos)
        .field("bit_len", &self.bit_len)
        .field("bit_pos", &self.bit_pos)
-       .field("conversion", &format_args!("crate::Conversion::{}", conversion))
+       .field("conversion", &format_args!("{}", conversion))
        .field("unit", &self.unit)
        .field("mapping", &format_args!("{}", mapping))
        .finish()

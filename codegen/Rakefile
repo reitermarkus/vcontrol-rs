@@ -335,31 +335,7 @@ def map_command_id(id)
 end
 
 def map_parameter(parameter)
-  case parameter
-  when 'StringCR'
-    'StringCr'
-  when 'StringNR'
-    'StringNt'
-  else
-    parameter
-  end
-end
-
-def map_conversion(conversion)
-  case conversion
-  when 'NoConversion', 'GWG_2010_Kennung~0x00F9', nil
-    'None'
-  when 'IPAddress'
-    'IpAddress'
-  when /\AMult/
-    conversion.sub(/\AMult/, 'Mul')
-  when /BCD\Z/
-    conversion.sub(/BCD\Z/, 'Bcd')
-  when 'HexByte2UTF16Byte'
-    'HexByte2Utf16Byte'
-  else
-    conversion
-  end
+  parameter.underscore
 end
 
 def strip_address(s)
@@ -384,7 +360,7 @@ def type_to_command(type_id, type, mappings:, translations:)
   command['data_type'] = type.fetch('value_type', type['sdk_data_type'])
   command['parameter'] = map_parameter(type['parameter'])
   command['unit'] = type['unit']
-  command['conversion'] = map_conversion(type['conversion'])
+  command['conversion'] = type['conversion']
   command['conversion_factor'] = type['conversion_factor']
   command['conversion_offset'] = type['conversion_offset']
   command['block_len'] = type.fetch('block_length')

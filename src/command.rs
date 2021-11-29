@@ -15,7 +15,7 @@ pub struct Command {
   pub byte_pos: usize,
   pub bit_pos: usize,
   pub bit_len: usize,
-  pub conversion: Conversion,
+  pub conversion: Option<Conversion>,
   pub unit: Option<&'static str>,
   pub mapping: Option<phf::map::Map<i32, &'static str>>,
 }
@@ -110,7 +110,9 @@ impl Command {
       }
     };
 
-    self.conversion.convert(&mut value);
+    if let Some(conversion) = &self.conversion {
+      value.convert(conversion);
+    }
 
     Ok(value)
   }
@@ -122,7 +124,9 @@ impl Command {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)))
     }
 
-    self.conversion.convert_back(&mut input);
+    if let Some(conversion) = &self.conversion {
+      input.convert_back(conversion);
+    }
 
     let bytes = match (&self.data_type, input) {
       (DataType::DateTime, Value::DateTime(date_time)) => {
