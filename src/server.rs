@@ -1,15 +1,27 @@
 use std::sync::{Arc, RwLock, Weak};
 use std::{thread, time};
 
-use schemars::schema_for;
+use schemars::{schema, schema_for};
 use serde_json::json;
-use webthing::property::ValueForwarder;
-use webthing::server::ActionGenerator;
 use webthing::{
-    Action, BaseAction, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
+  Action, BaseAction, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
+  property::ValueForwarder,
+  server::ActionGenerator,
 };
 
 use crate::{VControl, DataType, types::{DateTime, Error, CircuitTimes}};
+
+struct VcontrolValueForwarder {
+  command: &'static str,
+  vcontrol: Arc<RwLock<VControl>>,
+}
+
+impl ValueForwarder for VcontrolValueForwarder {
+  fn set_value(&mut self, value: serde_json::Value) -> Result<serde_json::Value, &'static str> {
+    log::info!("Setting property {} to {}.", self.command, value);
+    Ok(value)
+  }
+}
 
 struct Generator;
 
@@ -24,16 +36,22 @@ impl ActionGenerator for Generator {
   }
 }
 
-fn make_thing(vcontrol: &mut VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
+fn make_thing(vcontrol: Arc<RwLock<VControl>>) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
+  let vcontrol_arc = vcontrol.clone();
+  let vcontrol = vcontrol.read().unwrap();
+
+  // TODO: Get from `vcontrol`.
+  let device_id = 1234;
+
   let mut thing = BaseThing::new(
-      "urn:dev:ops:heating-1234".to_owned(),
-      vcontrol.device().name().to_owned(),
-      Some(vec!["ObjectProperty".to_owned()]),
-      None,
+    format!("urn:dev:ops:heating-{}", device_id),
+    vcontrol.device().name().to_owned(),
+    Some(vec!["ObjectProperty".to_owned()]),
+    None,
   );
 
   for (command_name, command) in vcontrol.device().commands() {
-    let schema = serde_json::to_value(match command.data_type {
+    let mut root_schema = match command.data_type {
       DataType::Int => schema_for!(i64),
       DataType::Double => schema_for!(f64),
       DataType::Byte => schema_for!(u8),
@@ -42,38 +60,51 @@ fn make_thing(vcontrol: &mut VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> 
       DataType::Error => schema_for!(Error),
       DataType::CircuitTimes => schema_for!(CircuitTimes),
       DataType::ByteArray => schema_for!(Vec<u8>),
-    }).unwrap().as_object().unwrap().clone();
+    };
 
-    dbg!(&schema);
+    if command.mode.is_read() && !command.mode.is_write() {
+      root_schema.schema.metadata().read_only = true;
+    }
 
-    let mut description = schema;
-    description.insert("@type".into(), json!("LevelProperty"));
+    if command.mode.is_write() && !command.mode.is_read() {
+      root_schema.schema.metadata().write_only = true;
+    }
 
-    let create_enum = |enum_description: &mut serde_json::Map<String, serde_json::Value>, mapping: &'static phf::Map<i32, &'static str>| {
-      enum_description.insert("enum_values".into(), json!(mapping));
-      enum_description.insert("enum".into(), json!(mapping.keys().collect::<Vec<_>>()));
+    root_schema.schema.extensions.insert("@type".into(), json!("LevelProperty"));
+
+    if let Some(unit) = &command.unit {
+      root_schema.schema.extensions.insert("unit".into(), json!(unit));
+    }
+
+    let create_enum = |enum_schema: &mut schema::SchemaObject, mapping: &'static phf::Map<i32, &'static str>| {
+      enum_schema.enum_values = Some(mapping.keys().map(|n| json!(n)).collect());
+
+      // TODO: Represent enums only strings.
+      // enum_schema.extensions.insert("@enum_values".into(), json!(mapping.values().collect::<Vec<_>>()));
     };
 
     if let Some(mapping) = &command.mapping {
-      create_enum(&mut description, mapping);
+      create_enum(&mut root_schema.schema, mapping);
     } else if command.data_type == DataType::Error {
-      if let Some(properties) = description.get_mut("properties") {
-        if let Some(index_description) = properties.get_mut("index").and_then(|d| d.as_object_mut()) {
-          create_enum(index_description, vcontrol.device().errors());
+      if let Some(ref mut validation) = root_schema.schema.object {
+        if let Some(schema::Schema::Object(index_schema)) = validation.properties.get_mut("index") {
+          create_enum(index_schema, vcontrol.device().errors());
         }
       }
     };
 
-    if let Some(unit) = &command.unit {
-      description.insert("unit".into(), json!(unit));
-    }
+    let schema = serde_json::to_value(root_schema).unwrap().as_object().unwrap().clone();
+    let mut description = schema;
 
-    description.insert("readOnly".into(), json!(!command.mode.is_write()));
+    let value_forwarder = VcontrolValueForwarder {
+      command: command_name.clone(),
+      vcontrol: vcontrol_arc.clone(),
+    };
 
     thing.add_property(Box::new(BaseProperty::new(
       command_name.to_string(),
       json!(null),
-      None,
+      Some(Box::new(value_forwarder)),
       Some(description),
     )));
   }
@@ -86,12 +117,16 @@ pub struct Server {
 }
 
 impl Server {
-  pub fn new() -> Self {
-    Self { port: 8888 }
+  pub fn new(port: u16) -> Self {
+    Self { port }
   }
 
   pub async fn start(&self, mut vcontrol: VControl) -> std::io::Result<()> {
-    let thing = make_thing(&mut vcontrol);
+    let commands = vcontrol.device().commands();
+
+    let vcontrol = Arc::new(RwLock::new(vcontrol));
+
+    let thing = make_thing(vcontrol.clone());
 
     let mut server = WebThingServer::new(
       ThingsType::Single(thing.clone()),
@@ -105,12 +140,12 @@ impl Server {
 
     thread::spawn(move || {
       loop {
-        for (command_name, command) in vcontrol.device().commands() {
+        for (command_name, command) in commands {
           if !command.mode.is_read() {
             continue;
           }
 
-          let new_value = if let Ok(value) = vcontrol.get(command_name) {
+          let new_value = if let Ok(value) = vcontrol.write().unwrap().get(command_name) {
             serde_json::to_value(&value.value).unwrap()
           } else {
             json!(null)

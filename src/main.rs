@@ -101,7 +101,8 @@ async fn main() -> std::io::Result<()> {
   }
 
   if let Some(_matches) = matches.subcommand_matches("server") {
-    let server = Server::new();
+    let port = 8888;
+    let server = Server::new(port);
     server.start(vcontrol).await;
   }
 
