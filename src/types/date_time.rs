@@ -3,6 +3,8 @@ use std::fmt;
 use std::str::FromStr;
 
 use chrono::{NaiveDate, NaiveDateTime, Datelike, Timelike};
+#[cfg(feature = "impl_json_schema")]
+use schemars::JsonSchema;
 use serde::ser::{Serialize, Serializer};
 use serde::de::{self, Deserialize, Deserializer};
 
@@ -105,6 +107,19 @@ impl<'de> Deserialize<'de> for DateTime {
   {
     let string = String::deserialize(deserializer)?;
     DateTime::from_str(&string).map_err(de::Error::custom)
+  }
+}
+
+#[cfg(feature = "impl_json_schema")]
+impl JsonSchema for DateTime {
+  fn schema_name() -> String {
+    "DateTime".into()
+  }
+
+  fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    let mut schema = gen.subschema_for::<String>().into_object();
+    schema.format = Some("date-time".into());
+    schema.into()
   }
 }
 

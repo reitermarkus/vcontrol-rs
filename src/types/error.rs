@@ -1,10 +1,13 @@
 use std::fmt;
 
+#[cfg(feature = "impl_json_schema")]
+use schemars::JsonSchema;
 use serde::{Serialize, Deserialize};
 
 use crate::Device;
 use super::DateTime;
 
+#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Error {
   index: u8,

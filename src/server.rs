@@ -1,6 +1,7 @@
 use std::sync::{Arc, RwLock, Weak};
 use std::{thread, time};
 
+use schemars::schema_for;
 use serde_json::json;
 use webthing::property::ValueForwarder;
 use webthing::server::ActionGenerator;
@@ -8,7 +9,7 @@ use webthing::{
     Action, BaseAction, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
 };
 
-use crate::{VControl, DataType};
+use crate::{VControl, DataType, types::{DateTime, Error, CircuitTimes}};
 
 struct Generator;
 
@@ -32,14 +33,21 @@ fn make_thing(vcontrol: &mut VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> 
   );
 
   for (command_name, command) in vcontrol.device().commands() {
-    let mut description = serde_json::Map::new();
+    let schema = serde_json::to_value(match command.data_type {
+      DataType::Int => schema_for!(i64),
+      DataType::Double => schema_for!(f64),
+      DataType::Byte => schema_for!(u8),
+      DataType::String => schema_for!(String),
+      DataType::DateTime => schema_for!(DateTime),
+      DataType::Error => schema_for!(Error),
+      DataType::CircuitTimes => schema_for!(CircuitTimes),
+      DataType::ByteArray => schema_for!(Vec<u8>),
+    }).unwrap().as_object().unwrap().clone();
+
+    dbg!(&schema);
+
+    let mut description = schema;
     description.insert("@type".into(), json!("LevelProperty"));
-    description.insert("type".into(), json!(match command.data_type {
-      DataType::Int | DataType::Double | DataType::Byte => "number",
-      DataType::String | DataType::DateTime => "string",
-      DataType::Error | DataType::CircuitTimes => "object",
-      DataType::ByteArray => "array",
-    }));
 
     let create_enum = |enum_description: &mut serde_json::Map<String, serde_json::Value>, mapping: &'static phf::Map<i32, &'static str>| {
       enum_description.insert("enum_values".into(), json!(mapping));
@@ -49,15 +57,11 @@ fn make_thing(vcontrol: &mut VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> 
     if let Some(mapping) = &command.mapping {
       create_enum(&mut description, mapping);
     } else if command.data_type == DataType::Error {
-      let mut enum_description = serde_json::Map::new();
-      enum_description.insert("type".into(), json!("number"));
-      create_enum(&mut enum_description, vcontrol.device().errors());
-
-      description.insert("required".into(), json!(["index", "time"]));
-      description.insert("properties".into(), json!({
-        "index": enum_description,
-        "time": { "type": "string" },
-      }));
+      if let Some(properties) = description.get_mut("properties") {
+        if let Some(index_description) = properties.get_mut("index").and_then(|d| d.as_object_mut()) {
+          create_enum(index_description, vcontrol.device().errors());
+        }
+      }
     };
 
     if let Some(unit) = &command.unit {
