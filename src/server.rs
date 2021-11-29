@@ -77,10 +77,25 @@ fn make_thing(vcontrol: Arc<RwLock<VControl>>) -> Arc<RwLock<Box<dyn Thing + 'st
     }
 
     let create_enum = |enum_schema: &mut schema::SchemaObject, mapping: &'static phf::Map<i32, &'static str>| {
-      enum_schema.enum_values = Some(mapping.keys().map(|n| json!(n)).collect());
+      // Use `oneOf` schema in order to add description for enum values.
+      // https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-815166515
+      let subschemas = mapping.entries().map(|(k, v)| {
+        schema::SchemaObject {
+          const_value: Some(json!(k)),
+          metadata: Some(Box::new(schemars::schema::Metadata {
+            description: Some(v.to_string()),
+            ..Default::default()
+          })),
+          ..Default::default()
+        }.into()
+      }).collect();
 
-      // TODO: Represent enums only strings.
-      // enum_schema.extensions.insert("@enum_values".into(), json!(mapping.values().collect::<Vec<_>>()));
+      enum_schema.subschemas = Some(Box::new(
+        schemars::schema::SubschemaValidation {
+          one_of: Some(subschemas),
+          ..Default::default()
+        }
+      ));
     };
 
     if let Some(mapping) = &command.mapping {
