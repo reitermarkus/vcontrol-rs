@@ -1,12 +1,11 @@
-use std::sync::{Arc, RwLock, Weak};
+use std::sync::{Arc, RwLock};
 use std::{thread, time};
 
 use schemars::{schema, schema_for};
 use serde_json::json;
 use webthing::{
-  Action, BaseAction, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
+  BaseProperty, BaseThing, Thing,
   property::ValueForwarder,
-  server::ActionGenerator,
 };
 
 use crate::{VControl, DataType, types::{DateTime, Error, CircuitTimes}};
@@ -23,34 +22,23 @@ impl ValueForwarder for VcontrolValueForwarder {
   }
 }
 
-struct Generator;
+pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
+  let device = vcontrol.device();
+  let commands = device.commands().clone();
 
-impl ActionGenerator for Generator {
-  fn generate(
-    &self,
-    thing: Weak<RwLock<Box<dyn Thing>>>,
-    name: String,
-    input: Option<&serde_json::Value>,
-  ) -> Option<Box<dyn Action>> {
-    None
-  }
-}
-
-fn make_thing(vcontrol: Arc<RwLock<VControl>>) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
-  let vcontrol_arc = vcontrol.clone();
-  let vcontrol = vcontrol.read().unwrap();
+  let vcontrol = Arc::new(RwLock::new(vcontrol));
 
   // TODO: Get from `vcontrol`.
   let device_id = 1234;
 
   let mut thing = BaseThing::new(
     format!("urn:dev:ops:heating-{}", device_id),
-    vcontrol.device().name().to_owned(),
+    device.name().to_owned(),
     Some(vec!["ObjectProperty".to_owned()]),
     None,
   );
 
-  for (command_name, command) in vcontrol.device().commands() {
+  for (command_name, command) in commands {
     let mut root_schema = match command.data_type {
       DataType::Int => schema_for!(i64),
       DataType::Double => schema_for!(f64),
@@ -103,7 +91,7 @@ fn make_thing(vcontrol: Arc<RwLock<VControl>>) -> Arc<RwLock<Box<dyn Thing + 'st
     } else if command.data_type == DataType::Error {
       if let Some(ref mut validation) = root_schema.schema.object {
         if let Some(schema::Schema::Object(index_schema)) = validation.properties.get_mut("index") {
-          create_enum(index_schema, vcontrol.device().errors());
+          create_enum(index_schema, device.errors());
         }
       }
     };
@@ -113,7 +101,7 @@ fn make_thing(vcontrol: Arc<RwLock<VControl>>) -> Arc<RwLock<Box<dyn Thing + 'st
 
     let value_forwarder = VcontrolValueForwarder {
       command: command_name.clone(),
-      vcontrol: vcontrol_arc.clone(),
+      vcontrol: vcontrol.clone(),
     };
 
     thing.add_property(Box::new(BaseProperty::new(
@@ -124,66 +112,46 @@ fn make_thing(vcontrol: Arc<RwLock<VControl>>) -> Arc<RwLock<Box<dyn Thing + 'st
     )));
   }
 
-  Arc::new(RwLock::new(Box::new(thing)))
-}
+  let thing: Box<dyn Thing + 'static> = Box::new(thing);
+  let thing = Arc::new(RwLock::new(thing));
+  let weak_thing = Arc::downgrade(&thing);
 
-pub struct Server {
-  port: u16,
-}
+  thread::spawn(move || {
+    loop {
+      let thing = if let Some(thing) = weak_thing.upgrade() {
+        thing
+      } else {
+        return
+      };
 
-impl Server {
-  pub fn new(port: u16) -> Self {
-    Self { port }
-  }
-
-  pub async fn start(&self, mut vcontrol: VControl) -> std::io::Result<()> {
-    let commands = vcontrol.device().commands();
-
-    let vcontrol = Arc::new(RwLock::new(vcontrol));
-
-    let thing = make_thing(vcontrol.clone());
-
-    let mut server = WebThingServer::new(
-      ThingsType::Single(thing.clone()),
-      Some(self.port),
-      None,
-      None,
-      Box::new(Generator),
-      None,
-      Some(true),
-    );
-
-    thread::spawn(move || {
-      loop {
-        for (command_name, command) in commands {
-          if !command.mode.is_read() {
-            continue;
-          }
-
-          let new_value = if let Ok(value) = vcontrol.write().unwrap().get(command_name) {
-            serde_json::to_value(&value.value).unwrap()
-          } else {
-            json!(null)
-          };
-
-          let mut t = thing.write().unwrap();
-          let prop = t.find_property(&command_name.to_string()).unwrap();
-
-          let old_value = prop.get_value();
-
-          if let Err(err) = prop.set_cached_value(new_value.clone()) {
-            log::error!("Failed setting cached value for property '{}': {}", command_name, err)
-          }
-
-          if old_value != new_value {
-            log::info!("Property '{}' changed from {} to {}.", command_name, old_value, new_value);
-          }
-
-          t.property_notify(command_name.to_string(), new_value);
+      for (command_name, command) in commands {
+        if !command.mode.is_read() {
+          continue;
         }
-      }
-    });
 
-    server.start(None).await
-  }
+        let new_value = if let Ok(value) = vcontrol.write().unwrap().get(command_name) {
+          serde_json::to_value(&value.value).unwrap()
+        } else {
+          json!(null)
+        };
+
+        let mut t = thing.write().unwrap();
+        let prop = t.find_property(&command_name.to_string()).unwrap();
+
+        let old_value = prop.get_value();
+
+        if let Err(err) = prop.set_cached_value(new_value.clone()) {
+          log::error!("Failed setting cached value for property '{}': {}", command_name, err)
+        }
+
+        if old_value != new_value {
+          log::info!("Property '{}' changed from {} to {}.", command_name, old_value, new_value);
+        }
+
+        t.property_notify(command_name.to_string(), new_value);
+      }
+    }
+  });
+
+  thing
 }

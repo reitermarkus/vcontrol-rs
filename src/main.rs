@@ -1,9 +1,28 @@
 use std::process::exit;
+use std::sync::{Arc, RwLock, Weak};
 
 use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp};
 use serde_json;
+use webthing::{
+  Action, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
+  property::ValueForwarder,
+  server::ActionGenerator,
+};
 
-use vcontrol::{Optolink, VControl, Value, Server};
+use vcontrol::{Optolink, VControl, Value};
+
+struct Generator;
+
+impl ActionGenerator for Generator {
+  fn generate(
+    &self,
+    thing: Weak<RwLock<Box<dyn Thing>>>,
+    name: String,
+    input: Option<&serde_json::Value>,
+  ) -> Option<Box<dyn Action>> {
+    None
+  }
+}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -102,8 +121,18 @@ async fn main() -> std::io::Result<()> {
 
   if let Some(_matches) = matches.subcommand_matches("server") {
     let port = 8888;
-    let server = Server::new(port);
-    server.start(vcontrol).await;
+
+    let mut server = WebThingServer::new(
+      ThingsType::Single(vcontrol.into_thing()),
+      Some(port),
+      None,
+      None,
+      Box::new(Generator),
+      None,
+      Some(true),
+    );
+
+    server.start(None).await?;
   }
 
   Ok(())
