@@ -59,14 +59,6 @@ TRANSLATION_FIXES = {
   'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
 }
 
-EMPTY_VALUE_TRANSLATION = '@@viessmann-ess.eventvaluetype.ModulBetriebsart~3'
-
-# Remove enum number from text representation if present.
-def clean_enum_text(id, text)
-  id = Regexp.escape(id)
-  text.sub(/^(?:#{id}(?::)?\s+|\(0#{id}\))([^\s]+)/, '\1').strip
-end
-
 file USED_COMMANDS => [DEVICES, DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
     t.sources.map { |source| load_yaml(source) }
@@ -113,7 +105,7 @@ file USED_TRANSLATIONS => [USED_MAPPINGS, TRANSLATIONS_UNIQUE] do |t|
 
       [
         translation_id,
-        clean_enum_text(mapping_index.to_s, translation)
+        translation
       ]
     }
   }.to_h

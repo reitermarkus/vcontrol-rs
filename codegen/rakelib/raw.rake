@@ -69,6 +69,27 @@ multitask :raw => [
   TRANSLATIONS_RAW,
 ]
 
+# Remove enum index from text representation if present.
+def clean_enum_text(translation_id, index, text)
+  index = if match = translation_id&.match(/^(?<name>.*)~(?<index>\d+)$/)
+    if match[:name] == 'viessmann.eventvaluetype.K73_KonfiZpumpeIntervallFreigabe'
+      # False positive: <index> per hour
+      nil
+    else
+      match[:index]
+    end
+  else
+    index
+  end
+
+  if index
+    index = Regexp.escape(index)
+    text = text.sub(/^(?:#{index}(?::)?\s+|\(0#{index}\))([^\s]+)/, '\1')
+  end
+
+  text.strip
+end
+
 def value_if_non_empty(node)
   v = node.text.strip
   v.empty? ? nil : v
@@ -93,7 +114,7 @@ def parse_bool(text)
 end
 
 def parse_value_list(text)
-  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k.to_i, clean_enum_text(k, v)] }.to_h
+  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [Integer(k), clean_enum_text(nil, k, v)] }.to_h
 end
 
 def parse_options_value(text)
@@ -444,18 +465,15 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
 
     translations.reduce({}) { |h, node|
       language_id = node.attribute('CultureId').text
-      label = node.attribute('Label').text
+      translation_id = node.attribute('Label').text
       value = node.attribute('Value').text.strip
         .gsub('##ecnnewline##', "\n")
         .gsub('##ecntab##', "\t")
         .gsub('##ecnsemicolon##', ';')
         .gsub('##nl##', "\n")
 
-      if /~(?<index>\d+)$/ =~ label
-        value = clean_enum_text(index, value)
-      end
-
-      h[label] = { languages.fetch(language_id) => value }
+      value = clean_enum_text(translation_id, nil, value)
+      h[translation_id] = { languages.fetch(language_id) => value }
       h
     }
   }.reduce({}) { |h, translations|

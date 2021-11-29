@@ -9,6 +9,8 @@ EVENT_TYPE_NAME_FIXES = {
   '@@viessmann.eventvaluetype.name.WPR3_Split.KC0_Main_mode_variant' => '@@viessmann.eventtype.name.WPR3_Split.KC0_Main_mode_variant',
 }
 
+EMPTY_VALUE_TRANSLATION = '@@viessmann-ess.eventvaluetype.ModulBetriebsart~3'
+
 VALUE_LIST_FIXES = {
   '@@viessmann.eventvaluetype.name.HO2B_Geraetetyp~8'                          => '@@viessmann.eventvaluetype.HO2B_Geraetetyp~8',
   '@@viessmann.eventvaluetype..SC100_SoftwareIndex~14'                         => '@@viessmann.eventvaluetype.SC100_SoftwareIndex~14',
