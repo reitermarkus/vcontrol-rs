@@ -329,7 +329,7 @@ def map_command_id(id)
     'RelaistestV200KW2_NR1'                         => 'relay_test_v200kw2_nr1',
   }
 
-  # mapped_id = exact_mappings.fetch(id, id.gsub('~', '_'))
+  # mapped_id = exact_mappings.fetch(id, id)
 
   id
 end
