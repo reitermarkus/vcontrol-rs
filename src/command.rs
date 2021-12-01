@@ -33,16 +33,16 @@ impl Command {
 
     let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
 
+    if bytes.iter().all(|&b| b == 0xff) && self.data_type != DataType::ErrorIndex {
+      return Ok(Value::Empty)
+    }
+
     let mut value = match &self.data_type {
       DataType::DateTime => Value::DateTime(DateTime::from_bytes(&bytes)),
       DataType::CircuitTimes => Value::CircuitTimes(CircuitTimes::from_bytes(&bytes)),
       DataType::ErrorIndex => Value::Int(bytes[0] as i64),
       DataType::Error => Value::Error(types::Error::from_bytes(&bytes)),
       DataType::String => {
-        if bytes.iter().all(|&b| b == 0xff) {
-          return Ok(Value::Empty)
-        }
-
         let end = bytes.iter().position(|&c| c == b'\0').unwrap_or(bytes.len());
 
         match String::from_utf8(bytes[..end].to_vec()) {
@@ -52,10 +52,6 @@ impl Command {
       },
       DataType::ByteArray => Value::Array(bytes.to_vec()),
       t => {
-        if bytes.iter().all(|&b| b == 0xff) {
-          return Ok(Value::Empty)
-        }
-
         let mut n: i32 = 0;
 
         if self.bit_len > 0 {
