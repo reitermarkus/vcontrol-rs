@@ -33,20 +33,29 @@ impl Command {
 
     let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
 
-    if bytes.iter().all(|&b| b == 0xff) {
-      return Ok(Value::Empty)
-    }
-
     let mut value = match &self.data_type {
       DataType::DateTime => Value::DateTime(DateTime::from_bytes(&bytes)),
       DataType::CircuitTimes => Value::CircuitTimes(CircuitTimes::from_bytes(&bytes)),
+      DataType::ErrorIndex => Value::Int(bytes[0] as i64),
       DataType::Error => Value::Error(types::Error::from_bytes(&bytes)),
       DataType::String => {
+        if bytes.iter().all(|&b| b == 0xff) {
+          return Ok(Value::Empty)
+        }
+
         let end = bytes.iter().position(|&c| c == b'\0').unwrap_or(bytes.len());
-        Value::String(String::from_utf8(bytes[..end].to_vec()).unwrap().to_owned())
+
+        match String::from_utf8(bytes[..end].to_vec()) {
+          Ok(s) => Value::String(s),
+          Err(err) => return Err(Error::Utf8(err)),
+        }
       },
       DataType::ByteArray => Value::Array(bytes.to_vec()),
       t => {
+        if bytes.iter().all(|&b| b == 0xff) {
+          return Ok(Value::Empty)
+        }
+
         let mut n: i32 = 0;
 
         if self.bit_len > 0 {
@@ -67,38 +76,38 @@ impl Command {
           	Parameter::IntHighByteFirst |
             Parameter::Int4HighByteFirst |
             Parameter::SIntHighByteFirst |
-            Parameter::SInt4HighByteFirst => for &b in bytes.into_iter() {
+            Parameter::SInt4HighByteFirst => for &b in bytes.into_iter().take(4) {
               n = (n << 8) | (b as i32);
           	},
-            _ => for &b in bytes.into_iter().rev() {
+            _ => for &b in bytes.into_iter().rev().take(4) {
               n = (n << 8) | (b as i32);
             },
           }
         }
 
         match t {
-          DataType::Byte => match self.parameter {
+          data_type @ DataType::Byte => match &self.parameter {
             Parameter::SByte => Value::Int(n as i8 as i64),
             Parameter::Byte => Value::Int(n as u8 as i64),
-            _ => unreachable!(),
+            parameter => unreachable!("Data type {:?} with parameter {:?}.", data_type, parameter),
           },
-          DataType::Int => match self.parameter {
+          data_type @ DataType::Int => match &self.parameter {
             Parameter::Byte =>  Value::Int(n as u8 as i64),
             Parameter::Int | Parameter::IntHighByteFirst => Value::Int(n as u16 as i64),
             Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Int(n as u32 as i64),
             Parameter::SByte =>  Value::Int(n as i8 as i64),
             Parameter::SInt | Parameter::SIntHighByteFirst => Value::Int(n as i16 as i64),
             Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Int(n as i32 as i64),
-            _ => unreachable!(),
+            parameter => unreachable!("Data type {:?} with parameter {:?} ({:?}).", data_type, parameter, bytes),
           },
-          DataType::Double => match self.parameter {
+          data_type @ DataType::Double => match &self.parameter {
             Parameter::Byte =>  Value::Double(n as f64 as u8 as f64),
             Parameter::Int | Parameter::IntHighByteFirst => Value::Double(n as f64 as u16 as f64),
             Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Double(n as f64 as u32 as f64),
             Parameter::SByte =>  Value::Double(n as f64 as i8 as f64),
             Parameter::SInt | Parameter::SIntHighByteFirst => Value::Double(n as f64 as i16 as f64),
             Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Double(n as f64 as i32 as f64),
-            _ => unreachable!(),
+            parameter => unreachable!("Data type {:?} with parameter {:?}.", data_type, parameter),
           },
           _ => unreachable!(),
         }
@@ -119,47 +128,55 @@ impl Command {
 
     self.conversion.convert_back(&mut input);
 
-    let bytes = match &self.data_type {
-      DataType::DateTime => {
-        if let Value::DateTime(date_time) = input {
-          date_time.to_bytes().to_vec()
-        } else {
-          return Err(Error::InvalidArgument(format!("expected DateTime, got {:?}", input)))
+    let bytes = match (&self.data_type, input) {
+      (DataType::DateTime, Value::DateTime(date_time)) => {
+        date_time.to_bytes().to_vec()
+      },
+      (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => {
+        cycletimes.to_bytes().to_vec()
+      },
+      (DataType::ByteArray, Value::Array(bytes)) => {
+        bytes.to_vec()
+      },
+      (DataType::String, Value::String(s)) => {
+        s.as_bytes().to_vec()
+      },
+      (DataType::Error, Value::Error(error)) => {
+        error.to_bytes().to_vec()
+      }
+      (DataType::Int | DataType::Byte, Value::Int(n)) => {
+        match self.parameter {
+          Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
+          Parameter::Int => (n as u16).to_le_bytes().to_vec(),
+          Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
+          Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
+          Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
+          Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
+          Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
+          Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
+          Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
+          Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
+          _ => unreachable!(),
         }
       },
-      DataType::CircuitTimes => {
-        if let Value::CircuitTimes(cycletimes) = input {
-          cycletimes.to_bytes().to_vec()
-        } else {
-          return Err(Error::InvalidArgument(format!("expected CircuitTimes, got {:?}", input)))
+      (DataType::Double, Value::Double(n)) => {
+        match self.parameter {
+          Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
+          Parameter::Int => (n as u16).to_le_bytes().to_vec(),
+          Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
+          Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
+          Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
+          Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
+          Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
+          Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
+          Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
+          Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
+          _ => unreachable!(),
         }
       },
-      DataType::ByteArray => {
-        if let Value::Array(bytes) = input {
-          bytes.to_vec()
-        } else {
-          return Err(Error::InvalidArgument(format!("expected ByteArray, got {:?}", input)))
-        }
-      },
-      _ => {
-        if let Value::Double(n) = input {
-          match self.parameter {
-            Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
-            Parameter::Int => (n as u16).to_le_bytes().to_vec(),
-            Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
-            Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
-            Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
-            Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
-            Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
-            Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
-            Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
-            Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
-            _ => unreachable!(),
-          }
-        } else {
-          return Err(Error::InvalidArgument(format!("expected number, got {:?}", input)))
-        }
-      },
+      (data_type, input) => {
+        return Err(Error::InvalidArgument(format!("expected {:?}, got {:?}", data_type, input)))
+      }
     };
 
     protocol.set(o, self.addr, &bytes).map_err(Into::into)

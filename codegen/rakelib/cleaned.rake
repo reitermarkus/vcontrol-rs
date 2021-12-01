@@ -196,6 +196,8 @@ file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
 
   system_event_types = system_event_types_raw.map { |k, v|
     case k
+    when 'ecnsysEventType~ErrorIndex'
+      v['value_type'] = 'ErrorIndex'
     when /\AecnsysFehlerhistorie\d+\Z/
       v['value_type'] = 'Error'
     end
@@ -313,6 +315,8 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
       { 'value_type' => 'DateTime' }
     when 'Binary'
       case v.fetch('name')
+      when 'ecnsysEventType~ErrorIndex'
+        { 'value_type' => 'ErrorIndex' }
       when 'ecnsysEventType~Error'
         { 'value_type' => 'Error' }
       when 'Mapping~Schaltzeiten'

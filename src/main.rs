@@ -5,7 +5,6 @@ use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp
 use serde_json;
 use webthing::{
   Action, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
-  property::ValueForwarder,
   server::ActionGenerator,
 };
 

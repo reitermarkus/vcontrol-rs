@@ -2,6 +2,7 @@ use crate::types::DeviceIdent;
 use std::io;
 use std::fmt;
 use std::error::Error as StdError;
+use std::string::FromUtf8Error;
 
 #[derive(Debug)]
 pub enum Error {
@@ -10,7 +11,8 @@ pub enum Error {
   UnsupportedMode(String),
   InvalidArgument(String),
   UnknownEnumVariant(String),
-  Io(io::Error)
+  Utf8(FromUtf8Error),
+  Io(io::Error),
 }
 
 impl From<io::Error> for Error {
@@ -32,6 +34,7 @@ impl fmt::Display for Error {
       Error::UnsupportedMode(description) => description.fmt(f),
       Error::InvalidArgument(description) => description.fmt(f),
       Error::UnknownEnumVariant(description) => description.fmt(f),
+      Error::Utf8(err) => err.fmt(f),
       Error::Io(err) => err.fmt(f),
     }
   }

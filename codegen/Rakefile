@@ -330,7 +330,8 @@ def map_command_id(id)
   }
 
   # mapped_id = exact_mappings.fetch(id, id.gsub('~', '_'))
-  id.gsub('~', '_')
+
+  id
 end
 
 def map_parameter(parameter)

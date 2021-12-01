@@ -7,6 +7,7 @@ pub enum DataType {
   Double,
   DateTime,
   CircuitTimes,
+  ErrorIndex,
   Error,
   Byte,
   ByteArray,

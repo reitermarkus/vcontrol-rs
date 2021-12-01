@@ -26,7 +26,7 @@ mod parameter;
 use parameter::Parameter;
 
 fn escape_const_name(s: &str) -> String {
-  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("%", "PROZENT")
+  s.to_uppercase().replace(".", "_").replace("|", "_").replace(" ", "_").replace("-", "_").replace("~", "_").replace("%", "PERCENT")
 }
 
 #[track_caller]

@@ -1,4 +1,4 @@
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, RwLock, Mutex};
 use std::{thread, time};
 
 use schemars::{schema, schema_for};
@@ -8,17 +8,47 @@ use webthing::{
   property::ValueForwarder,
 };
 
-use crate::{VControl, DataType, types::{DateTime, Error, CircuitTimes}};
+use crate::{VControl, Command, DataType, Value, types::{DateTime, Error, CircuitTimes}};
 
 struct VcontrolValueForwarder {
-  command: &'static str,
-  vcontrol: Arc<RwLock<VControl>>,
+  command_name: &'static str,
+  command: &'static Command,
+  vcontrol: Arc<RwLock<Mutex<VControl>>>,
 }
 
 impl ValueForwarder for VcontrolValueForwarder {
   fn set_value(&mut self, value: serde_json::Value) -> Result<serde_json::Value, &'static str> {
-    log::info!("Setting property {} to {}.", self.command, value);
-    Ok(value)
+    let new_value = value.clone();
+
+    let vcontrol_value = match self.command.data_type {
+      DataType::Int => serde_json::from_value::<i64>(value).map(Value::Int),
+      DataType::Double => serde_json::from_value::<f64>(value).map(Value::Double),
+      DataType::Byte | DataType::ErrorIndex => serde_json::from_value::<u8>(value).map(|b| Value::Int(b as i64)),
+      DataType::String => serde_json::from_value::<String>(value).map(Value::String),
+      DataType::DateTime => serde_json::from_value::<DateTime>(value).map(Value::DateTime),
+      DataType::Error => serde_json::from_value::<Error>(value).map(Value::Error),
+      DataType::CircuitTimes => serde_json::from_value::<CircuitTimes>(value).map(Value::CircuitTimes),
+      DataType::ByteArray => serde_json::from_value::<Vec<u8>>(value).map(Value::Array),
+    };
+
+    let vcontrol_value = match vcontrol_value {
+      Ok(vcontrol_value) => vcontrol_value,
+      Err(err) => {
+        log::error!("Failed setting property {}: {}", self.command_name, err);
+        return Err("Parsing value failed")
+      }
+    };
+
+    log::info!("Setting property {} to {}.", self.command_name, new_value);
+    let vcontrol = self.vcontrol.write().unwrap();
+    let mut vcontrol = vcontrol.lock().unwrap();
+    if let Err(err) = vcontrol.set(self.command_name, vcontrol_value) {
+      log::error!("Failed setting property {}: {}", self.command_name, err);
+      return Err("Failed setting value")
+    }
+    log::info!("Property {} successfully set to {}.", self.command_name, new_value);
+
+    Ok(new_value)
   }
 }
 
@@ -26,7 +56,7 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
   let device = vcontrol.device();
   let commands = device.commands().clone();
 
-  let vcontrol = Arc::new(RwLock::new(vcontrol));
+  let vcontrol = Arc::new(RwLock::new(Mutex::new(vcontrol)));
 
   // TODO: Get from `vcontrol`.
   let device_id = 1234;
@@ -42,7 +72,7 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
     let mut root_schema = match command.data_type {
       DataType::Int => schema_for!(i64),
       DataType::Double => schema_for!(f64),
-      DataType::Byte => schema_for!(u8),
+      DataType::Byte | DataType::ErrorIndex => schema_for!(u8),
       DataType::String => schema_for!(String),
       DataType::DateTime => schema_for!(DateTime),
       DataType::Error => schema_for!(Error),
@@ -88,6 +118,8 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
 
     if let Some(mapping) = &command.mapping {
       create_enum(&mut root_schema.schema, mapping);
+    } else if command.data_type == DataType::ErrorIndex {
+      create_enum(&mut root_schema.schema, device.errors());
     } else if command.data_type == DataType::Error {
       if let Some(ref mut validation) = root_schema.schema.object {
         if let Some(schema::Schema::Object(index_schema)) = validation.properties.get_mut("index") {
@@ -100,7 +132,8 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
     let mut description = schema;
 
     let value_forwarder = VcontrolValueForwarder {
-      command: command_name.clone(),
+      command_name: command_name.clone(),
+      command: command.clone(),
       vcontrol: vcontrol.clone(),
     };
 
@@ -129,10 +162,14 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
           continue;
         }
 
-        let new_value = if let Ok(value) = vcontrol.write().unwrap().get(command_name) {
-          serde_json::to_value(&value.value).unwrap()
-        } else {
-          json!(null)
+        let new_value = {
+          let vcontrol = vcontrol.read().unwrap();
+          let mut vcontrol = vcontrol.lock().unwrap();
+          if let Ok(value) = vcontrol.get(command_name) {
+            json!(value.value)
+          } else {
+            json!(null)
+          }
         };
 
         let mut t = thing.write().unwrap();
