@@ -17,12 +17,6 @@ class Pathname
   alias to_str to_s
 end
 
-class Hash
-  def sort_by_key
-    map { |k, v| [k, v.is_a?(Hash) ? v.sort_by_key : v] }.sort_by { |k,| k }.to_h
-  end
-end
-
 DATAPOINT_DEFINITION_VERSION_RAW                  = 'datapoint_definition_version_raw.yml'
 DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions_raw.yml'
 DATAPOINT_DEFINITIONS                             = 'datapoint_definitions.yml'
@@ -164,7 +158,7 @@ def create_mapping_to_unique(input)
   {
     mapping: mapping,
     translations: combined,
-  }.sort_by_key
+  }.deep_sort!
 end
 
 file TRANSLATIONS_UNIQUE => TRANSLATIONS_RAW do |t|
@@ -387,7 +381,7 @@ file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
   devices = devices.reduce({}) { |h, (device_id, device)|
     h.merge({
       device_id => {
-        'id' => device.fetch('identification'),
+        'id' => device.fetch('identification', nil),
         'id_ext' => device.fetch('identification_extension', 0x0000),
         'id_ext_till' => device.fetch('identification_extension_till', 0xffff),
         'f0' => device.fetch('f0', 0x0000),

@@ -1,3 +1,5 @@
+require 'backports/2.7.0/enumerable/filter_map'
+
 desc 'create cleaned versions for raw YAML files'
 task :cleaned => [
   SYSTEM_EVENT_TYPES,
@@ -205,7 +207,7 @@ file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
     v['value_list']&.transform_values! { |v| "@@#{reverse_translations.fetch(v)}" }
 
     [k, v]
-  }.compact.to_h
+  }.to_h
 
   File.write t.name, system_event_types.to_yaml
 end
@@ -276,7 +278,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     end
   end
 
-  datapoints = datapoints.map { |k, v|
+  datapoints = datapoints.filter_map { |k, v|
     datapoint_type_id = v.delete('address')
 
     # Remove unsupported devices.
@@ -302,8 +304,8 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     v['event_types'] = v.fetch('event_types').map { |id|
       map_event_type_name(event_types.fetch(id).fetch('name'))
     }
-    [datapoint_type_id, v.compact.sort_by_key]
-  }.compact.to_h
+    [datapoint_type_id, v]
+  }.to_h
 
   event_value_types = event_value_types.map { |k, v|
     if unit = v.delete('unit')
@@ -353,7 +355,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     [k, v]
   }.to_h
 
-  event_types = event_types.map { |_, v|
+  event_types = event_types.filter_map { |_, v|
     event_type_id = map_event_type_name(v.fetch('name'))
 
     # Remove unneeded/unsupported event types.
@@ -366,15 +368,15 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
     v.merge!(value_types) if value_types
 
-    [event_type_id, v.compact.sort_by_key]
-  }.compact.to_h.compact.sort_by_key
+    [event_type_id, v]
+  }.to_h
 
   datapoint_definitions = {
     'datapoints' => datapoints,
     'event_types' => event_types,
   }
 
-  File.write t.name, datapoint_definitions.to_yaml
+  File.write t.name, datapoint_definitions.deep_sort!.to_yaml
 end
 
 DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
@@ -385,28 +387,28 @@ file DEVICES => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES] do |t|
   datapoints = datapoint_definitions.fetch('datapoints')
   event_types = datapoint_definitions.fetch('event_types')
 
-  devices = datapoints.map { |datapoint_type_id, v|
-    device_event_types = v['event_types'].map { |event_type_id|
+  devices = datapoints.filter_map { |datapoint_type_id, v|
+    device_event_types = v['event_types'].filter_map { |event_type_id|
       event_type = event_types[event_type_id]
       next unless event_type
 
       [event_type_id, event_type]
-    }.compact.to_h
+    }.to_h
 
-    v['event_types'] = device_event_types.merge(system_event_types).map { |type_id, type|
+    v['event_types'] = device_event_types.merge(system_event_types).filter_map { |type_id, type|
       fc_read = type['fc_read']
       fc_write = type['fc_write']
       next if fc_read.nil? && fc_write.nil?
       next unless fc_read == 'virtual_read' || fc_write == 'virtual_write'
 
       type_id
-    }.compact
+    }
 
     # Remove devices without any supported event types.
     next if (v['event_types'] - DUMMY_EVENT_TYPES).empty?
 
-    [datapoint_type_id, v.compact]
-  }.compact.to_h
+    [datapoint_type_id, v]
+  }.to_h
 
-  File.write t.name, devices.sort_by_key.to_yaml
+  File.write t.name, devices.deep_sort!.to_yaml
 end

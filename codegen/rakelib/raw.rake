@@ -3,6 +3,8 @@ require 'tempfile'
 require 'base64'
 require 'stringio'
 require 'parallel'
+require 'deepsort'
+require 'backports/2.7.0/enumerable/filter_map'
 
 require 'pycall/import'
 include PyCall::Import
@@ -183,10 +185,10 @@ def event_types(path)
   document = Nokogiri::XML.parse(File.read(path))
   document.remove_namespaces!
 
-  document.xpath('.//EventTypes/EventType').map { |fragment|
+  document.xpath('.//EventTypes/EventType').filter_map { |fragment|
     next if fragment.children.empty?
 
-    event_type = fragment.children.map { |n|
+    event_type = fragment.children.filter_map { |n|
       value = case name = n.name.underscore
       when 'id'
         strip_address(n.text.strip)
@@ -219,14 +221,16 @@ def event_types(path)
         value_if_non_empty(n)
       end
 
+      next if value.nil?
+
       [name, value]
-    }.to_h.compact
+    }.to_h
 
     [
       event_type.delete('id'),
       event_type,
     ]
-  }.compact.to_h
+  }.to_h.deep_sort!
 end
 
 file SYSTEM_EVENT_TYPES_RAW => SYSTEM_EVENT_TYPES_XML do |t|
@@ -258,7 +262,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
     ['ecnVersion', 'version'] => ->(fragment) {
       next if fragment.children.empty?
 
-      version = fragment.children.map do |n|
+      version = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'id'
           Integer(n.text.strip)
@@ -271,15 +275,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { version.delete('name') => version.fetch('value') }
     },
     ['ecnDatapointType', 'datapoints'] => ->(fragment) {
       next if fragment.children.empty?
 
-      datapoint_type = fragment.children.map do |n|
+      datapoint_type = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'id', 'event_type_id', 'status_event_type_id'
           Integer(n.text.strip)
@@ -290,15 +294,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { datapoint_type.delete('id') => datapoint_type }
     },
     ['ecnDataPointTypeEventTypeLink', 'datapoint_type_event_type_links'] => ->(fragment) {
       next if fragment.children.empty?
 
-      link = fragment.children.map do |n|
+      link = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'data_point_type_id', 'event_type_id'
           Integer(n.text.strip)
@@ -309,15 +313,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { fragment['id'] => link }
     },
     ['ecnEventType', 'event_types'] => ->(fragment) {
       next if fragment.children.empty?
 
-      event_type = fragment.children.map do |n|
+      event_type = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'id', 'priority', 'config_set_id', 'config_set_parameter_id'
           Integer(n.text.strip)
@@ -349,15 +353,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { event_type.delete('id') => event_type }
     },
     ['ecnEventValueType', 'event_value_types'] => ->(fragment) {
       next if fragment.children.empty?
 
-      event_value_type = fragment.children.map do |n|
+      event_value_type = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'id', 'enum_address_value', 'status_type_id', 'value_precision', 'length'
           Integer(n.text.strip)
@@ -370,15 +374,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { event_value_type.delete('id') => event_value_type }
     },
     ['ecnEventTypeEventValueTypeLink', 'event_type_event_value_type_links'] => ->(fragment) {
       next if fragment.children.empty?
 
-      link = fragment.children.map do |n|
+      link = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'event_type_id', 'event_value_id'
           Integer(n.text.strip)
@@ -389,15 +393,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { fragment['id'] => link }
     },
     ['ecnTableExtension', 'table_extensions'] => ->(fragment) {
       next if fragment.children.empty?
 
-      table_extension = fragment.children.map do |n|
+      table_extension = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'id', 'internal_data_type'
           Integer(n.text.strip)
@@ -414,15 +418,15 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { table_extension.delete('id') => table_extension }
     },
     ['ecnTableExtensionValue', 'table_extension_values'] => ->(fragment) {
       next if fragment.children.empty?
 
-      table_extension_value = fragment.children.map do |n|
+      table_extension_value = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
         when 'id', 'ref_id'
           Integer(n.text.strip)
@@ -437,8 +441,8 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           value_if_non_empty(n)
         end
 
-        [name, value]
-      end.to_h.compact
+        [name, value] unless value.nil?
+      }.to_h
 
       { table_extension_value.delete('id') => table_extension_value }
     },
@@ -454,7 +458,6 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
     data_point_type = definitions.fetch('datapoints').fetch(link.fetch('data_point_type_id'))
     data_point_type['event_types'] ||= []
     data_point_type['event_types'].push(link.fetch('event_type_id'))
-    data_point_type['event_types'].sort!
   end
 
   definitions.delete('event_type_event_value_type_links').each do |_, link|
@@ -463,7 +466,7 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
     event_type['value_types'].push(link.fetch('event_value_id'))
   end
 
-  File.write t.name, definitions.sort_by_key.to_yaml
+  File.write t.name, definitions.deep_sort!.to_yaml
 end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
@@ -502,5 +505,5 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     h.deep_merge!(translations)
   }
 
-  File.write t.name, translations.sort_by_key.to_yaml
+  File.write t.name, translations.deep_sort!.to_yaml
 end
