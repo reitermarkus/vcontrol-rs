@@ -1,10 +1,10 @@
 use std::process::exit;
-use std::sync::{Arc, RwLock, Weak};
+use std::sync::{RwLock, Weak};
 
 use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp};
 use serde_json;
 use webthing::{
-  Action, BaseEvent, BaseProperty, BaseThing, Thing, ThingsType, WebThingServer,
+  Action, Thing, ThingsType, WebThingServer,
   server::ActionGenerator,
 };
 
@@ -15,9 +15,9 @@ struct Generator;
 impl ActionGenerator for Generator {
   fn generate(
     &self,
-    thing: Weak<RwLock<Box<dyn Thing>>>,
-    name: String,
-    input: Option<&serde_json::Value>,
+    _thing: Weak<RwLock<Box<dyn Thing>>>,
+    _name: String,
+    _input: Option<&serde_json::Value>,
   ) -> Option<Box<dyn Action>> {
     None
   }
