@@ -1,6 +1,5 @@
 use std::convert::TryInto;
 use std::fmt;
-use std::str::FromStr;
 
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;

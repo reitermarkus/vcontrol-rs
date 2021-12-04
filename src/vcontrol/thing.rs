@@ -8,7 +8,7 @@ use webthing::{
   property::ValueForwarder,
 };
 
-use crate::{VControl, Command, DataType, Value, types::{DateTime, Error, CircuitTimes}};
+use crate::{VControl, AccessMode, Command, DataType, Value, types::{DateTime, Error, CircuitTimes}};
 
 struct VcontrolValueForwarder {
   command_name: &'static str,
@@ -80,12 +80,14 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
       DataType::ByteArray => schema_for!(Vec<u8>),
     };
 
-    if command.mode.is_read() && !command.mode.is_write() {
-      root_schema.schema.metadata().read_only = true;
-    }
-
-    if command.mode.is_write() && !command.mode.is_read() {
-      root_schema.schema.metadata().write_only = true;
+    match command.mode {
+      AccessMode::Read => {
+        root_schema.schema.metadata().read_only = true;
+      },
+      AccessMode::Write => {
+        root_schema.schema.metadata().write_only = true;
+      },
+      AccessMode::ReadWrite => (),
     }
 
     root_schema.schema.extensions.insert("@type".into(), json!("LevelProperty"));

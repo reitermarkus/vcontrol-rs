@@ -1,5 +1,4 @@
 use phf;
-use serde::de::{self, Deserialize, Deserializer};
 
 use crate::{AccessMode, Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DateTime, CircuitTimes}};
 
