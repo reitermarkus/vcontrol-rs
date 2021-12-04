@@ -53,16 +53,16 @@ TRANSLATION_FIXES = {
   'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
 }
 
-file USED_COMMANDS => [DEVICES, DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
+file USED_COMMANDS => [USED_DEVICES, DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
     t.sources.map { |source| load_yaml(source) }
   event_types = datapoint_definitions.fetch('event_types')
 
-  used_event_type_ids = devices.each_value.reduce(Set.new) { |s, v| s | v['event_types'].to_set }
+  used_event_type_ids = used_devices.each_value.reduce(Set.new) { |s, d| s | d['commands'].to_set }
 
-  used_event_types = system_event_types.merge(event_types.keep_if { |type_id,|
+  used_event_types = system_event_types.merge(event_types).keep_if { |type_id,|
     used_event_type_ids.include?(type_id)
-  })
+  }
 
   used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
     command = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
@@ -72,13 +72,13 @@ file USED_COMMANDS => [DEVICES, DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, MAPPI
   File.write t.name, used_commands.to_yaml
 end
 
-file USED_MAPPINGS => [USED_COMMANDS, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
-  used_commands = used_commands.map { |_, v| v.fetch('type_id') }.to_set
+file USED_MAPPINGS => [USED_DEVICES, USED_COMMANDS, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  used_devices, used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
+  device_error_mappings = used_devices.map { |_, v| v.fetch('error_mapping') }
+  command_mappings = used_commands.filter_map { |_, v| v['mapping'] }
 
-  used_mappings = mappings_unique.fetch(:mapping)
-    .select { |k, _| used_commands.include?(k) || k.match?(/\Aviessmann\.errorcode(?:\.|$)/) }
-    .map { |_, k|
+  used_mappings = (device_error_mappings + command_mappings).uniq
+    .map { |k|
       [
         k,
         mappings_unique.fetch(:translations).fetch(k)
@@ -373,8 +373,8 @@ def type_to_command(type_id, type, mappings:, translations:)
   command
 end
 
-file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
-  devices, mappings_unique, used_commands = t.sources.map { |source| load_yaml(source) }
+file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE] do |t|
+  devices, mappings_unique = t.sources.map { |source| load_yaml(source) }
 
   default_error_mapping = mappings_unique.fetch(:mapping).fetch('viessmann.errorcode')
 
@@ -388,7 +388,6 @@ file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE, USED_COMMANDS] do |t|
         'f0_till' => device.fetch('f0_till', 0xffff),
         'commands' => device['event_types']
           .map { |command_name| map_command_id(command_name) }
-          .select { |id| used_commands.key?(id) }
           .uniq,
         'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
       }

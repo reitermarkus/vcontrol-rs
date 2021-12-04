@@ -8,6 +8,8 @@ task :cleaned => [
 ]
 
 EVENT_TYPE_NAME_FIXES = {
+  '@@WW_Temperatur_Mitte_ab_Bit_0' => 'WW_Temperatur_Mitte_ab_Bit_0',
+  '@@WW_Temperatur_Mitte_ab_Bit_4' => 'WW_Temperatur_Mitte_ab_Bit_4',
   '@@viessmann.eventvaluetype.name.WPR3_Split.KC0_Main_mode_variant' => '@@viessmann.eventtype.name.WPR3_Split.KC0_Main_mode_variant',
 }
 
@@ -237,7 +239,6 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
         when /\A\h{4}\Z/i
           Integer(value, 16)
         else
-          #warn "Unknown value for field '#{field_name}': #{value}\n#{datapoint}" if field_name == 'identification'
           nil
         end
       when 'f0', 'f0_till'
@@ -262,7 +263,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
         when /\A0x\h+\Z/
           Integer(value.delete_prefix('0x'), 16)
         else
-          value
+          nil
         end
       when /^fc_(read|write)$/
         parse_function(value)
@@ -272,6 +273,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
       else
         value
       end
+
       event_type[field_name] = value unless value.nil?
     when 'ecnEventTypeGroup'
       next
@@ -283,26 +285,12 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
   datapoints = datapoints.filter_map { |k, v|
     datapoint_type_id = v.delete('address')
 
+    # Remove devices without identification number.
+    next unless v.key?('identification')
+
     # Remove unsupported devices.
-    next if datapoint_type_id == 'ecnStatusDataPoint'
     next if datapoint_type_id.start_with?('BESS')
     next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
-    next if datapoint_type_id.start_with?('CU401B')
-    next if datapoint_type_id == 'EA2'
-    next if datapoint_type_id == 'VirtualHydraulicCalibration'
-    next if datapoint_type_id == 'puffermgm'
-    next if datapoint_type_id.start_with?('DEKATEL_')
-    next if datapoint_type_id.start_with?('Dekamatik_')
-    next if datapoint_type_id.start_with?('Solartrol_')
-    next if datapoint_type_id.start_with?('GWG_')
-    next if datapoint_type_id.start_with?('MBus')
-    next if datapoint_type_id.start_with?('HV_')
-    next if datapoint_type_id.start_with?('VBlock')
-    next if datapoint_type_id.start_with?('VCOM')
-    next if datapoint_type_id.start_with?('Vitocom')
-    next if datapoint_type_id.start_with?('Vitogate')
-    next if datapoint_type_id.start_with?('WILO')
-    next if datapoint_type_id.start_with?('_VITODATA')
 
     v['event_types'] = v.fetch('event_types').map { |id|
       map_event_type_name(event_types.fetch(id).fetch('name'))
@@ -382,7 +370,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
   File.write t.name, datapoint_definitions.deep_sort!.to_yaml
 end
 
-DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType', 'ecnsysEventType~Error', 'ecnsysEventType~ErrorIndex']
+DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType']
 
 file DEVICES => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES] do |t|
   datapoint_definitions, system_event_types = t.sources.map { |source| load_yaml(source) }
@@ -408,7 +396,7 @@ file DEVICES => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES] do |t|
     }
 
     # Remove devices without any supported event types.
-    next if (v['event_types'] - DUMMY_EVENT_TYPES).empty?
+    next if (v['event_types'] - system_event_types.keys - DUMMY_EVENT_TYPES).empty?
 
     [datapoint_type_id, v]
   }.to_h
