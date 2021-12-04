@@ -194,8 +194,6 @@ end
 file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
-  reverse_translations = translations_raw.map { |k, v| [v.fetch('de'), k] }.to_h
-
   system_event_types = system_event_types_raw.map { |k, v|
     case k
     when 'ecnsysEventType~ErrorIndex'
@@ -203,8 +201,6 @@ file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
     when /\AecnsysFehlerhistorie\d+\Z/
       v['value_type'] = 'Error'
     end
-
-    v['value_list']&.transform_values! { |v| "@@#{reverse_translations.fetch(v)}" }
 
     [k, v]
   }.to_h
@@ -227,12 +223,13 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     pk = table_extension.fetch('pk_fields').zip(v.fetch('pk_value')).to_h
     id = pk.fetch('id')
 
-    case table_name = table_extension.fetch('table_name')
+    table_name = table_extension.fetch('table_name')
+    field_name = table_extension.fetch('field_name')
+    value = v.fetch('internal_value')
+
+    case table_name
     when 'ecnDatapointType'
       next unless datapoint = datapoints[id]
-
-      field_name = table_extension.fetch('field_name').delete_prefix('label.tableextension.ecnDatapointType.').underscore
-      value = v.fetch('internal_value')
 
       value = case field_name
       when 'identification', 'identification_extension', 'identification_extension_till'
@@ -240,19 +237,24 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
         when /\A\h{4}\Z/i
           Integer(value, 16)
         else
+          #warn "Unknown value for field '#{field_name}': #{value}\n#{datapoint}" if field_name == 'identification'
           nil
         end
       when 'f0', 'f0_till'
         [value].pack('n').unpack('n').first
+      when 'options'
+        if value == 'undefined'
+          nil
+        else
+          value.underscore
+        end
       else
         value
       end
-      datapoint[field_name] = value
+
+      datapoint[field_name] = value unless value.nil?
     when 'ecnEventType'
       next unless event_type = event_types[id]
-
-      field_name = table_extension.fetch('field_name').delete_prefix('label.tableextension.ecnEventType.').underscore
-      value = v.fetch('internal_value')
 
       value = case field_name
       when 'address'
@@ -270,7 +272,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
       else
         value
       end
-      event_type[field_name] = value
+      event_type[field_name] = value unless value.nil?
     when 'ecnEventTypeGroup'
       next
     else

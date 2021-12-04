@@ -16,6 +16,7 @@ SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceId
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
 SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
 TEXT_RESOURCES_DIR                                = "#{VITOSOFT_DIR}"
+REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations_raw.yml'
 
 desc 'download program for decoding .NET Remoting Binary Format data'
 file 'nrbf.py' do |t|
@@ -161,6 +162,33 @@ def parse_function(text)
   }.fetch(text, text.underscore)
 end
 
+def parse_translation_text(text)
+  text.strip
+      .gsub(/\s+/, ' ')
+      .gsub('##ecnnewline##', "\n")
+      .gsub('##ecntab##', "\t")
+      .gsub('##ecnsemicolon##', ';')
+      .gsub('##nl##', "\n")
+      .lines.map(&:strip).join("\n")
+end
+
+# Simplify all whitespace, since some translations differ only by whitespace.
+def simplify_translation_text(text)
+  text.gsub(/\s+/, ' ').strip
+end
+
+def parse_description(text, reverse_translations:)
+  case v = text.strip
+  when ''
+    nil
+  when /^@@/
+    v
+  else
+    k = simplify_translation_text(v)
+    "@@#{reverse_translations.fetch(k)}"
+  end
+end
+
 def parse_conversion(text)
   @conversion_cache ||= {}
 
@@ -181,11 +209,11 @@ def parse_conversion(text)
   @conversion_cache[text] = conversion
 end
 
-def event_types(path)
+def event_types(path, reverse_translations: {})
   document = Nokogiri::XML.parse(File.read(path))
   document.remove_namespaces!
 
-  document.xpath('.//EventTypes/EventType').filter_map { |fragment|
+  types = document.xpath('.//EventTypes/EventType').filter_map { |fragment|
     next if fragment.children.empty?
 
     event_type = fragment.children.filter_map { |n|
@@ -209,12 +237,26 @@ def event_types(path)
         Float(n.text)
       when 'access_mode'
         n.text.empty? ? nil : n.text.underscore
+      when 'description'
+        parse_description(n.text, reverse_translations: reverse_translations)
+      when 'data_type'
+        case value = n.text.underscore
+        when 'readonly'
+          name = 'access_mode'
+          'read'
+        when 'dropdown'
+          next
+        else
+          raise "Unknown `data_type` value: #{value}"
+        end
       when /^fc_(read|write)$/
         parse_function(n.text)
       when 'option_list'
         parse_option_list(n.text)
       when 'value_list'
-        parse_value_list(n.text)
+        parse_value_list(n.text).transform_values { |v|
+          parse_description(v, reverse_translations: reverse_translations)
+        }
       when /^prefix_(read|write)$/
         n.text.empty? ? nil : n.text.delete_prefix('0x').each_char.each_slice(2).map { |c| Integer(c.join, 16) }
       else
@@ -230,11 +272,15 @@ def event_types(path)
       event_type.delete('id'),
       event_type,
     ]
-  }.to_h.deep_sort!
+  }.to_h
+
+  types.deep_sort!
 end
 
-file SYSTEM_EVENT_TYPES_RAW => SYSTEM_EVENT_TYPES_XML do |t|
-  File.write t.name, event_types(t.source).to_yaml
+file SYSTEM_EVENT_TYPES_RAW => [SYSTEM_EVENT_TYPES_XML, REVERSE_TRANSLATIONS_RAW] do |t|
+  system_event_types_xml, reverse_translations_raw = t.sources
+  reverse_translations = load_yaml(reverse_translations_raw)
+  File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml
 end
 
 file SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW => SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML do |t|
@@ -245,21 +291,17 @@ file SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW => SYSTEM_DEVICE_IDENTIFI
   File.write t.name, event_types(t.source).to_yaml
 end
 
-file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
-  datapoint_definitions = {}
-  event_type_definitions = {}
-  event_value_type_definitions = {}
-  table_extensions = {}
-  table_extension_values = {}
-  versions = {}
+file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, REVERSE_TRANSLATIONS_RAW] do |t|
+  datapoint_definitions_raw, reverse_translations_raw = t.sources
 
-  document = Nokogiri::XML.parse(File.read(t.source))
+  reverse_translations = load_yaml(reverse_translations_raw)
+  document = Nokogiri::XML.parse(File.read(datapoint_definitions_raw))
   document.remove_namespaces!
 
   dataset = document.at_xpath('.//ImportExportDataHolder/ECNDataSet/diffgram/ECNDataSet')
 
   definitions = Parallel.map({
-    ['ecnVersion', 'version'] => ->(fragment) {
+    ['ecnVersion', 'versions'] => ->(fragment) {
       next if fragment.children.empty?
 
       version = fragment.children.filter_map { |n|
@@ -289,6 +331,9 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           Integer(n.text.strip)
         when 'company_id'
           assert_company_id(n.text.strip)
+          nil
+        when 'description'
+          # `name` contains translation ID which is mostly the same as the description.
           nil
         else
           value_if_non_empty(n)
@@ -370,12 +415,20 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
         when 'company_id'
           assert_company_id(n.text.strip)
           nil
+        when 'description'
+          # `name` contains translation ID which is mostly the same as the description.
+          nil
         else
           value_if_non_empty(n)
         end
 
         [name, value] unless value.nil?
       }.to_h
+
+      if event_value_type.key?('enum_replace_value')
+        # `name` is mostly useless for enum values.
+        event_value_type.delete('name')
+      end
 
       { event_value_type.delete('id') => event_value_type }
     },
@@ -414,12 +467,18 @@ file DATAPOINT_DEFINITIONS_RAW => DATAPOINT_DEFINITIONS_XML do |t|
           dotnet_decode(n.text)
         when 'options_value'
           parse_options_value(n.text)
+        when 'label'
+          # Redundant information already contained in `field_name`.
+          nil
         else
           value_if_non_empty(n)
         end
 
         [name, value] unless value.nil?
       }.to_h
+
+      table_name = table_extension.fetch('table_name')
+      table_extension['field_name'] = table_extension.delete('field_name').delete_prefix("label.tableextension.#{table_name}.").underscore
 
       { table_extension.delete('id') => table_extension }
     },
@@ -491,11 +550,7 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     translations.reduce({}) { |h, node|
       language_id = node.attribute('CultureId').text
       translation_id = node.attribute('Label').text
-      value = node.attribute('Value').text.strip
-        .gsub('##ecnnewline##', "\n")
-        .gsub('##ecntab##', "\t")
-        .gsub('##ecnsemicolon##', ';')
-        .gsub('##nl##', "\n")
+      value = parse_translation_text(node.attribute('Value').text)
 
       value = clean_enum_text(translation_id, nil, value)
       h[translation_id] = { languages.fetch(language_id) => value }
@@ -506,4 +561,16 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   }
 
   File.write t.name, translations.deep_sort!.to_yaml
+end
+
+file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
+  translations_raw = load_yaml(t.source)
+
+  reverse_translations_raw = translations_raw.filter_map { |k, v|
+    text = simplify_translation_text(v.fetch('de'))
+    next if text.empty?
+    [text, k]
+  }.to_h
+
+  File.write t.name, reverse_translations_raw.to_yaml
 end
