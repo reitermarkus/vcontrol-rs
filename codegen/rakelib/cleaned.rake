@@ -284,6 +284,7 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     # Remove unsupported devices.
     next if datapoint_type_id == 'ecnStatusDataPoint'
     next if datapoint_type_id.start_with?('BESS')
+    next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
     next if datapoint_type_id.start_with?('CU401B')
     next if datapoint_type_id == 'EA2'
     next if datapoint_type_id == 'VirtualHydraulicCalibration'
