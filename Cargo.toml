@@ -57,4 +57,4 @@ serde_yaml = "0.8"
 
 [patch.crates-io]
 # webthing = { path = "./webthing-rust" }
-webthing = { git = "https://github.com/reitermarkus/webthing-rust", branch = "refactoring" }
+webthing = { git = "https://github.com/WebThingsIO/webthing-rust", branch = "master" }
