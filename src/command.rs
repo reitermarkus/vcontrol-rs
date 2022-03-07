@@ -15,6 +15,8 @@ pub struct Command {
   pub(crate) bit_pos: usize,
   pub(crate) bit_len: usize,
   pub(crate) conversion: Option<Conversion>,
+  pub(crate) lower_bound: Option<f32>,
+  pub(crate) upper_bound: Option<f32>,
   pub(crate) unit: Option<&'static str>,
   pub(crate) mapping: Option<phf::map::Map<i32, &'static str>>,
 }

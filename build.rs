@@ -200,6 +200,8 @@ impl fmt::Debug for Command {
        .field("bit_len", &self.bit_len)
        .field("bit_pos", &self.bit_pos)
        .field("conversion", &format_args!("{}", conversion))
+       .field("lower_bound", &self.lower_border)
+       .field("upper_bound", &self.upper_border)
        .field("unit", &self.unit)
        .field("mapping", &format_args!("{}", mapping))
        .finish()

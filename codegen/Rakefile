@@ -29,14 +29,13 @@ SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.yml'
 SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.yml'
 SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types.raw.yml'
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types.raw.yml'
-
-DEVICES_CLEANED             = 'devices.cleaned.yml'
-MAPPINGS_UNIQUE     = 'mappings_unique.yml'
-TRANSLATIONS_UNIQUE = 'translations_unique.yml'
-COMMANDS_USED       = 'commands.used.yml'
-MAPPINGS_USED       = 'mappings.used.yml'
-TRANSLATIONS_USED   = 'translations.used.yml'
-DEVICES_USED        = 'devices.used.yml'
+DEVICES_CLEANED                                   = 'devices.cleaned.yml'
+MAPPINGS_UNIQUE                                   = 'mappings.unique.yml'
+TRANSLATIONS_UNIQUE                               = 'translations.unique.yml'
+COMMANDS_USED                                     = 'commands.used.yml'
+MAPPINGS_USED                                     = 'mappings.used.yml'
+TRANSLATIONS_USED                                 = 'translations.used.yml'
+DEVICES_USED                                      = 'devices.used.yml'
 
 file COMMANDS_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
@@ -64,11 +63,7 @@ file MAPPINGS_USED => [DEVICES_USED, COMMANDS_USED, MAPPINGS_UNIQUE, TRANSLATION
   command_mappings = used_commands.filter_map { |_, v| v['mapping'] }
 
   used_mappings = (device_error_mappings + command_mappings).uniq.reduce({}) { |h, k|
-    h[k] = mappings_unique
-      .fetch(:translations).fetch(k)
-      .transform_values { |v|
-        translations_unique.fetch(:mapping).fetch(v.delete_prefix('@@'))
-      }
+    h[k] = mappings_unique.fetch(:translations).fetch(k)
     h
   }.deep_sort!
 
@@ -91,14 +86,14 @@ file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
   File.write t.name, used_translations.to_yaml
 end
 
-file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_CLEANED] do |t|
+file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_UNIQUE] do |t|
   datapoint_definitions, system_event_types, translations = t.sources.map { |source| load_yaml(source) }
   event_types = datapoint_definitions.fetch('event_types')
 
-  error_mappings = translations.each_key.reduce({}) { |h, translation_id|
+  error_mappings = translations.fetch(:mapping).reduce({}) { |h, (translation_id, mapping_id)|
     if /^(?<id>viessmann\.errorcode(?:\.SMS)?(?:\.[^.]+)?)\.(?<value>\h{2})$/ =~ translation_id
       h[id] ||= {}
-      h[id][value.to_i(16)] = translation_id
+      h[id][value.to_i(16)] = mapping_id
     end
 
     h
@@ -109,7 +104,7 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
 
     unless value_list.empty?
       h[event_type_id] = value_list.filter_map { |index, translation_id|
-        [index, translation_id]
+        [index, translations.fetch(:mapping).fetch(translation_id)]
       }.to_h
     end
 
