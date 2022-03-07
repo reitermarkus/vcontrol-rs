@@ -14,9 +14,9 @@ use phf_codegen;
 mod access_mode;
 use access_mode::AccessMode;
 
-#[path = "src/device_ident_range.rs"]
-mod device_ident_range;
-use device_ident_range::DeviceIdentRange;
+#[path = "src/device_id_range.rs"]
+mod device_id_range;
+use device_id_range::DeviceIdRange;
 
 #[path = "src/data_type.rs"]
 mod data_type;
@@ -102,9 +102,9 @@ fn generate_devices() {
 
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
 
-  let mut device_map = phf_codegen::Map::<DeviceIdentRange>::new();
+  let mut device_map = phf_codegen::Map::<DeviceIdRange>::new();
   for (device_id, device) in &mappings {
-    let id_range = DeviceIdentRange {
+    let id_range = DeviceIdRange {
       id: device.id,
       hardware_index_range: ((device.id_ext.start() >> 8) as u8)..=((device.id_ext.end() >> 8) as u8),
       software_index_range: ((device.id_ext.start() & 0xff) as u8)..=((device.id_ext.end() & 0xff) as u8),
@@ -133,7 +133,7 @@ fn generate_devices() {
     writeln!(&mut file, r#"    /// - `{}`"#, escape_const_name(&device_id)).unwrap();
   }
 
-  writeln!(&mut file, r#"    pub const DEVICES: ::phf::Map<DeviceIdentRange, &'static Device> = {};"#, device_map.build()).unwrap();
+  writeln!(&mut file, r#"    pub const DEVICES: ::phf::Map<DeviceIdRange, &'static Device> = {};"#, device_map.build()).unwrap();
 }
 
 fn main() {

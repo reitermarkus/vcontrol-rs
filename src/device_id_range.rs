@@ -5,15 +5,16 @@ use std::ops::RangeInclusive;
 
 use phf_shared::{PhfHash, FmtConst};
 
+/// Device identifier range used for detecting device type.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct DeviceIdentRange {
+pub struct DeviceIdRange {
   pub id: u16,
   pub hardware_index_range: RangeInclusive<u8>,
   pub software_index_range: RangeInclusive<u8>,
   pub f0_range: RangeInclusive<u16>,
 }
 
-impl PhfHash for DeviceIdentRange {
+impl PhfHash for DeviceIdRange {
   fn phf_hash<H: Hasher>(&self, state: &mut H) {
     let id = self.id.to_be_bytes();
     let f0_start = self.f0_range.start().to_be_bytes();
@@ -29,7 +30,7 @@ impl PhfHash for DeviceIdentRange {
   }
 }
 
-impl FmtConst for DeviceIdentRange {
+impl FmtConst for DeviceIdRange {
     fn fmt_const(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
       write!(f, "{:?}", self)
     }
