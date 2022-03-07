@@ -23,6 +23,8 @@ DATAPOINT_DEFINITIONS_CLEANED                     = 'datapoint_definitions.clean
 DATAPOINT_TYPES_RAW                               = 'datapoint_types.raw.yml'
 DATAPOINT_TYPES                                   = 'datapoint_types.yml'
 TRANSLATIONS_RAW                                  = 'translations.raw.yml'
+TRANSLATIONS_CLEANED                              = 'translations.cleaned.yml'
+REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.yml'
 SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.yml'
 SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.yml'
 SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types.raw.yml'
@@ -35,23 +37,6 @@ COMMANDS_USED       = 'commands.used.yml'
 MAPPINGS_USED       = 'mappings.used.yml'
 TRANSLATIONS_USED   = 'translations.used.yml'
 DEVICES_USED        = 'devices.used.yml'
-
-TRANSLATION_FIXES = {
-  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0',
-  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~1'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~1',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~0'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~0',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~1'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~1',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~2'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~2',
-  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~3'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~3',
-  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
-  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~2' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
-  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~3' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
-  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
-  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~2'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~2',
-  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~3'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~3',
-  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~2'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
-  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
-}
 
 file COMMANDS_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
@@ -98,7 +83,7 @@ file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
       translations.map { |_, translation_id| translation_id }
     }
     .reduce({}) { |h, translation_id|
-      h[translation_id] = translations_unique.fetch(:translations).fetch(translation_id).fetch('en')
+      h[translation_id] = translations_unique.fetch(:translations).fetch(translation_id)
       h
     }
     .deep_sort!
@@ -106,7 +91,7 @@ file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
   File.write t.name, used_translations.to_yaml
 end
 
-file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_RAW] do |t|
+file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_CLEANED] do |t|
   datapoint_definitions, system_event_types, translations = t.sources.map { |source| load_yaml(source) }
   event_types = datapoint_definitions.fetch('event_types')
 
@@ -122,7 +107,11 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   mappings = system_event_types.merge(event_types).reduce({}) { |h, (event_type_id, event_type)|
     value_list = event_type.fetch('value_list', {})
 
-    h[event_type_id] = value_list unless value_list.empty?
+    unless value_list.empty?
+      h[event_type_id] = value_list.filter_map { |index, translation_id|
+        [index, translation_id]
+      }.to_h
+    end
 
     h
   }
@@ -160,13 +149,8 @@ def create_mapping_to_unique(input)
   }.deep_sort!
 end
 
-file TRANSLATIONS_UNIQUE => TRANSLATIONS_RAW do |t|
+file TRANSLATIONS_UNIQUE => TRANSLATIONS_CLEANED do |t|
   translations = load_yaml(t.sources.first)
-
-  translations = translations.transform_keys { |k|
-    TRANSLATION_FIXES.fetch(k, k)
-  }
-
   File.write t.name, create_mapping_to_unique(translations).to_yaml
 end
 

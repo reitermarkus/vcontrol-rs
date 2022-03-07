@@ -5,6 +5,7 @@ task :cleaned => [
   SYSTEM_EVENT_TYPES_CLEANED,
   DATAPOINT_DEFINITIONS_CLEANED,
   DEVICES_CLEANED,
+  TRANSLATIONS_CLEANED,
 ]
 
 EVENT_TYPE_NAME_FIXES = {
@@ -13,71 +14,88 @@ EVENT_TYPE_NAME_FIXES = {
   '@@viessmann.eventvaluetype.name.WPR3_Split.KC0_Main_mode_variant' => '@@viessmann.eventtype.name.WPR3_Split.KC0_Main_mode_variant',
 }
 
-EMPTY_VALUE_TRANSLATION = '@@viessmann-ess.eventvaluetype.ModulBetriebsart~3'
+EMPTY_VALUE_TRANSLATION = 'viessmann-ess.eventvaluetype.ModulBetriebsart~3'
+
+TRANSLATION_FIXES = {
+  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0',
+  'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~1'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~1',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~0'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~0',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~1'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~1',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~2'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~2',
+  'viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~3'               => 'viessmann.eventvaluetype.WPR3_SGReady_Funktionen~3',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~2' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~3' => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~2'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~3'            => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~3',
+  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~2'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
+}
 
 VALUE_LIST_FIXES = {
-  '@@viessmann.eventvaluetype.name.HO2B_Geraetetyp~8'                          => '@@viessmann.eventvaluetype.HO2B_Geraetetyp~8',
-  '@@viessmann.eventvaluetype..SC100_SoftwareIndex~14'                         => '@@viessmann.eventvaluetype.SC100_SoftwareIndex~14',
-  '@@viessmann.eventvaluetype.name.SR13_FktDrehzahlPumpe~3'                    => '@@viessmann.eventvaluetype.SR13_FktDrehzahlPumpe~3',
-  '@@viessmann.eventvaluetype.Vitotwin_Fuehlereingang~15'                      => '@@viessmann.eventvaluetype.Vitotwin_Fuehlereingang~3', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0'    => '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
-  '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper/shortLWT~3'    => '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
-  '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper/shortLWT~2'    => '@@viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
-  '@@viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0'               => '@@viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
-  '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortIRT~2'               => '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
-  '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortIRT~3'               => '@@viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
-  '@@viessmann.eventvaluetype.name.K4F_Protectionreason_0~4'                   => '@@viessmann.eventvaluetype.K4F_Protectionreason_0~4',
-  '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~5'              => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~4', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~2'  => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~2', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_modevariant_diagnostics~0'   => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~0', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~16' => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~3', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~1'  => '@@viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~1', # Translation does not exist.
-  '@@viessmann.eventvaluetype.name.WPR3_Split.KC5_Protection_code~3'           => '@@viessmann.eventvaluetype.WPR3_Split.KC5_Protection_code~3',
-  '@@viessmann.eventvaluetype.WPR3_Split.KE1_IFeel_mode_status~1'              => '@@viessmann.eventvaluetype.WPR3_Split.KE1_IFeel_mode_status~2', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.KE4_Reset_NLOAD~1'                    => '@@viessmann.eventvaluetype.name.WPR3_Split.KE4_Reset_NLOAD~1',
-  '@@viessmann.eventvaluetype.name.WPR3_Split.KEF_On_Off_Status~1'             => '@@viessmann.eventvaluetype.WPR3_Split.KEF_On_Off_Status~1',
-  '@@viessmann.eventvaluetype.WPR3_Split.KF1_self_test_jumper_1~1'             => '@@viessmann.eventtype.name.WPR3_Split.KF1_self_test_jumper_1~1',
-  '@@viessmann.eventvaluetype.WPR3_Split.KF10_jumper_10~0'                     => 'viessmann.eventvaluetype.WPR3_Split.KF2_jumper_10~0', # Translation does not exist.
-  '@@viessmann.eventvaluetype.WPR3_Split.KF10_jumper_10~1'                     => 'viessmann.eventvaluetype.WPR3_Split.KF2_jumper_10~1', # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.nciNetConfig~0'                              => '@@viessmann.eventvaluetype.nciNetConfig~0',
-  '@@viessmann-ess.eventvaluetype.nciNetConfig~1'                              => '@@viessmann.eventvaluetype.nciNetConfig~1',
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~0'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~1'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~2'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~4'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~5'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~6'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~7'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~8'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~9'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~10'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~11'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~12'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~13'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~14'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~15'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-1'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-2'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-3'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-4'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-5'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-6'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-10'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-11'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-12'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-13'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~-1'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~0'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~1'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~2'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~3'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~4'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~5'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~8'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~7'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~9'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~10'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
-  '@@viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~11'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann.eventvaluetype.name.HO2B_Geraetetyp~8'                          => 'viessmann.eventvaluetype.HO2B_Geraetetyp~8',
+  'viessmann.eventvaluetype..SC100_SoftwareIndex~14'                         => 'viessmann.eventvaluetype.SC100_SoftwareIndex~14',
+  'viessmann.eventvaluetype.name.SR13_FktDrehzahlPumpe~3'                    => 'viessmann.eventvaluetype.SR13_FktDrehzahlPumpe~3',
+  'viessmann.eventvaluetype.Vitotwin_Fuehlereingang~15'                      => 'viessmann.eventvaluetype.Vitotwin_Fuehlereingang~3', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0'    => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper/shortLWT~3'    => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3',
+  'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper/shortLWT~2'    => 'viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2',
+  'viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0'               => 'viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0',
+  'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortIRT~2'               => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2',
+  'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortIRT~3'               => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
+  'viessmann.eventvaluetype.name.K4F_Protectionreason_0~4'                   => 'viessmann.eventvaluetype.K4F_Protectionreason_0~4',
+  'viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~5'              => 'viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~4', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~2'  => 'viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~2', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.KC4_Main_modevariant_diagnostics~0'   => 'viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~0', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~16' => 'viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~3', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.KC4_Main_mode_variant_diagnostics~1'  => 'viessmann.eventvaluetype.WPR3_Split.KC0_Main_mode_variant~1', # Translation does not exist.
+  'viessmann.eventvaluetype.name.WPR3_Split.KC5_Protection_code~3'           => 'viessmann.eventvaluetype.WPR3_Split.KC5_Protection_code~3',
+  'viessmann.eventvaluetype.WPR3_Split.KE1_IFeel_mode_status~1'              => 'viessmann.eventvaluetype.WPR3_Split.KE1_IFeel_mode_status~2', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.KE4_Reset_NLOAD~1'                    => 'viessmann.eventvaluetype.name.WPR3_Split.KE4_Reset_NLOAD~1',
+  'viessmann.eventvaluetype.name.WPR3_Split.KEF_On_Off_Status~1'             => 'viessmann.eventvaluetype.WPR3_Split.KEF_On_Off_Status~1',
+  'viessmann.eventvaluetype.WPR3_Split.KF1_self_test_jumper_1~1'             => 'viessmann.eventtype.name.WPR3_Split.KF1_self_test_jumper_1~1',
+  'viessmann.eventvaluetype.WPR3_Split.KF10_jumper_10~0'                     => 'viessmann.eventvaluetype.WPR3_Split.KF2_jumper_10~0', # Translation does not exist.
+  'viessmann.eventvaluetype.WPR3_Split.KF10_jumper_10~1'                     => 'viessmann.eventvaluetype.WPR3_Split.KF2_jumper_10~1', # Translation does not exist.
+  'viessmann-ess.eventvaluetype.nciNetConfig~0'                              => 'viessmann.eventvaluetype.nciNetConfig~0',
+  'viessmann-ess.eventvaluetype.nciNetConfig~1'                              => 'viessmann.eventvaluetype.nciNetConfig~1',
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~0'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~1'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~2'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~4'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~5'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~6'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~7'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~8'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~9'                      => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~10'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~11'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~12'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~13'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~14'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~15'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-1'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-2'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-3'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-4'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-5'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-6'                     => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-10'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-11'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-12'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_alarm_type~-13'                    => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~-1'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~0'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~1'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~2'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~3'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~4'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~5'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~8'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~7'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~9'                  => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~10'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
+  'viessmann-ess.eventvaluetype.SNVTAlarm_priority_level~11'                 => EMPTY_VALUE_TRANSLATION, # Translation does not exist.
 }
 
 def map_unit(unit)
@@ -196,15 +214,17 @@ end
 file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
-  system_event_types = system_event_types_raw.map { |k, v|
+  system_event_types = system_event_types_raw.map { |k, system_event_type|
     case k
     when 'ecnsysEventType~ErrorIndex'
-      v['value_type'] = 'ErrorIndex'
+      system_event_type['value_type'] = 'ErrorIndex'
     when /\AecnsysFehlerhistorie\d+\Z/
-      v['value_type'] = 'Error'
+      system_event_type['value_type'] = 'Error'
     end
 
-    [k, v]
+    system_event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
+
+    [k, system_event_type]
   }.to_h
 
   File.write t.name, system_event_types.to_yaml
@@ -319,11 +339,13 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
       end
     when 'VarChar', 'NText'
       if v.key?('enum_address_value')
-        enum_replace_value = v.fetch('enum_replace_value')
+        enum_replace_value = v.fetch('enum_replace_value').delete_prefix('@@')
+        enum_replace_value = TRANSLATION_FIXES.fetch(enum_replace_value, enum_replace_value)
+        value_list = VALUE_LIST_FIXES.fetch(enum_replace_value, enum_replace_value)
 
         {
           'value_list' => {
-            v.fetch('enum_address_value') => VALUE_LIST_FIXES.fetch(enum_replace_value, enum_replace_value)
+            v.fetch('enum_address_value') => value_list
           }
         }
       else
@@ -405,4 +427,19 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   }.to_h
 
   File.write t.name, devices.to_yaml
+end
+
+file TRANSLATIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_RAW, REVERSE_TRANSLATIONS_RAW] do |t|
+  datapoint_definitions_raw, translations_raw, reverse_translations_raw = t.sources.map { |source| load_yaml(source) }
+
+  translations_cleaned = translations_raw.reduce({}) { |h, (k, v)|
+    h[TRANSLATION_FIXES.fetch(k, k)] = v.fetch('en')
+    h
+  }
+
+  datapoint_definitions_raw.fetch('event_value_types').each do |_, event_value_type|
+    add_missing_enum_replace_value_translations(event_value_type, translations_cleaned, reverse_translations: reverse_translations_raw)
+  end
+
+  File.write t.name, translations_cleaned.to_yaml
 end

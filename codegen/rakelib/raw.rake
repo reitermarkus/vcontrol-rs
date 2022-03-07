@@ -16,7 +16,6 @@ SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceId
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
 SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
 TEXT_RESOURCES_DIR                                = "#{VITOSOFT_DIR}"
-REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.yml'
 
 desc 'download program for decoding .NET Remoting Binary Format data'
 file 'nrbf.py' do |t|
@@ -185,7 +184,8 @@ def parse_description(text, reverse_translations:)
     v
   else
     k = simplify_translation_text(v)
-    "@@#{reverse_translations.fetch(k)}"
+    translation_id = reverse_translations.fetch(k, nil)
+    "@@#{translation_id}" if translation_id
   end
 end
 
@@ -291,9 +291,35 @@ file SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW => SYSTEM_DEVICE_IDENTIFI
   File.write t.name, event_types(t.source).to_yaml
 end
 
-file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, REVERSE_TRANSLATIONS_RAW] do |t|
-  datapoint_definitions_raw, reverse_translations_raw = t.sources
+def add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations:)
+  if event_value_type.key?('enum_replace_value')
+    enum_replace_value = event_value_type['enum_replace_value']
 
+    translation_id = enum_replace_value.delete_prefix('@@')
+    unless translations.key?(translation_id)
+      if (description = event_value_type['description'])
+        if enum_replace_value&.match?(/ecnStatusEventType~\d+/)
+          translations[translation_id] = description.delete_prefix('ecnStatusEventType~')
+          return
+        end
+
+        enum_text = clean_enum_text(enum_replace_value, nil, description)
+
+        if (reverse_translation_id = parse_description(enum_text, reverse_translations: reverse_translations))
+          event_value_type['enum_replace_value'] = reverse_translation_id
+          return
+        end
+      end
+
+      translations[translation_id] = enum_replace_value
+    end
+  end
+end
+
+file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, REVERSE_TRANSLATIONS_RAW] do |t|
+  datapoint_definitions_raw, translations_raw, reverse_translations_raw = t.sources
+
+  translations = load_yaml(translations_raw)
   reverse_translations = load_yaml(reverse_translations_raw)
   document = Nokogiri::XML.parse(File.read(datapoint_definitions_raw))
   document.remove_namespaces!
@@ -416,8 +442,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, REVERSE_TRANSLATIO
           assert_company_id(n.text.strip)
           nil
         when 'description'
-          # `name` contains translation ID which is mostly the same as the description.
-          nil
+          value_if_non_empty(n)
         else
           value_if_non_empty(n)
         end
@@ -425,10 +450,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, REVERSE_TRANSLATIO
         [name, value] unless value.nil?
       }.to_h
 
-      if event_value_type.key?('enum_replace_value')
-        # `name` is mostly useless for enum values.
-        event_value_type.delete('name')
-      end
+      add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations: reverse_translations)
 
       { event_value_type.delete('id') => event_value_type }
     },
