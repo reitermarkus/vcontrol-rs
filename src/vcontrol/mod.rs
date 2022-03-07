@@ -48,7 +48,7 @@ impl VControl {
     protocol.get(&mut optolink, 0x00f8, &mut buf)?;
     let device_ident = DeviceIdent::from_bytes(&buf);
 
-    let device_id_full = ((device_ident.id as u64) << 48);
+    let device_id_full = (device_ident.id as u64) << 48;
 
     let mut device = None;
 
