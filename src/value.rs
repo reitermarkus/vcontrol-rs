@@ -4,7 +4,7 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
-use crate::{Conversion, types::{DateTime, CircuitTimes, Error}};
+use crate::{conversion::Conversion, types::{DateTime, CircuitTimes, Error}};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]

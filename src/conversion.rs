@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[non_exhaustive]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(tag = "conversion", rename_all = "snake_case")]
-pub enum Conversion {
+pub(crate) enum Conversion {
   Div2,
   Div5,
   Div10,

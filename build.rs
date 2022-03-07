@@ -181,7 +181,7 @@ impl fmt::Debug for Command {
     };
 
     let conversion = if let Some(conversion) = &self.conversion {
-      format!("Some(crate::Conversion::{:?})", conversion)
+      format!("Some(crate::conversion::Conversion::{:?})", conversion)
     } else {
       "None".into()
     };

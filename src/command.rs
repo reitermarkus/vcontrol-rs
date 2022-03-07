@@ -1,22 +1,22 @@
 use phf;
 
-use crate::{AccessMode, Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DateTime, CircuitTimes}};
+use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DateTime, CircuitTimes}};
 
 /// A command which can be executed on an Optolink connection.
 #[derive(Debug)]
 pub struct Command {
-  pub addr: u16,
-  pub mode: AccessMode,
-  pub data_type: DataType,
-  pub parameter: Parameter,
-  pub block_len: usize,
-  pub byte_len: usize,
-  pub byte_pos: usize,
-  pub bit_pos: usize,
-  pub bit_len: usize,
-  pub conversion: Option<Conversion>,
-  pub unit: Option<&'static str>,
-  pub mapping: Option<phf::map::Map<i32, &'static str>>,
+  pub(crate) addr: u16,
+  pub(crate) mode: AccessMode,
+  pub(crate) data_type: DataType,
+  pub(crate) parameter: Parameter,
+  pub(crate) block_len: usize,
+  pub(crate) byte_len: usize,
+  pub(crate) byte_pos: usize,
+  pub(crate) bit_pos: usize,
+  pub(crate) bit_len: usize,
+  pub(crate) conversion: Option<Conversion>,
+  pub(crate) unit: Option<&'static str>,
+  pub(crate) mapping: Option<phf::map::Map<i32, &'static str>>,
 }
 
 impl Command {

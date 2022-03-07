@@ -36,6 +36,7 @@ impl Device {
     self.commands.get(name).map(|c| *c)
   }
 
+  /// Get mapping from error codes to strings.
   pub fn errors(&self) -> &'static phf::Map<i32, &'static str> {
     self.errors
   }
