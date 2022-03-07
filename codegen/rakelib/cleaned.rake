@@ -2,9 +2,9 @@ require 'backports/2.7.0/enumerable/filter_map'
 
 desc 'create cleaned versions for raw YAML files'
 task :cleaned => [
-  SYSTEM_EVENT_TYPES,
-  DATAPOINT_DEFINITIONS,
-  DEVICES,
+  SYSTEM_EVENT_TYPES_CLEANED,
+  DATAPOINT_DEFINITIONS_CLEANED,
+  DEVICES_CLEANED,
 ]
 
 EVENT_TYPE_NAME_FIXES = {
@@ -193,7 +193,7 @@ def map_event_type_name(name)
   name.sub(/\A@@viessmann(-ess)?\.eventtype\.name\./, '')
 end
 
-file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
+file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
   system_event_types = system_event_types_raw.map { |k, v|
@@ -210,7 +210,7 @@ file SYSTEM_EVENT_TYPES => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   File.write t.name, system_event_types.to_yaml
 end
 
-file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
+file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
   datapoint_definitions_raw = load_yaml(t.source)
 
   datapoints = datapoint_definitions_raw.fetch('datapoints')
@@ -359,6 +359,9 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
 
     v.merge!(value_types) if value_types
 
+    v.delete('conversion_factor') if v['conversion_factor'] == 0.0
+    v.delete('conversion_offset') if v['conversion_offset'] == 0.0
+
     [event_type_id, v]
   }.to_h
 
@@ -367,12 +370,12 @@ file DATAPOINT_DEFINITIONS => DATAPOINT_DEFINITIONS_RAW do |t|
     'event_types' => event_types,
   }
 
-  File.write t.name, datapoint_definitions.deep_sort!.to_yaml
+  File.write t.name, datapoint_definitions.to_yaml
 end
 
 DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType']
 
-file DEVICES => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES] do |t|
+file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED] do |t|
   datapoint_definitions, system_event_types = t.sources.map { |source| load_yaml(source) }
 
   datapoints = datapoint_definitions.fetch('datapoints')
@@ -401,5 +404,5 @@ file DEVICES => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES] do |t|
     [datapoint_type_id, v]
   }.to_h
 
-  File.write t.name, devices.deep_sort!.to_yaml
+  File.write t.name, devices.to_yaml
 end

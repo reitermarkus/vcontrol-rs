@@ -17,24 +17,24 @@ class Pathname
   alias to_str to_s
 end
 
-DATAPOINT_DEFINITION_VERSION_RAW                  = 'datapoint_definition_version_raw.yml'
-DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions_raw.yml'
-DATAPOINT_DEFINITIONS                             = 'datapoint_definitions.yml'
-DATAPOINT_TYPES_RAW                               = 'datapoint_types_raw.yml'
+DATAPOINT_DEFINITION_VERSION_RAW                  = 'datapoint_definition_version.raw.yml'
+DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions.raw.yml'
+DATAPOINT_DEFINITIONS_CLEANED                     = 'datapoint_definitions.cleaned.yml'
+DATAPOINT_TYPES_RAW                               = 'datapoint_types.raw.yml'
 DATAPOINT_TYPES                                   = 'datapoint_types.yml'
-TRANSLATIONS_RAW                                  = 'translations_raw.yml'
-SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types_raw.yml'
-SYSTEM_EVENT_TYPES                                = 'system_event_types.yml'
-SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types_raw.yml'
-SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types_raw.yml'
+TRANSLATIONS_RAW                                  = 'translations.raw.yml'
+SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.yml'
+SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.yml'
+SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types.raw.yml'
+SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types.raw.yml'
 
-DEVICES             = 'devices.yml'
+DEVICES_CLEANED             = 'devices.cleaned.yml'
 MAPPINGS_UNIQUE     = 'mappings_unique.yml'
 TRANSLATIONS_UNIQUE = 'translations_unique.yml'
-USED_COMMANDS       = 'used_commands.yml'
-USED_MAPPINGS       = 'used_mappings.yml'
-USED_TRANSLATIONS   = 'used_translations.yml'
-USED_DEVICES        = 'used_devices.yml'
+COMMANDS_USED       = 'commands.used.yml'
+MAPPINGS_USED       = 'mappings.used.yml'
+TRANSLATIONS_USED   = 'translations.used.yml'
+DEVICES_USED        = 'devices.used.yml'
 
 TRANSLATION_FIXES = {
   'viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0'                   => 'viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0',
@@ -53,7 +53,7 @@ TRANSLATION_FIXES = {
   'viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3'            => 'viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3',
 }
 
-file USED_COMMANDS => [USED_DEVICES, DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+file COMMANDS_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
     t.sources.map { |source| load_yaml(source) }
   event_types = datapoint_definitions.fetch('event_types')
@@ -66,48 +66,47 @@ file USED_COMMANDS => [USED_DEVICES, DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, 
 
   used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
     command = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
-    h.merge({ command.delete('id') => command })
-  }
+    h[command.delete('id')] = command
+    h
+  }.deep_sort!
 
   File.write t.name, used_commands.to_yaml
 end
 
-file USED_MAPPINGS => [USED_DEVICES, USED_COMMANDS, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+file MAPPINGS_USED => [DEVICES_USED, COMMANDS_USED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
   device_error_mappings = used_devices.map { |_, v| v.fetch('error_mapping') }
   command_mappings = used_commands.filter_map { |_, v| v['mapping'] }
 
-  used_mappings = (device_error_mappings + command_mappings).uniq
-    .map { |k|
-      [
-        k,
-        mappings_unique.fetch(:translations).fetch(k)
-          .transform_values { |v| translations_unique.fetch(:mapping).fetch(v.delete_prefix('@@')) }
-      ]
-    }
-    .to_h
+  used_mappings = (device_error_mappings + command_mappings).uniq.reduce({}) { |h, k|
+    h[k] = mappings_unique
+      .fetch(:translations).fetch(k)
+      .transform_values { |v|
+        translations_unique.fetch(:mapping).fetch(v.delete_prefix('@@'))
+      }
+    h
+  }.deep_sort!
 
   File.write t.name, used_mappings.to_yaml
 end
 
-file USED_TRANSLATIONS => [USED_MAPPINGS, TRANSLATIONS_UNIQUE] do |t|
+file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
   used_mappings, translations_unique = t.sources.map { |source| load_yaml(source) }
 
-  used_translations = used_mappings.flat_map { |_, translations|
-    translations.map { |mapping_index, translation_id|
-      translation = translations_unique.fetch(:translations).fetch(translation_id).fetch('en')
-
-      [
-        translation_id,
-        translation
-      ]
+  used_translations = used_mappings
+    .flat_map { |_, translations|
+      translations.map { |_, translation_id| translation_id }
     }
-  }.to_h
+    .reduce({}) { |h, translation_id|
+      h[translation_id] = translations_unique.fetch(:translations).fetch(translation_id).fetch('en')
+      h
+    }
+    .deep_sort!
 
   File.write t.name, used_translations.to_yaml
 end
 
-file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS, SYSTEM_EVENT_TYPES, TRANSLATIONS_RAW] do |t|
+file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_RAW] do |t|
   datapoint_definitions, system_event_types, translations = t.sources.map { |source| load_yaml(source) }
   event_types = datapoint_definitions.fetch('event_types')
 
@@ -370,34 +369,38 @@ def type_to_command(type_id, type, mappings:, translations:)
     command['mapping'] = mappings.fetch(:mapping).fetch(type_id)
   end
 
-  command
+  command.compact
 end
 
-file USED_DEVICES => [DEVICES, MAPPINGS_UNIQUE] do |t|
+file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
   devices, mappings_unique = t.sources.map { |source| load_yaml(source) }
 
   default_error_mapping = mappings_unique.fetch(:mapping).fetch('viessmann.errorcode')
 
   devices = devices.reduce({}) { |h, (device_id, device)|
-    h.merge({
-      device_id => {
-        'id' => device.fetch('identification', nil),
-        'id_ext' => device.fetch('identification_extension', 0x0000),
-        'id_ext_till' => device.fetch('identification_extension_till', 0xffff),
-        'f0' => device.fetch('f0', 0x0000),
-        'f0_till' => device.fetch('f0_till', 0xffff),
-        'commands' => device['event_types']
-          .map { |command_name| map_command_id(command_name) }
-          .uniq,
-        'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
-      }
-    })
-  }
+    h[device_id] = {
+      'id' => device.fetch('identification', nil),
+      'id_ext' => {
+        'start' => device.fetch('identification_extension', 0x0000),
+        'end' => device.fetch('identification_extension_till', 0xffff),
+      },
+      'f0' => {
+        'start' => device.fetch('f0', 0x0000),
+        'end' => device.fetch('f0_till', 0xffff),
+      },
+      'commands' => device['event_types']
+        .map { |command_name| map_command_id(command_name) }
+        .uniq
+        .sort,
+      'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
+    }
+    h
+  }.deep_sort!
 
   File.write t.name, devices.to_yaml
 end
 
-multitask :default => [USED_DEVICES, USED_COMMANDS, USED_MAPPINGS, USED_TRANSLATIONS]
+multitask :default => [DEVICES_USED, COMMANDS_USED, MAPPINGS_USED, TRANSLATIONS_USED]
 
 task :clean do
   rm Dir.glob('*.yml')

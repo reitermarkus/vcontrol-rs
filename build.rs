@@ -4,6 +4,7 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 use std::collections::BTreeMap;
 use std::fmt;
+use std::ops::RangeInclusive;
 
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_yaml;
@@ -48,7 +49,7 @@ fn output_file(file_name: &str) -> BufWriter<File> {
 fn generate_translations() {
   println!("Generating translations.");
 
-  let translations: BTreeMap<String, String> = load_yaml("used_translations.yml");
+  let translations: BTreeMap<String, String> = load_yaml("translations.used.yml");
 
   let mut file = output_file("translations.rs");
 
@@ -60,7 +61,7 @@ fn generate_translations() {
 fn generate_mappings() {
   println!("Generating mappings.");
 
-  let mappings: BTreeMap<String, BTreeMap<i32, String>> = load_yaml("used_mappings.yml");
+  let mappings: BTreeMap<String, BTreeMap<i32, String>> = load_yaml("mappings.used.yml");
 
   let mut file = output_file("mappings.rs");
 
@@ -81,7 +82,7 @@ fn generate_mappings() {
 fn generate_commands() {
   println!("Generating commands.");
 
-  let mappings: BTreeMap<String, Command> = load_yaml("used_commands.yml");
+  let mappings: BTreeMap<String, Command> = load_yaml("commands.used.yml");
 
   let mut file = output_file("commands.rs");
 
@@ -95,7 +96,7 @@ fn generate_commands() {
 fn generate_devices() {
   println!("Generating devices.");
 
-  let mappings: BTreeMap<String, Device> = load_yaml("used_devices.yml");
+  let mappings: BTreeMap<String, Device> = load_yaml("devices.used.yml");
 
   let mut file = output_file("devices.rs");
 
@@ -105,9 +106,9 @@ fn generate_devices() {
   for (device_id, device) in &mappings {
     let id_range = DeviceIdentRange {
       id: device.id,
-      hardware_index_range: ((device.id_ext >> 8) as u8)..=((device.id_ext_till >> 8) as u8),
-      software_index_range: ((device.id_ext & 0xff) as u8)..=((device.id_ext_till & 0xff) as u8),
-      f0_range: (device.f0)..=(device.f0_till),
+      hardware_index_range: ((device.id_ext.start() >> 8) as u8)..=((device.id_ext.end() >> 8) as u8),
+      software_index_range: ((device.id_ext.start() & 0xff) as u8)..=((device.id_ext.end() & 0xff) as u8),
+      f0_range: device.f0.clone(),
     };
     device_map.entry(id_range, &format!("&{}", escape_const_name(&device_id)));
 
@@ -125,10 +126,14 @@ fn generate_devices() {
       }};
     "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), escape_const_name(&device.error_mapping)).unwrap();
   }
-  writeln!(&mut file, r#"
-    /// A map of all supported devices.
-    pub const DEVICES: ::phf::Map<DeviceIdentRange, &'static Device> = {};
-  "#, device_map.build()).unwrap();
+
+  writeln!(&mut file, r#"    /// Mapping of device identifier ranges to devices. The following devices are supported:"#).unwrap();
+
+  for (device_id, _) in &mappings {
+    writeln!(&mut file, r#"    /// - `{}`"#, escape_const_name(&device_id)).unwrap();
+  }
+
+  writeln!(&mut file, r#"    pub const DEVICES: ::phf::Map<DeviceIdentRange, &'static Device> = {};"#, device_map.build()).unwrap();
 }
 
 fn main() {
@@ -144,10 +149,8 @@ fn main() {
 #[derive(Debug, Deserialize)]
 pub struct Device {
   id: u16,
-  id_ext: u16,
-  id_ext_till: u16,
-  f0: u16,
-  f0_till: u16,
+  id_ext: RangeInclusive<u16>,
+  f0: RangeInclusive<u16>,
   commands: Vec<String>,
   error_mapping: String
 }

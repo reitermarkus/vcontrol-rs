@@ -29,7 +29,7 @@ macro_rules! convert_double {
 }
 
 impl Value {
-  pub fn convert(&mut self, conversion: &Conversion) {
+  pub(crate) fn convert(&mut self, conversion: &Conversion) {
     match conversion {
       Conversion::Div2 => convert_double!(self, /, 2.0),
       Conversion::Div5 => convert_double!(self, /, 5.0),
@@ -88,7 +88,7 @@ impl Value {
     log::warn!("Conversion {:?} not applicable to value {:?}.", conversion, self);
   }
 
-  pub fn convert_back(&mut self, conversion: &Conversion) {
+  pub(crate) fn convert_back(&mut self, conversion: &Conversion) {
     match conversion {
       Conversion::Div2 => convert_double!(self, *, 2.0),
       Conversion::Div5 => convert_double!(self, *, 5.0),

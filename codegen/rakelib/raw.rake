@@ -16,7 +16,7 @@ SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML          = "#{VITOSOFT_DIR}/sysDeviceId
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML = "#{VITOSOFT_DIR}/sysDeviceIdentExt.xml"
 SYSTEM_EVENT_TYPES_XML                            = "#{VITOSOFT_DIR}/sysEventType.xml"
 TEXT_RESOURCES_DIR                                = "#{VITOSOFT_DIR}"
-REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations_raw.yml'
+REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.yml'
 
 desc 'download program for decoding .NET Remoting Binary Format data'
 file 'nrbf.py' do |t|
@@ -274,7 +274,7 @@ def event_types(path, reverse_translations: {})
     ]
   }.to_h
 
-  types.deep_sort!
+  types
 end
 
 file SYSTEM_EVENT_TYPES_RAW => [SYSTEM_EVENT_TYPES_XML, REVERSE_TRANSLATIONS_RAW] do |t|
@@ -525,7 +525,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, REVERSE_TRANSLATIO
     event_type['value_types'].push(link.fetch('event_value_id'))
   end
 
-  File.write t.name, definitions.deep_sort!.to_yaml
+  File.write t.name, definitions.to_yaml
 end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
@@ -560,7 +560,7 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     h.deep_merge!(translations)
   }
 
-  File.write t.name, translations.deep_sort!.to_yaml
+  File.write t.name, translations.to_yaml
 end
 
 file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
