@@ -56,7 +56,5 @@ serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.8"
 
 [patch.crates-io]
-# phf = { path = "./rust-phf/phf" }
-phf = { git = "https://github.com/reitermarkus/rust-phf", branch = "serialize-map" }
 # webthing = { path = "./webthing-rust" }
 webthing = { git = "https://github.com/reitermarkus/webthing-rust", branch = "refactoring" }
