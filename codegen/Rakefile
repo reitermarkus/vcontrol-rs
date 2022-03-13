@@ -49,8 +49,7 @@ file COMMANDS_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT
   }
 
   used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
-    command = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
-    h[command.delete('id')] = command
+    h[type_id] = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
     h
   }.deep_sort!
 
@@ -321,11 +320,6 @@ end
 def type_to_command(type_id, type, mappings:, translations:)
   command = {}
 
-  id = map_command_id(type_id)
-  command['id'] = id
-  command['type_id'] = type_id
-  command['description'] = type.fetch('description', 'N/A')
-
   command['addr'] = type.fetch('address')
   command['mode'] = type.fetch('access_mode')
 
@@ -368,7 +362,7 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
         'end' => device.fetch('f0_till', 0xffff),
       },
       'commands' => device['event_types']
-        .map { |command_name| map_command_id(command_name) }
+        .map { |command_name| command_name }
         .uniq
         .sort,
       'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
