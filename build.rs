@@ -4,7 +4,6 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 use std::collections::BTreeMap;
 use std::fmt;
-use std::ops::RangeInclusive;
 
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_yaml;
@@ -106,9 +105,12 @@ fn generate_devices() {
   for (device_id, device) in &mappings {
     let id_range = DeviceIdRange {
       id: device.id,
-      hardware_index_range: ((device.id_ext.start() >> 8) as u8)..=((device.id_ext.end() >> 8) as u8),
-      software_index_range: ((device.id_ext.start() & 0xff) as u8)..=((device.id_ext.end() & 0xff) as u8),
-      f0_range: device.f0.clone(),
+      hardware_index: device.id_ext.map(|id_ext| (id_ext >> 8) as u8),
+      hardware_index_till: device.id_ext_till.map(|id_ext_till| (id_ext_till >> 8) as u8),
+      software_index: device.id_ext.map(|id_ext| (id_ext & 0xff) as u8),
+      software_index_till: device.id_ext_till.map(|id_ext_till| (id_ext_till & 0xff) as u8),
+      f0: device.f0,
+      f0_till: device.f0_till,
     };
     device_map.entry(id_range, &format!("&{}", escape_const_name(&device_id)));
 
@@ -149,8 +151,10 @@ fn main() {
 #[derive(Debug, Deserialize)]
 pub struct Device {
   id: u16,
-  id_ext: RangeInclusive<u16>,
-  f0: RangeInclusive<u16>,
+  id_ext: Option<u16>,
+  id_ext_till: Option<u16>,
+  f0: Option<u16>,
+  f0_till: Option<u16>,
   commands: Vec<String>,
   error_mapping: String
 }

@@ -353,14 +353,10 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
   devices = devices.reduce({}) { |h, (device_id, device)|
     h[device_id] = {
       'id' => device.fetch('identification', nil),
-      'id_ext' => {
-        'start' => device.fetch('identification_extension', 0x0000),
-        'end' => device.fetch('identification_extension_till', 0xffff),
-      },
-      'f0' => {
-        'start' => device.fetch('f0', 0x0000),
-        'end' => device.fetch('f0_till', 0xffff),
-      },
+      'id_ext' => device.fetch('identification_extension', nil),
+      'id_ext_till' => device.fetch('identification_extension_till', nil),
+      'f0' => device.fetch('f0', nil),
+      'f0_till' => device.fetch('f0_till', nil),
       'commands' => device['event_types']
         .map { |command_name| command_name }
         .uniq

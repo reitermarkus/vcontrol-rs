@@ -1,4 +1,4 @@
-use crate::types::DeviceIdent;
+use crate::types::{DeviceIdent, DeviceIdentF0};
 use std::io;
 use std::fmt;
 use std::error::Error as StdError;
@@ -6,7 +6,7 @@ use std::string::FromUtf8Error;
 
 #[derive(Debug)]
 pub enum Error {
-  UnsupportedDevice(DeviceIdent, u16),
+  UnsupportedDevice(DeviceIdent, Option<DeviceIdentF0>),
   UnsupportedCommand(String),
   UnsupportedMode(String),
   InvalidArgument(String),
@@ -24,11 +24,17 @@ impl From<io::Error> for Error {
 impl fmt::Display for Error {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
-      Error::UnsupportedDevice(device_ident, f0) => {
+      Error::UnsupportedDevice(device_ident, device_ident_f0) => {
         write!(
-          f, "Device ID 0x{:04X} HX 0x{:02X} SW 0x{:02X} F0 0x{:04X} not supported.",
-          device_ident.id, device_ident.hardware_index, device_ident.software_index, f0
-        )
+          f, "Device ID 0x{:04X} HX 0x{:02X} SW 0x{:02X}",
+          device_ident.id, device_ident.hardware_index, device_ident.software_index
+        )?;
+
+        if let Some(device_ident_f0) = device_ident_f0 {
+          write!(f, " F0 0x{:04X}", device_ident_f0.0)?;
+        }
+
+        write!(f, " not supported.")
       },
       Error::UnsupportedCommand(command) => write!(f, "command {} is not supported", command),
       Error::UnsupportedMode(description) => description.fmt(f),

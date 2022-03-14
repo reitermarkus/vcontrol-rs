@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct DeviceIdent {
     pub id: u16,
     pub hardware_index: u8,
@@ -54,4 +54,13 @@ impl DeviceIdent {
             developer_version[0], developer_version[1],
         ]
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct DeviceIdentF0(pub(crate) u16);
+
+impl DeviceIdentF0 {
+  pub fn from_bytes(bytes: &[u8]) -> Self {
+    Self(u16::from_be_bytes(bytes[0..2].try_into().unwrap()))
+  }
 }
