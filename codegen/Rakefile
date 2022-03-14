@@ -33,31 +33,12 @@ SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_ex
 DEVICES_CLEANED                                   = 'devices.cleaned.yml'
 MAPPINGS_UNIQUE                                   = 'mappings.unique.yml'
 TRANSLATIONS_UNIQUE                               = 'translations.unique.yml'
-COMMANDS_USED                                     = 'commands.used.yml'
+EVENT_TYPES_USED                                  = 'event_types.used.yml'
 MAPPINGS_USED                                     = 'mappings.used.yml'
 TRANSLATIONS_USED                                 = 'translations.used.yml'
 DEVICES_USED                                      = 'devices.used.yml'
 
-file COMMANDS_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
-    t.sources.map { |source| load_yaml(source) }
-  event_types = datapoint_definitions.fetch('event_types')
-
-  used_event_type_ids = used_devices.each_value.reduce(Set.new) { |s, d| s | d['commands'].to_set }
-
-  used_event_types = system_event_types.merge(event_types).keep_if { |type_id,|
-    used_event_type_ids.include?(type_id)
-  }
-
-  used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
-    h[type_id] = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
-    h
-  }.deep_sort!
-
-  File.write t.name, used_commands.to_yaml
-end
-
-file MAPPINGS_USED => [DEVICES_USED, COMMANDS_USED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+file MAPPINGS_USED => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
   device_error_mappings = used_devices.map { |_, v| v.fetch('error_mapping') }
   command_mappings = used_commands.filter_map { |_, v| v['mapping'] }
@@ -370,6 +351,25 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
   File.write t.name, devices.to_yaml
 end
 
+file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
+    t.sources.map { |source| load_yaml(source) }
+  event_types = datapoint_definitions.fetch('event_types')
+
+  used_event_type_ids = used_devices.each_value.reduce(Set.new) { |s, d| s | d['commands'].to_set }
+
+  used_event_types = system_event_types.merge(event_types).keep_if { |type_id,|
+    used_event_type_ids.include?(type_id)
+  }
+
+  used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
+    h[type_id] = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
+    h
+  }.deep_sort!
+
+  File.write t.name, used_commands.to_yaml
+end
+
 file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   system_event_types_cleaned, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
 
@@ -398,7 +398,7 @@ file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TR
   File.write t.name, system_event_types.to_yaml
 end
 
-multitask :default => [DEVICES_USED, COMMANDS_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED]
+multitask :default => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED]
 
 task :clean do
   rm Dir.glob('*.yml')

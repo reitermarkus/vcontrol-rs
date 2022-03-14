@@ -81,7 +81,7 @@ fn generate_mappings() {
 fn generate_commands() {
   println!("Generating commands.");
 
-  let mappings: BTreeMap<String, Command> = load_yaml("commands.used.yml");
+  let mappings: BTreeMap<String, Command> = load_yaml("event_types.used.yml");
 
   let mut file = output_file("commands.rs");
 
