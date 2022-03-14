@@ -311,8 +311,12 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     next unless v.key?('identification')
 
     # Remove unsupported devices.
-    next if datapoint_type_id.start_with?('BESS')
     next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
+    next if datapoint_type_id.start_with?('BESS')
+    next if datapoint_type_id.start_with?('OpenTherm')
+    next if datapoint_type_id.start_with?('Vitocom')
+    next if datapoint_type_id.start_with?('Vitogate')
+    next if datapoint_type_id.start_with?('Vitowin')
 
     v['event_types'] = v.fetch('event_types').filter_map { |id|
       event_type = event_types.fetch(id)
