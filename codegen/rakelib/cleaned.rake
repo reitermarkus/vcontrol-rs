@@ -403,11 +403,11 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
   File.write t.name, datapoint_definitions.to_yaml
 end
 
-DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType']
-
 def event_type_supported?(type_id, type)
   return false if type_id.start_with?('Node_')
   return false if type_id.start_with?('nciNet')
+
+  return false unless type.key?('address')
 
   fc_read = type['fc_read']
   fc_write = type['fc_write']
@@ -422,10 +422,10 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   event_types = datapoint_definitions.fetch('event_types')
 
   devices = datapoints.filter_map { |datapoint_type_id, v|
-    v['event_types'] += system_event_types.keys
+    v['event_types'] -= system_event_types.keys
 
     # Remove devices without any supported event types.
-    next if (v['event_types'] - system_event_types.keys - DUMMY_EVENT_TYPES).empty?
+    next if v['event_types'].empty?
 
     [datapoint_type_id, v]
   }.to_h
