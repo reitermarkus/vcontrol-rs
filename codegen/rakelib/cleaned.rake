@@ -214,8 +214,10 @@ end
 file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
-  system_event_types = system_event_types_raw.map { |k, system_event_type|
-    case k
+  system_event_types = system_event_types_raw.filter_map { |system_event_type_id, system_event_type|
+    next unless event_type_supported?(system_event_type_id, system_event_type)
+
+    case system_event_type_id
     when 'ecnsysEventType~ErrorIndex'
       system_event_type['value_type'] = 'ErrorIndex'
     when /\AecnsysFehlerhistorie\d+\Z/
@@ -224,7 +226,7 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do
 
     system_event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
 
-    [k, system_event_type]
+    [system_event_type_id, system_event_type]
   }.to_h
 
   File.write t.name, system_event_types.to_yaml
@@ -312,8 +314,11 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     next if datapoint_type_id.start_with?('BESS')
     next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
 
-    v['event_types'] = v.fetch('event_types').map { |id|
-      map_event_type_name(event_types.fetch(id).fetch('name'))
+    v['event_types'] = v.fetch('event_types').filter_map { |id|
+      event_type = event_types.fetch(id)
+      event_type_id = map_event_type_name(event_type.fetch('name'))
+      next unless event_type_supported?(event_type_id, event_type)
+      event_type_id
     }
     [datapoint_type_id, v]
   }.to_h
@@ -368,23 +373,22 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     [k, v]
   }.to_h
 
-  event_types = event_types.filter_map { |_, v|
-    event_type_id = map_event_type_name(v.fetch('name'))
+  event_types = event_types.filter_map { |id, event_type|
+    event_type_id = map_event_type_name(event_type.fetch('name'))
 
     # Remove unneeded/unsupported event types.
-    next if event_type_id.start_with?('Node_')
-    next if event_type_id.start_with?('nciNet')
+    next unless event_type_supported?(event_type_id, event_type)
 
-    value_types = v.delete('value_types')&.reduce({}) { |h, value_type|
+    value_types = event_type.delete('value_types')&.reduce({}) { |h, value_type|
       h.deep_merge!(event_value_types.fetch(value_type).deep_dup)
     }
 
-    v.merge!(value_types) if value_types
+    event_type.merge!(value_types) if value_types
 
-    v.delete('conversion_factor') if v['conversion_factor'] == 0.0
-    v.delete('conversion_offset') if v['conversion_offset'] == 0.0
+    event_type.delete('conversion_factor') if event_type['conversion_factor'] == 0.0
+    event_type.delete('conversion_offset') if event_type['conversion_offset'] == 0.0
 
-    [event_type_id, v]
+    [event_type_id, event_type]
   }.to_h
 
   datapoint_definitions = {
@@ -397,6 +401,16 @@ end
 
 DUMMY_EVENT_TYPES = ['GWG_Kennung', 'ecnStatusEventType']
 
+def event_type_supported?(type_id, type)
+  return false if type_id.start_with?('Node_')
+  return false if type_id.start_with?('nciNet')
+
+  fc_read = type['fc_read']
+  fc_write = type['fc_write']
+
+  fc_read == 'virtual_read' || fc_write == 'virtual_write'
+end
+
 file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED] do |t|
   datapoint_definitions, system_event_types = t.sources.map { |source| load_yaml(source) }
 
@@ -404,21 +418,7 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   event_types = datapoint_definitions.fetch('event_types')
 
   devices = datapoints.filter_map { |datapoint_type_id, v|
-    device_event_types = v['event_types'].filter_map { |event_type_id|
-      event_type = event_types[event_type_id]
-      next unless event_type
-
-      [event_type_id, event_type]
-    }.to_h
-
-    v['event_types'] = device_event_types.merge(system_event_types).filter_map { |type_id, type|
-      fc_read = type['fc_read']
-      fc_write = type['fc_write']
-      next if fc_read.nil? && fc_write.nil?
-      next unless fc_read == 'virtual_read' || fc_write == 'virtual_write'
-
-      type_id
-    }
+    v['event_types'] += system_event_types.keys
 
     # Remove devices without any supported event types.
     next if (v['event_types'] - system_event_types.keys - DUMMY_EVENT_TYPES).empty?
