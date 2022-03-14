@@ -4,6 +4,7 @@ use {
   webthing::Thing
 };
 
+use crate::Command;
 use crate::types::{DeviceIdent, DeviceIdentF0};
 use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value, OutputValue};
 
@@ -129,43 +130,50 @@ impl VControl {
     self.protocol
   }
 
+  fn command_by_name(&self, command: &str) -> Result<&'static Command, Error> {
+    if let Some(system_command) = crate::commands::system_command(command) {
+      Ok(system_command)
+    } else if let Some(device_command) = self.device.command(command) {
+      Ok(device_command)
+    } else {
+      Err(Error::UnsupportedCommand(command.to_owned()))
+    }
+  }
+
   /// Gets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
   pub fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
     self.renegotiate()?;
 
-    if let Some(command) = self.device.command(command) {
-      match command.get(&mut self.optolink, self.protocol) {
-        Ok(value) => {
-          let mapping = if let Value::Error(ref error) = value {
-            Some(self.device.errors())
-          } else if let Some(ref mapping) = command.mapping {
-            Some(mapping)
-          } else {
-            None
-          };
+    let command = self.command_by_name(command)?;
+    match command.get(&mut self.optolink, self.protocol) {
+      Ok(value) => {
+        let mapping = if let Value::Error(ref error) = value {
+          Some(self.device.errors())
+        } else if let Some(ref mapping) = command.mapping {
+          Some(mapping)
+        } else {
+          None
+        };
 
-          if let (Value::Int(value), Some(mapping)) = (&value, command.mapping.as_ref()) {
-            let n = *value as i32;
-            if !mapping.contains_key(&n) {
-              return Err(Error::UnknownEnumVariant(format!("No enum mapping found for {}.", n)))
-            }
+        if let (Value::Int(value), Some(mapping)) = (&value, command.mapping.as_ref()) {
+          let n = *value as i32;
+          if !mapping.contains_key(&n) {
+            return Err(Error::UnknownEnumVariant(format!("No enum mapping found for {}.", n)))
           }
-
-          Ok(OutputValue {
-            value,
-            unit: command.unit,
-            mapping,
-          })
-        },
-        Err(err) => {
-          self.connected = false;
-          Err(err)
         }
+
+        Ok(OutputValue {
+          value,
+          unit: command.unit,
+          mapping,
+        })
+      },
+      Err(err) => {
+        self.connected = false;
+        Err(err)
       }
-    } else {
-      Err(Error::UnsupportedCommand(command.to_owned()))
     }
   }
 
@@ -175,15 +183,12 @@ impl VControl {
   pub fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
     self.renegotiate()?;
 
-    if let Some(command) = self.device.command(command) {
-      let res = command.set(&mut self.optolink, self.protocol, input);
-      if res.is_err() {
-        self.connected = false;
-      }
-      res
-    } else {
-      Err(Error::UnsupportedCommand(command.to_owned()))
+    let command = self.command_by_name(command)?;
+    let res = command.set(&mut self.optolink, self.protocol, input);
+    if res.is_err() {
+      self.connected = false;
     }
+    res
   }
 
   #[cfg(feature = "webthing")]

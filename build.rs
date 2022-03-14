@@ -74,7 +74,7 @@ fn generate_mappings() {
     }
 
     // let v = v.as_str().unwrap();
-    writeln!(file, "const MAPPING_{}: ::phf::Map<i32, &'static str> = {};", escape_const_name(&k), map.build()).unwrap();
+    writeln!(file, "\nconst MAPPING_{}: ::phf::Map<i32, &'static str> = {};", escape_const_name(&k), map.build()).unwrap();
   }
 }
 
@@ -88,8 +88,36 @@ fn generate_commands() {
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
 
   for (command_name, command) in mappings {
-    writeln!(file, "const COMMAND_{}: Command = {:?};", escape_const_name(&command_name), command).unwrap();
+    writeln!(file, "\nconst COMMAND_{}: crate::Command = {:?};", escape_const_name(&command_name), command).unwrap();
   }
+}
+
+fn generate_system_commands() {
+  println!("Generating system commands.");
+
+  let commands: BTreeMap<String, Command> = load_yaml("system_event_types.used.yml");
+
+  let mut file = output_file("system_commands.rs");
+
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
+
+  let mut map = phf_codegen::Map::<&str>::new();
+
+  writeln!(file, "\npub mod system {{").unwrap();
+  writeln!(file, "\nuse super::*;").unwrap();
+
+  for (command_name, command) in &commands {
+    let constant_name = command_name.to_uppercase();
+
+    map.entry(command_name, &format!("&system::{}", constant_name));
+
+    writeln!(file, "\npub const {}: crate::Command = {:#?};", constant_name, command).unwrap();
+  }
+
+  writeln!(file, "\n}}").unwrap();
+
+
+  writeln!(file, "\nconst SYSTEM: ::phf::Map<&'static str, &'static crate::Command> = {};", map.build()).unwrap();
 }
 
 fn generate_devices() {
@@ -118,7 +146,7 @@ fn generate_devices() {
     for command_name in device.commands.iter() {
       map.entry(command_name, &format!("&COMMAND_{}", escape_const_name(&command_name)));
     }
-    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
+    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
 
     writeln!(file, r#"
       const {}: Device = Device {{
@@ -142,6 +170,7 @@ fn main() {
   generate_translations();
   generate_mappings();
   generate_commands();
+  generate_system_commands();
   generate_devices();
 
   let mut file = output_file("codegen.rs");
@@ -193,7 +222,7 @@ impl fmt::Debug for Command {
       "None".into()
     };
 
-    f.debug_struct("Command")
+    f.debug_struct("crate::Command")
        .field("addr", &format_args!("0x{:04X}", self.addr))
        .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
        .field("data_type", &format_args!("crate::DataType::{:?}", self.data_type))

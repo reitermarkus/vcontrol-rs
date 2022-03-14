@@ -27,6 +27,7 @@ TRANSLATIONS_CLEANED                              = 'translations.cleaned.yml'
 REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.yml'
 SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.yml'
 SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.yml'
+SYSTEM_EVENT_TYPES_USED                           = 'system_event_types.used.yml'
 SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types.raw.yml'
 SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types.raw.yml'
 DEVICES_CLEANED                                   = 'devices.cleaned.yml'
@@ -369,7 +370,35 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
   File.write t.name, devices.to_yaml
 end
 
-multitask :default => [DEVICES_USED, COMMANDS_USED, MAPPINGS_USED, TRANSLATIONS_USED]
+file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  system_event_types_cleaned, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
+
+  system_event_types = system_event_types_cleaned.reduce({}) { |h, (type_id, type)|
+    k = type_id
+      .sub(/^ecnsys(EventType~)?/, '')
+      .gsub(/([a-z])([A-Z0-9])/, '\1_\2')
+      .gsub('LON', '_LON_')
+      .gsub('BHKW', '_CHP_') # Blockheizkraftwerk -> Combined Heat & Power
+      .split(/_+/)
+      .filter_map { |part|
+        {
+          '' => nil,
+          'Ident' => 'id',
+          'Fehlerhistorie' => 'error_history',
+          'Anlagennummer' => 'system_number',
+          'Teilnehmernummer' => 'subscriber_number',
+          'Modul' => 'module',
+        }.fetch(part, part)
+      }.join('_').downcase
+
+    h[k] = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
+    h
+  }.deep_sort!
+
+  File.write t.name, system_event_types.to_yaml
+end
+
+multitask :default => [DEVICES_USED, COMMANDS_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED]
 
 task :clean do
   rm Dir.glob('*.yml')

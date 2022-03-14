@@ -406,6 +406,8 @@ end
 def event_type_supported?(type_id, type)
   return false if type_id.start_with?('Node_')
   return false if type_id.start_with?('nciNet')
+  return false if type_id.start_with?('ecnsysEventType~Vitotwin')
+  return false if type_id.start_with?('ecnsysEventType~VCOMLan')
 
   return false unless type.key?('address')
 

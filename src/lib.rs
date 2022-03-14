@@ -8,6 +8,8 @@ pub mod types;
 mod command;
 pub use crate::command::{Command};
 
+pub mod commands;
+
 mod access_mode;
 pub use crate::access_mode::{AccessMode};
 
