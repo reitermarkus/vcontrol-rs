@@ -206,9 +206,8 @@ def map_unit(unit)
 end
 
 def map_event_type_name(name)
-  name = EVENT_TYPE_NAME_FIXES.fetch(name, name)
-
-  name.sub(/\A@@viessmann(-ess)?\.eventtype\.name\./, '')
+  EVENT_TYPE_NAME_FIXES.fetch(name, name)
+    .sub(/\A@@viessmann(-ess)?\.eventtype\.name\.(viessmann\.eventtype\.name\.)?/, '')
 end
 
 file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
