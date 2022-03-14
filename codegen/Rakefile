@@ -80,11 +80,11 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
     h
   }
 
-  mappings = system_event_types.merge(event_types).reduce({}) { |h, (event_type_id, event_type)|
+  mappings = system_event_types.merge(event_types).reduce({}) { |h, (id, event_type)|
     value_list = event_type.fetch('value_list', {})
 
     unless value_list.empty?
-      h[event_type_id] = value_list.filter_map { |index, translation_id|
+      h[event_type.fetch('type_id')] = value_list.filter_map { |index, translation_id|
         [index, translations.fetch(:mapping).fetch(translation_id)]
       }.to_h
     end
@@ -302,6 +302,8 @@ end
 def type_to_command(type_id, type, mappings:, translations:)
   command = {}
 
+  command['name'] = type_id
+
   command['addr'] = type.fetch('address')
   command['mode'] = type.fetch('access_mode')
 
@@ -358,12 +360,13 @@ file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EV
 
   used_event_type_ids = used_devices.each_value.reduce(Set.new) { |s, d| s | d['commands'].to_set }
 
-  used_event_types = system_event_types.merge(event_types).keep_if { |type_id,|
-    used_event_type_ids.include?(type_id)
+  used_event_types = system_event_types.merge(event_types).keep_if { |event_type_id,|
+    used_event_type_ids.include?(event_type_id)
   }
 
-  used_commands = used_event_types.reduce({}) { |h, (type_id, type)|
-    h[type_id] = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
+  used_commands = used_event_types.reduce({}) { |h, (id, event_type)|
+    event_type_id = event_type.fetch('type_id')
+    h[id] = type_to_command(event_type_id, event_type, mappings: mappings_unique, translations: translations_unique)
     h
   }.deep_sort!
 
@@ -373,8 +376,8 @@ end
 file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   system_event_types_cleaned, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
 
-  system_event_types = system_event_types_cleaned.reduce({}) { |h, (type_id, type)|
-    k = type_id
+  system_event_types = system_event_types_cleaned.reduce({}) { |h, (event_type_id, event_type)|
+    id = event_type_id
       .sub(/^ecnsys(EventType~)?/, '')
       .gsub(/([a-z])([A-Z0-9])/, '\1_\2')
       .gsub('LON', '_LON_')
@@ -391,7 +394,7 @@ file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TR
         }.fetch(part, part)
       }.join('_').downcase
 
-    h[k] = type_to_command(type_id, type, mappings: mappings_unique, translations: translations_unique)
+    h[id] = type_to_command(event_type_id, event_type, mappings: mappings_unique, translations: translations_unique)
     h
   }.deep_sort!
 

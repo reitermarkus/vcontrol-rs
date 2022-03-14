@@ -78,18 +78,24 @@ fn generate_mappings() {
   }
 }
 
-fn generate_commands() {
+fn generate_commands() -> BTreeMap<u16, String> {
   println!("Generating commands.");
 
-  let mappings: BTreeMap<String, Command> = load_yaml("event_types.used.yml");
+  let mut command_name_map = BTreeMap::new();
+  let mappings: BTreeMap<u16, Command> = load_yaml("event_types.used.yml");
 
   let mut file = output_file("commands.rs");
 
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
 
-  for (command_name, command) in mappings {
-    writeln!(file, "\nconst COMMAND_{}: crate::Command = {:?};", escape_const_name(&command_name), command).unwrap();
+  for (command_id, command) in mappings {
+    let command_name = &command.name;
+    writeln!(file, "\nconst COMMAND_{}: crate::Command = {:?};", command_id, command).unwrap();
+
+    command_name_map.insert(command_id, command_name.clone());
   }
+
+  command_name_map
 }
 
 fn generate_system_commands() {
@@ -120,7 +126,7 @@ fn generate_system_commands() {
   writeln!(file, "\nconst SYSTEM: ::phf::Map<&'static str, &'static crate::Command> = {};", map.build()).unwrap();
 }
 
-fn generate_devices() {
+fn generate_devices(command_name_map: &BTreeMap<u16, String>) {
   println!("Generating devices.");
 
   let mappings: BTreeMap<String, Device> = load_yaml("devices.used.yml");
@@ -143,8 +149,9 @@ fn generate_devices() {
     device_map.entry(id_range, &format!("&{}", escape_const_name(&device_id)));
 
     let mut map = phf_codegen::Map::<&str>::new();
-    for command_name in device.commands.iter() {
-      map.entry(command_name, &format!("&COMMAND_{}", escape_const_name(&command_name)));
+    for command_id in device.commands.iter() {
+      let command_name = command_name_map.get(command_id).unwrap();
+      map.entry(command_name, &format!("&COMMAND_{}", command_id));
     }
     writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
 
@@ -169,9 +176,9 @@ fn generate_devices() {
 fn main() {
   generate_translations();
   generate_mappings();
-  generate_commands();
+  let command_name_map = generate_commands();
   generate_system_commands();
-  generate_devices();
+  generate_devices(&command_name_map);
 
   let mut file = output_file("codegen.rs");
   writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/devices.rs"));"#).unwrap();
@@ -184,13 +191,14 @@ pub struct Device {
   id_ext_till: Option<u16>,
   f0: Option<u16>,
   f0_till: Option<u16>,
-  commands: Vec<String>,
+  commands: Vec<u16>,
   error_mapping: String
 }
 
 /// A command which can be executed on an Optolink connection.
 #[derive(Deserialize)]
 pub struct Command {
+  name: String,
   addr: u16,
   mode: AccessMode,
   data_type: DataType,

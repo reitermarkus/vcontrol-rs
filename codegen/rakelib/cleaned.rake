@@ -213,20 +213,22 @@ end
 file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
   system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
 
-  system_event_types = system_event_types_raw.filter_map { |system_event_type_id, system_event_type|
-    next unless event_type_supported?(system_event_type_id, system_event_type)
+  system_event_types = system_event_types_raw.reduce({}) { |h, (event_type_id, event_type)|
+    next h unless event_type_supported?(event_type_id, event_type)
+    event_type['type_id'] = event_type_id
 
-    case system_event_type_id
+    case event_type_id
     when 'ecnsysEventType~ErrorIndex'
-      system_event_type['value_type'] = 'ErrorIndex'
+      event_type['value_type'] = 'ErrorIndex'
     when /\AecnsysFehlerhistorie\d+\Z/
-      system_event_type['value_type'] = 'Error'
+      event_type['value_type'] = 'Error'
     end
 
-    system_event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
+    event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
 
-    [system_event_type_id, system_event_type]
-  }.to_h
+    h[event_type_id] = event_type
+    h
+  }
 
   File.write t.name, system_event_types.to_yaml
 end
@@ -321,7 +323,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
       event_type = event_types.fetch(id)
       event_type_id = map_event_type_name(event_type.fetch('name'))
       next unless event_type_supported?(event_type_id, event_type)
-      event_type_id
+      id
     }
     [datapoint_type_id, v]
   }.to_h
@@ -378,9 +380,8 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
 
   event_types = event_types.filter_map { |id, event_type|
     event_type_id = map_event_type_name(event_type.fetch('name'))
-
-    # Remove unneeded/unsupported event types.
     next unless event_type_supported?(event_type_id, event_type)
+    event_type['type_id'] = event_type_id
 
     value_types = event_type.delete('value_types')&.reduce({}) { |h, value_type|
       h.deep_merge!(event_value_types.fetch(value_type).deep_dup)
@@ -391,7 +392,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     event_type.delete('conversion_factor') if event_type['conversion_factor'] == 0.0
     event_type.delete('conversion_offset') if event_type['conversion_offset'] == 0.0
 
-    [event_type_id, event_type]
+    [id, event_type]
   }.to_h
 
   datapoint_definitions = {
@@ -423,7 +424,10 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   event_types = datapoint_definitions.fetch('event_types')
 
   devices = datapoints.filter_map { |datapoint_type_id, v|
-    v['event_types'] -= system_event_types.keys
+    v['event_types'].reject! { |id|
+      type_id = event_types.fetch(id).fetch('type_id')
+      system_event_types.key?(type_id)
+    }
 
     # Remove devices without any supported event types.
     next if v['event_types'].empty?
