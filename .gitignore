@@ -8,4 +8,5 @@ codegen/Vitosoft300SID1_Setup.exe
 codegen/src
 codegen/nrbf-cache.json
 codegen/nrbf.py
+!codegen/*.used.yml
 scan-cache.yml

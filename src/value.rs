@@ -4,11 +4,13 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
-use crate::{conversion::Conversion, types::{DateTime, CircuitTimes, Error}};
+use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, DateTime, CircuitTimes, Error}};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
+  DeviceId(DeviceId),
+  DeviceIdF0(DeviceIdF0),
   Int(i64),
   Double(f64),
   Array(Vec<u8>),
@@ -124,6 +126,8 @@ pub struct OutputValue {
 impl fmt::Display for OutputValue {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match &self.value {
+      Value::DeviceId(device_id) => write!(f, "{:#?}", device_id)?,
+      Value::DeviceIdF0(device_id_f0) => write!(f, "{:#?}", device_id_f0)?,
       Value::Int(n) => {
         if let Some(mapping) = self.mapping {
           write!(f, "{}", mapping.get(&(*n as i32)).unwrap())?;

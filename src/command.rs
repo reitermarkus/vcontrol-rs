@@ -1,7 +1,7 @@
 use arrayref::array_ref;
 use phf;
 
-use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DateTime, CircuitTimes}};
+use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DeviceId, DeviceIdF0, DateTime, CircuitTimes}};
 
 /// A command which can be executed on an Optolink connection.
 #[derive(Debug)]
@@ -40,6 +40,20 @@ impl Command {
     }
 
     let mut value = match &self.data_type {
+      DataType::DeviceId => {
+        if buf.len() != 8 {
+          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+        }
+
+        Value::DeviceId(DeviceId::from_bytes(array_ref![buf, 0, 8]))
+      },
+      DataType::DeviceIdF0 => {
+        if buf.len() != 2 {
+          return Err(Error::InvalidFormat("array length is not 2".to_string()))
+        }
+
+        Value::DeviceIdF0(DeviceIdF0::from_bytes(array_ref![buf, 0, 2]))
+      },
       DataType::DateTime => {
         if bytes.len() != 8 {
           return Err(Error::InvalidFormat("array length is not 8".to_string()))

@@ -218,6 +218,10 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do
     event_type['type_id'] = event_type_id
 
     case event_type_id
+    when 'ecnsysDeviceIdent'
+      event_type['value_type'] = 'DeviceId'
+    when 'ecnsysDeviceIdentF0'
+      event_type['value_type'] = 'DeviceIdF0'
     when 'ecnsysEventType~ErrorIndex'
       event_type['value_type'] = 'ErrorIndex'
     when /\AecnsysFehlerhistorie\d+\Z/

@@ -13,9 +13,9 @@ use phf_codegen;
 mod access_mode;
 use access_mode::AccessMode;
 
-#[path = "src/device/device_id.rs"]
-mod device_id;
-use device_id::DeviceIdRange;
+#[path = "src/device/device_id_range.rs"]
+mod device_id_range;
+use device_id_range::DeviceIdRange;
 
 #[path = "src/data_type.rs"]
 mod data_type;

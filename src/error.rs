@@ -3,7 +3,7 @@ use std::fmt;
 use std::error::Error as StdError;
 use std::string::FromUtf8Error;
 
-use crate::device::{DeviceId, DeviceIdF0};
+use crate::types::{DeviceId, DeviceIdF0};
 
 #[derive(Debug)]
 pub enum Error {

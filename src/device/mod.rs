@@ -1,9 +1,10 @@
 use phf;
 
 use crate::{Command};
+use crate::types::{DeviceId, DeviceIdF0};
 
-mod device_id;
-pub use device_id::*;
+mod device_id_range;
+pub use device_id_range::DeviceIdRange;
 
 #[allow(clippy::unreadable_literal)]
 mod codegen {
