@@ -65,8 +65,6 @@ end
 desc 'convert XML files to raw YAML files'
 multitask :raw => [
   SYSTEM_EVENT_TYPES_RAW,
-  SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW,
-  SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW,
   DATAPOINT_DEFINITIONS_RAW,
   TRANSLATIONS_RAW,
 ]
@@ -281,14 +279,6 @@ file SYSTEM_EVENT_TYPES_RAW => [SYSTEM_EVENT_TYPES_XML, REVERSE_TRANSLATIONS_RAW
   system_event_types_xml, reverse_translations_raw = t.sources
   reverse_translations = load_yaml(reverse_translations_raw)
   File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml
-end
-
-file SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW => SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_XML do |t|
-  File.write t.name, event_types(t.source).to_yaml
-end
-
-file SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW => SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_XML do |t|
-  File.write t.name, event_types(t.source).to_yaml
 end
 
 def add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations:)

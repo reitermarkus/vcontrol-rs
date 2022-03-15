@@ -17,7 +17,6 @@ class Pathname
   alias to_str to_s
 end
 
-DATAPOINT_DEFINITION_VERSION_RAW                  = 'datapoint_definition_version.raw.yml'
 DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions.raw.yml'
 DATAPOINT_DEFINITIONS_CLEANED                     = 'datapoint_definitions.cleaned.yml'
 DATAPOINT_TYPES_RAW                               = 'datapoint_types.raw.yml'
@@ -28,8 +27,6 @@ REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.ym
 SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.yml'
 SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.yml'
 SYSTEM_EVENT_TYPES_USED                           = 'system_event_types.used.yml'
-SYSTEM_DEVICE_IDENTIFIER_EVENT_TYPES_RAW          = 'system_device_identifier_event_types.raw.yml'
-SYSTEM_DEVICE_IDENTIFIER_EXTENDED_EVENT_TYPES_RAW = 'system_device_identifier_extended_event_types.raw.yml'
 DEVICES_CLEANED                                   = 'devices.cleaned.yml'
 MAPPINGS_UNIQUE                                   = 'mappings.unique.yml'
 TRANSLATIONS_UNIQUE                               = 'translations.unique.yml'
@@ -37,6 +34,7 @@ EVENT_TYPES_USED                                  = 'event_types.used.yml'
 MAPPINGS_USED                                     = 'mappings.used.yml'
 TRANSLATIONS_USED                                 = 'translations.used.yml'
 DEVICES_USED                                      = 'devices.used.yml'
+VERSIONS_USED                                     = 'versions.used.yml'
 
 file MAPPINGS_USED => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
@@ -412,7 +410,13 @@ file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TR
   File.write t.name, system_event_types.to_yaml
 end
 
-multitask :default => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED]
+file VERSIONS_USED => DATAPOINT_DEFINITIONS_RAW do |t|
+  datapoint_definitions, = t.sources.map { |source| load_yaml(source) }
+
+  File.write t.name, datapoint_definitions['versions'].to_yaml
+end
+
+multitask :default => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED, VERSIONS_USED]
 
 task :clean do
   rm Dir.glob('*.yml')
