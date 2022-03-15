@@ -318,6 +318,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     # Remove unsupported devices.
     next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
     next if datapoint_type_id.start_with?('BESS')
+    next if datapoint_type_id.start_with?('DEKATEL')
     next if datapoint_type_id.start_with?('OpenTherm')
     next if datapoint_type_id.start_with?('Vitocom')
     next if datapoint_type_id.start_with?('Vitogate')
