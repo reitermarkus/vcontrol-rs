@@ -254,7 +254,7 @@ def event_types(path, reverse_translations: {})
       when 'value_list'
         parse_value_list(n.text).transform_values { |v|
           parse_description(v, reverse_translations: reverse_translations)
-        }
+        }.compact
       when /^prefix_(read|write)$/
         n.text.empty? ? nil : n.text.delete_prefix('0x').each_char.each_slice(2).map { |c| Integer(c.join, 16) }
       else
