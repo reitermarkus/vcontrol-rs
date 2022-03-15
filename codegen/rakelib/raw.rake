@@ -86,7 +86,7 @@ def clean_enum_text(translation_id, index, text)
 
   if index
     index = Regexp.escape(index)
-    text = text.sub(/^(?:#{index}(?::)?\s+|\(0#{index}\))([^\s]+)/, '\1')
+    text = text.sub(/^(?:(?:#{index}|\(0*#{index}\))(?:\s*:|\s+-)?\s+)([^\s]+)/, '\1').sub(/\A-*\Z/, '')
   end
 
   text.strip

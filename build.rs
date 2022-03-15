@@ -48,19 +48,19 @@ fn output_file(file_name: &str) -> BufWriter<File> {
 fn generate_translations() {
   println!("Generating translations.");
 
-  let translations: BTreeMap<String, String> = load_yaml("translations.used.yml");
+  let translations: BTreeMap<u16, String> = load_yaml("translations.used.yml");
 
   let mut file = output_file("translations.rs");
 
   for (k, v) in translations {
-    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", escape_const_name(&k), v).unwrap();
+    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k, v).unwrap();
   }
 }
 
 fn generate_mappings() {
   println!("Generating mappings.");
 
-  let mappings: BTreeMap<String, BTreeMap<i32, String>> = load_yaml("mappings.used.yml");
+  let mappings: BTreeMap<u16, BTreeMap<i32, u16>> = load_yaml("mappings.used.yml");
 
   let mut file = output_file("mappings.rs");
 
@@ -70,11 +70,11 @@ fn generate_mappings() {
     let mut map = phf_codegen::Map::new();
 
     for (k, v) in mapping {
-      map.entry(k, &format!("TRANSLATION_{}", escape_const_name(&v)));
+      map.entry(k, &format!("TRANSLATION_{}", v));
     }
 
     // let v = v.as_str().unwrap();
-    writeln!(file, "\nconst MAPPING_{}: ::phf::Map<i32, &'static str> = {};", escape_const_name(&k), map.build()).unwrap();
+    writeln!(file, "\nconst MAPPING_{}: ::phf::Map<i32, &'static str> = {};", k, map.build()).unwrap();
   }
 }
 
@@ -161,7 +161,7 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) {
         commands: &{}_COMMANDS,
         errors: &MAPPING_{},
       }};
-    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), escape_const_name(&device.error_mapping)).unwrap();
+    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), device.error_mapping).unwrap();
   }
 
   writeln!(&mut file, r#"    /// Mapping of device identifier ranges to devices. The following devices are supported:"#).unwrap();
@@ -192,7 +192,7 @@ pub struct Device {
   f0: Option<u16>,
   f0_till: Option<u16>,
   commands: Vec<u16>,
-  error_mapping: String
+  error_mapping: u16
 }
 
 /// A command which can be executed on an Optolink connection.

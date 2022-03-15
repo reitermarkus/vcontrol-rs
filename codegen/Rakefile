@@ -83,11 +83,11 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   mappings = system_event_types.merge(event_types).reduce({}) { |h, (id, event_type)|
     value_list = event_type.fetch('value_list', {})
 
-    unless value_list.empty?
-      h[event_type.fetch('type_id')] = value_list.filter_map { |index, translation_id|
-        [index, translations.fetch(:mapping).fetch(translation_id)]
-      }.to_h
-    end
+    next h if value_list.empty?
+
+    h[event_type.fetch('type_id')] = value_list.transform_values { |translation_id|
+      translations.fetch(:mapping).fetch(translation_id)
+    }
 
     h
   }
@@ -96,21 +96,32 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
 end
 
 def create_mapping_to_unique(input)
+  input.deep_sort!
+
   reversed = {}
 
   input.each do |k, v|
     reversed[v] ||= []
     reversed[v] << k
-    reversed[v] = reversed[v].sort.uniq
   end
+
+  reversed.transform_values! { |v| v.sort.uniq }
 
   mapping = {}
   combined = {}
 
-  reversed.each do |k, v|
-    require 'digest'
+  id_map = {}
+  id = 0
 
-    new_id = Digest::MD5.hexdigest(v.sort_by(&:length).first)
+  reversed.each do |k, v|
+    id_key = v.sort_by(&:length).first
+
+    if (existing_id = id_map[id_key])
+      new_id = existing_id
+    else
+      new_id = id_map[id_key] = id
+      id += 1
+    end
 
     v.each do |old_id|
       mapping[old_id] = new_id
