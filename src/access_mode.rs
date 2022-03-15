@@ -9,6 +9,7 @@ pub enum AccessMode {
 }
 
 impl AccessMode {
+  #[allow(unused)]
   pub fn is_read(self) -> bool {
     match self {
       AccessMode::Read | AccessMode::ReadWrite => true,
@@ -16,6 +17,7 @@ impl AccessMode {
     }
   }
 
+  #[allow(unused)]
   pub fn is_write(self) -> bool {
     match self {
       AccessMode::Write | AccessMode::ReadWrite => true,
