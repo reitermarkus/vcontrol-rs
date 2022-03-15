@@ -1,12 +1,13 @@
-use crate::types::{DeviceIdent, DeviceIdentF0};
 use std::io;
 use std::fmt;
 use std::error::Error as StdError;
 use std::string::FromUtf8Error;
 
+use crate::device::{DeviceId, DeviceIdF0};
+
 #[derive(Debug)]
 pub enum Error {
-  UnsupportedDevice(DeviceIdent, Option<DeviceIdentF0>),
+  UnsupportedDevice(DeviceId, Option<DeviceIdF0>),
   UnsupportedCommand(String),
   UnsupportedMode(String),
   InvalidArgument(String),

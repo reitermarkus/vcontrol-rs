@@ -8,6 +8,8 @@ pub mod types;
 mod command;
 pub use crate::command::{Command};
 
+pub(crate) mod mappings;
+
 pub mod commands;
 
 mod access_mode;
@@ -18,9 +20,6 @@ pub use crate::optolink::Optolink;
 
 mod protocol;
 pub use crate::protocol::Protocol;
-
-mod device_id_range;
-pub use crate::device_id_range::DeviceIdRange;
 
 pub mod device;
 pub use crate::device::Device;

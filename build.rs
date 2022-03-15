@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufReader, BufWriter, Write};
+use std::io::{self, BufReader, BufWriter, Write};
 use std::path::Path;
 use std::collections::BTreeMap;
 use std::fmt;
@@ -13,9 +13,9 @@ use phf_codegen;
 mod access_mode;
 use access_mode::AccessMode;
 
-#[path = "src/device_id_range.rs"]
-mod device_id_range;
-use device_id_range::DeviceIdRange;
+#[path = "src/device/device_id.rs"]
+mod device_id;
+use device_id::DeviceIdRange;
 
 #[path = "src/data_type.rs"]
 mod data_type;
@@ -34,37 +34,40 @@ fn escape_const_name(s: &str) -> String {
 }
 
 #[track_caller]
-fn load_yaml<T: DeserializeOwned>(file_name: &str) -> T {
-  let path = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("codegen").join(file_name);
+fn load_yaml<T: DeserializeOwned>(file_name: &str) -> anyhow::Result<T> {
+  let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is not set");
+  let path = Path::new(&cargo_manifest_dir).join("codegen").join(file_name);
   let file = BufReader::new(File::open(&path).expect(&format!("Error opening {:?}", path)));
-  serde_yaml::from_reader(file).unwrap()
+  Ok(serde_yaml::from_reader(file)?)
 }
 
-fn output_file(file_name: &str) -> BufWriter<File> {
-  let path = Path::new(&env::var("OUT_DIR").unwrap()).join(file_name);
-  BufWriter::new(File::create(&path).unwrap())
+fn output_file(file_name: &str) -> io::Result<BufWriter<File>> {
+  let path = Path::new(&env::var("OUT_DIR").expect("OUT_DIR is not set")).join(file_name);
+  Ok(BufWriter::new(File::create(&path)?))
 }
 
-fn generate_translations() {
+fn generate_translations() -> anyhow::Result<()> {
   println!("Generating translations.");
 
-  let translations: BTreeMap<u16, String> = load_yaml("translations.used.yml");
+  let translations: BTreeMap<u16, String> = load_yaml("translations.used.yml")?;
 
-  let mut file = output_file("translations.rs");
+  let mut file = output_file("translations.rs")?;
 
   for (k, v) in translations {
-    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k, v).unwrap();
+    writeln!(file, "const TRANSLATION_{}: &'static str = {:?};", k, v)?;
   }
+
+  Ok(())
 }
 
-fn generate_mappings() {
+fn generate_mappings() -> anyhow::Result<()> {
   println!("Generating mappings.");
 
-  let mappings: BTreeMap<u16, BTreeMap<i32, u16>> = load_yaml("mappings.used.yml");
+  let mappings: BTreeMap<u16, BTreeMap<i32, u16>> = load_yaml("mappings.used.yml")?;
 
-  let mut file = output_file("mappings.rs");
+  let mut file = output_file("mappings.rs")?;
 
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/translations.rs"));"#).unwrap();
+  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/translations.rs"));"#)?;
 
   for (k, mapping) in mappings {
     let mut map = phf_codegen::Map::new();
@@ -73,67 +76,63 @@ fn generate_mappings() {
       map.entry(k, &format!("TRANSLATION_{}", v));
     }
 
-    // let v = v.as_str().unwrap();
-    writeln!(file, "\nconst MAPPING_{}: ::phf::Map<i32, &'static str> = {};", k, map.build()).unwrap();
+    writeln!(file, "\npub const MAPPING_{}: ::phf::Map<i32, &'static str> = {};", k, map.build())?;
   }
+
+  Ok(())
 }
 
-fn generate_commands() -> BTreeMap<u16, String> {
+fn generate_commands() -> anyhow::Result<BTreeMap<u16, String>> {
   println!("Generating commands.");
 
   let mut command_name_map = BTreeMap::new();
-  let mappings: BTreeMap<u16, Command> = load_yaml("event_types.used.yml");
+  let mappings: BTreeMap<u16, Command> = load_yaml("event_types.used.yml")?;
 
-  let mut file = output_file("commands.rs");
-
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
+  let mut file = output_file("commands.rs")?;
 
   for (command_id, command) in mappings {
     let command_name = &command.name;
-    writeln!(file, "\nconst COMMAND_{}: crate::Command = {:?};", command_id, command).unwrap();
+    writeln!(file, "\npub const COMMAND_{}: crate::Command = {:?};", command_id, command)?;
 
     command_name_map.insert(command_id, command_name.clone());
   }
 
-  command_name_map
+  Ok(command_name_map)
 }
 
-fn generate_system_commands() {
+fn generate_system_commands() -> anyhow::Result<()> {
   println!("Generating system commands.");
 
-  let commands: BTreeMap<String, Command> = load_yaml("system_event_types.used.yml");
+  let commands: BTreeMap<String, Command> = load_yaml("system_event_types.used.yml")?;
 
-  let mut file = output_file("system_commands.rs");
-
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/mappings.rs"));"#).unwrap();
+  let mut file = output_file("system_commands.rs")?;
 
   let mut map = phf_codegen::Map::<&str>::new();
 
-  writeln!(file, "\npub mod system {{").unwrap();
-  writeln!(file, "\nuse super::*;").unwrap();
+  writeln!(file, "\npub mod system {{")?;
 
   for (command_name, command) in &commands {
     let constant_name = command_name.to_uppercase();
 
     map.entry(command_name, &format!("&system::{}", constant_name));
 
-    writeln!(file, "\npub const {}: crate::Command = {:#?};", constant_name, command).unwrap();
+    writeln!(file, "\npub const {}: crate::Command = {:#?};", constant_name, command)?;
   }
 
-  writeln!(file, "\n}}").unwrap();
+  writeln!(file, "\n}}")?;
 
 
-  writeln!(file, "\nconst SYSTEM: ::phf::Map<&'static str, &'static crate::Command> = {};", map.build()).unwrap();
+  writeln!(file, "\npub(crate) const SYSTEM_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", map.build())?;
+
+  Ok(())
 }
 
-fn generate_devices(command_name_map: &BTreeMap<u16, String>) {
+fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<()> {
   println!("Generating devices.");
 
-  let mappings: BTreeMap<String, Device> = load_yaml("devices.used.yml");
+  let mappings: BTreeMap<String, Device> = load_yaml("devices.used.yml")?;
 
-  let mut file = output_file("devices.rs");
-
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/commands.rs"));"#).unwrap();
+  let mut file = output_file("devices.rs")?;
 
   let mut device_map = phf_codegen::Map::<DeviceIdRange>::new();
   for (device_id, device) in &mappings {
@@ -151,37 +150,32 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) {
     let mut map = phf_codegen::Map::<&str>::new();
     for command_id in device.commands.iter() {
       let command_name = command_name_map.get(command_id).unwrap();
-      map.entry(command_name, &format!("&COMMAND_{}", command_id));
+      map.entry(command_name, &format!("&crate::commands::COMMAND_{}", command_id));
     }
-    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", escape_const_name(&device_id), map.build()).unwrap();
+    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", escape_const_name(&device_id), map.build())?;
 
     writeln!(file, r#"
-      const {}: Device = Device {{
+      pub const {}: Device = Device {{
         name: {},
         commands: &{}_COMMANDS,
-        errors: &MAPPING_{},
+        errors: &crate::mappings::MAPPING_{},
       }};
-    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), device.error_mapping).unwrap();
+    "#, escape_const_name(&device_id), format!("{:?}", device_id), escape_const_name(&device_id), device.error_mapping)?;
   }
 
-  writeln!(&mut file, r#"    /// Mapping of device identifier ranges to devices. The following devices are supported:"#).unwrap();
+  writeln!(&mut file, r#"    pub(crate) const DEVICES: ::phf::Map<DeviceIdRange, &'static Device> = {};"#, device_map.build())?;
 
-  for (device_id, _) in &mappings {
-    writeln!(&mut file, r#"    /// - `{}`"#, escape_const_name(&device_id)).unwrap();
-  }
-
-  writeln!(&mut file, r#"    pub const DEVICES: ::phf::Map<DeviceIdRange, &'static Device> = {};"#, device_map.build()).unwrap();
+  Ok(())
 }
 
-fn main() {
-  generate_translations();
-  generate_mappings();
-  let command_name_map = generate_commands();
-  generate_system_commands();
-  generate_devices(&command_name_map);
+fn main() -> anyhow::Result<()> {
+  generate_translations()?;
+  generate_mappings()?;
+  let command_name_map = generate_commands()?;
+  generate_system_commands()?;
+  generate_devices(&command_name_map)?;
 
-  let mut file = output_file("codegen.rs");
-  writeln!(file, r#"include!(concat!(env!("OUT_DIR"), "/devices.rs"));"#).unwrap();
+  Ok(())
 }
 
 #[derive(Debug, Deserialize)]
@@ -219,7 +213,7 @@ pub struct Command {
 impl fmt::Debug for Command {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let mapping = if let Some(mapping) = &self.mapping {
-      format!("Some(MAPPING_{})", escape_const_name(&mapping))
+      format!("Some(crate::mappings::MAPPING_{})", escape_const_name(&mapping))
     } else {
       "None".into()
     };

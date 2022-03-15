@@ -5,8 +5,8 @@ use {
 };
 
 use crate::Command;
-use crate::types::{DeviceIdent, DeviceIdentF0};
-use crate::{Error, Optolink, Device, device::DEVICES, Protocol, Value, OutputValue};
+use crate::device::{DeviceId, DeviceIdF0};
+use crate::{Error, Optolink, Device, Protocol, Value, OutputValue};
 
 #[cfg(feature = "webthing")]
 mod thing;
@@ -30,63 +30,6 @@ impl VControl {
     Ok(())
   }
 
-  fn detect_device(device_ident: DeviceIdent, device_ident_f0: Option<DeviceIdentF0>) -> Option<&'static Device> {
-    let devices = DEVICES.entries().filter(|(device_ident_range, _)| device_ident.id == device_ident_range.id);
-
-    if let Some(device_ident_f0) = device_ident_f0 {
-      if (192..=203).contains(&device_ident.id) && device_ident.software_index >= 200 {
-        // Find exact F0 match.
-        for (device_ident_range, device) in devices.clone() {
-          if let Some(f0) = device_ident_range.f0 {
-            if device_ident_f0.0 == f0 {
-              return Some(device)
-            }
-          }
-        }
-
-        // Find match in F0 range.
-        for (device_ident_range, device) in devices.clone() {
-          if let Some((f0, f0_till)) = device_ident_range.f0.zip(device_ident_range.f0_till) {
-            let f0_range = f0..=f0_till;
-
-            if f0_range.contains(&device_ident_f0.0) {
-              return Some(device)
-            }
-          }
-        }
-      }
-    }
-
-    let mut device_fallback = None;
-
-    // Find exact hardware/software index match.
-    for (device_ident_range, device) in devices.clone() {
-      if let Some((hardware_index, software_index)) = device_ident_range.hardware_index.zip(device_ident_range.software_index) {
-        if device_ident.hardware_index == hardware_index && device_ident.software_index == software_index {
-          return Some(device)
-        }
-      }
-
-      device_fallback = Some(*device);
-    }
-
-    // Find match in hardware/software index range.
-    for (device_ident_range, device) in devices.clone() {
-      if let Some((hardware_index, software_index)) = device_ident_range.hardware_index.zip(device_ident_range.software_index) {
-        if let Some((hardware_index_till, software_index_till)) = device_ident_range.hardware_index.zip(device_ident_range.software_index) {
-          let hardware_index_range = hardware_index..=hardware_index_till;
-          let software_index_range = software_index..=software_index_till;
-
-          if hardware_index_range.contains(&device_ident.hardware_index) && software_index_range.contains(&device_ident.software_index) {
-            return Some(device)
-          }
-        }
-      }
-    }
-
-    device_fallback
-  }
-
   /// Automatically detect the `Device` and `Protocol` and connect to it.
   pub fn connect(mut optolink: Optolink) -> Result<Self, Error> {
     let (connected, protocol) = if let Some(protocol) = Protocol::detect(&mut optolink) {
@@ -100,15 +43,15 @@ impl VControl {
 
     let mut buf = [0; 8];
     protocol.get(&mut optolink, 0x00f8, &mut buf)?;
-    let device_ident = DeviceIdent::from_bytes(&buf);
+    let device_ident = DeviceId::from_bytes(&buf);
 
     let mut buf = [0; 2];
     let device_ident_f0 = match protocol.get(&mut optolink, 0x00f0, &mut buf) {
-      Ok(()) => Some(DeviceIdentF0::from_bytes(&buf)),
+      Ok(()) => Some(DeviceIdF0::from_bytes(&buf)),
       Err(_) => None, // TODO: Use specific error type.
     };
 
-    let mut device = Self::detect_device(device_ident, device_ident_f0);
+    let mut device = Device::detect(device_ident, device_ident_f0);
 
     let device = if let Some(device) = device {
       log::debug!("Device detected: {}", device.name());
