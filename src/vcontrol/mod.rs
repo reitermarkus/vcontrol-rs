@@ -41,28 +41,30 @@ impl VControl {
       (false, protocol)
     };
 
-    let mut buf = [0; 8];
-    protocol.get(&mut optolink, 0x00f8, &mut buf)?;
-    let device_ident = DeviceId::from_bytes(&buf);
+    let (device_id, device_id_f0) = match crate::commands::system::DEVICE_ID.get(&mut optolink, protocol)? {
+      Value::Array(buf) if buf.len() == 8 => {
+        let device_id = DeviceId::from_bytes(&buf);
 
-    let mut buf = [0; 2];
-    let device_ident_f0 = match protocol.get(&mut optolink, 0x00f0, &mut buf) {
-      Ok(()) => Some(DeviceIdF0::from_bytes(&buf)),
-      Err(_) => None, // TODO: Use specific error type.
+        let device_id_f0 = match crate::commands::system::DEVICE_ID_F0.get(&mut optolink, protocol) {
+          Ok(Value::Array(buf)) if buf.len() == 2 => Some(DeviceIdF0::from_bytes(&buf)),
+          Ok(_) => unreachable!("`device_id_f0` command should return an array with length 2"),
+          Err(_) => None, // TODO: Use specific error type.
+        };
+
+        if let Some(device) = Device::detect(device_id, device_id_f0) {
+          log::debug!("Device detected: {}", device.name());
+
+          let mut vcontrol = VControl { optolink, device, connected, protocol };
+          vcontrol.renegotiate()?;
+          return Ok(vcontrol)
+        }
+
+        (device_id, device_id_f0)
+      },
+      _ => unreachable!("`device_id` command should return an array with length 8"),
     };
 
-    let mut device = Device::detect(device_ident, device_ident_f0);
-
-    let device = if let Some(device) = device {
-      log::debug!("Device detected: {}", device.name());
-      device
-    } else {
-      return Err(Error::UnsupportedDevice(device_ident, device_ident_f0))
-    };
-
-    let mut vcontrol = VControl { optolink, device, connected, protocol };
-    vcontrol.renegotiate()?;
-    Ok(vcontrol)
+    Err(Error::UnsupportedDevice(device_id, device_id_f0))
   }
 
   pub fn device(&self) -> &'static Device {
