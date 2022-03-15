@@ -1,6 +1,7 @@
 use std::convert::TryInto;
 use std::fmt;
 
+use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
 use serde::{Serialize, Serializer, Deserialize, Deserializer, de};
@@ -18,15 +19,15 @@ pub struct CircuitTimes {
 }
 
 impl CircuitTimes {
-  pub fn from_bytes(bytes: &[u8]) -> Self {
+  pub fn from_bytes(bytes: &[u8; 56]) -> Self {
     Self {
-      mon: CircuitTime::from_bytes(&bytes[0..8]),
-      tue: CircuitTime::from_bytes(&bytes[8..16]),
-      wed: CircuitTime::from_bytes(&bytes[16..24]),
-      thu: CircuitTime::from_bytes(&bytes[24..32]),
-      fri: CircuitTime::from_bytes(&bytes[32..40]),
-      sat: CircuitTime::from_bytes(&bytes[40..48]),
-      sun: CircuitTime::from_bytes(&bytes[48..56]),
+      mon: CircuitTime::from_bytes(array_ref![bytes,  0, 8]),
+      tue: CircuitTime::from_bytes(array_ref![bytes,  8, 8]),
+      wed: CircuitTime::from_bytes(array_ref![bytes, 16, 8]),
+      thu: CircuitTime::from_bytes(array_ref![bytes, 24, 8]),
+      fri: CircuitTime::from_bytes(array_ref![bytes, 32, 8]),
+      sat: CircuitTime::from_bytes(array_ref![bytes, 40, 8]),
+      sun: CircuitTime::from_bytes(array_ref![bytes, 48, 8]),
     }
   }
 
@@ -56,7 +57,7 @@ impl CircuitTimes {
 pub struct CircuitTime([Option<TimeSpan>; 4]);
 
 impl CircuitTime {
-  pub fn from_bytes(bytes: &[u8]) -> Self {
+  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
     Self([
       Time::from_byte(bytes[0]).zip(Time::from_byte(bytes[1])).map(|(from, to)| TimeSpan { from, to }),
       Time::from_byte(bytes[2]).zip(Time::from_byte(bytes[3])).map(|(from, to)| TimeSpan { from, to }),

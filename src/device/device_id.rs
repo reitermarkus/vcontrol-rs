@@ -31,17 +31,19 @@ impl fmt::Debug for DeviceId {
 }
 
 impl DeviceId {
-  pub fn from_bytes(bytes: &[u8]) -> Self {
+  #[allow(unused)]
+  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
     Self {
-      id: u16::from_be_bytes(bytes[0..2].try_into().unwrap()),
-      hardware_index: u8::from_be_bytes(bytes[2..3].try_into().unwrap()),
-      software_index: u8::from_be_bytes(bytes[3..4].try_into().unwrap()),
-      protocol_version_lda: u8::from_be_bytes(bytes[4..5].try_into().unwrap()),
-      protocol_version_rda: u8::from_be_bytes(bytes[5..6].try_into().unwrap()),
-      developer_version: u16::from_be_bytes(bytes[6..8].try_into().unwrap()),
+      id: u16::from_be_bytes([bytes[0], bytes[1]]),
+      hardware_index: bytes[2],
+      software_index: bytes[3],
+      protocol_version_lda: bytes[4],
+      protocol_version_rda: bytes[5],
+      developer_version: u16::from_be_bytes([bytes[6], bytes[7]]),
     }
   }
 
+  #[allow(unused)]
   pub fn to_bytes(&self) -> [u8; 8] {
     let id = self.id.to_be_bytes();
     let hardware_index = self.hardware_index.to_be_bytes();
@@ -66,7 +68,7 @@ impl DeviceId {
 pub struct DeviceIdF0(pub(crate) u16);
 
 impl DeviceIdF0 {
-  pub fn from_bytes(bytes: &[u8]) -> Self {
+  pub fn from_bytes(bytes: &[u8; 2]) -> Self {
     Self(u16::from_be_bytes(bytes[0..2].try_into().unwrap()))
   }
 }

@@ -1,3 +1,4 @@
+use arrayref::array_ref;
 use phf;
 
 use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DateTime, CircuitTimes}};
@@ -39,10 +40,28 @@ impl Command {
     }
 
     let mut value = match &self.data_type {
-      DataType::DateTime => Value::DateTime(DateTime::from_bytes(&bytes)),
-      DataType::CircuitTimes => Value::CircuitTimes(CircuitTimes::from_bytes(&bytes)),
+      DataType::DateTime => {
+        if bytes.len() != 8 {
+          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+        }
+
+        Value::DateTime(DateTime::from_bytes(array_ref![bytes, 0, 8]))
+      },
+      DataType::CircuitTimes => {
+        if bytes.len() != 56 {
+          return Err(Error::InvalidFormat("array length is not 56".to_string()))
+        }
+
+        Value::CircuitTimes(CircuitTimes::from_bytes(array_ref![bytes, 0, 56]))
+      },
       DataType::ErrorIndex => Value::Int(bytes[0] as i64),
-      DataType::Error => Value::Error(types::Error::from_bytes(&bytes)),
+      DataType::Error => {
+        if bytes.len() != 9 {
+          return Err(Error::InvalidFormat("array length is not 9".to_string()))
+        }
+
+        Value::Error(types::Error::from_bytes(array_ref![bytes, 0, 9]))
+      },
       DataType::String => {
         let end = bytes.iter().position(|&c| c == b'\0').unwrap_or(bytes.len());
 

@@ -54,8 +54,8 @@ impl DateTime {
     byte_to_dec(self.0[7])
   }
 
-  pub fn from_bytes(bytes: &[u8]) -> Self {
-    Self(bytes[..8].try_into().unwrap())
+  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
+    Self(*bytes)
   }
 
   pub fn to_bytes(&self) -> [u8; 8] {

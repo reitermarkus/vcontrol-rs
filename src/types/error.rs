@@ -1,5 +1,6 @@
 use std::fmt;
 
+use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
 use serde::{Serialize, Deserialize};
@@ -31,9 +32,9 @@ impl Error {
     &self.time
   }
 
-  pub fn from_bytes(bytes: &[u8]) -> Self {
+  pub fn from_bytes(bytes: &[u8; 9]) -> Self {
     let index = bytes[0];
-    let time = DateTime::from_bytes(&bytes[1..]);
+    let time = DateTime::from_bytes(array_ref![bytes, 1, 8]);
 
     Self { index, time }
   }

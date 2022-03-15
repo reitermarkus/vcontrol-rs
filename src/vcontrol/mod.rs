@@ -4,6 +4,8 @@ use {
   webthing::Thing
 };
 
+use arrayref::array_ref;
+
 use crate::Command;
 use crate::device::{DeviceId, DeviceIdF0};
 use crate::{Error, Optolink, Device, Protocol, Value, OutputValue};
@@ -42,11 +44,21 @@ impl VControl {
     };
 
     let (device_id, device_id_f0) = match crate::commands::system::DEVICE_ID.get(&mut optolink, protocol)? {
-      Value::Array(buf) if buf.len() == 8 => {
-        let device_id = DeviceId::from_bytes(&buf);
+      Value::Array(buf) => {
+        if buf.len() != 8 {
+          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+        }
+
+        let device_id = DeviceId::from_bytes(array_ref![buf, 0, 8]);
 
         let device_id_f0 = match crate::commands::system::DEVICE_ID_F0.get(&mut optolink, protocol) {
-          Ok(Value::Array(buf)) if buf.len() == 2 => Some(DeviceIdF0::from_bytes(&buf)),
+          Ok(Value::Array(buf)) if buf.len() == 2 => {
+            if buf.len() != 2 {
+              return Err(Error::InvalidFormat("array length is not 2".to_string()))
+            }
+
+            Some(DeviceIdF0::from_bytes(array_ref![buf, 0, 2]))
+          },
           Ok(_) => unreachable!("`device_id_f0` command should return an array with length 2"),
           Err(_) => None, // TODO: Use specific error type.
         };
@@ -61,7 +73,7 @@ impl VControl {
 
         (device_id, device_id_f0)
       },
-      _ => unreachable!("`device_id` command should return an array with length 8"),
+      _ => unreachable!(),
     };
 
     Err(Error::UnsupportedDevice(device_id, device_id_f0))
