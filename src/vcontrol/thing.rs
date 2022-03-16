@@ -8,7 +8,7 @@ use webthing::{
   property::ValueForwarder,
 };
 
-use crate::{VControl, AccessMode, Command, DataType, Value, types::{DateTime, Error, CircuitTimes}};
+use crate::{VControl, AccessMode, Command, DataType, Value, types::{DeviceId, DeviceIdF0, DateTime, Error, CircuitTimes}};
 
 struct VcontrolValueForwarder {
   command_name: &'static str,
@@ -21,6 +21,8 @@ impl ValueForwarder for VcontrolValueForwarder {
     let new_value = value.clone();
 
     let vcontrol_value = match self.command.data_type {
+      DataType::DeviceId => serde_json::from_value::<DeviceId>(value).map(Value::DeviceId),
+      DataType::DeviceIdF0 => serde_json::from_value::<DeviceIdF0>(value).map(Value::DeviceIdF0),
       DataType::Int => serde_json::from_value::<i64>(value).map(Value::Int),
       DataType::Double => serde_json::from_value::<f64>(value).map(Value::Double),
       DataType::Byte | DataType::ErrorIndex => serde_json::from_value::<u8>(value).map(|b| Value::Int(b as i64)),
@@ -70,6 +72,8 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
 
   for (command_name, command) in commands {
     let mut root_schema = match command.data_type {
+      DataType::DeviceId => schema_for!(DeviceId),
+      DataType::DeviceIdF0 => schema_for!(DeviceIdF0),
       DataType::Int => schema_for!(i64),
       DataType::Double => schema_for!(f64),
       DataType::Byte | DataType::ErrorIndex => schema_for!(u8),
