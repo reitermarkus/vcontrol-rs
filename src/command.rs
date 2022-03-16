@@ -40,7 +40,9 @@ impl Command {
 
     let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
 
-    if bytes.iter().all(|&b| b == 0xff) && self.data_type != DataType::ErrorIndex {
+    if bytes.iter().all(|&b| b == 0xff) && !matches!(
+      self.data_type, DataType::DeviceId | DataType::DeviceIdF0 | DataType::ErrorIndex
+    ) {
       return Ok(Value::Empty)
     }
 
