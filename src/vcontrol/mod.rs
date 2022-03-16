@@ -47,7 +47,11 @@ impl VControl {
         let device_id_f0 = match crate::commands::system::DEVICE_ID_F0.get(&mut optolink, protocol) {
           Ok(Value::DeviceIdF0(device_id_f0)) => Some(device_id_f0),
           Ok(value) => unreachable!("expected DeviceIdF0, got {:?}", value),
-          Err(_) => None, // TODO: Check for more specific error type.
+          // TODO: Check for more specific error type.
+          Err(err) => {
+            log::debug!("Failed to get `device_id_f0`: {}", err);
+            None
+          },
         };
 
         if let Some(device) = Device::detect(device_id, device_id_f0) {
