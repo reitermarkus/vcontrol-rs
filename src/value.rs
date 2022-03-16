@@ -24,7 +24,11 @@ pub enum Value {
 macro_rules! convert_double {
   ($value:expr, $op:tt, $n:literal) => {
     if let Value::Double(n) = $value {
-      *n = *n $op $n;
+      #[allow(clippy::assign_op_pattern)]
+      {
+        *n = *n $op $n;
+      }
+
       return
     }
   }

@@ -1,8 +1,6 @@
-use core::fmt;
-
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{Serialize, Serializer, Deserialize, Deserializer, de};
+use serde::{Serialize, Deserialize};
 
 /// Device identifier.
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]

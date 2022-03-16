@@ -1,10 +1,9 @@
-use std::convert::TryInto;
 use std::fmt;
 
 use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{Serialize, Serializer, Deserialize, Deserializer, de};
+use serde::{Serialize, Deserialize};
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -118,7 +117,7 @@ struct TimeSpan {
 }
 
 impl TimeSpan {
-  pub fn to_bytes(&self) -> [u8; 2] {
+  pub fn to_bytes(self) -> [u8; 2] {
     [self.from.to_byte(), self.to.to_byte()]
   }
 }
@@ -149,7 +148,7 @@ impl Time {
     }
   }
 
-  pub const fn to_byte(&self) -> u8 {
+  pub const fn to_byte(self) -> u8 {
     self.hh << 3 | (self.mm / 10)
   }
 }

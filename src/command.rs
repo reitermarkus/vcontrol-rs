@@ -1,5 +1,4 @@
 use arrayref::array_ref;
-use phf;
 
 use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DeviceId, DeviceIdF0, DateTime, CircuitTimes}};
 
@@ -113,10 +112,10 @@ impl Command {
           	Parameter::IntHighByteFirst |
             Parameter::Int4HighByteFirst |
             Parameter::SIntHighByteFirst |
-            Parameter::SInt4HighByteFirst => for &b in bytes.into_iter().take(4) {
+            Parameter::SInt4HighByteFirst => for &b in bytes.iter().take(4) {
               n = (n << 8) | (b as i32);
           	},
-            _ => for &b in bytes.into_iter().rev().take(4) {
+            _ => for &b in bytes.iter().rev().take(4) {
               n = (n << 8) | (b as i32);
             },
           }

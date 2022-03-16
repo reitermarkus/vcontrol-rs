@@ -6,6 +6,7 @@ use crate::Optolink;
 const RESET: u8 = 0x04;
 const SYNC: u8  = 0x05;
 
+#[allow(unused)]
 #[non_exhaustive]
 #[repr(u8)]
 enum Function {

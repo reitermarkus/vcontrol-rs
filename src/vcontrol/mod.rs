@@ -4,8 +4,6 @@ use {
   webthing::Thing
 };
 
-use arrayref::array_ref;
-
 use crate::Command;
 use crate::{Error, Optolink, Device, Protocol, Value, OutputValue};
 
@@ -97,7 +95,7 @@ impl VControl {
     let command = self.command_by_name(command)?;
     match command.get(&mut self.optolink, self.protocol) {
       Ok(value) => {
-        let mapping = if let Value::Error(ref error) = value {
+        let mapping = if let Value::Error(ref _error) = value {
           Some(self.device.errors())
         } else if let Some(ref mapping) = command.mapping {
           Some(mapping)

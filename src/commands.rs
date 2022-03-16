@@ -9,7 +9,7 @@ pub use self::codegen::*;
 
 /// Get a system command by name.
 pub fn system_command(name: impl AsRef<str>) -> Option<&'static Command> {
-  SYSTEM_COMMANDS.get(name.as_ref()).map(|&c| c)
+  SYSTEM_COMMANDS.get(name.as_ref()).copied()
 }
 
 /// Iterate over system commands.

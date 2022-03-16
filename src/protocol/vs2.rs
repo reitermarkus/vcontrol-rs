@@ -14,6 +14,7 @@ const NACK:  [u8; 1] = [0x15];
 const REQUEST: u8   = 0x00;
 const RESPONSE: u8  = 0x01;
 
+#[allow(unused)]
 #[non_exhaustive]
 #[repr(u8)]
 enum Function {
@@ -83,7 +84,7 @@ impl Vs2 {
     loop {
       o.write_all(&LEADIN)?;
       o.write_all(&[message_length])?;
-      o.write_all(&message)?;
+      o.write_all(message)?;
       o.write_all(&[checksum])?;
       o.flush()?;
 

@@ -36,7 +36,7 @@ impl Device {
 
   /// Get a specific command for the device, if it is supported.
   pub fn command(&self, name: impl AsRef<str>) -> Option<&'static Command> {
-    self.commands.get(name.as_ref()).map(|c| *c)
+    self.commands.get(name.as_ref()).copied()
   }
 
   /// Get mapping from error codes to strings.
