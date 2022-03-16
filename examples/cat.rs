@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 
@@ -17,7 +18,16 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
 
   log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
 
-  let commands = vcontrol.device().commands();
+  let mut commands = HashMap::new();
+
+  for (command_name, command) in vcontrol::commands::system_commands() {
+    commands.insert(command_name, command);
+  }
+
+  for (command_name, command) in vcontrol.device().commands() {
+    commands.insert(command_name, command);
+  }
+
   let mut keys = commands.keys().collect::<Vec<_>>();
   keys.sort();
 

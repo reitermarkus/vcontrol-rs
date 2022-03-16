@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::{Arc, RwLock, Mutex};
 use std::{thread, time};
 
@@ -8,7 +9,7 @@ use webthing::{
   property::ValueForwarder,
 };
 
-use crate::{VControl, AccessMode, Command, DataType, Value, types::{DeviceId, DeviceIdF0, DateTime, Error, CircuitTimes}};
+use crate::{VControl, Device, AccessMode, Command, DataType, Value, types::{DeviceId, DeviceIdF0, DateTime, Error, CircuitTimes}};
 
 struct VcontrolValueForwarder {
   command_name: &'static str,
@@ -54,9 +55,98 @@ impl ValueForwarder for VcontrolValueForwarder {
   }
 }
 
+fn add_command(thing: &mut dyn Thing, vcontrol: Arc<RwLock<Mutex<VControl>>>, device: &Device, command_name: &'static str, command: &'static Command) {
+  let mut root_schema = match command.data_type {
+    DataType::DeviceId => schema_for!(DeviceId),
+    DataType::DeviceIdF0 => schema_for!(DeviceIdF0),
+    DataType::Int => schema_for!(i64),
+    DataType::Double => schema_for!(f64),
+    DataType::Byte | DataType::ErrorIndex => schema_for!(u8),
+    DataType::String => schema_for!(String),
+    DataType::DateTime => schema_for!(DateTime),
+    DataType::Error => schema_for!(Error),
+    DataType::CircuitTimes => schema_for!(CircuitTimes),
+    DataType::ByteArray => schema_for!(Vec<u8>),
+  };
+
+  match command.mode {
+    AccessMode::Read => {
+      root_schema.schema.metadata().read_only = true;
+    },
+    AccessMode::Write => {
+      root_schema.schema.metadata().write_only = true;
+    },
+    AccessMode::ReadWrite => (),
+  }
+
+  root_schema.schema.extensions.insert("@type".into(), json!("LevelProperty"));
+
+  if let Some(unit) = &command.unit {
+    root_schema.schema.extensions.insert("unit".into(), json!(unit));
+  }
+
+  let create_enum = |enum_schema: &mut schema::SchemaObject, mapping: &'static phf::Map<i32, &'static str>| {
+    // Use `oneOf` schema in order to add description for enum values.
+    // https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-815166515
+    let subschemas = mapping.entries().map(|(k, v)| {
+      schema::SchemaObject {
+        const_value: Some(json!(k)),
+        metadata: Some(Box::new(schemars::schema::Metadata {
+          description: Some(v.to_string()),
+          ..Default::default()
+        })),
+        ..Default::default()
+      }.into()
+    }).collect();
+
+    enum_schema.subschemas = Some(Box::new(
+      schemars::schema::SubschemaValidation {
+        one_of: Some(subschemas),
+        ..Default::default()
+      }
+    ));
+  };
+
+  if let Some(mapping) = &command.mapping {
+    create_enum(&mut root_schema.schema, mapping);
+  } else if command.data_type == DataType::ErrorIndex {
+    create_enum(&mut root_schema.schema, device.errors());
+  } else if command.data_type == DataType::Error {
+    if let Some(ref mut validation) = root_schema.schema.object {
+      if let Some(schema::Schema::Object(index_schema)) = validation.properties.get_mut("index") {
+        create_enum(index_schema, device.errors());
+      }
+    }
+  };
+
+  let schema = serde_json::to_value(root_schema).unwrap().as_object().unwrap().clone();
+  let mut description = schema;
+
+  let value_forwarder = VcontrolValueForwarder {
+    command_name: command_name.clone(),
+    command: command.clone(),
+    vcontrol: vcontrol.clone(),
+  };
+
+  thing.add_property(Box::new(BaseProperty::new(
+    command_name.to_string(),
+    json!(null),
+    Some(Box::new(value_forwarder)),
+    Some(description),
+  )));
+}
+
 pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
   let device = vcontrol.device();
-  let commands = device.commands().clone();
+  let mut commands = HashMap::new();
+
+  for (command_name, command) in crate::commands::system_commands() {
+    commands.insert(command_name, command);
+  }
+
+  for (command_name, command) in device.commands() {
+    commands.insert(command_name, command);
+  }
 
   let vcontrol = Arc::new(RwLock::new(Mutex::new(vcontrol)));
 
@@ -70,85 +160,8 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
     None,
   );
 
-  for (command_name, command) in commands {
-    let mut root_schema = match command.data_type {
-      DataType::DeviceId => schema_for!(DeviceId),
-      DataType::DeviceIdF0 => schema_for!(DeviceIdF0),
-      DataType::Int => schema_for!(i64),
-      DataType::Double => schema_for!(f64),
-      DataType::Byte | DataType::ErrorIndex => schema_for!(u8),
-      DataType::String => schema_for!(String),
-      DataType::DateTime => schema_for!(DateTime),
-      DataType::Error => schema_for!(Error),
-      DataType::CircuitTimes => schema_for!(CircuitTimes),
-      DataType::ByteArray => schema_for!(Vec<u8>),
-    };
-
-    match command.mode {
-      AccessMode::Read => {
-        root_schema.schema.metadata().read_only = true;
-      },
-      AccessMode::Write => {
-        root_schema.schema.metadata().write_only = true;
-      },
-      AccessMode::ReadWrite => (),
-    }
-
-    root_schema.schema.extensions.insert("@type".into(), json!("LevelProperty"));
-
-    if let Some(unit) = &command.unit {
-      root_schema.schema.extensions.insert("unit".into(), json!(unit));
-    }
-
-    let create_enum = |enum_schema: &mut schema::SchemaObject, mapping: &'static phf::Map<i32, &'static str>| {
-      // Use `oneOf` schema in order to add description for enum values.
-      // https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-815166515
-      let subschemas = mapping.entries().map(|(k, v)| {
-        schema::SchemaObject {
-          const_value: Some(json!(k)),
-          metadata: Some(Box::new(schemars::schema::Metadata {
-            description: Some(v.to_string()),
-            ..Default::default()
-          })),
-          ..Default::default()
-        }.into()
-      }).collect();
-
-      enum_schema.subschemas = Some(Box::new(
-        schemars::schema::SubschemaValidation {
-          one_of: Some(subschemas),
-          ..Default::default()
-        }
-      ));
-    };
-
-    if let Some(mapping) = &command.mapping {
-      create_enum(&mut root_schema.schema, mapping);
-    } else if command.data_type == DataType::ErrorIndex {
-      create_enum(&mut root_schema.schema, device.errors());
-    } else if command.data_type == DataType::Error {
-      if let Some(ref mut validation) = root_schema.schema.object {
-        if let Some(schema::Schema::Object(index_schema)) = validation.properties.get_mut("index") {
-          create_enum(index_schema, device.errors());
-        }
-      }
-    };
-
-    let schema = serde_json::to_value(root_schema).unwrap().as_object().unwrap().clone();
-    let mut description = schema;
-
-    let value_forwarder = VcontrolValueForwarder {
-      command_name: command_name.clone(),
-      command: command.clone(),
-      vcontrol: vcontrol.clone(),
-    };
-
-    thing.add_property(Box::new(BaseProperty::new(
-      command_name.to_string(),
-      json!(null),
-      Some(Box::new(value_forwarder)),
-      Some(description),
-    )));
+  for (command_name, command) in &commands {
+    add_command(&mut thing, vcontrol.clone(), &device, command_name, command);
   }
 
   let thing: Box<dyn Thing + 'static> = Box::new(thing);
@@ -163,7 +176,7 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
         return
       };
 
-      for (command_name, command) in commands {
+      for (command_name, command) in &commands {
         if !command.mode.is_read() {
           continue;
         }
