@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock, Mutex};
-use std::{thread, time};
+use std::thread;
 
 use schemars::{schema, schema_for};
 use serde_json::json;
@@ -120,7 +120,7 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<RwLock<Mutex<VControl>>>, de
   };
 
   let schema = serde_json::to_value(root_schema).unwrap().as_object().unwrap().clone();
-  let mut description = schema;
+  let description = schema;
 
   let value_forwarder = VcontrolValueForwarder {
     command_name: command_name.clone(),
