@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
   keys.sort();
 
   for key in keys {
-    let readable = commands.get(key).map(|c| c.mode.is_read()).unwrap_or(false);
+    let readable = commands.get(key).map(|c| c.access_mode().is_read()).unwrap_or(false);
     if !readable {
       continue;
     }

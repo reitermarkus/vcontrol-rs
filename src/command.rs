@@ -23,6 +23,11 @@ pub struct Command {
 }
 
 impl Command {
+  /// Get the command's access mode.
+  pub fn access_mode(&self) -> AccessMode {
+    self.mode
+  }
+
   pub fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
     log::trace!("Command::get(…)");
 
