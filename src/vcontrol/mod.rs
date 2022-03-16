@@ -46,7 +46,7 @@ impl VControl {
       Value::DeviceId(device_id) => {
         let device_id_f0 = match crate::commands::system::DEVICE_ID_F0.get(&mut optolink, protocol) {
           Ok(Value::DeviceIdF0(device_id_f0)) => Some(device_id_f0),
-          Ok(_) => unreachable!(),
+          Ok(value) => unreachable!("expected DeviceIdF0, got {:?}", value),
           Err(_) => None, // TODO: Check for more specific error type.
         };
 
@@ -60,7 +60,7 @@ impl VControl {
 
         (device_id, device_id_f0)
       },
-      _ => unreachable!(),
+      value => unreachable!("expected DeviceId, got {:?}", value),
     };
 
     Err(Error::UnsupportedDevice(device_id, device_id_f0))
