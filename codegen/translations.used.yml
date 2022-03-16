@@ -1,0 +1,2577 @@
+---
+7: 'No'
+10: DHW
+11: DHW circulation
+32: 'Yes'
+102: Unknown
+103: Fault
+104: Standard
+124: Communication
+125: ''
+128: Load
+144: Accept
+157: Daily
+199: Active
+201: Error
+204: Undefined
+217: OK
+365: Close
+459: Outside sensor
+462: Boiler flow
+464: Reserve
+530: Device identification
+664: General
+717: Flow temperature raising
+718: Open
+719: Not selected
+720: Selected
+721: 'OFF'
+722: Manual
+723: Mains substitution
+724: Selection 100 %
+725: Set value 0-100 %
+726: Auto
+727: Ready
+728: Start
+729: Mode
+769: Winter mode
+770: Summer mode
+771: 'Off'
+773: No error
+774: CIField_wrong_72hex_expected
+775: no_data_receive
+776: error_checksum
+777: error_in_head_data
+778: usiAdress_over_250
+779: send_error
+780: NOT AVAILABLE
+781: AVAILABLE
+783: Cylinder 1 top sensor
+784: Cylinder 1 centre sensor
+785: CHP module coolant
+786: Cylinder 1 bottom sensor
+787: Cylinder 2 centre sensor
+788: Cylinder 2 bottom sensor
+802: Customer
+828: Send
+829: Standby mode
+830: Heating mode
+831: Standby
+832: Reduced
+833: FIXED VALUE
+842: Fixed value
+843: Intensive
+847: 'ON'
+875: '0'
+1023: Switching times
+1039: None
+1171: Heating
+1172: Local
+1174: Not available
+1502: Vitodens 200-W
+1503: Vitodens 222-F
+1504: Vitodens 222-W
+1505: Vitodens 242-F
+1862: No message
+2148: Debug
+2563: Deutsch
+2569: English
+2633: Heat
+2637: Water
+2777: Fault manager
+2793: Continuous standard
+2794: Continuous reduced
+2795: Standard mode
+2796: Vitosolic 100
+2797: Vitosolic 200
+2798: without
+2803: 0F Maintenance
+2804: Short circuit outside temperature sensor
+2805: Lead break outside temperature sensor
+2806: 20 Short circuit system flow temperature sensor
+2807: 28 Lead break system flow temperature sensor
+2808: 30 Short circuit boiler water temperature sensor
+2809: 38 Lead break boiler water temperature sensor
+2810: 40 Short circuit flow temperature sensor heating circuit M2
+2811: 48 Lead break flow temperature sensor heating circuit M2
+2812: 50 Short circuit cylinder temperature sensor
+2813: 51 Short circuit outlet temperature sensor
+2814: 58 Lead break cylinder temperature sensor
+2815: 59 Lead break outlet temperature sensor
+2816: A2 System pressure too low
+2817: A4 Max. system pressure exceeded
+2818: B1 Communication fault programming unit (internal)
+2819: B4 Internal fault
+2820: B5 Internal fault EEPROM
+2821: BC Communication fault Vitotrol remote control heating circuit A1
+2822: BD Communication fault Vitotrol remote control heating circuit M2
+2823: BE Vitotrol remote control incorrectly programmed
+2882: BF Incorrect LON communication module
+2883: C2 Communication fault solar control unit
+2884: C5 Communication fault variable speed circulation pump in the heating circuit
+  connection set
+2885: C6 Communication fault variable speed heating circuit pump heating circuit M2
+2886: C7 Communication fault variable speed heating circuit pump heating circuit A1
+2887: CD Communication fault Vitocom 100 (KM BUS)
+2888: CF Communication fault LON communication module
+2889: No faults in the system
+2890: System fault
+2891: Configuration fault
+2892: Fault EEV
+2893: Fault EEV2
+2894: Message EEV
+2895: Message EEV2
+2896: Fault energy meter
+2897: Fault message from the ventilation unit
+2898: Message from ventilation unit
+2899: Short circuit, evaporator sensor 2
+2900: Short circuit, flow sensor HC2
+2901: Short circuit, flow sensor HC3
+2902: Lead break, flow sensor HC2
+2903: Lead break, flow sensor HC3
+2904: Cylinder temperature sensor solar
+2905: Short circuit, mixer external heat source
+2906: Lead break, mixer external heat source
+2907: Short circuit room temperature sensor HC1
+2908: Short circuit room temperature sensor HC2
+2909: Short circuit room temperature sensor HC3
+2910: Lead break room temperature sensor HC1
+2911: Lead break room temperature sensor HC2
+2912: Lead break room temperature sensor HC3
+2913: 'Solar module: Solar sensor 3'
+2914: 'Solar module: Solar sensor 4'
+2915: 'Solar control unit: Short circuit, sensor S1'
+2916: 'Solar control unit: Short circuit, sensor S3'
+2917: 'Ice store: Check absorber circuit'
+2918: 'Solar control unit: Lead break, sensor S1'
+2919: 'Solar control unit: Lead break, sensor S3'
+2920: 'Solar module: Delta T monitoring'
+2921: 'Solar module: Internal fault'
+2922: 'Ventilation: Check filter'
+2923: Check valve
+2924: Secondary pump
+2925: Solar circuit
+2926: Pump HC1
+2927: Heat pump faulty
+2928: Defrost cancelled due to fault
+2929: Electric heater
+2930: Cylinder primary pump faulty
+2931: Internal fault, A/D converter
+2932: Internal fault, EEPROM
+2933: Communication error, KM BUS, Airwell external unit
+2934: Fault, KM BUS, mixer HC
+2935: LON module incorrect/faulty
+2936: Monitoring, compressor power supply
+2937: Brine pressure
+2938: Power-OFF enabled
+2939: Safety chain
+2940: Refrigerant circuit
+2941: Primary source
+2942: Primary temperature
+2943: Coding card
+2944: Communication error, Vitocom 100
+2945: Communication error, fault message module
+2946: Impressed current anode
+2947: Compressor
+2948: Low pressure
+2949: Control high pressure
+2950: Water/water SHK
+2951: Paddle switch (1)
+2952: Compressor 2
+2953: Refrigerant circuit 2
+2954: Low pressure 2
+2955: Control high pressure 2
+2956: Primary source 2
+2957: Fault, external LON subscriber
+2958: Fault on the external heat source
+2959: Fault, lag heat pump
+2960: Subscriber failure at the KM BUS
+2961: Subscriber failure at the Modbus
+2962: Compressor shutdown due to a fault
+2963: Select output
+2964: Control unit restart
+2965: Compressor 1 blocked
+2966: Compressor 2 blocked
+2967: Lead break, sec. return sensor 1
+2968: Short circuit, DHW sensor at outlet
+2969: Lead break, DHW sensor at outlet
+2970: Buffer outlet sensor
+2971: Swimming pool flow
+2972: Vitosolic error
+2973: Error, Allengra
+2974: Error, fan
+2975: Fault at the auxiliary heat source (hybrid)
+2976: GBCU locked (hybrid)
+2977: Error, external subscriber on LON
+2978: Heat management hybrid
+2979: 'Warning: Auxiliary heat source locked'
+2980: DA Short circuit room temperature sensor heating circuit A1
+2981: DB Short circuit room temperature sensor heating circuit M2
+2982: DD Lead break room temperature sensor heating circuit A1
+2983: DE Lead break room temperature sensor heating circuit M2
+3168: Lead break 2-wire BUS
+3170: E0 Fault external LON subscriber
+3171: E4 Supply voltage fault
+3172: E5 Internal fault
+3173: E8 Ionisation current outside the permissible range
+3174: Lead break, sensor 1
+3175: Lead break sensor 2
+3176: Short circuit, sensor 1
+3177: Short circuit sensor 2
+3178: Error DIP switch EA2
+3179: Internal error EA2
+3180: Communication error EA2
+3181: Digital input EA2
+3182: ED Internal fault
+3183: Phase failure L1
+3184: Phase failure L2
+3185: Phase failure L3
+3186: Hardware (print HKK missing)
+3187: Service required
+3188: Hardware (print ZPK 2.01 missing)
+3189: Hardware (print ZPK 2.02 missing)
+3190: Hardware (print ZPK 2.03 missing)
+3191: Short circuit, boiler return temperature sensor
+3192: Short circuit flue gas temperature sensor
+3193: Boiler lambda probe short circuit
+3194: Short circuit, outside temperature sensor
+3195: Short circuit, buffer temperature sensor 1
+3196: Short circuit, buffer temperature sensor 2
+3197: Short circuit, buffer temperature sensor 3
+3198: Short circuit, buffer temperature sensor 4
+3199: Short circuit, buffer temperature sensor 5
+3200: Contact sensor short circuit
+3201: Short circuit boiler water temperature sensor
+3202: Short circuit flame temperature sensor
+3203: Lead break flue gas temperature sensor
+3204: Boiler lambda probe lead break
+3205: Lead break, outside temperature sensor
+3206: Lead break, buffer temperature sensor 1
+3207: Lead break, buffer temperature sensor 2
+3208: Lead break, buffer temperature sensor 3
+3209: Lead break boiler water temperature sensor
+3210: Lead break flame temperature sensor
+3211: Lead break, contact sensor
+3212: Ash removal, runtime
+3213: Ash removal, limit pos.
+3214: Ash box has been removed
+3215: Flue gas fan rotational speed measurement
+3216: Extinguishing water tank
+3217: Combustion chamber doors open
+3218: Fault, KM BUS, mixer module 1
+3219: Fault, KM BUS, mixer module 2
+3220: Fault, KM BUS, mixer module 3
+3221: Fault, KM BUS, remote control 1
+3222: Fault, KM BUS, remote control 2
+3223: Short circuit FTS mixer module M2
+3224: Short circuit, flow temperature sensor 1
+3225: Short circuit, flow temperature sensor 2
+3226: Short circuit, flow temperature sensor 3
+3227: Short circuit, DHW sensor
+3228: Short circuit return temperature sensor
+3229: Short circuit, collector temp. sensor
+3230: Short circuit, solar DHW sensor
+3231: Short circuit, flow temperature sensor 4
+3232: Lead break, flow temperature sensor 1
+3233: Lead break, flow temperature sensor 2
+3234: Lead break, flow temperature sensor 3
+3235: Lead break, DHW sensor
+3236: Lead break return temperature sensor
+3237: Lead break, collector sensor
+3238: Lead break, solar DHW sensor
+3239: Lead break, flow temperature sensor 4
+3240: Central fault, boiler 2
+3241: Central fault, boiler 3
+3242: Central fault, boiler 4
+3243: Cascade fault, CAN connection, boiler 2
+3244: Cascade fault, CAN connection, boiler 3
+3245: Cascade fault, CAN connection, boiler 4
+3246: Cascade, invalid boiler number, boiler 1
+3247: Cascade, invalid boiler number, boiler 2
+3248: Cascade, invalid boiler number, boiler 3
+3249: Cascade, invalid boiler number, boiler 4
+3250: Cascade fault, charging system, PLC CAN connection
+3251: Boiler version not compatible
+3252: Stepper motor voltage short circuit
+3253: Stepper motor voltage lead break
+3254: Flue gas temperature too low
+3255: Flue gas temperature too high
+3256: Return temperature too low
+3257: O2 undershot
+3258: Repeat heat-up
+3259: Residual O2 in flue gas
+3260: Negative pressure control
+3261: 'Solar control unit: short circuit sensor S3'
+3262: Overfill protection
+3263: Burn-back
+3264: Light barrier, firebed
+3265: Fault, material shortage
+3266: Fuel shortage lockout time
+3267: Ash box is full
+3268: General configuration fault
+3269: Water pressure too low
+3270: Water pressure
+3271: Light barrier, feed
+3272: Shut-off gate v sticks
+3273: Light barrier, screw conveyor
+3274: External charging
+3275: Internal fault temperature capture
+3276: Feed screw conveyor motor
+3277: Screw conveyor motor
+3278: Discharge motor
+3279: Suction turbine motor
+3280: Feed screw conveyor reversal
+3281: LS feed screw conv.
+3282: LS screw conveyor
+3283: LS discharge
+3284: Fault remote control HC2
+3285: Light barrier, discharge transfer
+3286: Rotary valve motor
+3287: Changeover unit position
+3288: Vacuum module runtime
+3289: Ash box full
+3290: Day hopper empty
+3291: Add firewood
+3292: Boiler heat-up
+3293: High limit safety cut-out responded
+3294: Check silo fill level
+3295: Hardware - jumpers 97 and 98 not inserted
+3296: Ash removal
+3297: Grate cleaning faulty
+3298: Heat exchanger cleaning faulty
+3299: FRAM checksum error
+3300: 'Solar control unit: short circuit sensor S2'
+3301: 'Solar control unit: lead break sensor S2'
+3302: 'Solar control unit: general fault'
+3303: Fault clock module
+3304: Fault mixer module M1
+3305: Fault mixer module M2
+3306: Communication fault solar control unit
+3307: Communication fault function extension 0-10V
+3308: Communication error, LON module/HV module
+3309: Communication fault to burner control unit
+3310: Primary air damper faulty
+3311: Secondary air damper faulty
+3312: Flue gas fan faulty
+3313: Doors open
+3314: Fault ignition phase
+3315: EEPROM fault combustion technology
+3316: Safety chain responded
+3317: Fault supply technology fuel
+3318: No fuel
+3319: Too full
+3320: Overheating drop chute
+3321: F0 Internal fault
+3322: F1 Flue gas temperature limiter has responded.
+3323: F2 Temperature limiter has responded.
+3324: F3 Flame signal is already present at burner start.
+3325: F4 No flame signal.
+3326: F6 Gas pressure switch fault
+3327: F7 Short circuit or lead break water pressure sensor
+3328: F8 Fuel valve closes too late.
+3329: F9 Fan speed too low at burner start
+3330: FA Fan not at standstill
+3356: FB Flame failure during operation
+3357: FC Gas train faulty, faulty modulation valve control or flue gas path blocked
+3358: FD Gas burner control unit fault
+3359: Fault burner control unit
+3360: Burner control unit faulty
+3361: Emissions test mode enabled
+3362: Test function controller stop
+3363: Fault emissions test key
+3364: Short circuit flow temperature sensor B
+3365: Lead break flow temperature sensor B, low loss header
+3366: Short circuit cylinder temperature sensor
+3367: Short circuit cylinder temperature sensor 2
+3368: Lead break cylinder temperature sensor
+3369: Lead break cylinder temperature sensor 2
+3370: Short circuit water pressure sensor
+3371: Lead break water pressure sensor
+3372: Short circuit analogue remote control
+3373: Lead break analogue remote control
+3374: Start inhibited by GP
+3375: Interlocking extract air
+3376: Temperature limiter
+3377: Flue gas monitor
+3378: Lead break KM BUS burner control unit
+3379: Lead break KM BUS Vitocom
+3380: Lead break KM BUS cascade
+3381: Lead break KM BUS HCP1
+3382: Lead break mixer 1
+3383: Lead break KM BUS HCP2
+3384: Fault BE BUS
+3385: Fault analogue/digital conversion
+3386: Fault EEPROM
+3387: Fault ADC burner control unit
+3388: Internal fault 8
+3389: Internal fault 9
+3390: Short circuit air pressure sensor
+3391: Lead break air pressure sensor
+3392: Fault heating circuit controller 1
+3393: Fault heating circuit controller 2
+3394: Fault heating circuit controller 3
+3395: Fault heating circuit controller 4
+3396: Fault heating circuit controller 5
+3397: Fault heating circuit controller 6
+3398: Fault heating circuit controller 7
+3399: Fault heating circuit controller 8
+3400: Fault KM BUS burner control unit
+3401: Fault KM BUS Vitocom
+3402: Fault KM BUS cascade
+3403: Fault KM BUS HCP1
+3404: Fault mixer 1
+3405: Fault KM BUS HCP2
+3406: Internal programming fault burner control unit
+3407: Internal CRC fault burner control unit
+3408: Short circuit flow temperature sensor low loss header
+3409: Lead break flow temperature sensor low loss header
+3410: Incorrect code coding address 27
+3411: Incorrect code coding address 31
+3412: Short circuit remote control unit RTD/WC
+3413: Lead break remote control unit RTD/WC
+3414: KM BUS fault
+3415: KM BUS fault at Vitocom
+3416: KM BUS fault at heating circuit pump
+3417: KM BUS fault at mixer
+3418: Read error sensor inputs
+3419: Power supply failure
+3420: Fault at heating circuit control unit Vitotronic 050
+3421: Fault at the Vitocom
+3422: Fault message variable speed heating circuit pump
+3423: Fault message extension kit mixer
+3424: Incorrect operation Vitosoft
+3543: Lead break, flow temp HC2
+3544: Lead break, flow temp HC3
+3646: Short circuit, buffer sensor 2
+3647: Short circuit, buffer sensor 3
+3650: Lead break, buffer sensor 2
+3651: Lead break, buffer sensor 3
+3680: Failure boiler 5
+3681: Failure boiler 6
+3682: Failure boiler 7
+3683: Failure boiler 8
+3855: Short circuit, flow temp HC2
+3856: Short circuit, flow temp HC3
+4010: Short circuit flow sensor HC1 or system
+4011: Lead break flow sensor HC1 or system
+4012: Short circuit temperature sensor 17B
+4013: Lead break temperature sensor 17B
+4014: Fault programming unit
+4015: Hardware detection invalid
+4016: Fault remote control HC1
+4017: Fault remote control HC3
+4018: External safety device
+4019: Fault variable speed pump heating circuit 1
+4020: Fault variable speed pump heating circuit 2
+4021: Fault variable speed pump heating circuit 3
+4022: 'Plug-in adaptor: external fault 1'
+4023: 'Plug-in adaptor: external fault 2'
+4024: 'Plug-in adaptor: external fault 3'
+4025: Fault external subscriber HV
+4026: Short circuit cylinder temperature sensor 1
+4027: Lead break cylinder temperature sensor 1
+4028: Configuration fault heat exchanger set
+4029: Short circuit return sensor HC2
+4030: Short circuit return sensor HC3
+4031: Lead break return sensor HC2
+4032: Lead break return sensor HC3
+4033: Fault mixer module M2/M3
+4034: Boiler coding card incorrect/faulty
+4035: Communication error external outside temperature sensor
+4036: LAN hardware error
+4037: LAN system error
+4038: LAN update error
+4039: Short circuit, buffer temperature sensor
+4040: Fault boiler 5
+4041: Fault boiler 6
+4042: Fault boiler 7
+4043: Fault boiler 8
+4044: Short circuit temperature sensor 17
+4045: Lead break temperature sensor 17
+4046: Short circuit, boiler high limit safety cut-out (BHLSC)
+4047: Sensor drift, boiler high limit safety cut-out (BHLSC)
+4048: Short circuit, flue gas high limit safety cut-out (FGHLSC)
+4049: Sensor drift, flue gas high limit safety cut-out (FGHLSC)
+4050: Error Boiler 1
+4051: Error Boiler 2
+4052: Error Boiler 3
+4053: Error Boiler 4
+4054: Lead break, boiler high limit safety cut-out (BHLSC)
+4055: Lead break, flue gas high limit safety cut-out (FGHLSC)
+4056: Malfunction Boiler 1
+4057: Malfunction Boiler 2
+4058: Malfunction Boiler 3
+4059: Malfunction Boiler 4
+4060: 'Solar module: Short circuit, sensor 7'
+4061: 'Solar module: Short circuit, sensor 10'
+4062: 'Solar control unit: short circuit sensor S1'
+4063: 'Solar module: Lead break, sensor 7'
+4064: 'Solar module: Lead break, sensor 10'
+4065: 'Solar control unit: lead break sensor S1'
+4066: 'Solar control unit: lead break sensor S3'
+4067: 'Fault message module 2: Fault message input 1'
+4068: 'Fault message module 2: Fault message input 2'
+4069: 'Fault message module 2: Fault message input 3'
+4070: 'Fault message module 2: Fault message input 4'
+4071: 'Fault message module 2: External fault'
+4072: Fault clock module in programming unit
+4073: Configuration fault Therm-Control
+4074: Configuration fault constant return control
+4075: Configuration fault butterfly valve
+4076: Faulty transfer of coding card data
+4077: Communication error connection extension AM1
+4078: Fault low water indicator
+4079: Fault maximum pressure limiter
+4080: Fault minimum or maximum pressure limiter 2
+4081: Fault additional high limit safety cut-out
+4082: Communication fault ext. peripheral equipment
+4083: Burner fault boiler
+4084: Communication error fault message module 2
+4085: Fault high limit safety cut-out boiler
+4086: 'Cascade: Boiler does not log on'
+4087: Gas valve 1 not tight / gas pressure switch 2 does not open
+4088: Gas valve 2 not tight / gas pressure switch 2 does not close
+4089: Error in safety chain
+4090: Fault 24 V power supply
+4091: Minimum air/water pressure not reached
+4092: Fault safety relay
+4093: Fault ignition relay
+4094: Fault fuel relay 1
+4095: Fault fuel relay 2
+4096: Communication error KM BUS burner control unit
+4097: Excessive flue gas temperature
+4098: Excessive boiler water temperature
+4099: Extraneous light detected
+4100: no flame
+4101: Air pressure switch does not close
+4102: Gas pressure switch does not close
+4103: Air pressure switch does not open
+4104: Fault fuel valve feedback
+4105: Fan speed not reached
+4106: Fan standby not reached
+4107: Fan fault electrical control
+4108: Internal fault burner control unit (cause of fault present)
+4109: Internal fault burner control unit (cause of fault no longer present)
+4110: 'Solar module: open circuit sensor 3'
+4111: 'Solar module: open circuit sensor 4'
+4112: Wireless interference OTS
+4113: Communication error DCF-77
+4114: Wireless interference DCF-77
+4115: Lead break, return temp HC3
+4116: Communication fault mixer HC3
+4117: Short circuit, flow temp HC1 / system
+4118: Lead break, flow temp HC1 / system
+4119: 'Solar: Short circuit, collector temp. sensor'
+4120: 'Solar: Short circuit, cylinder temp. sensor'
+4121: 'Solar: Lead break, collector temp. sensor'
+4122: 'Solar: Lead break, cylinder temp. sensor'
+4123: 'Fault message module 2: Safety equipment 2'
+4124: Communication error mixer module KM BUS
+4125: External safety equipment boiler 1
+4126: 'Fault message module 1: External fault'
+4127: 'Fault message module 1 input 4: Maximum pressure 2'
+4128: External periphery
+4129: Burner fault boiler 1
+4130: Communication fault connection extension EA1
+4131: 'Burner control unit: Communication error, KM BUS burner control unit'
+4132: Boiler does not log in at the cascade
+4133: Internal fault mixer extension
+4134: Short circuit return temperature sensor M1
+4135: Lead break return temperature sensor M1
+4136: Fault HV BUS subscriber
+4137: Short circuit, buffer sensor 4
+4138: Short circuit, buffer sensor 5
+4139: Lead break, buffer sensor 4
+4140: Lead break, buffer sensor 5
+4141: Error, DIP switch
+4142: Short circuit Lambda probe
+4143: Short circuit feed temperature sensor
+4144: Lead break Lambda probe
+4145: Lead break feed temperature sensor
+4146: Short circuit sensor 4
+4147: Short circuit FTS mixer module M1
+4148: Lead break sensor 4
+4149: Lead break FTS mixer module M1
+4150: Lead break FTS mixer module M2
+4151: Short circuit buffer temperature sensor top
+4152: Short circuit buffer temperature sensor below
+4153: Lead break buffer temperature sensor top
+4154: Lead break buffer temperature sensor bottom
+4155: Boiler coding card incorrect
+4156: Communication fault mixer module M1
+4157: Communication fault mixer module M2
+4158: Boiler overheating enabled
+4159: General fault combustion technology
+4160: The ODU is in test mode
+4161: Communication fault KM BUS external unit
+4162: No error (No error)
+4163: Emergency stop (fault)
+4164: Oil level min. (fault)
+4165: Cooling water pressure min. (fault)
+4166: Gas pressure min. (fault)
+4167: Safety temperature (fault)
+4168: Generator temperature (fault)
+4169: Silencer hood temperature (fault)
+4170: Fan faulty (fault)
+4171: Cooling water pump faulty (fault)
+4172: Flue gas backpressure max. (fault)
+4173: Input switch (fault)
+4174: External fault (fault)
+4175: Speed too high (fault)
+4176: Cooling water temperature (fault)
+4177: Flue gas temperature max. (fault)
+4178: Flue gas temperature min. (fault)
+4179: Oil pressure min. (fault)
+4180: Gas pressure max. (fault)
+4181: Heating water pump faulty (fault)
+4182: Start-up speed less than 50 rpm (fault)
+4183: Ignition speed (fault)
+4184: Speed window (fault)
+4185: Speed less than 1200 rpm (fault)
+4186: Switch-on faulty (fault)
+4187: Synchronisation faulty (fault)
+4188: Speed less than 50/pick-up (fault)
+4189: Oil pressure max. (fault)
+4190: Temperature Pt100_2 max. (fault)
+4191: Temperature Pt100_3 max. (fault)
+4192: Output max. (fault)
+4193: Reverse output (fault)
+4194: Output controller faulty (fault)
+4195: Lambda controller faulty (fault)
+4196: Generator contactor faulty (fault)
+4197: Ignition faulty (fault)
+4198: Oil pressure faulty (fault)
+4199: Lambda start position (fault)
+4200: Knocking ON (fault)
+4201: Knocking OFF (fault)
+4202: Mains fault F lower (warning)
+4203: Mains fault F higher (warning)
+4204: Mains fault U+F lower higher (warning)
+4205: Knocking output min. (fault)
+4206: Knocking output max. (fault)
+4207: Mains isolator (fault)
+4208: Knocking (fault)
+4209: Mains fault (warning)
+4210: Maintenance exceeded (fault)
+4211: Safety shutdown (fault)
+4212: Engine not set (fault)
+4213: Battery undervoltage (fault)
+4214: Generator undervoltage (fault)
+4215: Generator overvoltage (fault)
+4216: Generator overcurrent (fault)
+4217: Generator out-of-balance load (fault)
+4218: Leak detector faulty (fault)
+4219: Mains circuit breaker faulty (fault)
+4220: Sensors faulty (fault)
+4221: Flue gas temperature A max (fault)
+4222: Flue gas temperature A min (fault)
+4223: Flue gas temperature B max (fault)
+4224: Flue gas temperature B min (fault)
+4225: Flue gas temperature C max (fault)
+4226: Flue gas temperature C min (fault)
+4227: Flue gas temperature D max (fault)
+4228: Flue gas temperature D min (fault)
+4229: Flue gas temp. Differential A/B (fault)
+4230: Temp. return max PT100/2 (fault)
+4231: Temp. heating water max PT100/3 (fault)
+4232: Temp. engine oil max (fault)
+4233: Temp. gas mixture max (fault)
+4234: Temp. cooling water mixture max (fault)
+4235: Turbo pressure max (fault)
+4236: Communication timeout to CHP module (fault)
+4237: Advance warning maintenance due (warning)
+4238: Maintenance due (warning)
+4239: External fault 2
+4240: External fault 3
+4241: Fault, gas valve 1
+4242: Fault, gas valve 2
+4243: Fault, motor compartment temp. 1
+4244: Fault, motor compartment temp. 2
+4245: Fault, safety temp
+4246: Fault, safety pressure
+4247: Fault, gas mixture pressure
+4248: Check motor compartment sensor
+4249: Short circuit flow sensor system
+4250: Lead break flow sensor system
+4251: Return temperature HC2 short circuit
+4252: Return temperature HC3 short circuit
+4253: Return temperature HC2 lead break
+4254: Return temperature HC3 lead break
+4255: Short circuit cylinder temperature sensor/comfort sensor/primary sensor
+4256: Short circuit outlet temperature sensor
+4257: Lead break cylinder temperature sensor/comfort sensor/primary sensor
+4258: Lead break outlet temperature sensor
+4259: 'Vitosolic: Lead break, collector return'
+4260: Fault low water pressure control unit
+4261: Maximum system pressure exceeded
+4262: Fault impressed current anode not OK
+4263: Fault clock module programming unit
+4264: Internal pump reports air
+4265: Internal pump blocked
+4266: Communication fault mixer HC2
+4267: Communication fault connection extension AM1
+4268: Communication fault connection extension OT
+4269: Fault variable speed pump - internal pump
+4270: Comm. fault KM BUS device DAP1
+4271: Comm. fault KM BUS device DAP2
+4272: Communication fault connection extension external
+4273: Communication fault LON module
+4274: Fault digital input 1
+4275: Fault digital input 2
+4276: Fault digital input 3
+4277: SCOT calibration value limit breach O
+4278: No calibration due to inadequate flow
+4279: Calibration fault thermal
+4280: Fault in voltage supply 24V - burner control unit
+4281: Fault flame amplifier - burner control unit
+4282: Min. air/water pressure not reached
+4283: SCOT calibration value limit breach U
+4284: SCOT ionisation signal differs
+4285: SCOT calibration value differs from previous
+4286: SCOT calibration not executed
+4287: SCOT set ionisation value incorrect
+4288: SCOT system fault
+4289: No flame built
+4290: Flame failure in safety time
+4291: Flue gas temperature limiter responded
+4292: Temperature limiter responded - excessive temperature
+4293: Flame pretence
+4294: Fault air pressure switch
+4295: Fault gas pressure switch
+4296: Fault gas valve
+4297: Fault fan - speed not reached
+4298: Fault fan - not at standstill
+4299: Flame failure during operation
+4300: Fault in electrical control of gas valve
+4301: Internal fault burner control unit
+4302: Fault burner control unit without own fault code
+4303: Short circuit cylinder temperature sensor / comfort sensor / primary sensor
+4304: Fault variable speed pump external heating circuit 1
+4305: Feedback oil preheating not in tolerated time
+4306: Fault electrical control fuel valve
+4307: Fault fuel valve
+4308: Incompatible coding card, Parameter setting coding card, Invalid data set coding
+  card
+4309: Communication error, flow sensor
+4310: Fault, flow sensor, fault 1
+4311: Fault, flow sensor, fault 2
+4312: Fault, flue gas temperature sensor
+4313: The minimum air pressure for the ignition output is not achieved
+4314: 'Fan: not at standstill'
+4315: Communication interruption, outside temperature sensor RF
+4316: Flue gas temperature sensor incorrectly positioned
+4317: Int. fault boiler protection coding card
+4318: External outside temperature sensor fault (connection extension OTS1)
+4319: Flow sensor fault (FS1)
+4320: Error, solar circuit temperature values
+4321: Error, cylinder temperature values
+4322: Error, charging state calculation
+4323: Error, DHW circulation detected
+4324: Error, transfer detected
+4325: Error, actuator signals
+4326: Error, flow rate value
+4327: Error, immersion heater signal
+4328: Inversion detected
+4329: LAN card hardware faulty
+4330: LAN system error (error in the Estrella system)
+4331: Communication error, LAN module (DHCP server not responding)
+4332: Ethernet cable missing
+4333: Communication error LAN module (LAN broker connection error)
+4334: 'LAN update error: Error during recovery'
+4335: Cylinder,Comfort,Primary sensor lead break.
+4336: Flue gas temperature sensor plugged in
+4337: Modbus gateway communication error
+4338: Vitovent fault
+4339: 'Vitosolic: Short circuit, collector return'
+4340: No response from DHCP server
+4341: LAN Ethernet line not connected
+4342: LAN broker connection error
+4343: AGU CO alarm
+4344: AGU CO sensor fault
+4345: AGU error, fan communication
+4346: AGU error, air mass
+4347: AGU error, fan overcurrent
+4348: Gas pressure switch on standby with demand
+4349: Mains voltage < min. BetrSpg. in PON and stand
+4350: DW excess temperature on standby with demand
+4351: RMAE feedback is missing during pre-purge with demand
+4352: Klixon digital input defective, ground fault
+4353: Connection extension digital input defective, ground fault
+4354: Gas pressure switch digital input defective, ground fault
+4355: Flow limiter digital input defective, ground fault
+4356: No flame formation – gas pressure absent/low
+4357: No flame formation – ignition spark absent
+4358: No flame formation – lo electrode inoperative
+4359: Reference value signal balance
+4360: CO limit for internal hygiene detection exceeded
+4361: Error calibration abort criterion
+4362: SCOT loss of flame during calibration
+4363: Fault in process control
+4364: Heat pump operation not possible. Heating system remains in operation.
+4365: Heating system remains in operation. Notify heating contractor
+4366: Heat pump operation not possible. Heating system remains in operation
+4367: Evaporator inlet sensor faulty
+4368: Heat exchanger sensor faulty
+4369: Sorber outlet sensor faulty.
+4370: Process flow sensor faulty
+4371: Process return sensor faulty
+4372: Incompatible coding card, coding card parameter setting, invalid coding card
+  data set
+4769: '20: Boiler sensor 1'
+4795: '30: Flow sensor 1'
+4796: '32: Flow sensor 2'
+4797: '40: Return sensor 1'
+4798: '50: DHW sensor 1'
+4799: '60: Room sensor 1'
+4801: '65: Room sensor 2'
+4802: '68: Room sensor 3'
+4803: '70: Buffer sensor 1'
+4804: '71: Buffer sensor 2'
+4805: '72: Buffer sensor 3'
+4806: '83: BSB short circuit'
+4807: '84: BSB address conflict'
+4808: '85: BSB wireless communication'
+4809: '91: Data loss in EEPROM'
+4810: '92: Device electronics error'
+4811: '95: Time invalid'
+4812: '96: Minor SW error'
+4813: '97: SW or HW error'
+4814: '98: Extension module 1'
+4815: '99: Extension module 2'
+4816: '102: Clock without power reserve'
+4817: '105: Maintenance message'
+4818: '121: Flow temperature HC1'
+4819: '122: Flow temperature HC2'
+4820: '127: Legionella temp'
+4821: '157: Boiler flow thermost.'
+4822: '158: Condensate'
+4823: '164: Flow pressure switch, heating circuit'
+4824: '187: Configuration output'
+4825: '217: Sensor error'
+4826: '253: Cause of fault unclear'
+4827: '254: Unknown fault code'
+4828: Communication error, PR
+4829: Communication error, fuel cell
+4830: Fault, fuel cell
+4831: Short circuit, sensor tHR
+4832: Lead break, sensor tHR
+4833: Short circuit, sensor tSpBr1
+4834: Lead break, sensor tSpBr1
+4835: Short circuit, sensor tSpBr2
+4836: Lead break, sensor tSpBr2
+4837: Flue gas temp. exceeds limit
+4928: Current fault
+4929: Heating circuit pump A1
+4942: Pump HC2
+4948: BURNER
+5047: Automatic ignition
+5057: Party mode
+5074: Shut-off gate valve
+5075: Discharge
+5076: Feed screw conveyor
+5077: Reverse feed screw conveyor
+5078: Screw conveyor
+5080: Close boiler valve
+5081: Open boiler valve
+5085: Close buffer valve
+5086: Open buffer valve
+5089: CENTRAL FAULT
+5090: Vacuum module
+5093: Heat exchanger cleaning
+5094: Rotary lock valve
+5095: Additional boiler
+5841: Bathroom switch
+5843: Ventilation program
+5850: Electric preheater bank
+6112: Available
+6114: Medium
+6453: Cylinder priority
+6470: Room control
+6953: Output 1 AM1
+6954: Output 2 AM1
+6981: Output 20
+6982: Output 29
+6985: CENTRAL FAULT MESSAGE
+6986: Cylinder primary pump
+6987: DHW circulation pump
+7134: INTERNAL PUMP
+7268: Target temperature control
+8533: External blocking
+8966: STBY
+8967: Cool
+8968: FAN
+8969: IDLE
+8970: INSTALLATION
+10041: HEATING CIRCUIT PUMP M2
+10042: Heating circuit pump M3
+10119: Output 52 OPEN
+10120: OUTPUT 52 CLOSED
+10121: Burner stage 2
+10122: BURNER STAGE 1
+10157: Boiler pump
+10255: Solar
+10297: Service
+10380: Heating circuit pump
+11041: Return control
+11237: Distribution pump
+11306: Reset control unit
+11312: Time from LON
+11545: Programming unit
+12724: Return temperature raising pump
+13809: AIR DAMPER DRIVE secondary AIR OPEN
+13810: Air damper drive primary air OPEN
+13813: AIR DAMPER DRIVE primary AIR CLOSED
+13819: Grate cleaning
+13820: Ignition
+14793: '1'
+14794: '2'
+14795: '3'
+14796: '4'
+14797: '5'
+14798: '6'
+14799: '7'
+14800: '8'
+14801: '9'
+14802: '10'
+14803: '11'
+14804: '12'
+14805: '13'
+14806: '14'
+14807: '15'
+14808: '16'
+14809: '17'
+14810: '18'
+14811: '19'
+14812: '20'
+14813: '21'
+14814: '22'
+14815: '23'
+14816: '24'
+14817: '25'
+14818: '26'
+14819: '27'
+14820: '28'
+14821: '29'
+14822: '30'
+14823: '31'
+15000: Buffer cylinder available
+15478: Intensive operation
+15480: Standard operation
+15648: Short
+16121: Active cooling
+16325: OTS
+16623: DHW heating
+16657: Feed pump
+16941: Cylinder heating
+17826: Cooling
+17827: Ventilation
+17828: Photovoltaics
+17832: Solar module SM1
+17964: Buffer
+17981: Cylinder
+18103: Screed function
+18257: LAN module
+18403: Interlock
+18434: Disabled
+18435: ALL PASSIVE
+18436: Pump HC1 external
+18437: Mixer OPEN HC1 external
+18438: Mixer CLOSED HC1 external
+18439: Pump HC2 external
+18440: Mixer OPEN HC2 external
+18441: Mixer CLOSED HC2 external
+18442: Relay external CE
+18443: Enable 2nd HS
+18444: Mixer OPEN HC1
+18445: Mixer CLOSED HC1
+18446: Mixer OPEN HC2
+18447: Mixer CLOSED HC2
+18448: Short circuit
+18449: Not installed
+18450: Not assigned
+18451: Individual
+18452: Autom. acc. to heating periods
+18509: Combi boiler
+18510: Combi boiler with comfort sensor
+18511: Storage combi boiler 80l
+18512: Storage combi boiler 260l
+18513: Only DHW
+18514: Heating + DHW
+18515: CONSTANT_REDUCED
+18516: CONSTANT_STANDARD
+18517: STANDARD_REDUCED
+18518: STANDARD_STANDBY
+18519: CONSTANT_STANDBY
+18520: Single stage
+18521: Two-stage
+18522: Modulating
+18523: FF
+18524: Responded
+18529: Fault d6
+18530: Fault d7
+18531: Fault d8
+18532: 10 to 100 °C
+18533: 30 to 120 °C
+18534: invalid
+18535: Night contact HCP A1/M1
+18536: Night contact HCP M2
+18537: Night contact HCP M3
+18538: Flue gas fan 100 %
+18539: Heating 1, pump
+18540: Heating 1, open valve
+18541: Heating 1, close valve
+18542: Flue gas fan 50 %
+18543: Heating 2, pump
+18544: Heating 2, open valve
+18545: Heating 2, close valve
+18546: Heating 3, pump
+18547: Heating 3, open valve
+18548: Heating 3, close valve
+18549: Heating 4, pump
+18550: Heating 4, open valve
+18551: Heating 4, close valve
+18552: DHW pump
+18553: Open DHW valve
+18554: Close DHW valve
+18555: Open primary air damper
+18556: Solar pump
+18557: Open solar valve
+18558: Close solar valve
+18559: Close primary air damper
+18560: Transfer pump
+18561: Open secondary air damper
+18562: Close secondary air damper
+18563: Central fault, contact
+18564: Infeed grate
+18565: Reverse infeed grate
+18566: Reverse ash removal
+18567: Pellet changeover unit
+18568: Reverse pellet changeover unit
+18573: Heating constantly ON
+18574: Heating automatic
+18575: Heating and balancing automatic
+18576: Manual charging
+18577: Vacuum module and discharge screw conveyor
+18578: Vacuum module and external charging
+18579: Vacuum module and changeover unit
+18580: Discharge screw conveyor
+18581: Screw conveyor and discharge screw conveyor
+18582: Screw conveyor and external charging
+18583: On the boiler
+18584: On the mixer module
+18585: Reduced mode
+18586: Frost protection active
+18587: Summer eco function enabled
+18588: Holiday program
+18589: Heat dissipation
+18590: Boiler priority enabled
+18591: Mixer economy function
+18592: Without cylinder priority control
+18593: Cylinder priority heating circuit reduced mode
+18594: Boiler, zero air dampers
+18595: Boiler, flush comb chamber
+18596: Boiler, fill dosing hopper
+18597: Boiler, fill screw conveyor
+18598: Boiler, charge combustion chamber
+18599: Ignite boiler
+18600: Ignite boiler, firebed
+18601: Ignite boiler, recharge
+18602: Boiler, load operation
+18603: Boiler, run-on
+18604: Boiler, standby
+18605: Boiler, run until empty
+18606: Boiler, feed tube warm
+18607: Boiler, grate cleaning
+18608: Boiler, day hopper empty
+18609: Boiler, automatically calibrate probe
+18610: Boiler, ash box full
+18611: Boiler, test mode
+18612: Residual heat utilisation
+18613: Close valves
+18614: Buffer heat draw
+18615: Additional boiler enable
+18616: Boiler recharging allowed
+18617: Recharge boiler with wood
+18618: Boiler off
+18619: Not defined
+18620: Zero air dampers
+18621: Purge combustion chamber
+18622: Fill hopper
+18623: Fill screw conveyor
+18624: Fill combustion chamber
+18625: Ignition charge time
+18626: Monitor ignition process
+18627: Ignition recharge
+18628: Load run-on
+18629: Recharging allowed
+18630: Test mode
+18631: Cleaning
+18632: Automatically calibrate probe
+18633: Oil/gas-fired operation
+18634: Ignite firebed
+18635: Run screw conveyor until empty
+18636: VL250S
+18637: VL200S
+18638: VL300C
+18639: VL300H
+18640: VL150S
+18641: VL300S
+18642: VL300C 8kW
+18643: VL300C 12kW
+18644: VL300C 18kW
+18645: VL300C 24kW
+18646: VL300C 32kW
+18647: VL300C 40kW
+18648: VL300C 48kW
+18649: VL300H 50kW
+18650: VL300H 60kW
+18651: VL300H 80kW
+18652: VL300H 99kW
+18653: VL300H 101kW
+18654: VL300H 120kW
+18655: VL300H 150kW
+18656: VL300H 220kW
+18657: VL150S 17kW
+18658: VL150S 23kW
+18659: VL150S 30kW
+18660: VL150S 34kW
+18661: VL150S 45kW
+18662: VL250S 3
+18663: VL250S 5
+18664: VL250S 6
+18665: VL250S 10
+18666: VL200S 20kW
+18667: VL200S 30kW
+18668: VL200S 40kW
+18669: VL200S 50kW
+18670: electric
+18671: thermal
+18672: 10°C - ON
+18673: 11°C - ON
+18674: 12°C - ON
+18675: 13°C - ON
+18676: 14°C - ON
+18677: 15°C - ON
+18678: 16°C - ON
+18679: 17°C - ON
+18680: 18°C - ON
+18681: 19°C - ON
+18682: 20°C - ON
+18683: 21°C - ON
+18684: 22°C - ON
+18685: 23°C - ON
+18686: 24°C - ON
+18687: 25°C - ON
+18688: 26°C - ON
+18689: 27°C - ON
+18690: 28°C - ON
+18691: 29°C - ON
+18692: 3°C - ON
+18693: 30°C - ON
+18694: 31°C - ON
+18695: 32°C - ON
+18696: 33°C - ON
+18697: 34°C - ON
+18698: 35°C - ON
+18699: 36°C - ON
+18700: 37°C - ON
+18701: "°C - ON"
+18702: 6°C - ON
+18703: 7°C - ON
+18704: 8°C - ON
+18705: 9°C - ON
+18706: Automatic
+18707: On the external solar module
+18708: Switched OFF
+18709: Switched ON
+18710: Too cold
+18711: Superheating
+18712: DHW max.
+18713: Waiting
+18714: Flushing
+18715: Buffer overheating
+18716: LSM
+18717: NTK
+18718: 0-20 mA
+18719: Wideband probe with print
+18720: Time program lockout
+18721: System too cold
+18722: Is heating up
+18723: Temperature reached
+18724: Dissipate excess heat
+18725: Central fault
+18726: Loading pump
+18727: No function
+18728: BV time-controlled
+18729: BV switching
+18730: BV constant boiler water temp
+18731: BV constant
+18732: Central fault message
+18733: Cylinder loading pump
+18734: Internal pump
+18735: HCP (Heating circuit pump, direct heating circuit)
+18736: CLP (cylinder loading pump)
+18737: NG
+18738: LPG
+18739: LA
+18740: HA
+18741: Flue gas damper
+18742: '40'
+18743: '41'
+18744: '42'
+18745: '43'
+18746: '44'
+18747: 'Vitotronic 100 HC1A (CU-ID: C3)'
+18748: 'Vitotronic 100 HC2A (CU-ID: C4)'
+18749: 'Vitotronic 200 HO1A (CU-ID: C5)'
+18750: 'Vitotronic 100 HC1A (CU-ID: C6)'
+18751: 'Vitotronic 100 HC2A (CU-ID: C7)'
+18752: 'Vitotronic 200 HO1A (CU-ID: C8)'
+18753: 'Vitotronic 100 HC1A (CU-ID: C9)'
+18754: 'Vitotronic 100 HC2A (CU-ID: CA)'
+18755: 'Vitotronic 200 HO1A (CU-ID: CB)'
+18756: 'Vitovalor 300-P (CU-ID: E3)'
+18757: 'Vitotronic 100 KC2B/KC4B (CU-ID: 9D)'
+18758: 'Vitotronic 200 KO1B/KO2B (CU-ID: 9F)'
+18759: 'Vitotronic 100 HC1 (CU-ID: C0)'
+18760: 'Vitotronic 100 HC2 (CU-ID: C1)'
+18761: 'Vitotronic 200 HO1 (CU-ID: C2)'
+18762: 'Vitotronic 100 HC1 (CU-ID: C3)'
+18763: 'Vitotronic 100 HC2 (CU-ID: C4)'
+18764: 'Vitotronic 200 HO1 (CU-ID: C5)'
+18765: 'Vitotronic 100 HC1 (CU-ID: C6)'
+18766: 'Vitotronic 100 HC2 (CU-ID: C7)'
+18767: 'Vitotronic 200 HO1 (CU-ID: C8)'
+18768: 'Vitotronic 100 HC1 (CU-ID: C9)'
+18769: 'Vitotronic 100 HC2 (CU-ID: CA)'
+18770: 'Vitoladens with Vitotronic 200 HC1A / Vitotronic 200 KW6 (CU-ID: C6)'
+18771: 'Vitoladens with Vitotronic 200 HC2A / Vitotronic 200 KW6 (CU-ID: C7)'
+18772: 'Vitoladens with Vitotronic 200 HO1A / Vitotronic 200 KW6 (CU-ID: C8)'
+18773: Pump direct heating circuit
+18775: Blocked
+18776: Control mode
+18796: Enabled
+18812: Parallel
+18816: Never
+18820: No fault
+18851: Not enabled
+18897: Constant reduced room temp
+18899: System boiler
+18900: Combi boiler without comfort function
+18901: Combi boiler with comfort function
+18902: Storage combi boiler (primary store 80l)
+18903: Storage combi boiler with solar (primary store 260l)
+18904: Single stage burner
+18905: Two-stage burner
+18906: Modulating burner
+18907: Control function
+18908: Viessmann diverter valve
+18909: Wilo diverter valve
+18910: Grundfos diverter valve
+18911: Block third party devices
+18912: Operating mode changeover
+18913: External set value demand
+18914: External blocking and fault message input
+18915: Fault message input
+18916: Short-term operation DHW circulation pump
+18947: 'SCOT with Vitotronic 100 HC1A (CU-ID: C9)'
+18948: Without connection extension AM1
+18949: With connection extension AM1
+18950: Without connection extension EA1
+18951: With connection extension EA1
+18952: 'Vitodens with Vitotronic 100 HC1 (CU-ID: C0)'
+18953: 'Vitodens with Vitotronic 100 HC2 (CU-ID: C1)'
+18954: 'Vitodens with Vitotronic 200 HO1 (CU-ID: C2)'
+18955: 'Vitopend with Vitotronic 100 HC1 (CU-ID: C3)'
+18956: 'Vitopend with Vitotronic 100 HC2 (CU-ID: C4)'
+18957: 'Vitopend with Vitotronic 200 HO1 (CU-ID: C5)'
+18958: 'Vitoplus with Vitotronic 100 HC1 (CU-ID: C6)'
+18959: 'Vitoplus with Vitotronic 100 HC2 (CU-ID: C7)'
+18960: 'Vitoplus with Vitotronic 200 HO1 (CU-ID: C8)'
+18961: 'SCOT with Vitotronic 100 HC1 (CU-ID: C9)'
+18962: 'SCOT with Vitotronic 100 HC2 (CU-ID: CA)'
+18963: Pump in control mode
+18964: Force pump shutdown
+18965: Force pump start
+18968: Invalid
+18969: Vitotronic 100 KC2
+18970: Vitotronic 150 KB1
+18971: Vitotronic 200 KW1
+18972: Vitotronic 200 KW2
+18973: Vitotronic 300 KW3
+18974: Direct circuit
+18975: Mixer circuit
+18976: Heating circuit pump OFF
+18977: Heating circuit pump ON
+18978: Heating circuit pump ON reduced
+18979: Constant control
+18980: Heat demand-dependent control
+18981: Weather-compensated control
+18982: Screed program enabled
+18983: Heating circuit not available
+18984: FT set default via LON
+18985: Control subject to heat demand
+18986: Quick heat-up enabled
+18987: Quick setback enabled
+18988: Enable OFF
+18989: Enable acc. to DHW switching times
+18990: Enable through party/external changeover
+18991: Pressure below limit
+18992: Maximum pressure exceeded
+18993: HI910 (HC1B)
+18995: HI920 (HO1B)
+18996: HI931 (HO2B Touch)
+18997: not defined
+18998: Vitodens 300-W
+18999: Vitodens 333-F
+19000: Vitodens 343-F
+19001: Vitosolar 300-F
+19002: Vitodens 200-W PWT
+19003: Function clock thermostat/room thermostat
+19004: Function external demand
+19005: Function external blocking
+19006: Connection is being established
+19007: Connected
+19008: Update running
+19009: No connection
+19010: Restoring
+19011: Emergency op
+19012: Frost protection
+19013: Continuous operation
+19014: Screed drying
+19015: Emergency shutdown
+19016: Basic ventilation
+19017: Reduced ventilation
+19018: Nominal ventilation
+19019: Intensive ventilation
+19020: Operating program
+19021: Eco
+19022: Emergency functions not permissible
+19023: Emergency functions can be activated
+19024: No DHW cylinder
+19025: One standard cylinder
+19026: Vitocell 140-E SEIA 600l
+19027: Vitocell 140-E SEIA 750l
+19028: Vitocell 140-E SEIA 950l
+19029: Vitocell 160-E SESA 750l
+19030: Vitocell 160-E SESA 950l
+19031: Vitocell 340-M SVKA 750l
+19032: Vitocell 340-M SVKA 950l
+19033: Vitocell 360-M SVSA 750l
+19034: Vitocell 360-M SVSA 950l
+19035: CVUC
+19036: Dual mode cylinder
+19037: CVUC system cylinder
+19038: Vitosolar
+19039: Vitocell 100-W 100B CVB 300l
+19040: Vitocell 100-W 100B CVB 400l
+19041: Vitocell 100-W 100B CVB 500l
+19042: Vitocell 140-E SEIA 400l
+19043: Closed
+19044: No heating coil
+19045: Hydraulic heating coil
+19046: Geothermal heat exchanger
+19047: RFU
+19048: Electric heating coil 2
+19049: Hydraulic heating coil 2
+19050: Geothermal heat exchanger 2
+19051: Electric 2, hydraulic 2 & geo 2
+19052: Electric, electric 2, hydraulic 2 & geo 2
+19053: Hydraulic, geo & electric 2
+19054: Electric, hydraulic, geo & electric 2
+19055: Electric, geo, electric 2 & hydraulic 2
+19056: Electric, hydraulic & geo
+19057: Electric, hydraulic, electric 2 & geo 2
+19058: Electric, hydraulic 2 & geo 2
+19071: Regulate to return with return integral
+19072: Regulate to return with PID controller
+19073: Regulate to flow with flow integral
+19074: 3. Regulate to flow with PID controller
+19075: Flow temperature default on AVI flow temperature controller
+19076: Multi boiler
+19077: Boiler without DHW
+19078: Boiler with DHW
+19079: A1
+19080: A1 + DHW
+19081: M2
+19082: M2 + DHW
+19083: A1 + M2
+19084: A1 + M2 + DHW
+19085: M1
+19086: M1 + DHW
+19087: M1 + M2 + M3 + DHW
+19088: M1 + M2
+19089: M1 + M2 + DHW
+19090: M2 + M3
+19091: M2 + M3 + DHW
+19092: M1 + M2 + M3
+19093: BC
+19094: BC + DHW
+19095: BC + M2
+19096: BC + M2 + DHW
+19097: BC + M2 + M3 + DHW
+19098: BC + M2 + M3
+19099: Without heating circuit/cylinder (multi boiler system)
+19100: A1 + M2 + M3 + DHW
+19101: A1 + M2 + M3
+19102: Single boiler
+19103: Multi boiler VI cascade
+19104: Multi boiler LON
+19105: Contact control
+19106: Burner via CT - HC pump ON
+19107: Burner and HC pump via CT
+19108: External burner ON
+19109: Gas operation
+19110: Oil operation
+19111: ERB 50
+19112: ERB 80
+19113: Not enabled (BV time-controlled)
+19114: Not enabled (BV switching)
+19115: Not enabled (BV constant with boiler water temp influence)
+19116: Not enabled (BV constant)
+19117: system mixers constantly over temperature (only for 100M)
+19118: Without ThermControl
+19119: Effect on MC
+19120: Effect on BV
+19121: Effect on mixer circuits
+19122: Reserved
+19123: CAN burner control unit
+19124: No pump module
+19125: With pump module
+19126: Natural gas
+19127: Standard status
+19128: Maintenance
+19129: Without
+19130: With connection extension OTS1
+19131: OTS1 or wireless OTS via control unit not used
+19132: With wireless OTS via control unit
+19133: For demand
+19134: Constant
+19135: Without wireless OTS
+19136: With wireless OTS
+19137: Wireless OTS not used
+19138: Filling
+19139: Without wireless base station
+19140: With wireless base station
+19141: Multi stage
+19142: Variable speed
+19143: speed-controlled with flow rate
+19144: Without fault message module 1
+19145: With fault message module 1
+19146: Neutralising system / flue gas heat exchanger
+19147: Distribution pump (master and cascade only)
+19148: Without fault message module 2
+19149: With fault message module 2
+19150: Without connection extension 1
+19151: With connection extension 1
+19152: All actuators in control mode
+19153: All pumps OFF all mixers CLOSED
+19154: DHWCP (DHW circulation pump)
+19155: CPP (cylinder primary pump)
+19156: Boiler 1
+19157: Boiler 2
+19158: Boiler 3
+19159: Boiler 4
+19160: Boiler 5
+19161: Boiler 6
+19162: Boiler 7
+19163: Boiler 8
+19164: Parallel with FTS
+19165: Series
+19166: Series with FTS
+19167: Sequential
+19168: Gross calorific value
+19169: Net calorific value 1
+19170: Net calorific value 2
+19171: Constant ON
+19172: Temperature demand
+19173: Performance demand
+19174: Temperature demand 10 ... 100 °C
+19175: Temperature demand 30 ... 120°
+19176: Idle
+19178: EEPROM programming
+19179: Shutdown
+19180: Bad
+19181: Primary P HE set
+19182: Switching contact TS start-up control
+19183: Flue gas HE pump
+19184: Shunt pump
+19185: Boiler circuit pump
+19186: Boiler circuit pump BV
+19187: Mixer HE set
+19188: Mixer first HC
+19189: BV or return
+19190: Butterfly valve (delivered condition for 100M)
+19191: Return control (delivered condition for 300M and cascade)
+19192: Primary circuit mixer for control unit, heat exchanger set (300M, cascade,
+  HC3, (delivered condition for 333 MW2)
+19193: Mixer for mixer heating circuit 1 (only for HC1 and HC3, in delivered condition)
+19194: OFAN max
+19195: Stop rise
+19196: HtgDown 1
+19197: HtgDown 2
+19198: Stop compressor
+19202: n.u.
+19204: De-ice
+19205: Compressor overcurrent
+19206: Heat sink overheat
+19207: Compressor overheat
+19208: Internal indirect coil defrost
+19209: Internal/external coil
+19210: No water flow
+19213: Decentralised return control
+19214: Central return control
+19215: Fault present
+19216: Initialisation
+19217: Constant with clock
+19218: Weather-compensated
+19219: Very low
+19220: Low
+19221: High
+19222: Ext. heating circuit pump
+19223: Solar module SM1 with DT2
+19224: Heat exchanger set
+19225: Adaptive
+19226: 2-sensor
+19227: HE set
+19228: 5-sensor control
+19229: Range 10-60°C
+19230: 1Range 10-maximum
+19231: 1Range 10-95°C
+19232: Local cylinder
+19233: Central cylinder
+19234: 2½ K below set
+19235: K below set
+19236: Upstream of low loss header
+19237: Downstream of low loss header
+19238: Subject to boiler water temp
+19239: Not subject to boiler water temp
+19240: Every 10 days
+19241: Every 11 days
+19242: Every 12 days
+19243: Every 13 days
+19244: Every 14 days
+19245: 2 times per day
+19246: Every 2 days
+19247: Every 3 days
+19248: Every 4 days
+19249: Every 5 days
+19250: Every 6 days
+19251: Every 7 days
+19252: Every 8 days
+19253: Every 9 days
+19254: AC undervoltage
+19255: DC undervoltage
+19256: DC excess voltage
+19257: IPM error
+19258: OFAN bad
+19259: COMP lock
+19260: acc. to time switch
+19261: Viessmann valve
+19262: Wilo valve
+19263: Grundfos valve
+19264: PU + RC1
+19265: PU + RC2
+19266: PU + RC3
+19267: PU + RC1+RC2+RC3
+19268: RC1
+19269: RC2
+19270: RC3
+19271: Relay output
+19272: 0 Time switch
+19273: 1 per hour
+19274: 2 per hour
+19275: 3 per hour
+19276: 4 per hour
+19277: 5 per hour
+19278: 6 per hour
+19279: LON module
+19280: Cascade module
+19281: HV BUS module
+19282: No manager
+19283: Central oper. of HC1
+19284: Central oper. of HC2
+19285: Central oper. of HC3
+19286: Do not send
+19287: Reset LON module
+19288: Without flue gas cascade
+19289: With flue gas cascade
+19290: Apartment building
+19291: Detached house
+19292: WILO Stratos
+19293: GRUNDFOS Magna 3
+19294: Clock without summer time
+19295: Clock with summer time
+19296: Radio clock
+19297: Do not accept
+19298: Celsius
+19299: Fahrenheit
+19300: Via KM BUS
+19301: Via LON
+19302: No subscriber ID
+19303: Automatic subscriber ID
+19304: Everything operational
+19305: Everything blocked
+19306: Only standard display operational
+19307: A1/M1
+19308: A1/M1 + M2
+19309: No effect
+19310: Boiler circuit
+19311: Mixer circuit M2
+19312: Boiler circuit + M2
+19313: Mixer circuit M3
+19314: Boiler circuit + M3
+19315: Boiler circuit + M2 + M3
+19316: M3
+19317: A1/M1 + M3
+19318: A1/M1 + M2 + M3
+19319: Vitotronic 100 GC1
+19320: Vitotronic 200 GW1
+19321: Vitotronic 300 GW2
+19322: Vitotronic 050 HK1W
+19323: Vitotronic 050 HK3W
+19324: Vitotronic 050 HK1S
+19325: Vitotronic 050 HK1M
+19326: Vitotronic 333 MW1
+19327: Vitotronic 333 MW1S
+19328: Vitotronic 333 MW2
+19331: 'Vitotronic 100 GC1B (CU-ID: A1)'
+19332: Vitotronic 100 GC1C, GC4C
+19333: 'Vitotronic 300 GW2B/GW4B (CU-ID: A6)'
+19334: '0xA7: Vitotronic 100 CC1x'
+19335: '0xA9: Vitotronic 200 CO1x'
+19336: Vitotronic 050 HK3S
+19337: 'Vitotronic 200 HK1B/HK3B (CU-ID: AE)'
+19338: 'Vitotronic 300K MW1B (CU-ID: BB)'
+19339: 'Vitotronic 300K MW2B (CU-ID: BC)'
+19340: Vitotronic 300-K MW3B
+19341: Vitotronic 300 GW6B
+19342: '0xBF: Cascade Vitotronic 300 CM1x'
+19343: Does not have an effect
+19344: Has an effect
+19345: With control module V
+19346: With plug-in adaptor
+19347: Without Vitocom 100
+19348: With Vitocom 100
+19349: Outside temperature sensor not available
+19350: Outside temperature sensor available
+19351: From sensor
+19352: Accept from LON
+19353: Send to LON
+19354: CLOSED M1
+19355: Ext. bl. and CLOSED M2
+19356: Ext. bl. and CLOSED M1+M2
+19357: Ext. bl. and CLOSED M3
+19358: Ext. bl. and CLOSED M1+M3
+19359: Ext. bl. and CLOSED M2+M3
+19360: Ext. bl. and CLOSED M1+M2+M3
+19361: CLOSED M2
+19362: CLOSED M1+M2
+19363: CLOSED M3
+19364: CLOSED M1+M3
+19365: CLOSED M2+M3
+19366: CLOSED M1+M2+M3
+19367: Ext. bl. and CLOSED M1
+19368: OPEN M1
+19369: OPEN M2
+19370: OPEN M1+M2
+19371: OPEN M3
+19372: OPEN M1+M3
+19373: OPEN M2+M3
+19374: OPEN M1+M2+M3
+19375: No monitoring
+19376: '32'
+19377: '33'
+19378: '34'
+19379: '35'
+19380: '36'
+19381: '37'
+19382: '38'
+19383: '39'
+19384: '45'
+19385: '46'
+19386: '47'
+19387: '48'
+19388: '49'
+19389: '50'
+19390: '51'
+19391: '52'
+19392: '53'
+19393: '54'
+19394: '55'
+19395: '56'
+19396: '57'
+19397: '58'
+19398: '59'
+19399: '60'
+19400: Vitotrol 200
+19401: Vitotrol 300
+19402: Vitotrol 200 RF
+19403: Vitotrol 300 RF
+19404: With Vitotrol 200
+19405: With Vitotrol 300
+19406: No cylinder priority
+19407: Priority for mixer
+19408: Modulating priority
+19409: Without HPL function
+19410: OT > set rtn + 5 K
+19411: OT > set rtn - 4 K
+19412: OT > set rtn - 5 K
+19413: OT > set rtn - 6 K
+19414: OT > set rtn - 7 K
+19415: OT > set rtn - 8 K
+19416: OT > set rtn - 9 K
+19417: OT > set rtn + 4 K
+19418: OT > set rtn + 3 K
+19419: OT > set rtn + 2 K
+19420: OT > set rtn + 1 K
+19421: OT > set rtn
+19422: OT > set rtn - 1 K
+19423: OT > set rtn - 2 K
+19424: OT > set rtn - 3 K
+19425: On/off upon demand
+19426: On upon demand, off after delay (code 0xA8)
+19427: Always on
+19428: HC sets demand for int. pump
+19429: Non-critical
+19430: Always
+19431: WC - WC
+19432: WC - RTD
+19433: RTD - WC
+19434: RTD - RTD
+19435: ON up to 2 h 30 min
+19436: ON up to 15 h 50 min
+19443: enabled
+19480: ON maximum time brought forward 1 hour
+19481: ON maximum time brought forward 2 hours
+19482: Without learning
+19483: With learning
+19484: Parameter set 0
+19485: Parameter set 1
+19486: Parameter set 2
+19487: Parameter set 3
+19488: No heat-up phase
+19489: Heat-up phase
+19490: Rotational direction standard
+19491: Rotational direction inverse
+19492: Standby reduced
+19493: Range 3 to 23 °C
+19494: Range 10 to 30 °C
+19495: Range 17 to 37 °C
+19496: Minimum
+19497: Minimum acc. to code E7
+19498: Reduced acc. to code E9
+19499: Diagram 1
+19500: Default
+19501: Diagram 2
+19502: Diagram 3
+19503: Diagram 4
+19504: Diagram 5
+19505: Unknown device
+19506: Wall mounted appliance
+19507: Wall mounted appliance WGB 2010
+19508: Wall mounted appliance WGB 2012
+19509: Oil condensing boiler
+19510: Oil condensing boiler 2010
+19511: ERB50
+19512: ERB80
+19528: Fault BWTS - CTS ok
+19529: Fault BWTS - no CTS
+19530: BWTS ok - no CTS
+19531: 'Low loss header: Internal pump runs on demand'
+19532: 'Low loss header: Internal pump only runs on demand when the burner is running
+  (with run-on time)'
+19533: 'Buffer cylinder: Internal pump only runs on demand when the burner is running'
+19534: Temp_okay
+19535: Temp_sensor short circuit
+19536: Temp_sensor lead break
+19537: Temp_reference fault
+19538: Sensor_reference below min
+19539: Sensor_reference above max
+19540: SENSOR_NOT_AVAILABLE
+19541: Czech
+19542: Russian
+19543: Slovenian
+19544: Croatian
+19545: Rumanian
+19546: Hungarian
+19547: French
+19548: Spanish
+19549: Italian
+19550: Dutch
+19551: Danish
+19552: Swedish
+19553: Turkish
+19554: Polish
+19555: Current_outside temperature
+19556: Current_FT_actual temperature
+19557: Current_date
+19558: Current_boiler water temp_actual temperature
+19559: Current_DHW_actual temperature
+19560: Current_DHW_actual temperature_1
+19561: Current_DHW_actual temperature_2
+19562: Current_return_actual temperature
+19563: Current_RT_actual temperature
+19564: Current_actual flue gas temperature
+19565: Current_time
+19566: No use
+19567: Heating circuit mixer M1
+19568: Control diverter valve in use
+19569: Control shunt valve in use
+19570: Butterfly valve in a multi boiler system
+19571: Heating circuit mixer M2
+19572: Solar controller
+19573: No special use
+19574: Boiler water temperature sensor in 2nd heat source
+19575: DHW heating enabled
+19576: Central fault message output
+19577: Output contact soft starter boiler
+19578: No reheating by 2nd heat source
+19579: Reheating by 2nd heat source
+19580: Vacuum system
+19581: Screw conveyor system
+19582: Pellet supply only from intermediate container
+19583: Vacuum system from fabric silo
+19584: Screw conveyor system from fabric silo
+19585: Vacuum system mole
+19586: 0°
+19587: 20°
+19588: 40°
+19589: Subject to boiler enable
+19590: Subject to actual boiler water temperature
+19591: Subject to actual buffer temperature
+19592: Combi cylinder
+19593: Without stratification mode
+19594: With stratification mode
+19595: Cylinder not available
+19596: Standard cylinder control unit
+19597: Adaptive cylinder control unit
+19598: Range 10-60 °C
+19599: Range 10-90 °C
+19600: Temperature-dependent
+19601: Viessmann heat transfer medium
+19602: Without LON module
+19603: With LON module
+19604: Initialisation counter
+19605: Reset control unit without delivered condition
+19606: Reset control unit with set delivered condition
+19607: Reset LON
+19608: Trigger service pin message
+19609: With KM BUS mixer circuit M1
+19610: Soft starter is not taken into account
+19611: Soft starter is taken into account during burner start
+19612: Soft starter is taken into account during burner operation
+19613: No reaction of consumers to force signal
+19614: Reaction of consumers to force signal
+19615: Remote control heating circuit 1 available
+19616: Remote control heating circuit 2 available
+19617: Remote control heating circuit 1 and 2 available
+19618: Constant WC
+19619: A1/M1 + DHW
+19620: A1/M1 + M2 + DHW
+19621: No buffer cylinder available
+19622: Internal
+19623: External
+19624: BV RETURN_CLOSED
+19625: BV RETURN_PREHEATING
+19626: BV RETURN_CONTROL_CLOSED
+19627: BV RETURN_CONTROL
+19628: BV RETURN_CONTROL_OPEN
+19629: BV RETURN_OPEN
+19630: BV RETURN_RUN-ON
+19631: 1 BV RETURN_CLOSED
+19632: 2 BV RETURN_PREHEATING
+19633: 3 BV RETURN_CONTROL_CLOSED
+19634: 4 BV RETURN_CONTROL
+19635: 5 BV RETURN_CONTROL_OPEN
+19636: 6 BV RETURN_OPEN
+19637: 7 BV RETURN_RUN-ON
+19638: Reference fault
+19639: SENSOR_REFERENCE ABOVE MAX
+19640: WWS frost protection
+19641: WWS set 1
+19642: WWS set 2
+19643: WWS external
+19644: Burner off
+19645: Burner Stage 1
+19646: Burner Stage 2
+19647: Burner Stage 1+2 on
+19648: Neutral
+19649: Pending
+19650: Opening
+19651: Validation
+19652: Closing
+19653: Lost connection
+19654: Ext. Flash error
+19655: Incorrect version
+19656: Invalid URL
+19657: File integrity
+19658: System fail
+19659: Download failed
+19660: Init
+19661: Initiate update
+19662: Downloading image
+19663: Rebooting gateway
+19664: Updated successfully
+19665: Any error occurred
+19666: Sensor fault
+19670: Temperature demand 30 ... 120 °C
+19671: Switching heating circuit pump A1/M1 to low speed (night contact)
+19672: Switching heating circuit pump M2 to low speed (night contact)
+19673: Switching heating circuit pump M3 to low speed (night contact)
+19674: 'Low loss header: Boiler circuit pump always runs on demand'
+19675: 'Low loss header: Boiler circuit pump only runs on demand when the burner is
+  running'
+19676: 'Low loss header: Boiler circuit pump runs on demand only if the burner is
+  running (application: buffer cylinder)'
+19677: Without extension DAP 1
+19678: With extension DAP 1
+19679: Without extension DAP 2
+19680: With extension DAP 2
+19681: Sensor OK
+19682: Sensor short circuit
+19683: Sensor lead break
+19684: Sensor reference fault
+19685: Sensor reference below min
+19686: Sensor reference above max
+19687: Sensor not available
+19688: FlowSwitch
+19689: FlowSensor
+19690: Initialisation (passive position)
+19691: Mixer open
+19692: Undefined (not available)
+19693: Central position
+19694: Wipe
+19695: Emergency position
+19696: Light
+19697: Heavy
+19698: Code predetermines function (display code)
+19699: DHW circulation pump (do not display code)
+19700: Without function (do not display code)
+19701: Use of boiler temperature sensor
+19702: Use of pump module sensor input 3
+19703: Use of buffer temperature sensor
+19704: Use of pump module sensor input 4
+19705: Output-controlled speed
+19706: Return loss header differential temperature control
+19707: Flow loss header differential temperature control
+19708: Buffer temperature control
+19709: Buffer temperature control with target temperature control
+19710: Multi-boiler system differential temperature control
+19711: No fault monitoring
+19712: Fault active on input “High”
+19713: Fault active on input “Low”
+19714: 12 kW
+19715: 18 kW
+19716: 24 kW
+19717: 32 kW
+19718: 40 kW
+19719: 48 kW
+19720: HC 1
+19721: HC 2
+19722: HC 3
+19723: 200RF
+19724: 300RF
+19736: CE INTERNAL RELAY K12
+19737: CE EXTERNAL HCP
+19738: CE EXTERN CPP
+19739: CE EXTERN DHWCP
+19740: CE EXTERNAL CENTRAL FAULT MESSAGE
+19741: BURNER MIN OUTPUT
+19742: BURNER MAX OUTPUT
+19743: VALVE HEATING
+19744: VALVE CENTRE
+19745: VALVE DHW
+19746: MIXER M2 OPEN
+19747: MIXER M2 CLOSED
+19748: Mixer M3 OPEN
+19749: Mixer M3 CLOSE
+19750: OUTPUT 52 NEUTRAL
+19751: CYLINDER PUMP
+19752: HC PUMP M2
+19753: MIXER OPEN M2
+19754: MIXER CLOSED M2
+19755: HC PUMP M3
+19756: MIXER OPEN M3
+19757: MIXER CLOSED M3
+19758: BURNER STAGE 2
+19759: BURNER MOD OPEN
+19760: BURNER MOD NEUTRAL
+19761: BURNER MOD CLOSED
+19762: HC PUMP BC1
+19763: HC PUMP A1-M1
+19764: DISABLED
+19765: BURNER STAGE 1 + 2
+19766: All relays OFF
+19767: Night contact HC2
+19768: Night contact HC3
+19769: Output 52 mod. OPEN
+19770: Output 52 mod. NEUTRAL
+19771: Output 52 mod. CLOSED
+19772: Output 1 solar module
+19773: Output 1 solar module min.
+19774: Output 1 solar module max.
+19775: Output 2 solar module ON
+19776: Output 1 EA1
+19777: HC pump HC1
+19778: Mixer HC1 OPEN
+19779: Mixer HC1 CLOSE
+19780: HC pump HC2
+19781: Mixer HC2 OPEN
+19782: Mixer HC2 CLOSE
+19783: HC pump HC3
+19784: Mixer HC3 OPEN
+19785: Mixer HC3 CLOSE
+19786: Mod. burner OPEN
+19787: Mod. burner NEUTRAL
+19788: Mod. burner CLOSE
+19789: Night contact HC1
+19790: CLEANING MOTOR
+19791: HEATING LAMBDA PROBE
+19794: FLUE GAS FAN 50%
+19795: FLUE GAS FAN 100%
+19796: IGNITION
+19797: Air damper drive secondary air CLOSED
+19798: DESLAGGING
+19799: blocked
+19800: released
+19801: disabled
+19802: Top up pellet store
+19803: Close ash door
+19804: Empty ash box
+19805: Please wait
+19806: Idle status
+19807: Heat-up
+19808: Cleaning during operation
+19809: Burnout phase
+19810: Cleaning with stop
+19811: 0D
+19812: 0E
+19813: 0F
+19814: No feedback
+19815: Feedback enabled
+19816: Door open
+19817: Door closed
+19818: Safety chain interrupted
+19819: Safety chain not interrupted
+19820: High limit safety cut-out did not respond
+19821: Pellets are in front of the sensor
+19822: No pellets are in front of the sensor
+19825: Speed control switched off
+19826: Wave pack control
+19827: PWM control
+19828: switched off
+19829: ON with heat transfer medium Viessmann
+19830: ON with heat transfer medium water
+19831: No extended control functions enabled
+19832: Auxiliary function
+19833: Second differential temperature control
+19834: Second differential temperature control and auxiliary function
+19835: Second differential temperature control for central heating backup
+19836: Thermostat
+19837: Thermostat and auxiliary function
+19838: Solar heating via ext. heat exchanger without additional sensor
+19839: Solar heating via ext. heat exchanger with additional sensor
+19840: Solar heating of two cylinders
+19841: Priority cylinder 1, No cyclical heating
+19842: Priority cylinder 1, Cyclical heating
+19843: Priority cylinder 2, No cyclical heating
+19844: Priority cylinder 2, Cyclical heating
+19845: Cyclical heating without priority
+19846: In use
+19853: Flow distributor
+19854: Direct consumer
+19855: Oil/gas gross calorific value
+19856: Oil/gas net calorific value
+19857: CHP unit
+19858: HP
+19859: Wood boiler
+19860: Subject to burner output
+19861: Optimisation for condensing technology
+19862: Starting on demand from VEE
+19863: Starting on demand from VEE after set flow cascade
+19864: Reserved for variable speed pump
+19865: Reserved for variable speed pump (do not adjust)
+19866: Deactivation of CHP unit when cancelling VEE enabling
+19867: Deactivation of CHP unit as soon as the lower buffer temperature = set flow
+  temperature
+19868: Deactivation of CHP unit as soon as the lower buffer temperature = maximum
+  return temperature
+19869: Variable speed pump
+19870: '255'
+19871: '61'
+19872: '62'
+19873: '79'
+19874: '80'
+19875: '81'
+19876: '82'
+19877: No blocking
+19878: Only party
+19879: SENSOR_OK
+19880: SENSOR_SHORT CIRCUIT
+19881: SENSOR_LEAD BREAK
+19882: SENSOR_REFERENCE FAULT
+19883: Direction heating
+19884: Direction DHW
+19885: Economical
+19886: Ecological
+19887: Fixed temperature
+19892: Balancing disabled
+19893: Balancing requested
+19894: Balancing enabled
+19899: Start initialization
+19900: Process circuit being cooled
+19901: Burner in operation
+19902: Process circuit being filled
+19903: Heat pump module is being tested
+19904: Desorption
+19905: Adsorption
+19906: Mixer operation
+19907: Direct heating operation
+19908: Sensors are being calibrated
+19909: All actuators off
+19910: Possible
+19911: Desirable
+19912: Urgent
+19916: '1: Protective mode'
+19917: Comfort
+19918: No limitation
+19919: Stirling burner only
+19920: First heat-up Stirling burner only
+19921: First heat-up Stirling burner, otherwise supplementary burner
+19922: '2008'
+19923: '2009'
+19924: '2010'
+19925: '2011'
+19926: '2012'
+19927: '2013'
+19928: '2014'
+19929: '2015'
+19930: '2016'
+19931: '2017'
+19932: '2018'
+19933: '2019'
+19934: '2020'
+19935: '2021'
+19936: '2022'
+19937: '2023'
+19938: '2024'
+19939: '2025'
+19940: '2026'
+19941: '2027'
+19942: '2028'
+19943: '2029'
+19944: '2030'
+19945: '2031'
+19946: '2032'
+19947: '2033'
+19948: DHW sensor B31
+19949: DHW charging sensor B36
+19950: Buffer sensor B42
+19951: Common return sensor B73
+19952: Cascade return sensor B70
+19953: Swimming pool sensor B13
+19955: Solar flow sensor B63
+19956: Solar return sensor B64
+19957: DHW draw-off sensor B38
+19959: Instantaneous water heater sensor B37
+19960: DHW sensor B3
+19961: Casing temperature sensor B23
+19962: Return sensor B74
+19963: DHW circulation sensor B39
+19964: Buffer cylinder sensor B4
+19965: Buffer cylinder sensor B41
+19966: Flue gas temperature sensor B8
+19967: Common flow sensor B10
+19968: '3: ---'
+19969: Pre-purge
+19970: Safety time
+19971: Intermediate purge
+19972: Post-purge
+19973: Fault position
+19975: Ready for mains connection
+19976: Mains switched ON
+19977: In operation
+19978: Run-on
+19981: Standby (Stirling + auxiliary burner)
+19982: Stirling operation
+19983: Auxiliary burner operation
+19984: Stirling + auxiliary burner operation
+19985: Partial diagram / no status available
+19987: Screed function active
+19988: Limited, boiler protection
+19989: Limited, DHW priority
+19997: Start optimisation
+19999: Comfort heating mode
+20000: Stop optimisation
+20001: Reduced heating mode
+20007: Run-on active
+20014: Limiter responded
+20015: Manual mode active
+20017: In operation for heating circuit
+20019: In operation for DHW
+20021: In operation for HC, DHW
+20023: Enabled for HC, DHW
+20024: Enabled for DHW
+20025: Enabled for HC
+20026: Blocked, outside temperature
+20027: Blocked, eco mode
+20034: Buffer cylinder charging
+20036: Emissions test function active
+20037: Blocked, manually
+20039: Limited heat-up
+20040: Duration of block after heating
+20041: Re-cooling via DHW / heating circuits
+20042: Heated, minimum heating temperature
+20043: Warm
+20044: Electric heating, forced
+20045: Electric heating, alternative
+20046: Frost protection, cooling active
+20047: Full heat-up active
+20048: Enable heat generator
+20049: 254"
+20050: 255"
+20051: No demand
+20052: Re-cooling active
+20053: Heating, immersion heater
+20054: Forced heating active
+20055: Heating enabled
+20056: Heated, maximum cylinder temperature
+20057: Heated, maximum heating temperature
+20058: Heated, forced heat-up, set temperature
+20059: Heated, set temperature
+20060: Heated
+20061: Cold
+20062: Re-cooling via collector
+20063: Charging blocked
+20064: Draw-off mode
+20065: Standby operation ON
+20066: Standby operation active
+20067: Heating opt energy, rated
+20068: Heating opt energy, pasteurisation
+20069: Heating opt energy AE [active energy], rated
+20070: Heating opt energy AE, pasteurisation
+20071: Immersion heater blocked
+20072: Min source temp. limit
+20073: Re-cooling via generator / heating circuit
+20074: Discharge protection active
+20075: Charging time limit active
+20076: Charging block active
+20077: Forced, max. cylinder temperature
+20078: Forced, max. heating temperature
+20079: Forced, set pasteurisation temperature
+20080: Forced, rated set value
+20081: Electric heating, set pasteurisation temp
+20082: Electric heating, rated set temperature
+20083: Electric heating, reduced set value
+20084: Electric heating, set frost protection value
+20085: Immersion heater enabled
+20086: Push, set pasteurisation value
+20087: Push, rated set value
+20088: Push active
+20089: Heating, set pasteurisation value
+20090: Blocked, solid fuel boiler
+20091: 'Current limiter / additional heat generator: Minimum flow rate undershot'
+20092: Unexpected reset
+20093: Monitoring chain
+20094: Flame failure
+20095: BCU PCB failure
+20096: System version 1
+20097: System version 2
+20098: System version 3
+20099: System version 4
+20100: System version 5
+20101: Service mode
+20102: Energy manager ON
+20103: Energy manager OFF
+20104: CSM
+20105: Holiday mode ON
+20106: Holiday mode OFF
+20107: N/A
+20108: Regular maintenance
+20109: Overhaul stop
+20110: Complete stop (end of lifetime)
+20111: Maintenance required immediately (2 weeks remaining)
+20112: Maintenance within 4 weeks
+20113: Maintenance in 2 months
+20114: Maintenance in 3 months
+20115: Maintenance in 4 months
+20116: Maintenance in 5 months
+20117: Maintenance in 6 months
+20118: Maintenance within 5–6 weeks
+20119: Maintenance required!
+20122: Contractor
+20123: Expert
+20124: No remote control
+20125: 300 series remote control
+20126: Vitovent 300-F
+20127: Vitovent 200-C
+20128: Vitovent UI
+20129: No passive frost protection
+20130: Bypass is open
+20131: Disbalance is generated
+20132: Model 0
+20133: Model 1
+20134: Ceiling installation
+20135: Wall mounting
+20136: Constant set value
+20137: Combustion equipment switch
+20138: Ventilation OFF (standby mode)
+20139: Ventilation stage 1 (basic operation)
+20140: Ventilation stage 2 (reduced operation)
+20141: Ventilation stage 3 (standard operation)
+20142: Ventilation stage 4 (intensive operation)
+20143: CLOSED
+20144: OPEN
+20145: Via BUS
+20146: Via EEV
+20147: Fixed speed
+20148: Speed dependent on compressor output
+20149: Speed dependent on curve
+20150: Speed dependent on primary inlet/outlet temperature differential
+20151: Fieldbus (e.g. LON)
+20152: KM BUS (e.g. wireless gateway)
+20153: '3: DCF77'
+20154: Functions enabled (default via contacts)
+20155: Functions enabled (default via VS)
+20156: 0:Disabled
+20157: 1:SG PU block
+20158: 2:SG set value increase
+20159: 3:SG maximum set value
+20160: Alarm ON
+20161: Up to down protection type
+20162: Turn ON
+20163: Turn OFF
+20164: Indicates ODU lock
+20165: '00:00'
+20166: '01:01'
+20171: Driver IC fault
+20173: Sync loss
+20174: Instance OVC
+20176: Temp rise
+20178: DCOV
+20179: TX fail
+20180: Power fail
+20181: Nine
+20182: Setup
+20183: Dry
+20184: Test
+20186: In fault
+20194: VLow
+20195: Med
+20196: Max
+20198: Output 1 (3.5 kW)
+20199: Output 1 (4 kW)
+20200: Output 1 (5/6 kW)
+20201: Output 1 (>6 kW)
+20202: '01:00'
+20204: Flow switch close
+20205: Flow switch open
+20206: Energy saving is deactivated
+20207: Energy saving is activated
+20210: Disable
+20211: IFEEL OFF
+20212: IFEEL ON
+20215: Alarm OFF
+20216: Communication version
+20217: Internal indirect coil overheat
+20221: H0
+20222: H1
+20225: Down to up protection type
+20226: Indicates no ODU lock
+20227: HC still enabled during DHW mode
+20228: HC blocked during DHW mode
+20229: Digital
+20230: Controlled
+20231: Bulgarian
+20232: Latvian
+20233: Lithuanian
+20234: Romanian
+20235: Finnish
+20236: Estonian
+20237: System start
+20238: HWQC enable
+20239: HWQC
+20240: HWQC end
+20241: HWQC timeout
+20242: Flash programming
+20243: System stop
+20244: Starting according to output specification
+20245: Starting according to return or flow integral
+20246: Starting according to set cylinder integral
+20247: Starting according to return or flow integral and set cylinder integral
+20248: Preheating
+20249: Heating mode Must
+20250: Heating mode May
+20251: Shutdown pause
+20252: Prepare
+20253: Defrosting preparation
+20254: Defrosting
+20256: 1 HC
+20257: 1 HC 1 MHC 1 MHC DHW
+20258: External control
+20259: 1 HC DHW
+20260: 0 HC 1 MHC
+20261: 0 HC 1 MHC DHW
+20262: 1 HC 1 MHC
+20263: 1 HC 1 MHC DHW
+20264: 0 HC 1 MHC 1 MHC
+20265: 0 HC 1 MHC 1 MHC DHW
+20266: 1 HC 1 MHC 1 MHC
+20267: 1 HC 1 MHC 1MHC DHW
+20268: No changeover
+20269: STANDBY
+20270: M2 control mode M3 control mode demand no effect
+20271: M2 OPEN M3 control mode demand no effect
+20272: M2 control mode M3 OPEN demand no effect
+20273: M2 OPEN M3 OPEN demand no effect
+20274: M2 control mode M3 control mode demand effect
+20275: M2 OPEN M3 control mode demand effect
+20276: M2 control mode M3 OPEN demand effect
+20277: M2 OPEN M3 OPEN demand effect
+20278: M2 control mode M3 control mode blocking no effect
+20279: M2 OPEN M3 control mode blocking no effect
+20280: M2 control mode M3 OPEN blocking no effect
+20281: M2 OPEN M3 OPEN blocking no effect
+20282: M2 control mode M3 control mode blocking effect
+20283: M2 OPEN M3 control mode blocking effect
+20284: M2 control mode M3 OPEN blocking effect
+20285: M2 OPEN M3 OPEN blocking effect
+20286: External blocking of AC M2 control mode M3 control mode blocking effect
+20287: Cascade via H1
+20288: LON cascade
+20289: NR1 (GK 0x71)
+20290: NRF (GK 0x73)
+20291: LOW PRIORITY
+20292: HIGH PRIORITY
+20293: KM BUS MIXER
+20294: INTERNAL MIXER
+20295: HC mixer as NC mixer
+20296: 0 DHW
+20297: 1 HC + 1 MHC + 1 MHC + DHW
+20298: 1 HC + DHW
+20299: 0 HC + 1 MHC
+20300: 0 HC + 1 MHC + DHW
+20301: 1 HC + 1 MHC
+20302: 1 HC + 1 MHC + DHW
+20303: 0 HC + 1 MHC + 1 MHC
+20304: 0 HC + 1 MHC + 1 MHC + DHW
+20305: 1 HC + 1 MHC + 1 MHC
+20306: Minimum demand
+20307: Low demand
+20308: Average demand
+20309: High demand
+20310: Maximum demand
+20311: MAXIMUM DEMAND
+20312: normal
+20313: Operating mode_reduced
+20314: Operating mode_standby
+20315: Operating mode_standard
+20316: Operating mode_fixed value
+20317: Operating mode_OFF
+20318: Operating mode_heating
+20319: Operating mode_cooling
+20320: Operating mode_auto
+20321: 'Standby: Frost protection'
+20322: Constant standard room temp
+20323: Fixed value controller to max. flow temp
+20324: Operating mode selector
+20325: Standard & reduced mode
+20326: No heat draw-off
+20327: ONLY IN CASE OF CRITICAL EXCESS
+20328: At any time
+20329: TOP SENSOR
+20330: STANDARD
+20331: NO HEAT DRAW-OFF
+20332: Temperature/time profile 1 (to EN 1264-4)
+20333: 20 days at fixed value
+20334: 25 days at fixed value
+20335: 30 days at fixed value
+20336: '13..15: Free'
+20337: Temperature/time profile 2 (to ZV Parkett und Fussbodentechnik)
+20338: Temperature/time profile 3 (to ÖNORM)
+20339: Temperature/time profile 4 (see installation/service instructions)
+20340: Temperature/time profile 5 (see installation/service instructions)
+20341: Temperature/time profile 6 (see installation/service instructions)
+20342: 5 days at fixed value
+20343: 10 days at fixed value
+20344: 15 days at fixed value
+20345: Receive from field BUS (e.g. LON)
+20346: Send to field BUS (e.g. LON)
+20347: Installed
+20348: SENSOR REFERENCE BELOW MIN
+20349: SENSOR REFERENCE ABOVE MAX
+20350: SENSOR CHECK
+20351: SENSOR FAULT
+20352: SENSOR COMM FAULT
+20353: S_ON
+20354: S_OFF
+20355: SENSOR REFERENCE FAULT
+20356: NC with mixer
+20357: Cooling on HC1
+20358: Cooling on HC2
+20359: Cooling on HC3
+20360: Cooling on separate cooling circuit
+20361: Use of the NC room sensor
+20362: Use of the HC1 room sensor
+20363: Use of the HC2 room sensor
+20364: Use of the HC3 room sensor
+20365: Internal solar control unit
+20366: Cooling / DHW
+20367: standby mode
+20368: only DHW
+20369: heating/cooling/DHW
+20370: constant reduced
+20371: constant standard
+20372: standard standby
+20373: only cooling
+20374: ONLY ACC. TO SWITCHING TIMES
+20375: ROTARY SELECTOR
+20378: SET TEMP 2
+20379: AT ANY TIME
+20380: No stages are enabled
+20381: Instantaneous water heater 1
+20382: Instantaneous water heater 2
+20383: Instantaneous water heater 3
+20384: 3 kW
+20385: 6 kW
+20386: 9 kW
+20387: Instantaneous water heaters 1 and 2
+20388: Heating disabled
+20389: In heating
+20390: In run-on
+20391: Start pump kick
+20392: No operating mode changeover
+20393: Operating mode changeover via EA1 / ext CE input 1
+20394: Operating mode changeover via EA1 / ext CE input 2
+20395: Operating mode changeover via EA1 input 3
+20419: LWT Spt received from HYDU where NLOAD is calculated by HYDI
+20420: LWT Spt received from HYDU
+20421: Sent by HYDU
+20423: Self-binding
+20424: Tool binding
+20425: No fault manager
+20426: Device is fault manager
+20427: No change
+20428: Change
+20429: HVAC_AUTO
+20430: HVAC_HEAT
+20431: HVAC_FREE_COOL
+20432: HVAC_FLOW_TEMP
+20433: HVAC_ICE
+20434: HVAC_SLAVE_ACTIVE
+20435: HVAC_LOW_FIRE
+20436: HVAC_HIGH_FIRE
+20437: HVAC_MRNG_WRMUP
+20438: HVAC_NUL
+20439: HVAC_COOL
+20440: HVAC_NIGHT_PURGE
+20441: HVAC_PRE_COOL
+20442: HVAC_OFF
+20443: HVAC_TEST
+20444: HVAC_EMERG_HEAT
+20445: HVAC_FAN_ONLY
+20446: Control mode_CLOSED
+20447: Control mode OPEN
+20448: Critical
+20449: HVAC_HEAT_DHW
