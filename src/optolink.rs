@@ -39,7 +39,7 @@ impl Optolink {
   /// ```no_run
   /// use vcontrol::Optolink;
   ///
-  /// # fn main() -> Result<(), Box<std::error::Error>> {
+  /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
   /// let mut device = Optolink::open("/dev/ttyUSB0")?;
   /// # Ok(())
   /// # }
@@ -77,7 +77,7 @@ impl Optolink {
   /// ```no_run
   /// use vcontrol::Optolink;
   ///
-  /// # fn main() -> Result<(), Box<std::error::Error>> {
+  /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
   /// let mut device = Optolink::connect(("localhost", 1234))?;
   /// # Ok(())
   /// # }
