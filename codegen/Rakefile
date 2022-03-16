@@ -328,6 +328,13 @@ def type_to_command(type_id, type, mappings:, translations:)
   command['bit_len'] = type.fetch('bit_length')
   command['bit_pos'] = type.fetch('bit_position')
 
+  if (lower_border = type.fetch('lower_border', nil))
+    command['lower_border'] = lower_border
+  end
+  if (upper_border = type.fetch('upper_border', nil))
+    command['upper_border'] = upper_border
+  end
+
   value_list = type.fetch('value_list', {})
   enum_type = value_list.any?
 

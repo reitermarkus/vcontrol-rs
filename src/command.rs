@@ -15,8 +15,8 @@ pub struct Command {
   pub(crate) bit_pos: usize,
   pub(crate) bit_len: usize,
   pub(crate) conversion: Option<Conversion>,
-  pub(crate) lower_bound: Option<f32>,
-  pub(crate) upper_bound: Option<f32>,
+  pub(crate) lower_bound: Option<f64>,
+  pub(crate) upper_bound: Option<f64>,
   pub(crate) unit: Option<&'static str>,
   pub(crate) mapping: Option<phf::map::Map<i32, &'static str>>,
 }
@@ -185,6 +185,20 @@ impl Command {
         error.to_bytes().to_vec()
       }
       (DataType::Int | DataType::Byte, Value::Int(n)) => {
+        if let Some(lower_bound) = self.lower_bound {
+          let lower_bound = lower_bound as _;
+          if n < lower_bound {
+            return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)))
+          }
+        }
+
+        if let Some(upper_bound) = self.upper_bound {
+          let upper_bound = upper_bound as _;
+          if n > upper_bound {
+            return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)))
+          }
+        }
+
         match self.parameter {
           Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
           Parameter::Int => (n as u16).to_le_bytes().to_vec(),
@@ -200,6 +214,18 @@ impl Command {
         }
       },
       (DataType::Double, Value::Double(n)) => {
+        if let Some(lower_bound) = self.lower_bound {
+          if n < lower_bound {
+            return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)))
+          }
+        }
+
+        if let Some(upper_bound) = self.upper_bound {
+          if n > upper_bound {
+            return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)))
+          }
+        }
+
         match self.parameter {
           Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
           Parameter::Int => (n as u16).to_le_bytes().to_vec(),
