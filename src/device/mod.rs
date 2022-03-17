@@ -54,6 +54,8 @@ impl Device {
         for (device_id_range, device) in devices.clone() {
           if let Some(f0) = device_id_range.f0 {
             if device_id_f0.0 == f0 {
+              log::debug!("Found device with exact ID and F0.");
+
               return Some(device)
             }
           }
@@ -65,6 +67,8 @@ impl Device {
             let f0_range = f0..=f0_till;
 
             if f0_range.contains(&device_id_f0.0) {
+              log::debug!("Found device exact ID and F0 in range {:?}.", f0_range);
+
               return Some(device)
             }
           }
@@ -78,6 +82,8 @@ impl Device {
     for (device_id_range, device) in devices.clone() {
       if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index) {
         if device_id.hardware_index == hardware_index && device_id.software_index == software_index {
+          log::debug!("Found device with exact ID, hardware index and software index.");
+
           return Some(device)
         }
       }
@@ -93,12 +99,21 @@ impl Device {
           let software_index_range = software_index..=software_index_till;
 
           if hardware_index_range.contains(&device_id.hardware_index) && software_index_range.contains(&device_id.software_index) {
+            log::debug!(
+              "Found device with exact ID, hardware index in range {:?} and software index in range {:?}.",
+              hardware_index_range, software_index_range,
+            );
             return Some(device)
           }
         }
       }
     }
 
-    device_fallback
+    if let Some(device) = device_fallback {
+      log::debug!("Found device with exact ID.");
+      return Some(device)
+    }
+
+    None
   }
 }
