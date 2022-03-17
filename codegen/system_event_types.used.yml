@@ -3,11 +3,10 @@ chp_error:
   addr: 29959
   bit_len: 0
   bit_pos: 0
+  block_factor: 10
   block_len: 100
   byte_len: 100
   byte_pos: 0
-  conversion_factor: 0.0
-  conversion_offset: 0.0
   data_type: ByteArray
   mode: read
   name: ecnsysEventType~BHKWError
@@ -16,11 +15,10 @@ chp_error_index:
   addr: 30049
   bit_len: 0
   bit_pos: 0
+  block_factor: 10
   block_len: 90
   byte_len: 90
   byte_pos: 0
-  conversion_factor: 0.0
-  conversion_offset: 0.0
   data_type: ByteArray
   mode: read
   name: ecnsysEventType~BHKWErrorIndex
@@ -75,11 +73,10 @@ error:
   addr: 29959
   bit_len: 0
   bit_pos: 0
+  block_factor: 10
   block_len: 90
   byte_len: 90
   byte_pos: 0
-  conversion_factor: 0.0
-  conversion_offset: 0.0
   data_type: ByteArray
   mode: read
   name: ecnsysEventType~Error
@@ -232,8 +229,6 @@ error_index:
   block_len: 10
   byte_len: 10
   byte_pos: 0
-  conversion_factor: 0.0
-  conversion_offset: 0.0
   data_type: ErrorIndex
   mode: read
   name: ecnsysEventType~ErrorIndex

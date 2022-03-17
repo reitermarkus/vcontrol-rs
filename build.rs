@@ -196,6 +196,7 @@ pub struct Command {
   mode: AccessMode,
   data_type: DataType,
   parameter: Parameter,
+  block_factor: Option<usize>,
   block_len: usize,
   byte_len: usize,
   byte_pos: usize,

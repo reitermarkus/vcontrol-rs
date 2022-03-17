@@ -217,6 +217,8 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do
     next h unless event_type_supported?(event_type_id, event_type)
     event_type['type_id'] = event_type_id
 
+    clean_event_type(event_type)
+
     case event_type_id
     when 'ecnsysDeviceIdent'
       event_type['value_type'] = 'DeviceId'
@@ -388,14 +390,13 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     next unless event_type_supported?(event_type_id, event_type)
     event_type['type_id'] = event_type_id
 
+    clean_event_type(event_type)
+
     value_types = event_type.delete('value_types')&.reduce({}) { |h, value_type|
       h.deep_merge!(event_value_types.fetch(value_type).deep_dup)
     }
 
     event_type.merge!(value_types) if value_types
-
-    event_type.delete('conversion_factor') if event_type['conversion_factor'] == 0.0
-    event_type.delete('conversion_offset') if event_type['conversion_offset'] == 0.0
 
     [id, event_type]
   }.to_h
@@ -413,6 +414,9 @@ def event_type_supported?(type_id, type)
   return false if type_id.start_with?('nciNet')
   return false if type_id.start_with?('ecnsysEventType~Vitotwin')
   return false if type_id.start_with?('ecnsysEventType~VCOMLan')
+  return false if type_id.start_with?('vcLan')
+  return false if type_id.start_with?('vcNotfax')
+  return false if type_id.start_with?('vlogVSNotfax')
 
   return false unless type.key?('address')
 
@@ -420,6 +424,23 @@ def event_type_supported?(type_id, type)
   fc_write = type['fc_write']
 
   fc_read == 'virtual_read' || fc_write == 'virtual_write'
+end
+
+def clean_event_type(event_type)
+  if (block_factor = event_type['block_factor'])
+    if block_factor.zero?
+      event_type.delete('block_factor')
+    else
+      block_length = event_type['block_length']
+
+      unless (block_length % block_factor).zero?
+        raise "Block length #{block_length} not divisible by block factor #{block_factor}: #{event_type}"
+      end
+    end
+  end
+
+  event_type.delete('conversion_factor') if event_type['conversion_factor']&.zero?
+  event_type.delete('conversion_offset') if event_type['conversion_offset']&.zero?
 end
 
 file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED] do |t|
