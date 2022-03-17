@@ -7,6 +7,7 @@ pub enum DataType {
   String,
   Int,
   Double,
+  Date,
   DateTime,
   CircuitTimes,
   ErrorIndex,

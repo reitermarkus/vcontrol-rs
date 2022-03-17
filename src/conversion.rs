@@ -27,8 +27,6 @@ pub(crate) enum Conversion {
   HexByteToDecimalByte,
   HexByteToVersion,
   FixedStringTerminalZeroes,
-  DateBcd,
-  DateTimeBcd,
   DayMonthBcd,
   DayToDate,
   Estrich,

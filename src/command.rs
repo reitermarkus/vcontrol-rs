@@ -1,6 +1,6 @@
 use arrayref::array_ref;
 
-use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DeviceId, DeviceIdF0, DateTime, CircuitTimes}};
+use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DeviceId, DeviceIdF0, Date, DateTime, CircuitTimes}};
 
 /// A command which can be executed on an Optolink connection.
 #[derive(Debug)]
@@ -59,6 +59,13 @@ impl Command {
         }
 
         Value::DeviceIdF0(DeviceIdF0::from_bytes(array_ref![buf, 0, 2]))
+      },
+      DataType::Date => {
+        if bytes.len() != 8 {
+          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+        }
+
+        Value::Date(Date::from_bytes(array_ref![bytes, 0, 8]))
       },
       DataType::DateTime => {
         if bytes.len() != 8 {

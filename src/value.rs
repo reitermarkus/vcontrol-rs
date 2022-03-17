@@ -4,7 +4,7 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
-use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, DateTime, CircuitTimes, Error}};
+use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, Date, DateTime, CircuitTimes, Error}};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -15,6 +15,7 @@ pub enum Value {
   Double(f64),
   Array(Vec<u8>),
   String(String),
+  Date(Date),
   DateTime(DateTime),
   CircuitTimes(CircuitTimes),
   Error(Error),
@@ -64,21 +65,6 @@ impl Value {
       Conversion::HexByteToVersion => {
         if let Value::Array(bytes) = self {
           *self = Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join("."));
-          return
-        }
-      },
-      Conversion::DateBcd => {
-        if let Value::DateTime(date_time) = self {
-          let year = date_time.year();
-          let month = date_time.month();
-          let day = date_time.day();
-
-          *self = Value::String(format!("{:04}-{:02}-{:02}", year, month, day));
-          return
-        }
-      },
-      Conversion::DateTimeBcd => {
-        if let Value::DateTime(_) = self {
           return
         }
       },
@@ -141,6 +127,7 @@ impl fmt::Display for OutputValue {
       },
       Value::Double(n) => write!(f, "{}", n)?,
       Value::Array(array) => write!(f, "{:?}", array)?,
+      Value::Date(date) => write!(f, "{}", date)?,
       Value::DateTime(date_time) => write!(f, "{}", date_time)?,
       Value::Error(error) => {
         write!(f, "{}", self.mapping.unwrap().get(&(error.index() as i32)).unwrap())?;
@@ -168,10 +155,6 @@ impl FromStr for Value {
 
     if let Ok(number) = s.parse::<f64>() {
       return Ok(Value::Double(number))
-    }
-
-    if let Ok(date_time) = s.parse::<DateTime>() {
-      return Ok(Value::DateTime(date_time))
     }
 
     // if let Ok(cycletime) = s.parse::<[CircuitTime; 4]>() {

@@ -9,7 +9,7 @@ use webthing::{
   property::ValueForwarder,
 };
 
-use crate::{VControl, Device, AccessMode, Command, DataType, Value, types::{DeviceId, DeviceIdF0, DateTime, Error, CircuitTimes}};
+use crate::{VControl, Device, AccessMode, Command, DataType, Value, types::{DeviceId, DeviceIdF0, Date, DateTime, Error, CircuitTimes}};
 
 struct VcontrolValueForwarder {
   command_name: &'static str,
@@ -28,6 +28,7 @@ impl ValueForwarder for VcontrolValueForwarder {
       DataType::Double => serde_json::from_value::<f64>(value).map(Value::Double),
       DataType::Byte | DataType::ErrorIndex => serde_json::from_value::<u8>(value).map(|b| Value::Int(b as i64)),
       DataType::String => serde_json::from_value::<String>(value).map(Value::String),
+      DataType::Date => serde_json::from_value::<Date>(value).map(Value::Date),
       DataType::DateTime => serde_json::from_value::<DateTime>(value).map(Value::DateTime),
       DataType::Error => serde_json::from_value::<Error>(value).map(Value::Error),
       DataType::CircuitTimes => serde_json::from_value::<CircuitTimes>(value).map(Value::CircuitTimes),
@@ -63,6 +64,7 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<RwLock<Mutex<VControl>>>, de
     DataType::Double => schema_for!(f64),
     DataType::Byte | DataType::ErrorIndex => schema_for!(u8),
     DataType::String => schema_for!(String),
+    DataType::Date => schema_for!(Date),
     DataType::DateTime => schema_for!(DateTime),
     DataType::Error => schema_for!(Error),
     DataType::CircuitTimes => schema_for!(CircuitTimes),

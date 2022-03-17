@@ -8,4 +8,4 @@ mod error;
 pub use self::error::Error;
 
 mod date_time;
-pub use self::date_time::DateTime;
+pub use self::date_time::{Date, DateTime};

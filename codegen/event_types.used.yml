@@ -2252,8 +2252,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: FerienBeginnA1M1
   parameter: array
@@ -2264,8 +2263,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: FerienBeginnM2
   parameter: array
@@ -2276,8 +2274,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: FerienBeginnM3
   parameter: array
@@ -2288,8 +2285,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: FerienEndeA1M1
   parameter: array
@@ -2300,8 +2296,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: FerienEndeM2
   parameter: array
@@ -2312,8 +2307,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: FerienEndeM3
   parameter: array
@@ -15699,7 +15693,6 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_time_bcd
   data_type: DateTime
   mode: read_write
   name: NRF_Uhrzeit
@@ -21205,7 +21198,6 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_time_bcd
   data_type: DateTime
   mode: read_write
   name: Uhrzeit
@@ -31705,7 +31697,6 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_time_bcd
   data_type: DateTime
   mode: read_write
   name: WPR_Uhrzeit
@@ -38202,7 +38193,6 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_time_bcd
   data_type: DateTime
   mode: read
   name: Zaehler1letztesAuslesedatum
@@ -38214,7 +38204,6 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_time_bcd
   data_type: DateTime
   mode: read
   name: Zaehler2letztesAuslesedatum
@@ -38226,7 +38215,6 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_time_bcd
   data_type: DateTime
   mode: read
   name: Zaehler3letztesAuslesedatum
@@ -54433,8 +54421,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7000_Fehler_Historie_1
   parameter: array
@@ -54456,8 +54443,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_700C_Fehler_Historie_2
   parameter: array
@@ -54468,8 +54454,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7018_Fehler_Historie_3
   parameter: array
@@ -54491,8 +54476,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7024_Fehler_Historie_4
   parameter: array
@@ -54514,8 +54498,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7030_Fehler_Historie_5
   parameter: array
@@ -54537,8 +54520,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_703C_Fehler_Historie_6
   parameter: array
@@ -54571,8 +54553,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7048_Fehler_Historie_7
   parameter: array
@@ -54583,8 +54564,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7054_Fehler_Historie_8
   parameter: array
@@ -54606,8 +54586,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_7060_Fehler_Historie_9
   parameter: array
@@ -54629,8 +54608,7 @@
   block_len: 9
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_706C_Fehler_Historie_10
   parameter: array
@@ -65875,8 +65853,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_1409_Datum_Stichtag1
   parameter: array
@@ -65887,8 +65864,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_1429_Datum_Stichtag2
   parameter: array
@@ -65899,8 +65875,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_1449_Datum_Monatswerte1
   parameter: array
@@ -65911,8 +65886,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read
   name: Vitotwin_1469_Datum_Monatswerte2
   parameter: array
@@ -66969,8 +66943,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienBeginnM4
   parameter: array
@@ -66981,8 +66954,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienEndeM4
   parameter: array
@@ -70621,8 +70593,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: HO2B_Lueftung_Ferienbeginn
   parameter: array
@@ -70633,8 +70604,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: HO2B_Lueftung_Ferienende
   parameter: array
@@ -74175,8 +74145,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienBeginn_HK1
   parameter: array
@@ -74187,8 +74156,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienBeginn_HK2
   parameter: array
@@ -74199,8 +74167,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienBeginn_HK3
   parameter: array
@@ -74211,8 +74178,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienEnde_HK1
   parameter: array
@@ -74223,8 +74189,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienEnde_HK2
   parameter: array
@@ -74235,8 +74200,7 @@
   block_len: 8
   byte_len: 8
   byte_pos: 0
-  conversion: date_bcd
-  data_type: DateTime
+  data_type: Date
   mode: read_write
   name: Ecotronic_FerienEnde_HK3
   parameter: array

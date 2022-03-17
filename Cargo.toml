@@ -21,7 +21,7 @@ impl_webthing = ["impl_json_schema", "serde_json", "webthing"]
 [dependencies]
 actix-rt = { version = "2.7", optional = true }
 clap = { version = "2.33", optional = true }
-chrono = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 phf = { version = "0.10", features = ["serde"] }
 phf_shared = "0.10"

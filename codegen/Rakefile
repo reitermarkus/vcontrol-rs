@@ -316,10 +316,30 @@ def type_to_command(type_id, type, mappings:, translations:)
   command['addr'] = type.fetch('address')
   command['mode'] = type.fetch('access_mode')
 
-  command['data_type'] = type.fetch('value_type', type['sdk_data_type'])
   command['parameter'] = map_parameter(type['parameter'])
   command['unit'] = type['unit']
-  command['conversion'] = type['conversion']
+
+  data_type = type.fetch('value_type', type['sdk_data_type'])
+
+  if (conversion = type['conversion'])
+    case conversion
+    when 'date_time_bcd'
+      unless data_type == 'DateTime'
+        raise "Conversion #{conversion} not supported for type #{data_type}."
+      end
+    when 'date_bcd'
+      if data_type == 'DateTime'
+        data_type = 'Date'
+      else
+        raise "Conversion #{conversion} not supported for type #{data_type}."
+      end
+    else
+      command['conversion'] = conversion
+    end
+  end
+
+  command['data_type'] = data_type
+
   command['conversion_factor'] = type['conversion_factor']
   command['conversion_offset'] = type['conversion_offset']
   command['block_len'] = type.fetch('block_length')

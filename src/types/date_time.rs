@@ -1,11 +1,10 @@
 use std::fmt;
-use std::str::FromStr;
 
-use chrono::{NaiveDate, NaiveDateTime, Datelike, Timelike};
+use chrono::{NaiveDate, NaiveTime, NaiveDateTime, Datelike, Timelike};
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
 use serde::ser::{Serialize, Serializer};
-use serde::de::{self, Deserialize, Deserializer};
+use serde::de::{Deserialize, Deserializer};
 
 #[inline]
 fn byte_to_dec(byte: u8) -> u8 {
@@ -18,84 +17,135 @@ fn dec_to_byte(dec: u8) -> u8 {
 }
 
 #[derive(Clone)]
-pub struct DateTime([u8; 8]);
+pub struct Date(NaiveDate);
+
+impl Date {
+  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
+    let year = u16::from(byte_to_dec(bytes[0])) * 100 + u16::from(byte_to_dec(bytes[1]));
+    let month = byte_to_dec(bytes[2]);
+    let day = byte_to_dec(bytes[3]);
+    let date = NaiveDate::from_ymd(year.into(), month.into(), day.into());
+
+    Self(date)
+  }
+
+  pub fn to_bytes(&self) -> [u8; 8] {
+    [
+      dec_to_byte((self.0.year() / 100) as u8),
+      dec_to_byte((self.0.year() % 100) as u8),
+      dec_to_byte(self.0.month() as u8),
+      dec_to_byte(self.0.day() as u8),
+      self.0.weekday().number_from_monday() as u8,
+      0,
+      0,
+      0,
+    ]
+  }
+}
+
+impl From<Date> for NaiveDate {
+  fn from(date: Date) -> Self {
+    date.0
+  }
+}
+
+impl From<NaiveDate> for Date {
+  fn from(date: NaiveDate) -> Self {
+    Self(date)
+  }
+}
+
+impl<'de> Deserialize<'de> for Date {
+  fn deserialize<D>(deserializer: D) -> Result<Date, D::Error>
+  where
+      D: Deserializer<'de>,
+  {
+    NaiveDate::deserialize(deserializer).map(Into::into)
+  }
+}
+
+#[cfg(feature = "impl_json_schema")]
+impl JsonSchema for Date {
+  fn schema_name() -> String {
+    "Date".into()
+  }
+
+  fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+    let mut schema = gen.subschema_for::<String>().into_object();
+    schema.format = Some("date".into());
+    schema.into()
+  }
+}
+
+impl Serialize for Date {
+  fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+    serializer.serialize_str(&self.to_string())
+  }
+}
+
+impl fmt::Display for Date {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "{:04}-{:02}-{:02}",
+      self.0.year(),
+      self.0.month(),
+      self.0.day(),
+    )
+  }
+}
+
+impl fmt::Debug for Date {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "Date(")?;
+    fmt::Display::fmt(self, f)?;
+    write!(f, ")")
+  }
+}
+
+#[derive(Clone)]
+pub struct DateTime(NaiveDateTime);
 
 impl DateTime {
   pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> DateTime {
     NaiveDate::from_ymd(year.into(), month.into(), day.into()).and_hms(hour.into(), minute.into(), second.into()).into()
   }
 
-  pub fn year(&self) -> u16 {
-    u16::from(byte_to_dec(self.0[0])) * 100 + u16::from(byte_to_dec(self.0[1]))
-  }
-
-  pub fn month(&self) -> u8 {
-    byte_to_dec(self.0[2])
-  }
-
-  pub fn day(&self) -> u8 {
-    byte_to_dec(self.0[3])
-  }
-
-  pub fn weekday(&self) -> u8 {
-    self.0[4]
-  }
-
-  pub fn hour(&self) -> u8 {
-    byte_to_dec(self.0[5])
-  }
-
-  pub fn minute(&self) -> u8 {
-    byte_to_dec(self.0[6])
-  }
-
-  pub fn second(&self) -> u8 {
-    byte_to_dec(self.0[7])
-  }
-
   pub fn from_bytes(bytes: &[u8; 8]) -> Self {
-    Self(*bytes)
+    let year = u16::from(byte_to_dec(bytes[0])) * 100 + u16::from(byte_to_dec(bytes[1]));
+    let month = byte_to_dec(bytes[2]);
+    let day = byte_to_dec(bytes[3]);
+    let date = NaiveDate::from_ymd(year.into(), month.into(), day.into());
+
+    let hour = byte_to_dec(bytes[5]);
+    let minute = byte_to_dec(bytes[6]);
+    let second = byte_to_dec(bytes[7]);
+    let time = NaiveTime::from_hms(hour.into(), minute.into(), second.into());
+
+    Self(NaiveDateTime::new(date, time))
   }
 
   pub fn to_bytes(&self) -> [u8; 8] {
-    self.0
+    [
+      dec_to_byte((self.0.year() / 100) as u8),
+      dec_to_byte((self.0.year() % 100) as u8),
+      dec_to_byte(self.0.month() as u8),
+      dec_to_byte(self.0.day() as u8),
+      self.0.weekday().number_from_monday() as u8,
+      dec_to_byte(self.0.hour() as u8),
+      dec_to_byte(self.0.minute() as u8),
+      dec_to_byte(self.0.second() as u8),
+    ]
   }
 }
 
 impl From<DateTime> for NaiveDateTime {
-  fn from(date_time: DateTime) -> NaiveDateTime {
-    NaiveDate::from_ymd(
-      date_time.year().into(),
-      date_time.month().into(),
-      date_time.day().into(),
-    ).and_hms(
-      date_time.hour().into(),
-      date_time.minute().into(),
-      date_time.second().into(),
-    )
+  fn from(date_time: DateTime) -> Self {
+    date_time.0
   }
 }
 
 impl From<NaiveDateTime> for DateTime {
-  fn from(date_time: NaiveDateTime) -> DateTime {
-    DateTime([
-      dec_to_byte((date_time.year() / 100) as u8),
-      dec_to_byte((date_time.year() % 100) as u8),
-      dec_to_byte(date_time.month() as u8),
-      dec_to_byte(date_time.day() as u8),
-      date_time.weekday().number_from_monday() as u8,
-      dec_to_byte(date_time.hour() as u8),
-      dec_to_byte(date_time.minute() as u8),
-      dec_to_byte(date_time.second() as u8),
-    ])
-  }
-}
-
-impl FromStr for DateTime {
-  type Err = chrono::format::ParseError;
-
-  fn from_str(s: &str) -> Result<DateTime, Self::Err> {
-    NaiveDateTime::from_str(s).map(Into::into)
+  fn from(date_time: NaiveDateTime) -> Self {
+    Self(date_time)
   }
 }
 
@@ -104,8 +154,7 @@ impl<'de> Deserialize<'de> for DateTime {
   where
       D: Deserializer<'de>,
   {
-    let string = String::deserialize(deserializer)?;
-    DateTime::from_str(&string).map_err(de::Error::custom)
+    NaiveDateTime::deserialize(deserializer).map(Into::into)
   }
 }
 
@@ -131,12 +180,12 @@ impl Serialize for DateTime {
 impl fmt::Display for DateTime {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}",
-      self.year(),
-      self.month(),
-      self.day(),
-      self.hour(),
-      self.minute(),
-      self.second(),
+      self.0.year(),
+      self.0.month(),
+      self.0.day(),
+      self.0.hour(),
+      self.0.minute(),
+      self.0.second(),
     )
   }
 }
