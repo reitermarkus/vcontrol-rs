@@ -6,6 +6,8 @@ use crate::types::{DeviceId, DeviceIdF0};
 mod device_id_range;
 pub use device_id_range::DeviceIdRange;
 
+const USE_HARDWARE_INDEX: bool = false;
+
 #[allow(clippy::unreadable_literal)]
 mod codegen {
   use super::*;
@@ -81,7 +83,7 @@ impl Device {
     // Find exact hardware/software index match.
     for (device_id_range, device) in devices.clone() {
       if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index) {
-        if device_id.hardware_index == hardware_index && device_id.software_index == software_index {
+        if (!USE_HARDWARE_INDEX || device_id.hardware_index == hardware_index) && device_id.software_index == software_index {
           log::debug!("Found device with exact ID, hardware index and software index.");
 
           return Some(device)
@@ -94,11 +96,11 @@ impl Device {
     // Find match in hardware/software index range.
     for (device_id_range, device) in devices.clone() {
       if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index) {
-        if let Some((hardware_index_till, software_index_till)) = device_id_range.hardware_index.zip(device_id_range.software_index) {
+        if let Some((hardware_index_till, software_index_till)) = device_id_range.hardware_index_till.zip(device_id_range.software_index_till) {
           let hardware_index_range = hardware_index..=hardware_index_till;
           let software_index_range = software_index..=software_index_till;
 
-          if hardware_index_range.contains(&device_id.hardware_index) && software_index_range.contains(&device_id.software_index) {
+          if (!USE_HARDWARE_INDEX || hardware_index_range.contains(&device_id.hardware_index)) && software_index_range.contains(&device_id.software_index) {
             log::debug!(
               "Found device with exact ID, hardware index in range {:?} and software index in range {:?}.",
               hardware_index_range, software_index_range,
@@ -115,5 +117,24 @@ impl Device {
     }
 
     None
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn detect_vscot_ho1_4() {
+    let device_id = DeviceId::from_bytes(&[0x20, 0xCB, 0x00, 0x08, 0x00, 0x00, 0x01, 0x46]);
+    let device = Device::detect(device_id, None).unwrap();
+    assert_eq!(device.name(), "VScotHO1_4");
+  }
+  
+  #[test]
+  fn detect_vscot_ho1_72() {
+    let device_id = DeviceId::from_bytes(&[0x20, 0xCB, 0x03, 0x51, 0x00, 0x00, 0x01, 0x46]);
+    let device = Device::detect(device_id, None).unwrap();
+    assert_eq!(device.name(), "VScotHO1_72");
   }
 }
