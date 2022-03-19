@@ -31270,6 +31270,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_A1M1_HK
   parameter: array
@@ -31280,6 +31281,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_A1M1_WW
   parameter: array
@@ -31290,6 +31292,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_A1M1_ZP
   parameter: array
@@ -31300,6 +31303,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_M2_HK
   parameter: array
@@ -31310,6 +31314,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_M2_WW
   parameter: array
@@ -31320,6 +31325,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_M2_ZP
   parameter: array
@@ -31330,6 +31336,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_M3_HK
   parameter: array
@@ -31340,6 +31347,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_M3_WW
   parameter: array
@@ -31350,6 +31358,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Schaltzeiten_M3_ZP
   parameter: array
@@ -31360,6 +31369,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroCT
   mode: read_write
   name: WPR_Tagesprogramm_HK1
   parameter: array
@@ -31370,6 +31380,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroCT
   mode: read_write
   name: WPR_Tagesprogramm_HK2
   parameter: array
@@ -31380,6 +31391,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroCT
   mode: read_write
   name: WPR_Tagesprogramm_HK3
   parameter: array
@@ -31390,6 +31402,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroCT
   mode: read_write
   name: WPR_Tagesprogramm_PSP
   parameter: array
@@ -31400,6 +31413,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroCT
   mode: read_write
   name: WPR_Tagesprogramm_WW
   parameter: array
@@ -31432,6 +31446,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: NRF_Schaltzeiten_FT
   parameter: array
@@ -31442,6 +31457,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: NRF_Schaltzeiten_M1_WW
   parameter: array
@@ -31452,6 +31468,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: NRF_Schaltzeiten_M2_WW
   parameter: array
@@ -31462,6 +31479,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: NRF_Schaltzeiten_M2_ZP
   parameter: array
@@ -31472,6 +31490,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: NRF_Schaltzeiten_M1_ZP
   parameter: array
@@ -32153,6 +32172,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCT
   mode: read_write
   name: NKU_Tagesprogramm_HK1
   parameter: array
@@ -32164,6 +32184,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCT
   mode: read_write
   name: NKU_Tagesprogramm_HK2
   parameter: array
@@ -32175,6 +32196,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCT
   mode: read_write
   name: NKU_Tagesprogramm_HK3
   parameter: array
@@ -32186,6 +32208,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCTPSP
   mode: read_write
   name: NKU_Tagesprogramm_PSP
   parameter: array
@@ -32197,6 +32220,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCTWW
   mode: read_write
   name: NKU_Tagesprogramm_WW
   parameter: array
@@ -34829,6 +34853,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCTZP
   mode: read_write
   name: NKU_Tagesprogramm_ZP
   parameter: array
@@ -44467,6 +44492,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCT
   mode: read_write
   name: WPR3_Zeitprogramm_Lueftung
   parameter: array
@@ -44478,6 +44504,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCT
   mode: read_write
   name: WPR3_Zeitprogramm_Geraeuschreduzierung
   parameter: array
@@ -44489,6 +44516,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCT
   mode: read_write
   name: WPR3_Zeitprogramm_EHeizung
   parameter: array
@@ -50745,6 +50773,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Vitotwin_2100_Zeitprogramm_HK1
   parameter: array
@@ -50755,6 +50784,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Vitotwin_3100_Zeitprogramm_HK2
   parameter: array
@@ -50765,6 +50795,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Vitotwin_4100_Zeitprogramm_HK3
   parameter: array
@@ -50775,6 +50806,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Vitotwin_5100_Zeitprogramm_4_TWW
   parameter: array
@@ -50785,6 +50817,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Vitotwin_6100_Zeitprogramm_5_Stromanforderung
   parameter: array
@@ -62587,6 +62620,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Ecotronic_Schaltzeiten_M4_HK
   parameter: array
@@ -65856,6 +65890,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCTLF
   mode: read_write
   name: HO2B_Lueftung_Schaltzeiten
   parameter: array
@@ -69502,6 +69537,7 @@
   byte_len: 168
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: HydroPhaseCTPSP
   mode: read_write
   name: WPR3_93F8_Schaltzeit_Kuehlpufferspeicher
   parameter: array
@@ -69584,6 +69620,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Ecotronic_Puffer_Schaltzeiten
   parameter: array
@@ -69743,6 +69780,7 @@
   byte_len: 56
   byte_pos: 0
   data_type: CircuitTimes
+  mapping_type: PhaseCT
   mode: read_write
   name: Ecotronic_Schaltzeiten_FT
   parameter: array

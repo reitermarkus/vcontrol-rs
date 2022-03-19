@@ -7,6 +7,7 @@ chp_error:
   byte_len: 100
   byte_pos: 0
   data_type: Error
+  mapping_type: 3
   mode: read
   name: ecnsysEventType~BHKWError
   parameter: array
@@ -18,6 +19,7 @@ chp_error_index:
   byte_len: 90
   byte_pos: 0
   data_type: ErrorIndex
+  mapping_type: 0
   mode: read
   name: ecnsysEventType~BHKWErrorIndex
   parameter: array
@@ -71,6 +73,7 @@ error:
   byte_len: 90
   byte_pos: 0
   data_type: Error
+  mapping_type: 3
   mode: read
   name: ecnsysEventType~Error
   parameter: array
@@ -211,89 +214,7 @@ error_index:
   byte_len: 10
   byte_pos: 0
   data_type: ErrorIndex
+  mapping_type: 0
   mode: read
   name: ecnsysEventType~ErrorIndex
   parameter: array
-lon_communication_module:
-  addr: 30582
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 303
-  mode: read_write
-  name: ecnsysLONCommunicationModul
-  parameter: byte
-lon_communication_module_wp:
-  addr: 30480
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 303
-  mode: read_write
-  name: ecnsysLONCommunicationModulWP
-  parameter: byte
-lon_device_id:
-  addr: 30616
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mode: read_write
-  name: ecnsysLONDeviceID
-  parameter: byte
-lon_error_manager:
-  addr: 30585
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 232
-  mode: read_write
-  name: ecnsysLONErrorManager
-  parameter: byte
-lon_member_id:
-  addr: 30583
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mode: read_write
-  name: ecnsysLONMemberID
-  parameter: byte
-lon_neuron_id:
-  addr: 40969
-  bit_pos: 0
-  block_len: 6
-  byte_len: 6
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read
-  name: ecnsysLONNeuronID
-  parameter: array
-vitocom_subscriber_number:
-  addr: 30583
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mode: read_write
-  name: ecnsysVitocomTeilnehmernummer
-  parameter: byte
-vitocom_system_number:
-  addr: 30582
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mode: read_write
-  name: ecnsysVitocomAnlagennummer
-  parameter: byte
