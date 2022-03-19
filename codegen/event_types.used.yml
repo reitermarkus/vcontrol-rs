@@ -31263,6 +31263,28 @@
   mode: read
   name: Zubringerpumpe
   parameter: byte
+7183:
+  addr: 29959
+  bit_pos: 0
+  block_count: 10
+  block_len: 90
+  byte_len: 90
+  byte_pos: 0
+  data_type: Error
+  mapping_type: ErrorHistory
+  mode: read
+  name: ecnsysEventType~Error
+  parameter: array
+7184:
+  addr: 30049
+  bit_pos: 0
+  block_len: 10
+  byte_len: 10
+  byte_pos: 0
+  data_type: ErrorIndex
+  mode: read
+  name: ecnsysEventType~ErrorIndex
+  parameter: array
 7191:
   addr: 8192
   bit_pos: 0
@@ -34704,6 +34726,17 @@
   name: nvoNodeTimeSet_second
   parameter: int
   upper_border: 59.0
+7518:
+  addr: 30049
+  bit_pos: 0
+  block_count: 10
+  block_len: 90
+  byte_len: 90
+  byte_pos: 0
+  data_type: ErrorIndex
+  mode: read
+  name: ecnsysEventType~BHKWErrorIndex
+  parameter: array
 7520:
   addr: 4100
   bit_pos: 0

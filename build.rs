@@ -136,7 +136,8 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<
   let mut device_map = phf_codegen::Map::<DeviceIdRange>::new();
   for (device_id, device) in &mappings {
     let id_range = DeviceIdRange {
-      id: device.id,
+      group_id: ((device.id & 0xff00) >> 2) as u8,
+      id: (device.id & 0x00ff) as u8,
       hardware_index: device.id_ext.map(|id_ext| (id_ext >> 8) as u8),
       hardware_index_till: device.id_ext_till.map(|id_ext_till| (id_ext_till >> 8) as u8),
       software_index: device.id_ext.map(|id_ext| (id_ext & 0xff) as u8),

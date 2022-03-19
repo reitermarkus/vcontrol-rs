@@ -1,7 +1,7 @@
-use std::fmt;
+use core::fmt;
+use core::str::FromStr;
 
 use arrayref::array_ref;
-use chrono::{NaiveTime, Timelike};
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
 use serde::{Serialize, Serializer, de, Deserialize, Deserializer};
@@ -111,7 +111,7 @@ impl fmt::Debug for CircuitTime {
 }
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct TimeSpan {
   from: Time,
   to: Time,
@@ -130,7 +130,7 @@ impl fmt::Display for TimeSpan {
 }
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct Time {
   hour: u8,
   minute: u8,
@@ -144,7 +144,7 @@ impl Time {
         let hour = byte >> 3;
         let minute = (byte & 0b111) * 10;
 
-        assert!(hour < 24);
+        assert!(hour <= 24);
         assert!(minute < 60);
 
         Some(Self { hour, minute })
@@ -163,20 +163,67 @@ impl fmt::Display for Time {
   }
 }
 
+impl FromStr for Time {
+  type Err = &'static str;
+
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    let mut chars = s.chars();
+
+    fn char_to_u8(c: char) -> Option<u8> {
+      if matches!(c, '0'..='9') {
+        return Some(c as u8 - '0' as u8)
+      }
+
+      None
+    }
+
+    let h1 = chars.next().and_then(char_to_u8).ok_or("first hour character is not a number")?;
+    let h2 = chars.next().and_then(char_to_u8).ok_or("second hour character is not a number")?;
+    chars.next().filter(|&sep| sep == ':').ok_or("separator is not ':'")?;
+    let m1 = chars.next().and_then(char_to_u8).ok_or("first minute character is not a number")?;
+    let m2 = chars.next().and_then(char_to_u8).ok_or("second minute character is not a number")?;
+
+    let hour = h1 * 10 + h2;
+
+    if hour > 24 {
+      return Err("hour out of range")
+    }
+
+    let minute = m1 * 10 + m2;
+
+    if minute >= 60 {
+      return Err("minute out of range")
+    }
+
+    Ok(Time { hour, minute })
+  }
+}
+
 impl<'de> Deserialize<'de> for Time {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
   where
       D: Deserializer<'de>,
   {
     let s = String::deserialize(deserializer)?;
-    let time = NaiveTime::parse_from_str(&s, "%H:%M").map_err(de::Error::custom)?;
-
-    Ok(Time { hour: time.hour() as u8, minute: time.minute() as u8 })
+    s.parse::<Time>().map_err(de::Error::custom)
   }
 }
 
 impl Serialize for Time {
   fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
     serializer.serialize_str(&self.to_string())
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn time_from_str_24() {
+    let s = r#""24:00""#;
+
+    let time = serde_json::from_str::<Time>(s).unwrap();
+    assert_eq!(time, Time { hour: 24, minute: 0 });
   }
 }

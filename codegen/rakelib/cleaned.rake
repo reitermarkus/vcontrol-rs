@@ -210,22 +210,24 @@ def map_event_type_name(name)
     .sub(/\A@@viessmann(-ess)?\.eventtype\.name\.(viessmann\.eventtype\.name\.)?/, '')
 end
 
-file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do |t|
-  system_event_types_raw, translations_raw = t.sources.map { |source| load_yaml(source) }
+file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW, DATAPOINT_DEFINITIONS_CLEANED] do |t|
+  system_event_types_raw, translations_raw, datapoint_definitions_cleaned = t.sources.map { |source| load_yaml(source) }
+
+  event_type_ids = datapoint_definitions_cleaned.fetch('event_types').map { |_, v| v.fetch('type_id') }
 
   system_event_types = system_event_types_raw.reduce({}) { |h, (event_type_id, event_type)|
     next h unless event_type_supported?(event_type_id, event_type)
     event_type['type_id'] = event_type_id
+
+    next h if event_type_ids.include?(event_type_id)
 
     case event_type_id
     when 'ecnsysDeviceIdent'
       event_type['value_type'] = 'DeviceId'
     when 'ecnsysDeviceIdentF0'
       event_type['value_type'] = 'DeviceIdF0'
-    when /\AecnsysEventType~(BHKW)?ErrorIndex\Z/, 'ecnsysErrorBuffer'
-      event_type['value_type'] = 'ErrorIndex'
-    when /\AecnsysFehlerhistorie\d+\Z/, /\AecnsysEventType~(BHKW)?Error\Z/
-      event_type['value_type'] = 'Error'
+    when 'ecnsysErrorBuffer', /\AecnsysFehlerhistorie\d+\Z/, 'ecnsysControllerSerialNumber', 'ecnsysDeviceBoilerSerialNumber'
+      next h
     end
 
     event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
@@ -337,7 +339,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     [datapoint_type_id, v]
   }.to_h
 
-  event_value_types = event_value_types.map { |k, v|
+  event_value_types = event_value_types.reduce({}) { |h, (k, v)|
     if unit = v.delete('unit')
       v['unit'] = map_unit(unit)
     end
@@ -384,8 +386,9 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
       raise
     end
 
-    [k, v]
-  }.to_h
+    h[k] = v
+    h
+  }
 
   event_types = event_types.reduce({}) { |h, (id, event_type)|
     event_type_id = map_event_type_name(event_type.fetch('name'))
@@ -462,13 +465,11 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   event_types = datapoint_definitions.fetch('event_types')
 
   devices = datapoints.filter_map { |datapoint_type_id, v|
-    v['event_types'].reject! { |id|
-      type_id = event_types.fetch(id).fetch('type_id')
-      system_event_types.key?(type_id)
-    }
-
     # Remove devices without any supported event types.
-    next if v['event_types'].empty?
+    next if v['event_types'].reject { |id|
+      type_id = event_types.fetch(id).fetch('type_id')
+      type_id.match?(/\AecnsysEventType~Error(Index)?\Z/)
+    }.empty?
 
     [datapoint_type_id, v]
   }.to_h

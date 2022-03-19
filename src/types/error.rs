@@ -66,19 +66,22 @@ impl fmt::Debug for Error {
 mod tests {
   use super::*;
 
+  use chrono::Timelike;
+  use chrono::Datelike;
+
   #[test]
   fn new() {
     let time = DateTime::new(2018, 12, 23, 17, 49, 31);
     let error = Error::new(0xAC, time.clone());
 
     assert_eq!(error.index, 0xAC);
-    assert_eq!(time.year(), 2018);
-    assert_eq!(time.month(), 12);
-    assert_eq!(time.day(), 23);
-    assert_eq!(time.weekday(), 7);
-    assert_eq!(time.hour(), 17);
-    assert_eq!(time.minute(), 49);
-    assert_eq!(time.second(), 31);
+    assert_eq!(time.0.year(), 2018);
+    assert_eq!(time.0.month(), 12);
+    assert_eq!(time.0.day(), 23);
+    assert_eq!(time.0.weekday().number_from_monday(), 7);
+    assert_eq!(time.0.hour(), 17);
+    assert_eq!(time.0.minute(), 49);
+    assert_eq!(time.0.second(), 31);
   }
 
   #[test]
@@ -86,13 +89,13 @@ mod tests {
     let error = Error::from_bytes(&[0xAC, 0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);
 
     assert_eq!(error.index, 0xAC);
-    assert_eq!(error.time.year(), 2018);
-    assert_eq!(error.time.month(), 12);
-    assert_eq!(error.time.day(), 23);
-    assert_eq!(error.time.weekday(), 7);
-    assert_eq!(error.time.hour(), 17);
-    assert_eq!(error.time.minute(), 49);
-    assert_eq!(error.time.second(), 31);
+    assert_eq!(error.time.0.year(), 2018);
+    assert_eq!(error.time.0.month(), 12);
+    assert_eq!(error.time.0.day(), 23);
+    assert_eq!(error.time.0.weekday().number_from_monday(), 7);
+    assert_eq!(error.time.0.hour(), 17);
+    assert_eq!(error.time.0.minute(), 49);
+    assert_eq!(error.time.0.second(), 31);
   }
 
   #[test]

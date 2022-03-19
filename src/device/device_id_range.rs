@@ -7,7 +7,8 @@ use phf_shared::{PhfHash, FmtConst};
 /// Device identifier range used for detecting device type.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DeviceIdRange {
-  pub(crate) id: u16,
+  pub(crate) group_id: u8,
+  pub(crate) id: u8,
   pub(crate) hardware_index: Option<u8>,
   pub(crate) hardware_index_till: Option<u8>,
   pub(crate) software_index: Option<u8>,
@@ -18,7 +19,8 @@ pub struct DeviceIdRange {
 
 impl PhfHash for DeviceIdRange {
   fn phf_hash<H: Hasher>(&self, state: &mut H) {
-    self.id.to_be_bytes().phf_hash(state);
+    self.group_id.phf_hash(state);
+    self.id.phf_hash(state);
 
     self.hardware_index.map(|b| [1, b]).unwrap_or([0, 0]).phf_hash(state);
     self.hardware_index_till.map(|b| [1, b]).unwrap_or([0, 0]).phf_hash(state);

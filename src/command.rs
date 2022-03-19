@@ -29,8 +29,6 @@ impl Command {
   }
 
   pub(crate) fn parse_value(&self, buf: &[u8], bytes: &[u8]) -> Result<Value, Error> {
-    log::debug!("{}", bytes.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" "));
-
     if bytes.iter().all(|&b| b == 0xff) && !matches!(
       self.data_type, DataType::DeviceId | DataType::DeviceIdF0 | DataType::ErrorIndex
     ) {
@@ -102,14 +100,16 @@ impl Command {
 
         if let Some(bit_len) = self.bit_len {
           for i in 0..bit_len {
-            let byte = (self.bit_pos + i) / 8;
-            let bit = (self.bit_pos + i) % 8;
-            let bit_mask = 1 << (8 - bit);
+            let bit_pos = self.bit_pos + i;
 
-            if (buf[byte] & bit_mask) == 0 {
-              n <<= 1;
-            } else {
-              n = (n << 1) | 0b1;
+            let byte = bit_pos / 8;
+            let bit = bit_pos % 8;
+            let bit_mask = 0b10000000 >> bit;
+
+            n <<= 1;
+
+            if (buf[byte] & bit_mask) != 0 {
+              n |= 0b1;
             }
           }
         } else {
@@ -174,10 +174,6 @@ impl Command {
     protocol.get(o, self.addr, &mut buf)?;
 
     let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
-
-    log::debug!("bytes: {:?}", bytes);
-
-    log::debug!("DataType: {:?}", self.data_type);
 
     if let Some(block_count) = self.block_count {
       let block_len = self.block_len / block_count;
