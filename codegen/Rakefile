@@ -343,11 +343,11 @@ def type_to_command(type_id, type, mappings:, translations:)
   command['conversion_factor'] = type['conversion_factor']
   command['conversion_offset'] = type['conversion_offset']
 
-  command['block_factor'] = type['block_factor']
+  command['block_count'] = type['block_factor']
   command['block_len'] = type.fetch('block_length')
   command['byte_len'] = type.fetch('byte_length')
   command['byte_pos'] = type.fetch('byte_position')
-  command['bit_len'] = type.fetch('bit_length')
+  command['bit_len'] = type['bit_length']
   command['bit_pos'] = type.fetch('bit_position')
 
   if (lower_border = type.fetch('lower_border', nil))

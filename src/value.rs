@@ -13,7 +13,8 @@ pub enum Value {
   DeviceIdF0(DeviceIdF0),
   Int(i64),
   Double(f64),
-  Array(Vec<u8>),
+  ByteArray(Vec<u8>),
+  Array(Vec<Value>),
   String(String),
   Date(Date),
   DateTime(DateTime),
@@ -56,20 +57,20 @@ impl Value {
       Conversion::SecToMinute => convert_double!(self, /, 60.0),
       Conversion::SecToHour => convert_double!(self, /, 3600.0),
       Conversion::HexByteToAsciiByte => {
-        if let Value::Array(bytes) = self {
+        if let Value::ByteArray(bytes) = self {
           let s = bytes.iter().filter(|b| **b != b'0').map(|b| char::from(*b)).collect::<String>();
           *self = Value::String(s);
           return
         }
       },
       Conversion::HexByteToVersion => {
-        if let Value::Array(bytes) = self {
+        if let Value::ByteArray(bytes) = self {
           *self = Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join("."));
           return
         }
       },
       Conversion::RotateBytes => {
-        if let Value::Array(array) = self {
+        if let Value::ByteArray(array) = self {
           array.reverse();
           return
         }
@@ -127,6 +128,7 @@ impl fmt::Display for OutputValue {
       },
       Value::Double(n) => write!(f, "{}", n)?,
       Value::Array(array) => write!(f, "{:?}", array)?,
+      Value::ByteArray(byte_array) => write!(f, "{:?}", byte_array)?,
       Value::Date(date) => write!(f, "{}", date)?,
       Value::DateTime(date_time) => write!(f, "{}", date_time)?,
       Value::Error(error) => {

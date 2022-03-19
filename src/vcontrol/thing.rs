@@ -32,7 +32,7 @@ impl ValueForwarder for VcontrolValueForwarder {
       DataType::DateTime => serde_json::from_value::<DateTime>(value).map(Value::DateTime),
       DataType::Error => serde_json::from_value::<Error>(value).map(Value::Error),
       DataType::CircuitTimes => serde_json::from_value::<CircuitTimes>(value).map(Value::CircuitTimes),
-      DataType::ByteArray => serde_json::from_value::<Vec<u8>>(value).map(Value::Array),
+      DataType::ByteArray => serde_json::from_value::<Vec<u8>>(value).map(Value::ByteArray),
     };
 
     let vcontrol_value = match vcontrol_value {

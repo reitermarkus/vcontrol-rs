@@ -217,22 +217,20 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW] do
     next h unless event_type_supported?(event_type_id, event_type)
     event_type['type_id'] = event_type_id
 
-    clean_event_type(event_type)
-
     case event_type_id
     when 'ecnsysDeviceIdent'
       event_type['value_type'] = 'DeviceId'
     when 'ecnsysDeviceIdentF0'
       event_type['value_type'] = 'DeviceIdF0'
-    when 'ecnsysEventType~ErrorIndex'
+    when /\AecnsysEventType~(BHKW)?ErrorIndex\Z/, 'ecnsysErrorBuffer'
       event_type['value_type'] = 'ErrorIndex'
-    when /\AecnsysFehlerhistorie\d+\Z/
+    when /\AecnsysFehlerhistorie\d+\Z/, /\AecnsysEventType~(BHKW)?Error\Z/
       event_type['value_type'] = 'Error'
     end
 
     event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
 
-    h[event_type_id] = event_type
+    h[event_type_id] = clean_event_type(event_type)
     h
   }
 
@@ -385,12 +383,10 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     [k, v]
   }.to_h
 
-  event_types = event_types.filter_map { |id, event_type|
+  event_types = event_types.reduce({}) { |h, (id, event_type)|
     event_type_id = map_event_type_name(event_type.fetch('name'))
-    next unless event_type_supported?(event_type_id, event_type)
+    next h unless event_type_supported?(event_type_id, event_type)
     event_type['type_id'] = event_type_id
-
-    clean_event_type(event_type)
 
     value_types = event_type.delete('value_types')&.reduce({}) { |h, value_type|
       h.deep_merge!(event_value_types.fetch(value_type).deep_dup)
@@ -398,8 +394,9 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
 
     event_type.merge!(value_types) if value_types
 
-    [id, event_type]
-  }.to_h
+    h[id] = clean_event_type(event_type)
+    h
+  }
 
   datapoint_definitions = {
     'datapoints' => datapoints,
@@ -430,6 +427,12 @@ def clean_event_type(event_type)
   if (block_factor = event_type['block_factor'])
     if block_factor.zero?
       event_type.delete('block_factor')
+    elsif event_type['value_type'] == 'CircuitTimes'
+      if block_factor == 7
+        event_type.delete('block_factor')
+      elsif block_factor != 56
+        raise "Unsupported block factor #{block_factor} for CircuitTimes: #{event_type}"
+      end
     else
       block_length = event_type['block_length']
 
@@ -439,8 +442,11 @@ def clean_event_type(event_type)
     end
   end
 
+  event_type.delete('bit_length') if event_type['bit_length']&.zero?
   event_type.delete('conversion_factor') if event_type['conversion_factor']&.zero?
   event_type.delete('conversion_offset') if event_type['conversion_offset']&.zero?
+
+  event_type
 end
 
 file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED] do |t|

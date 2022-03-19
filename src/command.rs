@@ -9,11 +9,12 @@ pub struct Command {
   pub(crate) mode: AccessMode,
   pub(crate) data_type: DataType,
   pub(crate) parameter: Parameter,
+  pub(crate) block_count: Option<usize>,
   pub(crate) block_len: usize,
   pub(crate) byte_len: usize,
   pub(crate) byte_pos: usize,
   pub(crate) bit_pos: usize,
-  pub(crate) bit_len: usize,
+  pub(crate) bit_len: Option<usize>,
   pub(crate) conversion: Option<Conversion>,
   pub(crate) lower_bound: Option<f64>,
   pub(crate) upper_bound: Option<f64>,
@@ -27,17 +28,8 @@ impl Command {
     self.mode
   }
 
-  pub fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
-    log::trace!("Command::get(…)");
-
-    if !self.mode.is_read() {
-      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)))
-    }
-
-    let mut buf = vec![0; self.block_len];
-    protocol.get(o, self.addr, &mut buf)?;
-
-    let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
+  pub(crate) fn parse_value(&self, buf: &[u8], bytes: &[u8]) -> Result<Value, Error> {
+    log::debug!("{}", bytes.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" "));
 
     if bytes.iter().all(|&b| b == 0xff) && !matches!(
       self.data_type, DataType::DeviceId | DataType::DeviceIdF0 | DataType::ErrorIndex
@@ -47,18 +39,18 @@ impl Command {
 
     let mut value = match &self.data_type {
       DataType::DeviceId => {
-        if buf.len() != 8 {
+        if bytes.len() != 8 {
           return Err(Error::InvalidFormat("array length is not 8".to_string()))
         }
 
-        Value::DeviceId(DeviceId::from_bytes(array_ref![buf, 0, 8]))
+        Value::DeviceId(DeviceId::from_bytes(array_ref![bytes, 0, 8]))
       },
       DataType::DeviceIdF0 => {
-        if buf.len() != 2 {
+        if bytes.len() != 2 {
           return Err(Error::InvalidFormat("array length is not 2".to_string()))
         }
 
-        Value::DeviceIdF0(DeviceIdF0::from_bytes(array_ref![buf, 0, 2]))
+        Value::DeviceIdF0(DeviceIdF0::from_bytes(array_ref![bytes, 0, 2]))
       },
       DataType::Date => {
         if bytes.len() != 8 {
@@ -81,7 +73,14 @@ impl Command {
 
         Value::CircuitTimes(CircuitTimes::from_bytes(array_ref![bytes, 0, 56]))
       },
-      DataType::ErrorIndex => Value::Int(bytes[0] as i64),
+      DataType::ErrorIndex => {
+        if bytes.len() != 10 {
+          return Err(Error::InvalidFormat("array length is not 10".to_string()))
+        }
+
+        let errors = bytes.into_iter().copied().take_while(|&b| b != 0).collect();
+        Value::ByteArray(errors)
+      },
       DataType::Error => {
         if bytes.len() != 9 {
           return Err(Error::InvalidFormat("array length is not 9".to_string()))
@@ -97,12 +96,12 @@ impl Command {
           Err(err) => return Err(Error::Utf8(err)),
         }
       },
-      DataType::ByteArray => Value::Array(bytes.to_vec()),
+      DataType::ByteArray => Value::ByteArray(bytes.to_vec()),
       t => {
         let mut n: i32 = 0;
 
-        if self.bit_len > 0 {
-          for i in 0..self.bit_len {
+        if let Some(bit_len) = self.bit_len {
+          for i in 0..bit_len {
             let byte = (self.bit_pos + i) / 8;
             let bit = (self.bit_pos + i) % 8;
             let bit_mask = 1 << (8 - bit);
@@ -164,6 +163,38 @@ impl Command {
     Ok(value)
   }
 
+  pub fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
+    log::trace!("Command::get(…)");
+
+    if !self.mode.is_read() {
+      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)))
+    }
+
+    let mut buf = vec![0; self.block_len];
+    protocol.get(o, self.addr, &mut buf)?;
+
+    let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
+
+    log::debug!("bytes: {:?}", bytes);
+
+    log::debug!("DataType: {:?}", self.data_type);
+
+    if let Some(block_count) = self.block_count {
+      let block_len = self.block_len / block_count;
+
+      let mut values = vec![];
+      for i in 0..block_count {
+        let start = i * block_len;
+        let value = self.parse_value(&buf, &bytes[(start)..(start + block_len)])?;
+        values.push(value);
+      }
+
+      Ok(Value::Array(values))
+    } else {
+      self.parse_value(&buf, &bytes)
+    }
+  }
+
   pub fn set(&self, o: &mut Optolink, protocol: Protocol, mut input: Value) -> Result<(), Error> {
     log::trace!("Command::set(…)");
 
@@ -182,7 +213,7 @@ impl Command {
       (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => {
         cycletimes.to_bytes().to_vec()
       },
-      (DataType::ByteArray, Value::Array(bytes)) => {
+      (DataType::ByteArray, Value::ByteArray(bytes)) => {
         bytes.to_vec()
       },
       (DataType::String, Value::String(s)) => {

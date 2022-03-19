@@ -196,12 +196,12 @@ pub struct Command {
   mode: AccessMode,
   data_type: DataType,
   parameter: Parameter,
-  block_factor: Option<usize>,
+  block_count: Option<usize>,
   block_len: usize,
   byte_len: usize,
   byte_pos: usize,
   bit_pos: usize,
-  bit_len: usize,
+  bit_len: Option<usize>,
   #[serde(flatten)]
   conversion: Option<Conversion>,
   lower_border: Option<f64>,
@@ -229,6 +229,7 @@ impl fmt::Debug for Command {
        .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
        .field("data_type", &format_args!("crate::DataType::{:?}", self.data_type))
        .field("parameter", &format_args!("crate::Parameter::{:?}", self.parameter))
+       .field("block_count", &self.block_count)
        .field("block_len", &self.block_len)
        .field("byte_len", &self.byte_len)
        .field("byte_pos", &self.byte_pos)

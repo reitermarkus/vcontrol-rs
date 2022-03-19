@@ -1,31 +1,28 @@
 ---
 chp_error:
   addr: 29959
-  bit_len: 0
   bit_pos: 0
-  block_factor: 10
+  block_count: 10
   block_len: 100
   byte_len: 100
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: ecnsysEventType~BHKWError
   parameter: array
 chp_error_index:
   addr: 30049
-  bit_len: 0
   bit_pos: 0
-  block_factor: 10
+  block_count: 10
   block_len: 90
   byte_len: 90
   byte_pos: 0
-  data_type: ByteArray
+  data_type: ErrorIndex
   mode: read
   name: ecnsysEventType~BHKWErrorIndex
   parameter: array
 controller_serial_number:
   addr: 61440
-  bit_len: 0
   bit_pos: 0
   block_len: 16
   byte_len: 16
@@ -37,7 +34,6 @@ controller_serial_number:
   parameter: string
 device_boiler_serial_number:
   addr: 61456
-  bit_len: 0
   bit_pos: 0
   block_len: 16
   byte_len: 16
@@ -49,7 +45,6 @@ device_boiler_serial_number:
   parameter: string
 device_id:
   addr: 248
-  bit_len: 0
   bit_pos: 0
   block_len: 8
   byte_len: 8
@@ -60,7 +55,6 @@ device_id:
   parameter: byte
 device_id_f0:
   addr: 240
-  bit_len: 0
   bit_pos: 0
   block_len: 2
   byte_len: 2
@@ -71,30 +65,27 @@ device_id_f0:
   parameter: byte
 error:
   addr: 29959
-  bit_len: 0
   bit_pos: 0
-  block_factor: 10
+  block_count: 10
   block_len: 90
   byte_len: 90
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: ecnsysEventType~Error
   parameter: array
 error_buffer:
   addr: 30049
-  bit_len: 0
   bit_pos: 0
   block_len: 10
   byte_len: 10
   byte_pos: 0
-  data_type: ByteArray
+  data_type: ErrorIndex
   mode: read
   name: ecnsysErrorBuffer
   parameter: array
 error_history_0:
   addr: 29959
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -107,7 +98,6 @@ error_history_0:
   upper_border: 0.0
 error_history_1:
   addr: 29968
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -120,7 +110,6 @@ error_history_1:
   upper_border: 0.0
 error_history_2:
   addr: 29977
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -133,7 +122,6 @@ error_history_2:
   upper_border: 0.0
 error_history_3:
   addr: 29986
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -146,7 +134,6 @@ error_history_3:
   upper_border: 0.0
 error_history_4:
   addr: 29995
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -159,7 +146,6 @@ error_history_4:
   upper_border: 0.0
 error_history_5:
   addr: 30004
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -172,7 +158,6 @@ error_history_5:
   upper_border: 0.0
 error_history_6:
   addr: 30013
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -185,7 +170,6 @@ error_history_6:
   upper_border: 0.0
 error_history_7:
   addr: 30022
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -198,7 +182,6 @@ error_history_7:
   upper_border: 0.0
 error_history_8:
   addr: 30031
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -211,7 +194,6 @@ error_history_8:
   upper_border: 0.0
 error_history_9:
   addr: 30040
-  bit_len: 0
   bit_pos: 0
   block_len: 9
   byte_len: 9
@@ -224,7 +206,6 @@ error_history_9:
   upper_border: 0.0
 error_index:
   addr: 30049
-  bit_len: 0
   bit_pos: 0
   block_len: 10
   byte_len: 10
@@ -235,7 +216,6 @@ error_index:
   parameter: array
 lon_communication_module:
   addr: 30582
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1
@@ -247,7 +227,6 @@ lon_communication_module:
   parameter: byte
 lon_communication_module_wp:
   addr: 30480
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1
@@ -259,7 +238,6 @@ lon_communication_module_wp:
   parameter: byte
 lon_device_id:
   addr: 30616
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1
@@ -270,7 +248,6 @@ lon_device_id:
   parameter: byte
 lon_error_manager:
   addr: 30585
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1
@@ -282,7 +259,6 @@ lon_error_manager:
   parameter: byte
 lon_member_id:
   addr: 30583
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1
@@ -293,7 +269,6 @@ lon_member_id:
   parameter: byte
 lon_neuron_id:
   addr: 40969
-  bit_len: 0
   bit_pos: 0
   block_len: 6
   byte_len: 6
@@ -304,7 +279,6 @@ lon_neuron_id:
   parameter: array
 vitocom_subscriber_number:
   addr: 30583
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1
@@ -315,7 +289,6 @@ vitocom_subscriber_number:
   parameter: byte
 vitocom_system_number:
   addr: 30582
-  bit_len: 0
   bit_pos: 0
   block_len: 1
   byte_len: 1

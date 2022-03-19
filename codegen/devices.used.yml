@@ -2133,7 +2133,7 @@ CU401B_A:
   - 12621
   - 12622
   - 12623
-  error_mapping: 591
+  error_mapping: 583
   f0: 
   f0_till: 
   id: 8268
@@ -4278,7 +4278,7 @@ CU401B_G:
   - 12621
   - 12622
   - 12623
-  error_mapping: 592
+  error_mapping: 584
   f0: 
   f0_till: 
   id: 8267
@@ -6551,7 +6551,7 @@ CU401B_S:
   - 12621
   - 12622
   - 12623
-  error_mapping: 593
+  error_mapping: 585
   f0: 65535
   f0_till: 65535
   id: 8269
@@ -6635,7 +6635,7 @@ EA2:
   - 9691
   - 9736
   - 9737
-  error_mapping: 596
+  error_mapping: 588
   f0: 
   f0_till: 
   id: 8355
@@ -7758,7 +7758,7 @@ Ecotronic:
   - 12093
   - 12559
   - 12560
-  error_mapping: 597
+  error_mapping: 589
   f0: 65535
   f0_till: 65535
   id: 8244
@@ -8621,7 +8621,7 @@ Ecotronic_100:
   - 11979
   - 12006
   - 12539
-  error_mapping: 598
+  error_mapping: 590
   f0: 65535
   f0_till: 65535
   id: 8245
@@ -8633,7 +8633,7 @@ GWG_BT2:
   - 673
   - 674
   - 675
-  error_mapping: 600
+  error_mapping: 592
   f0: 
   f0_till: 
   id: 8276
@@ -8645,7 +8645,7 @@ GWG_VBEM_00:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8657,7 +8657,7 @@ GWG_VBEM_03:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8669,7 +8669,7 @@ GWG_VBEM_21:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8681,7 +8681,7 @@ GWG_VBEM_35:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8693,7 +8693,7 @@ GWG_VBEM_36:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8705,7 +8705,7 @@ GWG_VBES_00:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8717,7 +8717,7 @@ GWG_VBES_03:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8729,7 +8729,7 @@ GWG_VBES_21:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8741,7 +8741,7 @@ GWG_VBES_35:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8753,7 +8753,7 @@ GWG_VBES_36:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8765,7 +8765,7 @@ GWG_VBT2_00:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8777,7 +8777,7 @@ GWG_VBT2_03:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8789,7 +8789,7 @@ GWG_VBT2_21:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8801,7 +8801,7 @@ GWG_VBT2_35:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8813,7 +8813,7 @@ GWG_VBT2_36:
   - 673
   - 674
   - 675
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8824,7 +8824,7 @@ GWG_VWMS_00:
   - 672
   - 673
   - 674
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8835,7 +8835,7 @@ GWG_VWMS_03:
   - 672
   - 673
   - 674
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8846,7 +8846,7 @@ GWG_VWMS_21:
   - 672
   - 673
   - 674
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8857,7 +8857,7 @@ GWG_VWMS_35:
   - 672
   - 673
   - 674
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -8868,7 +8868,7 @@ GWG_VWMS_36:
   - 672
   - 673
   - 674
-  error_mapping: 601
+  error_mapping: 593
   f0: 
   f0_till: 
   id: 8275
@@ -9148,7 +9148,7 @@ V050HK1M:
   - 7567
   - 8400
   - 10796
-  error_mapping: 628
+  error_mapping: 620
   f0: 65535
   f0_till: 65535
   id: 8372
@@ -9341,7 +9341,7 @@ V050HK1M_7:
   - 7567
   - 8400
   - 10796
-  error_mapping: 628
+  error_mapping: 620
   f0: 65535
   f0_till: 65535
   id: 8372
@@ -9532,7 +9532,7 @@ V050HK1M_8:
   - 7567
   - 8400
   - 10796
-  error_mapping: 628
+  error_mapping: 620
   f0: 65535
   f0_till: 65535
   id: 8372
@@ -9727,7 +9727,7 @@ V050HK1M_9:
   - 7567
   - 8400
   - 10796
-  error_mapping: 628
+  error_mapping: 620
   f0: 65535
   f0_till: 65535
   id: 8372
@@ -10051,7 +10051,7 @@ V050HK1S:
   - 7567
   - 8400
   - 10796
-  error_mapping: 629
+  error_mapping: 621
   f0: 65535
   f0_till: 65535
   id: 8364
@@ -10297,7 +10297,7 @@ V050HK1S_7:
   - 7567
   - 8400
   - 10796
-  error_mapping: 629
+  error_mapping: 621
   f0: 65535
   f0_till: 65535
   id: 8364
@@ -10552,7 +10552,7 @@ V050HK1S_8:
   - 8400
   - 10796
   - 11927
-  error_mapping: 629
+  error_mapping: 621
   f0: 65535
   f0_till: 65535
   id: 8364
@@ -10810,7 +10810,7 @@ V050HK1S_9:
   - 8400
   - 10796
   - 11927
-  error_mapping: 629
+  error_mapping: 621
   f0: 
   f0_till: 
   id: 8364
@@ -11134,7 +11134,7 @@ V050HK1W:
   - 7567
   - 8400
   - 10796
-  error_mapping: 629
+  error_mapping: 621
   f0: 65535
   f0_till: 65535
   id: 8362
@@ -11381,7 +11381,7 @@ V050HK1W_7:
   - 7567
   - 8400
   - 10796
-  error_mapping: 629
+  error_mapping: 621
   f0: 65535
   f0_till: 65535
   id: 8362
@@ -11637,7 +11637,7 @@ V050HK1W_8:
   - 8400
   - 10796
   - 11927
-  error_mapping: 629
+  error_mapping: 621
   f0: 65535
   f0_till: 65535
   id: 8362
@@ -11896,7 +11896,7 @@ V050HK1W_9:
   - 8400
   - 10796
   - 11927
-  error_mapping: 629
+  error_mapping: 621
   f0: 
   f0_till: 
   id: 8362
@@ -12405,7 +12405,7 @@ V050HK3S:
   - 10796
   - 10797
   - 10800
-  error_mapping: 630
+  error_mapping: 622
   f0: 65535
   f0_till: 65535
   id: 8365
@@ -12794,7 +12794,7 @@ V050HK3S_7:
   - 10796
   - 10797
   - 10800
-  error_mapping: 630
+  error_mapping: 622
   f0: 65535
   f0_till: 65535
   id: 8365
@@ -13192,7 +13192,7 @@ V050HK3S_8:
   - 10797
   - 10800
   - 11927
-  error_mapping: 630
+  error_mapping: 622
   f0: 65535
   f0_till: 65535
   id: 8365
@@ -13601,7 +13601,7 @@ V050HK3S_9:
   - 10797
   - 10800
   - 11927
-  error_mapping: 630
+  error_mapping: 622
   f0: 
   f0_till: 
   id: 8365
@@ -14110,7 +14110,7 @@ V050HK3W:
   - 10796
   - 10797
   - 10800
-  error_mapping: 630
+  error_mapping: 622
   f0: 65535
   f0_till: 65535
   id: 8363
@@ -14499,7 +14499,7 @@ V050HK3W_7:
   - 10796
   - 10797
   - 10800
-  error_mapping: 630
+  error_mapping: 622
   f0: 65535
   f0_till: 65535
   id: 8363
@@ -14897,7 +14897,7 @@ V050HK3W_8:
   - 10797
   - 10800
   - 11927
-  error_mapping: 630
+  error_mapping: 622
   f0: 65535
   f0_till: 65535
   id: 8363
@@ -15306,7 +15306,7 @@ V050HK3W_9:
   - 10797
   - 10800
   - 11927
-  error_mapping: 631
+  error_mapping: 623
   f0: 
   f0_till: 
   id: 8363
@@ -15850,7 +15850,7 @@ V100CC1x:
   - 12611
   - 12612
   - 12624
-  error_mapping: 632
+  error_mapping: 624
   f0: 65535
   f0_till: 65535
   id: 8359
@@ -16228,7 +16228,7 @@ V100GC1:
   - 7178
   - 7180
   - 7567
-  error_mapping: 633
+  error_mapping: 625
   f0: 65535
   f0_till: 65535
   id: 8352
@@ -16656,7 +16656,7 @@ V100GC1A:
   - 9685
   - 9686
   - 11927
-  error_mapping: 634
+  error_mapping: 626
   f0: 
   f0_till: 
   id: 8353
@@ -17084,7 +17084,7 @@ V100GC1C:
   - 9727
   - 9728
   - 11927
-  error_mapping: 635
+  error_mapping: 627
   f0: 
   f0_till: 
   id: 8354
@@ -17393,7 +17393,7 @@ V100GC1_7:
   - 7180
   - 7182
   - 7567
-  error_mapping: 633
+  error_mapping: 625
   f0: 65535
   f0_till: 65535
   id: 8352
@@ -17713,7 +17713,7 @@ V100GC1_8:
   - 7182
   - 7567
   - 11927
-  error_mapping: 633
+  error_mapping: 625
   f0: 
   f0_till: 
   id: 8352
@@ -17919,7 +17919,7 @@ V100KC2:
   - 6058
   - 7177
   - 7179
-  error_mapping: 636
+  error_mapping: 628
   f0: 65535
   f0_till: 65535
   id: 8337
@@ -18099,7 +18099,7 @@ V100KC2_6:
   - 7177
   - 7179
   - 7182
-  error_mapping: 636
+  error_mapping: 628
   f0: 
   f0_till: 
   id: 8337
@@ -18535,7 +18535,7 @@ V100KC4B:
   - 8314
   - 8315
   - 11927
-  error_mapping: 637
+  error_mapping: 629
   f0: 
   f0_till: 
   id: 8349
@@ -18777,7 +18777,7 @@ V150KB1:
   - 7192
   - 8400
   - 10796
-  error_mapping: 638
+  error_mapping: 630
   f0: 65535
   f0_till: 65535
   id: 8338
@@ -19000,7 +19000,7 @@ V150KB1_4:
   - 8400
   - 10796
   - 11927
-  error_mapping: 639
+  error_mapping: 631
   f0: 65535
   f0_till: 65535
   id: 8338
@@ -19221,7 +19221,7 @@ V150KB1_5:
   - 8400
   - 10796
   - 11927
-  error_mapping: 639
+  error_mapping: 631
   f0: 65535
   f0_till: 65535
   id: 8338
@@ -19464,7 +19464,7 @@ V150KB1_6:
   - 8400
   - 10796
   - 11927
-  error_mapping: 639
+  error_mapping: 631
   f0: 
   f0_till: 
   id: 8338
@@ -20279,7 +20279,7 @@ V200CO1x:
   - 12611
   - 12612
   - 12624
-  error_mapping: 640
+  error_mapping: 632
   f0: 65535
   f0_till: 65535
   id: 8361
@@ -20768,7 +20768,7 @@ V200GW1:
   - 8400
   - 10796
   - 12541
-  error_mapping: 641
+  error_mapping: 633
   f0: 65535
   f0_till: 65535
   id: 8356
@@ -21153,7 +21153,7 @@ V200GW1_7:
   - 8400
   - 10796
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 65535
   f0_till: 65535
   id: 8356
@@ -21550,7 +21550,7 @@ V200GW1_8:
   - 10796
   - 11927
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 65535
   f0_till: 65535
   id: 8356
@@ -21949,7 +21949,7 @@ V200GW1_9:
   - 10796
   - 11927
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 
   f0_till: 
   id: 8356
@@ -22509,7 +22509,7 @@ V200HK3A:
   - 10800
   - 11927
   - 12541
-  error_mapping: 634
+  error_mapping: 626
   f0: 
   f0_till: 
   id: 8366
@@ -23100,7 +23100,7 @@ V200KO2B:
   - 10800
   - 11927
   - 12541
-  error_mapping: 643
+  error_mapping: 635
   f0: 
   f0_till: 
   id: 8351
@@ -23427,7 +23427,7 @@ V200KW1:
   - 8400
   - 10796
   - 12541
-  error_mapping: 644
+  error_mapping: 636
   f0: 65535
   f0_till: 65535
   id: 8340
@@ -23728,7 +23728,7 @@ V200KW1_4:
   - 10796
   - 11927
   - 12541
-  error_mapping: 645
+  error_mapping: 637
   f0: 65535
   f0_till: 65535
   id: 8340
@@ -24029,7 +24029,7 @@ V200KW1_5:
   - 10796
   - 11927
   - 12541
-  error_mapping: 645
+  error_mapping: 637
   f0: 65535
   f0_till: 65535
   id: 8340
@@ -24351,7 +24351,7 @@ V200KW1_6:
   - 10796
   - 11927
   - 12541
-  error_mapping: 645
+  error_mapping: 637
   f0: 
   f0_till: 
   id: 8340
@@ -24765,7 +24765,7 @@ V200KW2:
   - 10796
   - 10797
   - 12541
-  error_mapping: 646
+  error_mapping: 638
   f0: 65535
   f0_till: 65535
   id: 8344
@@ -25138,7 +25138,7 @@ V200KW2_4:
   - 10797
   - 11927
   - 12541
-  error_mapping: 647
+  error_mapping: 639
   f0: 65535
   f0_till: 65535
   id: 8344
@@ -25511,7 +25511,7 @@ V200KW2_5:
   - 10797
   - 11927
   - 12541
-  error_mapping: 647
+  error_mapping: 639
   f0: 65535
   f0_till: 65535
   id: 8344
@@ -25912,7 +25912,7 @@ V200KW2_6:
   - 10797
   - 11927
   - 12541
-  error_mapping: 647
+  error_mapping: 639
   f0: 
   f0_till: 
   id: 8344
@@ -27219,7 +27219,7 @@ V200WO1A:
   - 12616
   - 12617
   - 12618
-  error_mapping: 648
+  error_mapping: 640
   f0: 
   f0_till: 
   id: 8264
@@ -28134,7 +28134,7 @@ V300CM1x:
   - 12611
   - 12612
   - 12624
-  error_mapping: 649
+  error_mapping: 641
   f0: 65535
   f0_till: 65535
   id: 8383
@@ -28811,7 +28811,7 @@ V300GW2:
   - 10797
   - 10800
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 65535
   f0_till: 65535
   id: 8357
@@ -29422,7 +29422,7 @@ V300GW2A:
   - 10800
   - 11927
   - 12541
-  error_mapping: 650
+  error_mapping: 642
   f0: 
   f0_till: 
   id: 8358
@@ -29951,7 +29951,7 @@ V300GW2_7:
   - 10797
   - 10800
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 65535
   f0_till: 65535
   id: 8357
@@ -30491,7 +30491,7 @@ V300GW2_8:
   - 10800
   - 11927
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 65535
   f0_till: 65535
   id: 8357
@@ -31042,7 +31042,7 @@ V300GW2_9:
   - 10800
   - 11927
   - 12541
-  error_mapping: 642
+  error_mapping: 634
   f0: 
   f0_till: 
   id: 8357
@@ -31775,7 +31775,7 @@ V300GW6B:
   - 11636
   - 11927
   - 12541
-  error_mapping: 651
+  error_mapping: 643
   f0: 65535
   f0_till: 65535
   id: 8382
@@ -32413,7 +32413,7 @@ V300KMW1A:
   - 10800
   - 11927
   - 12541
-  error_mapping: 652
+  error_mapping: 644
   f0: 
   f0_till: 
   id: 8379
@@ -33073,7 +33073,7 @@ V300KMW2A:
   - 11636
   - 11927
   - 12541
-  error_mapping: 652
+  error_mapping: 644
   f0: 
   f0_till: 
   id: 8380
@@ -33579,7 +33579,7 @@ V300KW3:
   - 10797
   - 10800
   - 12541
-  error_mapping: 653
+  error_mapping: 645
   f0: 65535
   f0_till: 65535
   id: 8348
@@ -34025,7 +34025,7 @@ V300KW3_4:
   - 10800
   - 11927
   - 12541
-  error_mapping: 654
+  error_mapping: 646
   f0: 65535
   f0_till: 65535
   id: 8348
@@ -34471,7 +34471,7 @@ V300KW3_5:
   - 10800
   - 11927
   - 12541
-  error_mapping: 654
+  error_mapping: 646
   f0: 65535
   f0_till: 65535
   id: 8348
@@ -34958,7 +34958,7 @@ V300KW3_6:
   - 10800
   - 11927
   - 12541
-  error_mapping: 654
+  error_mapping: 646
   f0: 65535
   f0_till: 65535
   id: 8348
@@ -35677,7 +35677,7 @@ V300MW3B:
   - 11636
   - 11927
   - 12541
-  error_mapping: 655
+  error_mapping: 647
   f0: 
   f0_till: 
   id: 8381
@@ -36328,7 +36328,7 @@ V333MW1:
   - 10797
   - 10800
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 65535
   f0_till: 65535
   id: 8376
@@ -36979,7 +36979,7 @@ V333MW1S:
   - 10797
   - 10800
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 65535
   f0_till: 65535
   id: 8377
@@ -37493,7 +37493,7 @@ V333MW1S_7:
   - 10797
   - 10800
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 65535
   f0_till: 65535
   id: 8377
@@ -38018,7 +38018,7 @@ V333MW1S_8:
   - 10800
   - 11927
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 65535
   f0_till: 65535
   id: 8377
@@ -38558,7 +38558,7 @@ V333MW1S_9:
   - 10800
   - 11927
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 
   f0_till: 
   id: 8377
@@ -39072,7 +39072,7 @@ V333MW1_7:
   - 10797
   - 10800
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 65535
   f0_till: 65535
   id: 8376
@@ -39597,7 +39597,7 @@ V333MW1_8:
   - 10800
   - 11927
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 65535
   f0_till: 65535
   id: 8376
@@ -40133,7 +40133,7 @@ V333MW1_9:
   - 10800
   - 11927
   - 12541
-  error_mapping: 656
+  error_mapping: 648
   f0: 
   f0_till: 
   id: 8376
@@ -40663,7 +40663,7 @@ V333MW2:
   - 10800
   - 11927
   - 12541
-  error_mapping: 657
+  error_mapping: 649
   f0: 
   f0_till: 
   id: 8378
@@ -41189,7 +41189,7 @@ V333MW2_2:
   - 10800
   - 11927
   - 12541
-  error_mapping: 657
+  error_mapping: 649
   f0: 
   f0_till: 
   id: 8378
@@ -42037,7 +42037,7 @@ VBC550P:
   - 7645
   - 8458
   - 11927
-  error_mapping: 658
+  error_mapping: 650
   f0: 
   f0_till: 
   id: 8243
@@ -42785,7 +42785,7 @@ VBC550S:
   - 7215
   - 8458
   - 11927
-  error_mapping: 659
+  error_mapping: 651
   f0: 
   f0_till: 
   id: 8242
@@ -43699,7 +43699,7 @@ VBC700_AW:
   - 11403
   - 11404
   - 12557
-  error_mapping: 660
+  error_mapping: 652
   f0: 
   f0_till: 
   id: 8263
@@ -44616,7 +44616,7 @@ VBC700_BW_WW:
   - 11403
   - 11404
   - 12557
-  error_mapping: 660
+  error_mapping: 652
   f0: 
   f0_till: 
   id: 8262
@@ -45922,7 +45922,7 @@ VBC702_AW:
   - 12616
   - 12617
   - 12618
-  error_mapping: 648
+  error_mapping: 640
   f0: 
   f0_till: 
   id: 8265
@@ -47337,7 +47337,7 @@ VBC702_S:
   - 12616
   - 12617
   - 12618
-  error_mapping: 661
+  error_mapping: 653
   f0: 
   f0_till: 
   id: 8266
@@ -47452,7 +47452,7 @@ VBlock-Unbekannt:
   - 7653
   - 7654
   - 7655
-  error_mapping: 662
+  error_mapping: 654
   f0: 
   f0_till: 
   id: 12288
@@ -47565,7 +47565,7 @@ VBlockBM123-177:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12301
@@ -47679,7 +47679,7 @@ VBlockBM190-238:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12302
@@ -47788,7 +47788,7 @@ VBlockBM36-66:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12298
@@ -47903,7 +47903,7 @@ VBlockBM366-437:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12303
@@ -48012,7 +48012,7 @@ VBlockBM55-80:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12299
@@ -48121,7 +48121,7 @@ VBlockBM98-150:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12300
@@ -48230,7 +48230,7 @@ VBlockEM140-207:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12292
@@ -48339,7 +48339,7 @@ VBlockEM18-36:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12289
@@ -48453,7 +48453,7 @@ VBlockEM199-263:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12293
@@ -48567,7 +48567,7 @@ VBlockEM199-293:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12294
@@ -48676,7 +48676,7 @@ VBlockEM20-39:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12304
@@ -48787,7 +48787,7 @@ VBlockEM20-39_18:
   - 8746
   - 9458
   - 10235
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12306
@@ -48899,7 +48899,7 @@ VBlockEM238-363:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12295
@@ -49014,7 +49014,7 @@ VBlockEM363-498:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12296
@@ -49129,7 +49129,7 @@ VBlockEM401-549:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12297
@@ -49239,7 +49239,7 @@ VBlockEM5:
   - 8746
   - 9458
   - 10235
-  error_mapping: 663
+  error_mapping: 655
   f0: 65535
   f0_till: 65535
   id: 12305
@@ -49348,7 +49348,7 @@ VBlockEM50-81:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12290
@@ -49463,7 +49463,7 @@ VBlockEM530-660:
   - 7514
   - 7515
   - 7516
-  error_mapping: 590
+  error_mapping: 582
   f0: 
   f0_till: 
   id: 12309
@@ -49573,7 +49573,7 @@ VBlockEM6-15:
   - 8746
   - 9458
   - 10235
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12307
@@ -49682,7 +49682,7 @@ VBlockEM70-115:
   - 7514
   - 7515
   - 7516
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12291
@@ -49792,7 +49792,7 @@ VBlockEM9-20:
   - 8746
   - 9458
   - 10235
-  error_mapping: 663
+  error_mapping: 655
   f0: 
   f0_till: 
   id: 12308
@@ -49804,7 +49804,7 @@ VCaldens:
   - 111
   - 600
   - 5374
-  error_mapping: 664
+  error_mapping: 656
   f0: 
   f0_till: 
   id: 8393
@@ -50159,7 +50159,7 @@ VDensHC1:
   - 8395
   - 11609
   - 11927
-  error_mapping: 665
+  error_mapping: 657
   f0: 65535
   f0_till: 65535
   id: 8384
@@ -50473,7 +50473,7 @@ VDensHC1_4:
   - 8395
   - 11609
   - 11927
-  error_mapping: 665
+  error_mapping: 657
   f0: 65535
   f0_till: 65535
   id: 8384
@@ -50815,7 +50815,7 @@ VDensHC2:
   - 8395
   - 11609
   - 11927
-  error_mapping: 666
+  error_mapping: 658
   f0: 65535
   f0_till: 65535
   id: 8385
@@ -51125,7 +51125,7 @@ VDensHC2_4:
   - 8395
   - 11609
   - 11927
-  error_mapping: 666
+  error_mapping: 658
   f0: 
   f0_till: 
   id: 8385
@@ -51587,7 +51587,7 @@ VDensHO1:
   - 10797
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 65535
   f0_till: 65535
   id: 8386
@@ -52031,7 +52031,7 @@ VDensHO1_4:
   - 10797
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 
   f0_till: 
   id: 8386
@@ -52366,7 +52366,7 @@ VPendHC1:
   - 8395
   - 11609
   - 11927
-  error_mapping: 668
+  error_mapping: 660
   f0: 65535
   f0_till: 65535
   id: 8387
@@ -52681,7 +52681,7 @@ VPendHC1_4:
   - 8395
   - 11609
   - 11927
-  error_mapping: 665
+  error_mapping: 657
   f0: 65535
   f0_till: 65535
   id: 8387
@@ -53093,7 +53093,7 @@ VPendHC1_40:
   - 8740
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 65535
   f0_till: 65535
   id: 8387
@@ -53434,7 +53434,7 @@ VPendHC2:
   - 8395
   - 11609
   - 11927
-  error_mapping: 666
+  error_mapping: 658
   f0: 65535
   f0_till: 65535
   id: 8388
@@ -53741,7 +53741,7 @@ VPendHC2_4:
   - 8395
   - 11609
   - 11927
-  error_mapping: 666
+  error_mapping: 658
   f0: 
   f0_till: 
   id: 8388
@@ -54146,7 +54146,7 @@ VPendHC2_40:
   - 8740
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 
   f0_till: 
   id: 8388
@@ -54608,7 +54608,7 @@ VPendHO1:
   - 10797
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 65535
   f0_till: 65535
   id: 8389
@@ -55053,7 +55053,7 @@ VPendHO1_4:
   - 10797
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 
   f0_till: 
   id: 8389
@@ -55698,7 +55698,7 @@ VPendHO1_40:
   - 10800
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 
   f0_till: 
   id: 8389
@@ -56054,7 +56054,7 @@ VPlusHC1:
   - 11609
   - 11610
   - 11927
-  error_mapping: 670
+  error_mapping: 662
   f0: 65535
   f0_till: 65535
   id: 8390
@@ -56073,7 +56073,7 @@ VPlusHC1_130:
   - 5372
   - 5374
   - 5389
-  error_mapping: 671
+  error_mapping: 663
   f0: 65535
   f0_till: 65535
   id: 8390
@@ -56397,7 +56397,7 @@ VPlusHC1_20:
   - 8395
   - 11609
   - 11927
-  error_mapping: 672
+  error_mapping: 664
   f0: 65535
   f0_till: 65535
   id: 8390
@@ -56718,7 +56718,7 @@ VPlusHC1_4:
   - 11609
   - 11610
   - 11927
-  error_mapping: 673
+  error_mapping: 665
   f0: 65535
   f0_till: 65535
   id: 8390
@@ -57135,7 +57135,7 @@ VPlusHC1_40:
   - 8740
   - 11609
   - 11927
-  error_mapping: 674
+  error_mapping: 666
   f0: 65535
   f0_till: 65535
   id: 8390
@@ -57484,7 +57484,7 @@ VPlusHC2:
   - 11609
   - 11610
   - 11927
-  error_mapping: 675
+  error_mapping: 667
   f0: 65535
   f0_till: 65535
   id: 8391
@@ -57775,7 +57775,7 @@ VPlusHC2_4:
   - 11609
   - 11610
   - 11927
-  error_mapping: 675
+  error_mapping: 667
   f0: 
   f0_till: 
   id: 8391
@@ -58184,7 +58184,7 @@ VPlusHC2_40:
   - 8740
   - 11609
   - 11927
-  error_mapping: 676
+  error_mapping: 668
   f0: 
   f0_till: 
   id: 8391
@@ -58653,7 +58653,7 @@ VPlusHO1:
   - 11609
   - 11610
   - 11927
-  error_mapping: 672
+  error_mapping: 664
   f0: 65535
   f0_till: 65535
   id: 8392
@@ -59109,7 +59109,7 @@ VPlusHO1_20:
   - 11609
   - 11610
   - 11927
-  error_mapping: 672
+  error_mapping: 664
   f0: 65535
   f0_till: 65535
   id: 8392
@@ -59559,7 +59559,7 @@ VPlusHO1_4:
   - 11609
   - 11610
   - 11927
-  error_mapping: 672
+  error_mapping: 664
   f0: 
   f0_till: 
   id: 8392
@@ -60208,7 +60208,7 @@ VPlusHO1_40:
   - 11609
   - 11610
   - 11927
-  error_mapping: 677
+  error_mapping: 669
   f0: 
   f0_till: 
   id: 8392
@@ -60557,7 +60557,7 @@ VScotHC1:
   - 8395
   - 11609
   - 11927
-  error_mapping: 665
+  error_mapping: 657
   f0: 
   f0_till: 
   id: 8393
@@ -60877,7 +60877,7 @@ VScotHC1_20:
   - 8395
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 
   f0_till: 
   id: 8393
@@ -61297,7 +61297,7 @@ VScotHC1_200:
   - 11609
   - 11655
   - 11927
-  error_mapping: 678
+  error_mapping: 670
   f0: 0
   f0_till: 9
   id: 8393
@@ -61717,7 +61717,7 @@ VScotHC1_200_10:
   - 11609
   - 11655
   - 11927
-  error_mapping: 678
+  error_mapping: 670
   f0: 10
   f0_till: 19
   id: 8393
@@ -62127,7 +62127,7 @@ VScotHC1_200_30:
   - 11609
   - 11655
   - 11927
-  error_mapping: 678
+  error_mapping: 670
   f0: 30
   f0_till: 39
   id: 8393
@@ -62443,7 +62443,7 @@ VScotHC1_4:
   - 8395
   - 11609
   - 11927
-  error_mapping: 665
+  error_mapping: 657
   f0: 
   f0_till: 
   id: 8393
@@ -62855,7 +62855,7 @@ VScotHC1_40:
   - 8740
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 
   f0_till: 
   id: 8393
@@ -63266,7 +63266,7 @@ VScotHC1_90:
   - 8464
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 
   f0_till: 
   id: 8393
@@ -63607,7 +63607,7 @@ VScotHC2:
   - 8395
   - 11609
   - 11927
-  error_mapping: 666
+  error_mapping: 658
   f0: 65535
   f0_till: 65535
   id: 8394
@@ -64030,7 +64030,7 @@ VScotHC2_200_11:
   - 11609
   - 11655
   - 11927
-  error_mapping: 679
+  error_mapping: 671
   f0: 11
   f0_till: 19
   id: 8394
@@ -64338,7 +64338,7 @@ VScotHC2_4:
   - 8395
   - 11609
   - 11927
-  error_mapping: 666
+  error_mapping: 658
   f0: 
   f0_till: 
   id: 8394
@@ -64742,7 +64742,7 @@ VScotHC2_40:
   - 8740
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 
   f0_till: 
   id: 8394
@@ -65204,7 +65204,7 @@ VScotHO1:
   - 10797
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 
   f0_till: 
   id: 8395
@@ -65654,7 +65654,7 @@ VScotHO1_20:
   - 10797
   - 11609
   - 11927
-  error_mapping: 667
+  error_mapping: 659
   f0: 65535
   f0_till: 65535
   id: 8395
@@ -66466,7 +66466,7 @@ VScotHO1_200:
   - 11655
   - 11927
   - 11958
-  error_mapping: 680
+  error_mapping: 672
   f0: 0
   f0_till: 0
   id: 8395
@@ -67391,7 +67391,7 @@ VScotHO1_200_01:
   - 12029
   - 12030
   - 12031
-  error_mapping: 681
+  error_mapping: 673
   f0: 1
   f0_till: 9
   id: 8395
@@ -68128,7 +68128,7 @@ VScotHO1_200_10:
   - 11609
   - 11655
   - 11927
-  error_mapping: 682
+  error_mapping: 674
   f0: 10
   f0_till: 10
   id: 8395
@@ -68897,7 +68897,7 @@ VScotHO1_200_11:
   - 11927
   - 12528
   - 12529
-  error_mapping: 683
+  error_mapping: 675
   f0: 11
   f0_till: 19
   id: 8395
@@ -69624,7 +69624,7 @@ VScotHO1_200_20:
   - 11609
   - 11655
   - 11927
-  error_mapping: 684
+  error_mapping: 676
   f0: 20
   f0_till: 29
   id: 8395
@@ -70350,7 +70350,7 @@ VScotHO1_200_30:
   - 11609
   - 11655
   - 11927
-  error_mapping: 684
+  error_mapping: 676
   f0: 30
   f0_till: 39
   id: 8395
@@ -70795,7 +70795,7 @@ VScotHO1_4:
   - 10797
   - 11609
   - 11927
-  error_mapping: 685
+  error_mapping: 677
   f0: 
   f0_till: 
   id: 8395
@@ -71438,7 +71438,7 @@ VScotHO1_40:
   - 10800
   - 11609
   - 11927
-  error_mapping: 669
+  error_mapping: 661
   f0: 
   f0_till: 
   id: 8395
@@ -72129,7 +72129,7 @@ VScotHO1_70:
   - 10800
   - 11609
   - 11927
-  error_mapping: 684
+  error_mapping: 676
   f0: 
   f0_till: 
   id: 8395
@@ -72849,7 +72849,7 @@ VScotHO1_72:
   - 10800
   - 11609
   - 11927
-  error_mapping: 686
+  error_mapping: 678
   f0: 65535
   f0_till: 65535
   id: 8395
@@ -73564,7 +73564,7 @@ VScotHO1_90:
   - 10800
   - 11609
   - 11927
-  error_mapping: 684
+  error_mapping: 676
   f0: 
   f0_till: 
   id: 8395
@@ -74316,7 +74316,7 @@ VSorp:
   - 10800
   - 11609
   - 11927
-  error_mapping: 687
+  error_mapping: 679
   f0: 65535
   f0_till: 65535
   id: 8395
@@ -74328,7 +74328,7 @@ VirtualHydraulicCalibration:
   - 733
   - 734
   - 801
-  error_mapping: 590
+  error_mapping: 582
   f0: 
   f0_till: 
   id: 65535
@@ -74336,7 +74336,6 @@ VirtualHydraulicCalibration:
   id_ext_till: 
 VitotwinGW_BATI:
   commands:
-  - 5424
   - 5516
   - 5525
   - 5526
@@ -74489,7 +74488,7 @@ VitotwinGW_BATI:
   - 12086
   - 12087
   - 12088
-  error_mapping: 695
+  error_mapping: 687
   f0: 65535
   f0_till: 65535
   id: 2064
@@ -74497,7 +74496,6 @@ VitotwinGW_BATI:
   id_ext_till: 257
 VitotwinGW_BATI_02:
   commands:
-  - 5424
   - 5516
   - 5525
   - 5526
@@ -74652,7 +74650,7 @@ VitotwinGW_BATI_02:
   - 12086
   - 12087
   - 12088
-  error_mapping: 695
+  error_mapping: 687
   f0: 65535
   f0_till: 65535
   id: 2064
@@ -74660,7 +74658,6 @@ VitotwinGW_BATI_02:
   id_ext_till: 258
 VitotwinGW_BATI_03:
   commands:
-  - 5424
   - 5516
   - 5525
   - 5526
@@ -74815,7 +74812,7 @@ VitotwinGW_BATI_03:
   - 12090
   - 12091
   - 12092
-  error_mapping: 695
+  error_mapping: 687
   f0: 65535
   f0_till: 65535
   id: 2064
@@ -75966,7 +75963,7 @@ Vitovalor:
   - 11960
   - 12526
   - 12527
-  error_mapping: 696
+  error_mapping: 688
   f0: 65535
   f0_till: 65535
   id: 8419
@@ -75975,7 +75972,7 @@ Vitovalor:
 WILO:
   commands:
   - 6107
-  error_mapping: 590
+  error_mapping: 582
   f0: 
   f0_till: 
   id: 1792
@@ -76209,7 +76206,7 @@ puffermgm:
   - 8455
   - 8456
   - 8457
-  error_mapping: 590
+  error_mapping: 582
   f0: 
   f0_till: 
   id: 12543

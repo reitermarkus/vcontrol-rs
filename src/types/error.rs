@@ -1,4 +1,4 @@
-use std::fmt;
+use core::fmt;
 
 use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
