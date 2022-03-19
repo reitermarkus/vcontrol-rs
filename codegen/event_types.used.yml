@@ -51076,6 +51076,17 @@
   mode: read
   name: Neptun_GWGFA
   parameter: int
+9536:
+  addr: 28672
+  bit_pos: 0
+  block_count: 10
+  block_len: 120
+  byte_len: 120
+  byte_pos: 0
+  data_type: Error
+  mode: read
+  name: ecnsysEventType~VitotwinErrorHistory
+  parameter: array
 9585:
   addr: 5120
   bit_pos: 0
@@ -61832,6 +61843,17 @@
   mode: read
   name: Ecotronic_WW_Status
   parameter: byte
+10945:
+  addr: 28672
+  bit_pos: 0
+  block_count: 10
+  block_len: 120
+  byte_len: 120
+  byte_pos: 0
+  data_type: Error
+  mode: read
+  name: ecnsysEventType~VitotwinErrorHistorySW02
+  parameter: array
 10946:
   addr: 2116
   bit_pos: 0
@@ -62946,86 +62968,6 @@
   mode: read_write
   name: Ecotronic_Solar_Umschaltventil
   parameter: byte
-11041:
-  addr: 53258
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read_write
-  name: Ecotronic_LAN_Netzmaske
-  parameter: array
-11042:
-  addr: 53262
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read_write
-  name: Ecotronic_LAN_Gateway
-  parameter: array
-11043:
-  addr: 53266
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read_write
-  name: Ecotronic_LAN_Primär_DNS_Server
-  parameter: array
-11044:
-  addr: 53270
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read_write
-  name: Ecotronic_LAN_Sek_DNS_Server
-  parameter: array
-11045:
-  addr: 53275
-  bit_pos: 0
-  block_len: 32
-  byte_len: 32
-  byte_pos: 0
-  data_type: String
-  mode: read_write
-  name: Ecotronic_LAN_Proxy_Server
-  parameter: string
-11046:
-  addr: 53309
-  bit_pos: 0
-  block_len: 32
-  byte_len: 32
-  byte_pos: 0
-  data_type: String
-  mode: read_write
-  name: Ecotronic_LAN_Proxy_User
-  parameter: string
-11047:
-  addr: 53341
-  bit_pos: 0
-  block_len: 32
-  byte_len: 32
-  byte_pos: 0
-  data_type: String
-  mode: read_write
-  name: Ecotronic_LAN_Proxy_Passwort
-  parameter: string
-11048:
-  addr: 53307
-  bit_pos: 0
-  block_len: 2
-  byte_len: 2
-  byte_pos: 0
-  data_type: Int
-  mode: read_write
-  name: Ecotronic_LAN_Proxy_Port
-  parameter: int
 11049:
   addr: 17152
   bit_pos: 0
@@ -63899,46 +63841,6 @@
   mode: read
   name: Ecotronic_0D12
   parameter: array
-11125:
-  addr: 53400
-  bit_pos: 0
-  block_len: 32
-  byte_len: 32
-  byte_pos: 0
-  data_type: Int
-  mode: read
-  name: Ecotronic_LAN_Kolibri_Projekt
-  parameter: int
-11126:
-  addr: 53432
-  bit_pos: 0
-  block_len: 16
-  byte_len: 16
-  byte_pos: 0
-  data_type: Int
-  mode: read
-  name: Ecotronic_LAN_Produktionsdaten
-  parameter: int
-11127:
-  addr: 53448
-  bit_pos: 0
-  block_len: 16
-  byte_len: 16
-  byte_pos: 0
-  data_type: Int
-  mode: read
-  name: Ecotronic_LAN_Gerätepasswort
-  parameter: int
-11128:
-  addr: 53248
-  bit_pos: 0
-  block_len: 6
-  byte_len: 6
-  byte_pos: 0
-  data_type: String
-  mode: read
-  name: Ecotronic_LAN_MAC_Adresse
-  parameter: string
 11129:
   addr: 21801
   bit_pos: 0

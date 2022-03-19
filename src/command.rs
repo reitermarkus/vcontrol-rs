@@ -29,9 +29,7 @@ impl Command {
   }
 
   pub(crate) fn parse_value(&self, buf: &[u8], bytes: &[u8]) -> Result<Value, Error> {
-    if bytes.iter().all(|&b| b == 0xff) && !matches!(
-      self.data_type, DataType::DeviceId | DataType::DeviceIdF0 | DataType::ErrorIndex
-    ) {
+    if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty)
     }
 
