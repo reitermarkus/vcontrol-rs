@@ -297,6 +297,10 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
       when 'option'
         field_name = 'option_list'
         parse_option_list(value)
+      when 'mapping_type'
+        mapping_types = table_extension.fetch('options_value')
+        mapping_type = mapping_types.fetch(value)
+        mapping_type unless mapping_type == 'NoMap'
       else
         value
       end

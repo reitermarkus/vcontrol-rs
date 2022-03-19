@@ -114,11 +114,15 @@ def parse_bool(text)
 end
 
 def parse_value_list(text)
+  return if text.empty?
+
   text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [Integer(k), clean_enum_text(nil, k, v)] }.to_h
 end
 
 def parse_options_value(text)
-  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [k, v] }.to_h
+  return if text.empty?
+
+  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [v, k] }.to_h
 end
 
 def parse_option_list(text)
@@ -252,7 +256,7 @@ def event_types(path, reverse_translations: {})
       when 'option_list'
         parse_option_list(n.text)
       when 'value_list'
-        parse_value_list(n.text).transform_values { |v|
+        parse_value_list(n.text)&.transform_values { |v|
           parse_description(v, reverse_translations: reverse_translations)
         }.compact
       when /^prefix_(read|write)$/
@@ -488,6 +492,13 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
         [name, value] unless value.nil?
       }.to_h
+
+      case table_extension['internal_data_type']
+      when 6
+        internal_default_value = table_extension.delete('internal_default_value')
+        table_extension['internal_default_value'] = Integer(internal_default_value) unless internal_default_value == ''
+        table_extension.fetch('options_value').transform_keys! { |v| Integer(v) }
+      end
 
       table_name = table_extension.fetch('table_name')
       table_extension['field_name'] = table_extension.delete('field_name').delete_prefix("label.tableextension.#{table_name}.").underscore

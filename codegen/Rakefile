@@ -339,6 +339,7 @@ def type_to_command(type_id, type, mappings:, translations:)
   end
 
   command['data_type'] = data_type
+  command['mapping_type'] = type['mapping_type']
 
   command['conversion_factor'] = type['conversion_factor']
   command['conversion_offset'] = type['conversion_offset']
