@@ -1,9 +1,10 @@
 use std::fmt;
 
 use arrayref::array_ref;
+use chrono::{NaiveTime, Timelike};
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{Serialize, Deserialize};
+use serde::{Serialize, Serializer, de, Deserialize, Deserializer};
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -129,10 +130,10 @@ impl fmt::Display for TimeSpan {
 }
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Copy)]
 struct Time {
-  hh: u8,
-  mm: u8,
+  hour: u8,
+  minute: u8,
 }
 
 impl Time {
@@ -140,21 +141,42 @@ impl Time {
     match byte {
       0xff => None,
       byte => {
-        let hh = byte >> 3;
-        let mm = (byte & 0b111) * 10;
+        let hour = byte >> 3;
+        let minute = (byte & 0b111) * 10;
 
-        Some(Self { hh, mm })
+        assert!(hour < 24);
+        assert!(minute < 60);
+
+        Some(Self { hour, minute })
       },
     }
   }
 
   pub const fn to_byte(self) -> u8 {
-    self.hh << 3 | (self.mm / 10)
+    self.hour << 3 | (self.minute / 10)
   }
 }
 
 impl fmt::Display for Time {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{:02}:{:02}", self.hh, self.mm)
+    write!(f, "{:02}:{:02}", self.hour, self.minute)
+  }
+}
+
+impl<'de> Deserialize<'de> for Time {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+      D: Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    let time = NaiveTime::parse_from_str(&s, "%H:%M").map_err(de::Error::custom)?;
+
+    Ok(Time { hour: time.hour() as u8, minute: time.minute() as u8 })
+  }
+}
+
+impl Serialize for Time {
+  fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+    serializer.serialize_str(&self.to_string())
   }
 }
