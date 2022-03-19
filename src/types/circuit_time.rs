@@ -171,7 +171,7 @@ impl FromStr for Time {
 
     fn char_to_u8(c: char) -> Option<u8> {
       if matches!(c, '0'..='9') {
-        return Some(c as u8 - '0' as u8)
+        return Some(c as u8 - b'0')
       }
 
       None

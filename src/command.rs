@@ -76,7 +76,7 @@ impl Command {
           return Err(Error::InvalidFormat("array length is not 10".to_string()))
         }
 
-        let errors = bytes.into_iter().copied().take_while(|&b| b != 0).collect();
+        let errors = bytes.iter().copied().take_while(|&b| b != 0).collect();
         Value::ByteArray(errors)
       },
       DataType::Error => {
@@ -187,7 +187,7 @@ impl Command {
 
       Ok(Value::Array(values))
     } else {
-      self.parse_value(&buf, &bytes)
+      self.parse_value(&buf, bytes)
     }
   }
 
