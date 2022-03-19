@@ -186,10 +186,12 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
         let new_value = {
           let vcontrol = vcontrol.read().unwrap();
           let mut vcontrol = vcontrol.lock().unwrap();
-          if let Ok(value) = vcontrol.get(command_name) {
-            json!(value.value)
-          } else {
-            json!(null)
+          match vcontrol.get(command_name) {
+            Ok(value) => json!(value.value),
+            Err(err) => {
+              log::error!("Failed getting value for property '{}': {}", command_name, err);
+              json!(null)
+            }
           }
         };
 
