@@ -5,23 +5,10 @@ use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp
 use serde_json;
 use webthing::{
   Action, Thing, ThingsType, WebThingServer,
-  server::ActionGenerator,
+  BaseActionGenerator,
 };
 
 use vcontrol::{Optolink, VControl, Value};
-
-struct Generator;
-
-impl ActionGenerator for Generator {
-  fn generate(
-    &self,
-    _thing: Weak<RwLock<Box<dyn Thing>>>,
-    _name: String,
-    _input: Option<&serde_json::Value>,
-  ) -> Option<Box<dyn Action>> {
-    None
-  }
-}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -126,7 +113,7 @@ async fn main() -> std::io::Result<()> {
       Some(port),
       None,
       None,
-      Box::new(Generator),
+      Box::new(BaseActionGenerator),
       None,
       Some(true),
     );
