@@ -4044,7 +4044,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 105
+  mapping: 104
   mode: read_write
   name: K00_KonfiAnlagenschemaGWG_Konstant
   parameter: byte
@@ -4055,7 +4055,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 106
+  mapping: 105
   mode: read_write
   name: K00_KonfiAnlagenschemaGWG_Uhr
   parameter: byte
@@ -4066,7 +4066,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 107
+  mapping: 106
   mode: read_write
   name: K00_KonfiAnlagenschemaGWG_W
   parameter: byte
@@ -4077,7 +4077,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 108
+  mapping: 107
   mode: read_write
   name: K00_KonfiAnlagenschemaHK1W
   parameter: byte
@@ -4088,7 +4088,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 109
+  mapping: 108
   mode: read_write
   name: K00_KonfiAnlagenschemaHK3
   parameter: byte
@@ -4099,7 +4099,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 105
+  mapping: 104
   mode: read_write
   name: K00_KonfiAnlagenschemaV100GC1
   parameter: byte
@@ -4110,7 +4110,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 110
+  mapping: 109
   mode: read_write
   name: K00_KonfiAnlagenschemaV100KC2
   parameter: byte
@@ -4121,7 +4121,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 110
+  mapping: 109
   mode: read_write
   name: K00_KonfiAnlagenschemaV150KB1
   parameter: byte
@@ -4132,7 +4132,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 111
+  mapping: 110
   mode: read_write
   name: K00_KonfiAnlagenschemaV200
   parameter: byte
@@ -4143,7 +4143,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 112
+  mapping: 111
   mode: read_write
   name: K00_KonfiAnlagenschemaV200_NR1
   parameter: byte
@@ -4154,7 +4154,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 110
+  mapping: 109
   mode: read_write
   name: K00_KonfiAnlagenschemaV200_NR1_KW1
   parameter: byte
@@ -4165,7 +4165,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 113
+  mapping: 112
   mode: read_write
   name: K00_KonfiAnlagenschemaV300_NR1
   parameter: byte
@@ -4176,7 +4176,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 114
+  mapping: 113
   mode: read_write
   name: K00_KonfiAnlagenschemaV300_V333
   parameter: byte
@@ -4187,7 +4187,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 115
+  mapping: 114
   mode: read_write
   name: K00_Mischererweiterung_KM
   parameter: byte
@@ -4198,7 +4198,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 117
+  mapping: 116
   mode: read_write
   name: K01_KonfiAnlagentyp
   parameter: byte
@@ -4209,7 +4209,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 117
+  mapping: 116
   mode: read_write
   name: K01_KonfiAnlagentyp_D
   parameter: byte
@@ -4220,7 +4220,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 118
+  mapping: 117
   mode: read_write
   name: K01_KonfiAnlagentypGWG
   parameter: byte
@@ -4231,7 +4231,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 117
+  mapping: 116
   mode: read_write
   name: K01_KonfiAnlagentypNRF
   parameter: byte
@@ -4242,7 +4242,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 119
+  mapping: 118
   mode: read_write
   name: K01_KonfiDirekteBrennerschaltung
   parameter: byte
@@ -4275,7 +4275,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 122
+  mapping: 121
   mode: read_write
   name: K02_KonfiBrennertyp1
   parameter: byte
@@ -4286,7 +4286,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 124
+  mapping: 123
   mode: read_write
   name: K03_KonfiOelGasBetrieb
   parameter: byte
@@ -4297,7 +4297,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 126
+  mapping: 125
   mode: read_write
   name: K04_KonfiKesselSchalthysterese
   parameter: byte
@@ -4499,7 +4499,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 146
+  mapping: 145
   mode: read_write
   name: K0C_Funktion_Ruecklauf
   parameter: byte
@@ -4521,7 +4521,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 147
+  mapping: 146
   mode: read_write
   name: K0C_KonfiDKRLFunktionV300
   parameter: byte
@@ -4532,7 +4532,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 149
+  mapping: 148
   mode: read_write
   name: K0D_KonfiTSA_FunktionV100GC1
   parameter: byte
@@ -4543,7 +4543,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 150
+  mapping: 149
   mode: read_write
   name: K0D_KonfiTSA_FunktionV300
   parameter: byte
@@ -4554,7 +4554,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 151
+  mapping: 150
   mode: read_write
   name: K0D_ThermControl
   parameter: byte
@@ -4565,7 +4565,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 151
+  mapping: 150
   mode: read_write
   name: K0D_ThermControl_100GC1
   parameter: byte
@@ -4824,7 +4824,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 163
+  mapping: 162
   mode: read
   name: K1E_KonfiGasart
   parameter: byte
@@ -4970,7 +4970,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 168
+  mapping: 167
   mode: read_write
   name: K24_KonfiStatusWartung
   parameter: byte
@@ -4991,7 +4991,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K25_ATS_Konstant
   parameter: byte
@@ -5053,7 +5053,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K28_KonfiIntervallzuendung
   parameter: byte
@@ -5141,7 +5141,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 173
+  mapping: 172
   mode: read_write
   name: K2D_KonfiBeimischpumpeFunktion
   parameter: byte
@@ -5152,7 +5152,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 160
+  mapping: 159
   mode: read_write
   name: K2E_KonfiKennungAnschluss
   parameter: byte
@@ -5163,7 +5163,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K2E_KonfiKennungAnschlussD
   parameter: byte
@@ -5174,7 +5174,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 174
+  mapping: 173
   mode: read_write
   name: K2F_KonfiEntlueftung
   parameter: byte
@@ -5185,7 +5185,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 176
+  mapping: 175
   mode: read_write
   name: K30_KennungIntPumpe
   parameter: byte
@@ -5196,7 +5196,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 177
+  mapping: 176
   mode: read_write
   name: K30_KennungIntPumpeKM
   parameter: byte
@@ -5244,7 +5244,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 182
+  mapping: 181
   mode: read_write
   name: K33_KonfiBrenneranforderungExtern
   parameter: byte
@@ -5375,7 +5375,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 190
+  mapping: 189
   mode: read_write
   name: K39_KonfiFesterFuehrungskessel
   parameter: byte
@@ -5386,7 +5386,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 190
+  mapping: 189
   mode: read_write
   name: K3A_KonfiFesterLetzterKessel
   parameter: byte
@@ -5397,7 +5397,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 134
+  mapping: 133
   mode: read_write
   name: K3B_KonfiRegelungsart
   parameter: byte
@@ -5408,7 +5408,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 192
+  mapping: 191
   mode: read_write
   name: K3B_KonfiRegelungsart_MW2
   parameter: byte
@@ -5419,7 +5419,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 136
+  mapping: 135
   mode: read_write
   name: K3C_KonfiRegelungsstrategie
   parameter: byte
@@ -5430,7 +5430,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 136
+  mapping: 135
   mode: read_write
   name: K3C_KonfiRegelungsstrategie_GWG
   parameter: byte
@@ -5441,7 +5441,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K3D_KonfiLeistungsbilanz
   parameter: byte
@@ -5452,7 +5452,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 139
+  mapping: 138
   mode: read_write
   name: K3E_KonfiAnsteuerungVerteilerpumpe
   parameter: byte
@@ -5463,7 +5463,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K3F_KonfiSpeichervorrang_aufVP
   parameter: byte
@@ -5633,7 +5633,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K4A_KonfiEingang17A
   parameter: byte
@@ -5644,7 +5644,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K4A_KonfiVerwendungEingang17
   parameter: byte
@@ -5655,7 +5655,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K4B_KonfiEingang17B
   parameter: byte
@@ -5666,7 +5666,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K4B_KonfiVerwendungEingang17B
   parameter: byte
@@ -5677,7 +5677,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 198
+  mapping: 197
   mode: read_write
   name: K4C_KonfiVerwendungAusgang20V100GC1
   parameter: byte
@@ -5688,7 +5688,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 199
+  mapping: 198
   mode: read_write
   name: K4C_KonfiVerwendungAusgang20V300
   parameter: byte
@@ -5699,7 +5699,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 200
+  mapping: 199
   mode: read_write
   name: K4C_KonfiVerwendungAusgang20V333_V050
   parameter: byte
@@ -5710,7 +5710,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 201
+  mapping: 200
   mode: read_write
   name: K4D_KonfiVerwendungAusgang29
   parameter: byte
@@ -5721,7 +5721,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 202
+  mapping: 201
   mode: read_write
   name: K4D_KonfiVerwendungAusgang29_Kaskade
   parameter: byte
@@ -5732,7 +5732,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 202
+  mapping: 201
   mode: read_write
   name: K4D_KonfiVerwendungAusgang29_Kaskade_MW2
   parameter: byte
@@ -5743,7 +5743,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 203
+  mapping: 202
   mode: read_write
   name: K4D_Verteilerpumpe
   parameter: byte
@@ -5754,7 +5754,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 205
+  mapping: 204
   mode: read_write
   name: K4E_KonfiVerwendungAusgang52_MW2
   parameter: byte
@@ -5765,7 +5765,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 204
+  mapping: 203
   mode: read_write
   name: K4E_KonfiVerwendungAusgang52V050
   parameter: byte
@@ -5776,7 +5776,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 205
+  mapping: 204
   mode: read_write
   name: K4E_KonfiVerwendungAusgang52V100_V300_V333
   parameter: byte
@@ -5800,7 +5800,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 208
+  mapping: 207
   mode: read
   name: K50_Reglervariante
   parameter: byte
@@ -5811,7 +5811,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K52_KonfiWeiche
   parameter: byte
@@ -5822,7 +5822,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 210
+  mapping: 209
   mode: read_write
   name: K53_Rangierung
   parameter: byte
@@ -5833,7 +5833,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 211
+  mapping: 210
   mode: read_write
   name: K53_RangierungD
   parameter: byte
@@ -5844,7 +5844,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 213
+  mapping: 212
   mode: read_write
   name: K54_Solar
   parameter: byte
@@ -5855,7 +5855,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 215
+  mapping: 214
   mode: read
   name: K54_Solar_Info
   parameter: byte
@@ -5866,7 +5866,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 216
+  mapping: 215
   mode: read_write
   name: K55_Algorithmus_Info
   parameter: byte
@@ -5877,7 +5877,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 217
+  mapping: 216
   mode: read_write
   name: K55_Algorithmus_Info_NRF
   parameter: byte
@@ -5888,7 +5888,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 218
+  mapping: 217
   mode: read_write
   name: K55_KonfiWW_Algorithmus
   parameter: byte
@@ -5899,7 +5899,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 219
+  mapping: 218
   mode: read_write
   name: K55_KonfiWW_Algorithmus_NR1
   parameter: byte
@@ -5910,7 +5910,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 220
+  mapping: 219
   mode: read_write
   name: K56_KonfiWW_SolltempBereichGWG
   parameter: byte
@@ -5921,7 +5921,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 120
+  mapping: 119
   mode: read_write
   name: K56_KonfiWW_SolltemperaturBereich
   parameter: byte
@@ -5932,7 +5932,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 221
+  mapping: 220
   mode: read_write
   name: K57_KonfiKonfigurationSpeicher
   parameter: byte
@@ -5956,7 +5956,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 128
+  mapping: 127
   mode: read_write
   name: K59_KonfiWW_EinschaltOffset
   parameter: byte
@@ -5967,7 +5967,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K5A_KonfiSpeichersollwertMax
   parameter: byte
@@ -5978,7 +5978,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 222
+  mapping: 221
   mode: read_write
   name: K5B_KonfiAnbindungSpeicher
   parameter: byte
@@ -6002,7 +6002,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 135
+  mapping: 134
   mode: read_write
   name: K61_KonfiLpumpeKTabhaengig
   parameter: byte
@@ -6013,7 +6013,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 135
+  mapping: 134
   mode: read_write
   name: K61_KonfiLpumpeKTabhaengig_NR1
   parameter: byte
@@ -6050,7 +6050,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 140
+  mapping: 139
   mode: read_write
   name: K63_KonfiWWAL_Haeufigkeit
   parameter: byte
@@ -6061,7 +6061,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 143
+  mapping: 142
   mode: read_write
   name: K64_KonfiWW_BeiPartyDNormal
   parameter: byte
@@ -6072,7 +6072,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 224
+  mapping: 223
   mode: read_write
   name: K65_KonfibauartUmschaltventil
   parameter: byte
@@ -6083,7 +6083,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 225
+  mapping: 224
   mode: read
   name: K65_KonfibauartUmschaltventil_D
   parameter: int
@@ -6094,7 +6094,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 145
+  mapping: 144
   mode: read_write
   name: K66_KonfiZugriffWW_Solltemperatur
   parameter: byte
@@ -6206,7 +6206,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 154
+  mapping: 153
   mode: read_write
   name: K70_KonfiZpumpeRelaisausgang
   parameter: byte
@@ -6239,7 +6239,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 157
+  mapping: 156
   mode: read_write
   name: K73_KonfiZpumpeIntervallFreigabe
   parameter: byte
@@ -6263,7 +6263,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 159
+  mapping: 158
   mode: read_write
   name: K75_KonfiZpumpeBeiSparbetrieb
   parameter: byte
@@ -6274,7 +6274,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 226
+  mapping: 225
   mode: read
   name: K76_GWGiKommunikationsmodul_D
   parameter: byte
@@ -6285,7 +6285,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 227
+  mapping: 226
   mode: read_write
   name: K76_Kommunikationsmodul_GWG
   parameter: byte
@@ -6296,7 +6296,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 228
+  mapping: 227
   mode: read_write
   name: K76_KonfiKommunikationsmodul
   parameter: byte
@@ -6307,7 +6307,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 229
+  mapping: 228
   mode: read
   name: K76_KonfiKommunikationsmodul_D
   parameter: byte
@@ -6318,7 +6318,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 230
+  mapping: 229
   mode: read_write
   name: K76_KonfiKommunikationsmodul_mitHV
   parameter: byte
@@ -6377,7 +6377,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 231
+  mapping: 230
   mode: read_write
   name: K78_KonfiNVKommunikationLONV100GC1
   parameter: byte
@@ -6388,7 +6388,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read
   name: K78_KonfiNVKommunikationLONV100GC1_D
   parameter: byte
@@ -6399,7 +6399,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 232
+  mapping: 231
   mode: read_write
   name: K79_KonfiFehlerManagerV100_V050
   parameter: byte
@@ -6410,7 +6410,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 232
+  mapping: 231
   mode: read
   name: K79_KonfiFehlerManagerV100_V050_D
   parameter: byte
@@ -6421,7 +6421,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 232
+  mapping: 231
   mode: read_write
   name: K79_KonfiFehlerManagerV300_V333
   parameter: byte
@@ -6432,7 +6432,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 223
+  mapping: 222
   mode: read_write
   name: K7A_KonfiZentraleHeizkreisbedienung
   parameter: byte
@@ -6443,7 +6443,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 223
+  mapping: 222
   mode: read_write
   name: K7A_ZentraleHeizkreisbedienung
   parameter: byte
@@ -6454,7 +6454,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 233
+  mapping: 232
   mode: read_write
   name: K7B_Konfi_FunktionUhrSenden
   parameter: byte
@@ -6465,7 +6465,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 233
+  mapping: 232
   mode: read_write
   name: K7B_KonfiFunktionUhrSenden
   parameter: byte
@@ -6476,7 +6476,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 233
+  mapping: 232
   mode: read_write
   name: K7B_KonfiFunktionUhrSenden_3
   parameter: byte
@@ -6487,7 +6487,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 234
+  mapping: 233
   mode: read_write
   name: K7C_KonfiResetAktiv
   parameter: byte
@@ -6498,7 +6498,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 235
+  mapping: 234
   mode: read_write
   name: K7C_KonfiResetAktiv1
   parameter: byte
@@ -6529,7 +6529,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 236
+  mapping: 235
   mode: read_write
   name: K7E_KonfiAbgaskaskade
   parameter: byte
@@ -6540,7 +6540,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 237
+  mapping: 236
   mode: read_write
   name: K7F_KonfiEinfamilienhaus
   parameter: byte
@@ -6565,7 +6565,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 241
+  mapping: 240
   mode: read
   name: K81_Konfi_FunktionUhr_D
   parameter: byte
@@ -6576,7 +6576,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 239
+  mapping: 238
   mode: read_write
   name: K81_KonfiFunktionUhr
   parameter: byte
@@ -6587,7 +6587,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 240
+  mapping: 239
   mode: read_write
   name: K81_KonfiFunktionUhrNR1
   parameter: byte
@@ -6670,7 +6670,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 125
+  mapping: 124
   mode: read_write
   name: K88_KonfiCelsiusFahrenheit
   parameter: byte
@@ -6681,7 +6681,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 244
+  mapping: 243
   mode: read_write
   name: K89_KonfiKesselanbindung
   parameter: byte
@@ -6692,7 +6692,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 245
+  mapping: 244
   mode: read_write
   name: K89_KonfiTeilnehmerkennungKMBus
   parameter: byte
@@ -6703,7 +6703,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 246
+  mapping: 245
   mode: read_write
   name: K8A_KonfiAnzeigebedingungenAktiv
   parameter: byte
@@ -6760,7 +6760,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 247
+  mapping: 246
   mode: read_write
   name: K8E_KonfiZugriffStoerungen
   parameter: byte
@@ -6798,7 +6798,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 248
+  mapping: 247
   mode: read_write
   name: K91_KonfiZuordnungExtBA_GWG
   parameter: byte
@@ -6809,7 +6809,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 138
+  mapping: 137
   mode: read_write
   name: K91_KonfiZuordnungExtBA_Umschaltung
   parameter: byte
@@ -6820,7 +6820,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 249
+  mapping: 248
   mode: read_write
   name: K91_KonfiZuordnungExtBA_Umschaltung_D
   parameter: byte
@@ -6831,7 +6831,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 138
+  mapping: 137
   mode: read_write
   name: K91_KonfiZuordnungExtBA_Umschaltung_NR1
   parameter: byte
@@ -6842,7 +6842,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K92_KonfiModulM4
   parameter: byte
@@ -6853,7 +6853,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 250
+  mapping: 249
   mode: read_write
   name: K92_KonfiReglerkennung
   parameter: byte
@@ -6864,7 +6864,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 251
+  mapping: 250
   mode: read
   name: K92_Reglerkennung_Klartext
   parameter: byte
@@ -6875,7 +6875,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 252
+  mapping: 251
   mode: read_write
   name: K93_KonfiSPBetriebWartungsanzeige
   parameter: byte
@@ -6886,7 +6886,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 253
+  mapping: 252
   mode: read_write
   name: K94_KennungAnschlusserweiterung
   parameter: byte
@@ -6897,7 +6897,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 254
+  mapping: 253
   mode: read_write
   name: K94_KonfiKennungAnschlusserweiterung
   parameter: byte
@@ -6908,7 +6908,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K94_KonfiKennungSicherheits_Steckadapter
   parameter: byte
@@ -6919,7 +6919,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 255
+  mapping: 254
   mode: read_write
   name: K94_KonfiKennungSichSteckadapter
   parameter: byte
@@ -6930,7 +6930,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 256
+  mapping: 255
   mode: read_write
   name: K95_KennungDekatelM
   parameter: byte
@@ -6941,7 +6941,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K95_KennungVitocom100
   parameter: byte
@@ -6952,7 +6952,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 160
+  mapping: 159
   mode: read_write
   name: K96_KonfiKennungMischermodul
   parameter: byte
@@ -6963,7 +6963,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 257
+  mapping: 256
   mode: read_write
   name: K97_AussentemperaturSensorDuo
   parameter: byte
@@ -6974,7 +6974,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 258
+  mapping: 257
   mode: read_write
   name: K97_Konfi_Aussentemperatur
   parameter: byte
@@ -6985,7 +6985,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 258
+  mapping: 257
   mode: read_write
   name: K97_KonfiVerwendungAussentemperaturV050
   parameter: byte
@@ -6996,7 +6996,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 258
+  mapping: 257
   mode: read_write
   name: K97_KonfiVerwendungAussentemperaturV300_V333
   parameter: byte
@@ -7007,7 +7007,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 259
+  mapping: 258
   mode: read_write
   name: K98_KonfiKommunikationsmodul_D
   parameter: byte
@@ -7042,7 +7042,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 137
+  mapping: 136
   mode: read_write
   name: K99_KonfiZuordnungExtMischerZU
   parameter: byte
@@ -7053,7 +7053,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 144
+  mapping: 143
   mode: read_write
   name: K9A_KonfiZuordnungExtMischerAUF
   parameter: byte
@@ -7090,7 +7090,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 260
+  mapping: 259
   mode: read_write
   name: K9C_KonfiReceiveHeartBeat
   parameter: byte
@@ -7101,7 +7101,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: K9D_KennungKAE0_10V
   parameter: byte
@@ -7112,7 +7112,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 160
+  mapping: 159
   mode: read_write
   name: K9D_KonfiKennungKAE0_10V
   parameter: byte
@@ -7136,7 +7136,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 261
+  mapping: 260
   mode: read_write
   name: KA0_FernbedienungM2
   parameter: byte
@@ -7147,7 +7147,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 261
+  mapping: 260
   mode: read_write
   name: KA0_FernbedienungM3
   parameter: byte
@@ -7158,7 +7158,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 261
+  mapping: 260
   mode: read_write
   name: KA0_KennungFernbedienungA1M1
   parameter: byte
@@ -7202,7 +7202,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: KA2_KonfiSpeichervorrangA1M1
   parameter: byte
@@ -7213,7 +7213,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: KA2_KonfiSpeichervorrangA1M1_HKs
   parameter: byte
@@ -7224,7 +7224,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: KA2_KonfiSpeichervorrangM2
   parameter: byte
@@ -7235,7 +7235,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: KA2_KonfiSpeichervorrangM2_HKs
   parameter: byte
@@ -7246,7 +7246,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: KA2_KonfiSpeichervorrangM3
   parameter: byte
@@ -7257,7 +7257,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: KA2_KonfiSpeichervorrangM3_HKs
   parameter: byte
@@ -7392,7 +7392,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: KA5_KonfSommersparSchaltschwelleA1M1
   parameter: byte
@@ -7403,7 +7403,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: KA5_KonfSommersparSchaltschwelleM2
   parameter: byte
@@ -7414,7 +7414,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: KA5_KonfSommersparSchaltschwelleM3
   parameter: byte
@@ -7497,7 +7497,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 264
+  mapping: 263
   mode: read_write
   name: KA8_KonfiWirkung_aufPumpe
   parameter: byte
@@ -7583,7 +7583,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 265
+  mapping: 264
   mode: read_write
   name: KAA_KonfiWirkungLeistungsreduktionM1
   parameter: byte
@@ -7594,7 +7594,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 265
+  mapping: 264
   mode: read_write
   name: KAA_KonfiWirkungLeistungsreduktionM2
   parameter: byte
@@ -7605,7 +7605,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 265
+  mapping: 264
   mode: read_write
   name: KAA_KonfiWirkungLeistungsreduktionM3
   parameter: byte
@@ -7676,7 +7676,7 @@
   byte_len: 1
   byte_pos: 18
   data_type: Int
-  mapping: 282
+  mapping: 281
   mode: read
   name: Kaskade_Steuerungsbetrieb
   parameter: byte
@@ -7804,7 +7804,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB5_KonfiRaumSommersparA1M1
   parameter: byte
@@ -7815,7 +7815,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB5_KonfiRaumSommersparM2
   parameter: byte
@@ -7826,7 +7826,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB5_KonfiRaumSommersparM3
   parameter: byte
@@ -7837,7 +7837,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB6_KonfiSchnellkorrekturA1M1
   parameter: byte
@@ -7848,7 +7848,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB6_KonfiSchnellkorrekturM2
   parameter: byte
@@ -7859,7 +7859,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB6_KonfiSchnellkorrekturM3
   parameter: byte
@@ -7870,7 +7870,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 268
+  mapping: 267
   mode: read_write
   name: KB7_KonfiEinschaltoptimierungA1M1
   parameter: byte
@@ -7881,7 +7881,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 268
+  mapping: 267
   mode: read_write
   name: KB7_KonfiEinschaltoptimierungM2
   parameter: byte
@@ -7892,7 +7892,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 268
+  mapping: 267
   mode: read_write
   name: KB7_KonfiEinschaltoptimierungM3
   parameter: byte
@@ -7939,7 +7939,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB9_KonfiLernenEinschaltA1M1
   parameter: byte
@@ -7950,7 +7950,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB9_KonfiLernenEinschaltM2
   parameter: byte
@@ -7961,7 +7961,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: KB9_KonfiLernenEinschaltM3
   parameter: byte
@@ -7972,7 +7972,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 269
+  mapping: 268
   mode: read_write
   name: KC0_KonfiAusschaltoptimierungA1M1
   parameter: byte
@@ -7983,7 +7983,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 269
+  mapping: 268
   mode: read_write
   name: KC0_KonfiAusschaltoptimierungM2
   parameter: byte
@@ -7994,7 +7994,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 269
+  mapping: 268
   mode: read_write
   name: KC0_KonfiAusschaltoptimierungM3
   parameter: byte
@@ -8047,7 +8047,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 270
+  mapping: 269
   mode: read_write
   name: KC2_KonfiLernenAusschaltA1M1
   parameter: byte
@@ -8058,7 +8058,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 270
+  mapping: 269
   mode: read_write
   name: KC2_KonfiLernenAusschaltM2
   parameter: byte
@@ -8069,7 +8069,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 270
+  mapping: 269
   mode: read_write
   name: KC2_KonfiLernenAusschaltM3
   parameter: byte
@@ -8119,7 +8119,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 271
+  mapping: 270
   mode: read_write
   name: KC4_KonfiMischerAnlagendynamikM1
   parameter: byte
@@ -8130,7 +8130,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 271
+  mapping: 270
   mode: read_write
   name: KC4_KonfiMischerAnlagendynamikM2
   parameter: byte
@@ -8141,7 +8141,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 271
+  mapping: 270
   mode: read_write
   name: KC4_KonfiMischerAnlagendynamikM3
   parameter: byte
@@ -8295,7 +8295,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 272
+  mapping: 271
   mode: read_write
   name: KC7_OptmierteMischerA1M1
   parameter: byte
@@ -8342,7 +8342,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 273
+  mapping: 272
   mode: read_write
   name: KC9_KonfiOptMiRegMitAufheizphaseA1M1
   parameter: byte
@@ -8353,7 +8353,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 273
+  mapping: 272
   mode: read_write
   name: KC9_KonfiOptMiRegMitAufheizphaseM2
   parameter: byte
@@ -8364,7 +8364,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 273
+  mapping: 272
   mode: read_write
   name: KC9_KonfiOptMiRegMitAufheizphaseM3
   parameter: byte
@@ -8375,7 +8375,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 274
+  mapping: 273
   mode: read_write
   name: KCA_KonfiDrehrichtungHeizkreisMischerM1_HK1M
   parameter: byte
@@ -8568,7 +8568,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: KD5_KonfiWirkungExtBA_UmschaltungA1M1
   parameter: byte
@@ -8579,7 +8579,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: KD5_KonfiWirkungExtBA_UmschaltungM2
   parameter: byte
@@ -8590,7 +8590,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: KD5_KonfiWirkungExtBA_UmschaltungM3
   parameter: byte
@@ -8601,7 +8601,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: KD5_WirkungExtBA_UmschaltungA1M1
   parameter: byte
@@ -8612,7 +8612,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: KD5_WirkungExtBA_UmschaltungM2
   parameter: byte
@@ -8623,7 +8623,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: KD5_WirkungExtBA_UmschaltungM3
   parameter: byte
@@ -8634,7 +8634,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 275
+  mapping: 274
   mode: read_write
   name: KE1_KonfiOffsetRT_SolltemperaturA1M1
   parameter: byte
@@ -8645,7 +8645,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 275
+  mapping: 274
   mode: read_write
   name: KE1_KonfiOffsetRT_SolltemperaturM2
   parameter: byte
@@ -8656,7 +8656,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 275
+  mapping: 274
   mode: read_write
   name: KE1_KonfiOffsetRT_SolltemperaturM3
   parameter: byte
@@ -8703,7 +8703,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 276
+  mapping: 275
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeA1_GWG
   parameter: byte
@@ -8714,7 +8714,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 276
+  mapping: 275
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeA1M1
   parameter: byte
@@ -8725,7 +8725,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeA1M1_KM
   parameter: byte
@@ -8736,7 +8736,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 276
+  mapping: 275
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeM2
   parameter: byte
@@ -8747,7 +8747,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 276
+  mapping: 275
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeM2_GWG
   parameter: byte
@@ -8758,7 +8758,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeM2KM
   parameter: byte
@@ -8769,7 +8769,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 276
+  mapping: 275
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeM3
   parameter: byte
@@ -8780,7 +8780,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeM3KM
   parameter: byte
@@ -8921,7 +8921,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 277
+  mapping: 276
   mode: read_write
   name: KE8_KonfiDPumpeDrehzahlNebenbetriebA1M1
   parameter: byte
@@ -8932,7 +8932,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 277
+  mapping: 276
   mode: read_write
   name: KE8_KonfiDPumpeDrehzahlNebenbetriebM2
   parameter: byte
@@ -8943,7 +8943,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 277
+  mapping: 276
   mode: read_write
   name: KE8_KonfiDPumpeDrehzahlNebenbetriebM3
   parameter: byte
@@ -8954,7 +8954,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 278
+  mapping: 277
   mode: read_write
   name: KE8_KonfiNebenbetriebA1M1_GWG
   parameter: byte
@@ -8965,7 +8965,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 278
+  mapping: 277
   mode: read_write
   name: KE8_KonfiNebenbetriebM2_GWG
   parameter: byte
@@ -9200,7 +9200,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 283
+  mapping: 282
   mode: read_write
   name: KesselinFehlerbetrieb
   parameter: byte
@@ -9347,7 +9347,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 167
+  mapping: 166
   mode: read_write
   name: KF1_KonfiTemperaturprogrammM1
   parameter: byte
@@ -9358,7 +9358,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 167
+  mapping: 166
   mode: read_write
   name: KF1_KonfiTemperaturprogrammM2
   parameter: byte
@@ -9369,7 +9369,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 167
+  mapping: 166
   mode: read_write
   name: KF1_KonfiTemperaturprogrammM3
   parameter: byte
@@ -9841,7 +9841,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 258
+  mapping: 257
   mode: read_write
   name: KonfiVerwendungAussentemperatur
   parameter: byte
@@ -10642,7 +10642,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 279
+  mapping: 278
   mode: read
   name: KS_Karte_GWG_Typ1
   parameter: byte
@@ -10724,7 +10724,7 @@
   byte_len: 1
   byte_pos: 8
   data_type: Int
-  mapping: 281
+  mapping: 280
   mode: read
   name: KS_Karte_KonfiKesselschalthysterese
   parameter: byte
@@ -11618,7 +11618,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 284
+  mapping: 283
   mode: write
   name: NRF_AusgaengeNeutral
   parameter: int
@@ -11641,7 +11641,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 285
+  mapping: 284
   mode: read
   name: NRF_Aussentemperatur_Fehler
   parameter: byte
@@ -11666,7 +11666,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 287
+  mapping: 286
   mode: read_write
   name: NRF_Bedienanzeigetext_BDE
   parameter: byte
@@ -11717,7 +11717,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 286
+  mapping: 285
   mode: read_write
   name: NRF_BedienSprache_BDE
   parameter: byte
@@ -11728,7 +11728,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 286
+  mapping: 285
   mode: read_write
   name: NRF_Bediensprache_FBM1
   parameter: byte
@@ -11739,7 +11739,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 286
+  mapping: 285
   mode: read_write
   name: NRF_Bediensprache_FBM2
   parameter: byte
@@ -12327,7 +12327,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 288
+  mapping: 287
   mode: read_write
   name: NRF_K02_KonfiVerwendung_M1
   parameter: byte
@@ -12338,7 +12338,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 289
+  mapping: 288
   mode: read_write
   name: NRF_K03_KonfiVerwendung_M2
   parameter: byte
@@ -12349,7 +12349,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 290
+  mapping: 289
   mode: read_write
   name: NRF_K04_KonfiSonderfunktionVTS_M1
   parameter: byte
@@ -12360,7 +12360,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 291
+  mapping: 290
   mode: read_write
   name: NRF_K05_KonfiSonderfunktionAusgang20_M1
   parameter: byte
@@ -12396,7 +12396,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 292
+  mapping: 291
   mode: read_write
   name: NRF_K08_KonfiVerwendungAusgang50
   parameter: byte
@@ -12407,7 +12407,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 293
+  mapping: 292
   mode: read_write
   name: NRF_K09_Konfinacherwaermung
   parameter: byte
@@ -12585,7 +12585,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 294
+  mapping: 293
   mode: read_write
   name: NRF_K17_KonfiFoerdertechnik
   parameter: byte
@@ -12701,7 +12701,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 295
+  mapping: 294
   mode: read_write
   name: NRF_K20_KonfiStellungEintragschnecke
   parameter: byte
@@ -12971,7 +12971,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 296
+  mapping: 295
   mode: read
   name: NRF_K3C_KonfiSchaltbedingungUV
   parameter: byte
@@ -13034,7 +13034,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 297
+  mapping: 296
   mode: read_write
   name: NRF_K45_KonfiPufferspeicher
   parameter: byte
@@ -13097,7 +13097,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 298
+  mapping: 297
   mode: read_write
   name: NRF_K4A_KonfiPufferladefunktion
   parameter: byte
@@ -13225,7 +13225,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 215
+  mapping: 214
   mode: read
   name: NRF_K54_Solar_Info_Extern
   parameter: byte
@@ -13236,7 +13236,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 299
+  mapping: 298
   mode: read_write
   name: NRF_K55_KonfiWW_Algorithmus
   parameter: byte
@@ -13247,7 +13247,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 300
+  mapping: 299
   mode: read_write
   name: NRF_K56_KonfiWW_SolltemperaturBereich
   parameter: byte
@@ -13349,7 +13349,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 301
+  mapping: 300
   mode: read_write
   name: NRF_K61_KonfiWW_Ladeabhaengig
   parameter: byte
@@ -13373,7 +13373,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 302
+  mapping: 301
   mode: read_write
   name: NRF_K65_KonfiWaermetraegermedium
   parameter: byte
@@ -13514,7 +13514,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 303
+  mapping: 302
   mode: read_write
   name: NRF_K76_KonfiKommunikationsmodul
   parameter: byte
@@ -13525,7 +13525,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 304
+  mapping: 303
   mode: read_write
   name: NRF_K7C_KonfiResetAktiv
   parameter: byte
@@ -13635,7 +13635,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 248
+  mapping: 247
   mode: read_write
   name: NRF_K91_KonfiZuordnungExtBA_Umschaltung
   parameter: byte
@@ -13646,7 +13646,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 305
+  mapping: 304
   mode: read_write
   name: NRF_K94_KonfiKM_Mischer1
   parameter: byte
@@ -13657,7 +13657,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 305
+  mapping: 304
   mode: read_write
   name: NRF_K96_KonfiKM_Mischer2
   parameter: byte
@@ -13668,7 +13668,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 306
+  mapping: 305
   mode: read_write
   name: NRF_K99_KonfiZuordnungExtMischerZU
   parameter: byte
@@ -13679,7 +13679,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 307
+  mapping: 306
   mode: read_write
   name: NRF_K9A_KonfiZuordnungExtMischerAUF
   parameter: byte
@@ -13690,7 +13690,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 308
+  mapping: 307
   mode: read_write
   name: NRF_K9C_KonfiReceiveHeartBeat
   parameter: byte
@@ -13701,7 +13701,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 160
+  mapping: 159
   mode: read_write
   name: NRF_K9E_KonfiATSVorhanden
   parameter: byte
@@ -13712,7 +13712,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 309
+  mapping: 308
   mode: read_write
   name: NRF_KAA_KonfiAnfahrentlastungA1M1
   parameter: byte
@@ -13723,7 +13723,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 309
+  mapping: 308
   mode: read_write
   name: NRF_KAA_KonfiAnfahrentlastungM2
   parameter: byte
@@ -13783,7 +13783,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: NRF_Kaskade_Leistungssteuerung
   parameter: byte
@@ -13852,7 +13852,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 310
+  mapping: 309
   mode: read_write
   name: NRF_KBC_KonfiErzwungeneWaermeaufnahmeA1M1
   parameter: byte
@@ -13863,7 +13863,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 310
+  mapping: 309
   mode: read_write
   name: NRF_KBC_KonfiErzwungeneWaermeaufnahmeM2
   parameter: byte
@@ -13926,7 +13926,7 @@
   byte_len: 1
   byte_pos: 1
   data_type: Int
-  mapping: 311
+  mapping: 310
   mode: read
   name: NRF_KTInfo_Fernbedienungen
   parameter: byte
@@ -13937,7 +13937,7 @@
   byte_len: 1
   byte_pos: 2
   data_type: Int
-  mapping: 312
+  mapping: 311
   mode: read
   name: NRF_KTInfo_Heizkreis_1
   parameter: byte
@@ -13948,7 +13948,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 313
+  mapping: 312
   mode: read
   name: NRF_KTInfo_KonfiAnlagenschema
   parameter: byte
@@ -13959,7 +13959,7 @@
   byte_len: 1
   byte_pos: 3
   data_type: Int
-  mapping: 314
+  mapping: 313
   mode: read
   name: NRF_KTInfo_Pufferspeicher
   parameter: byte
@@ -13970,7 +13970,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 315
+  mapping: 314
   mode: read
   name: NRF_KTInfo_Solar
   parameter: byte
@@ -14185,7 +14185,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRF_Status_Drosselklappe0
   parameter: byte
@@ -14196,7 +14196,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRF_Status_Drosselklappe1
   parameter: byte
@@ -14207,7 +14207,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRF_Status_Drosselklappe2
   parameter: byte
@@ -14218,7 +14218,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRF_Status_Drosselklappe3
   parameter: byte
@@ -14229,7 +14229,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 317
+  mapping: 316
   mode: read
   name: NRF_Status_Drosselklappe4
   parameter: byte
@@ -14378,7 +14378,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_ATS
   parameter: byte
@@ -14389,7 +14389,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_PTSO
   parameter: byte
@@ -14400,7 +14400,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_PTSU
   parameter: byte
@@ -14411,7 +14411,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 319
+  mapping: 318
   mode: read
   name: NRF_TemperaturFehler_REF
   parameter: byte
@@ -14422,7 +14422,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 319
+  mapping: 318
   mode: read
   name: NRF_TemperaturFehler_RTS_M1
   parameter: byte
@@ -14433,7 +14433,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 319
+  mapping: 318
   mode: read
   name: NRF_TemperaturFehler_RTS_M2
   parameter: byte
@@ -14444,7 +14444,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_STS
   parameter: byte
@@ -14455,7 +14455,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_STSSOL
   parameter: byte
@@ -14466,7 +14466,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_VTSM1
   parameter: byte
@@ -14477,7 +14477,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: NRF_TemperaturFehler_VTSM2
   parameter: byte
@@ -14616,7 +14616,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 320
+  mapping: 319
   mode: read_write
   name: NRF_WW_Freigabe
   parameter: byte
@@ -19431,7 +19431,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 318
+  mapping: 317
   mode: read
   name: TemperaturFehler_2_NR1
   parameter: byte
@@ -24371,7 +24371,7 @@
   byte_len: 1
   byte_pos: 6
   data_type: Int
-  mapping: 323
+  mapping: 322
   mode: read
   name: WPR_Mischer_HK_M2_Status
   parameter: s_int
@@ -24430,7 +24430,7 @@
   byte_len: 1
   byte_pos: 6
   data_type: Int
-  mapping: 323
+  mapping: 322
   mode: read
   name: WPR_Mischer_HK_M3_Status
   parameter: s_int
@@ -24477,7 +24477,7 @@
   byte_len: 1
   byte_pos: 6
   data_type: Int
-  mapping: 323
+  mapping: 322
   mode: read
   name: WPR_Mischer_Kuehlkreis_NatCooling_Status
   parameter: s_int
@@ -24631,7 +24631,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_ActiveCooling_moeglich
   parameter: byte
@@ -24642,7 +24642,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Anschluss_Vitosolic_moeglich
   parameter: byte
@@ -24653,7 +24653,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_eHeizung_moeglich
   parameter: byte
@@ -24664,7 +24664,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_ElektrExpansionsventil1_vorhanden
   parameter: byte
@@ -24675,7 +24675,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_ElektrExpansionsventil2_vorhanden
   parameter: byte
@@ -24686,7 +24686,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Ext_Waermeerzeuger_moeglich
   parameter: byte
@@ -24697,7 +24697,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Fremdansteuerung_moeglich
   parameter: byte
@@ -24708,7 +24708,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Heissgassensor_vorhanden
   parameter: byte
@@ -24719,7 +24719,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_HeizenWW_ueberSolar_vorhanden
   parameter: byte
@@ -24730,7 +24730,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Heizkreis1_moeglich
   parameter: byte
@@ -24741,7 +24741,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Heizkreis2_moeglich
   parameter: byte
@@ -24752,7 +24752,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Heizkreis3_moeglich
   parameter: byte
@@ -24763,7 +24763,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Heizspeicher_moeglich
   parameter: byte
@@ -24774,7 +24774,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Kaskade_moeglich
   parameter: byte
@@ -24785,7 +24785,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_KommunikModul_moeglich
   parameter: byte
@@ -24796,7 +24796,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_LeistungsregVerdichter_moeglich
   parameter: byte
@@ -24807,7 +24807,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_LeiterplatteMB760_moeglich
   parameter: byte
@@ -24829,7 +24829,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_LONFktErweitert_vorhanden
   parameter: byte
@@ -24840,7 +24840,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_LuftLuftWP
   parameter: byte
@@ -24851,7 +24851,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_LuftWasserWP
   parameter: byte
@@ -24862,7 +24862,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_NaturalCooling_moeglich
   parameter: byte
@@ -24873,7 +24873,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_OelSumpfheizung_vorhanden
   parameter: byte
@@ -24884,7 +24884,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_ReversBetrieb_moeglich
   parameter: byte
@@ -24895,7 +24895,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Schwimmbad_moeglich
   parameter: byte
@@ -24906,7 +24906,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_SepNatCoolingKreis_moeglich
   parameter: byte
@@ -24917,7 +24917,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Solarsteuerung_int_moeglich
   parameter: byte
@@ -24928,7 +24928,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_SoleWasserWP
   parameter: byte
@@ -24939,7 +24939,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_TempSens_Prim_Ausg
   parameter: byte
@@ -24950,7 +24950,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_Verdampfersensor_vorhanden
   parameter: byte
@@ -24972,7 +24972,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_WW_eHeizung_moeglich
   parameter: byte
@@ -24983,7 +24983,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_WW_Zirkulationspumpe_moeglich
   parameter: byte
@@ -24994,7 +24994,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Produktmerkmal_WWSpeicher_moeglich
   parameter: byte
@@ -31721,7 +31721,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 121
+  mapping: 120
   mode: read_write
   name: KA1_GWG_Sperren_FB_HK1
   parameter: byte
@@ -31732,7 +31732,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 121
+  mapping: 120
   mode: read_write
   name: KA1_GWG_Sperren_FB_HK2
   parameter: byte
@@ -31743,7 +31743,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 121
+  mapping: 120
   mode: read_write
   name: KA1_GWG_Sperren_FB_HK3
   parameter: byte
@@ -31754,7 +31754,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 180
+  mapping: 179
   mode: read_write
   name: K32_GWG_Kennung_AM1
   parameter: byte
@@ -31765,7 +31765,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 181
+  mapping: 180
   mode: read_write
   name: K33_GWG_FunktionAusgang1_AM1
   parameter: byte
@@ -31776,7 +31776,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 185
+  mapping: 184
   mode: read_write
   name: K35_GWG_Kennung_EA1
   parameter: byte
@@ -31787,7 +31787,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 188
+  mapping: 187
   mode: read_write
   name: K36_GWG_FunktionAusgang1_EA1
   parameter: byte
@@ -31798,7 +31798,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: K3A_GWG_FunktionEingang1_EA1
   parameter: byte
@@ -31809,7 +31809,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: K3B_GWG_FunktionEingang2_EA1
   parameter: byte
@@ -31820,7 +31820,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: K3C_GWG_FunktionEingang3_EA1
   parameter: byte
@@ -31831,7 +31831,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 181
+  mapping: 180
   mode: read_write
   name: K34_GWG_FunktionAusgang2_AM1
   parameter: byte
@@ -31855,7 +31855,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: K5E_GWG_Ext_Sperren_SLP
   parameter: byte
@@ -31866,7 +31866,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: K5F_GWG_Ext_Anfordern_SLP
   parameter: byte
@@ -31877,7 +31877,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: K3E_GWG_Funktion_intPumpe_ExtSperren
   parameter: byte
@@ -31888,7 +31888,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: K3F_GWG_Funktion_intPumpe_ExtAnforder
   parameter: byte
@@ -32002,7 +32002,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 161
+  mapping: 160
   mode: read_write
   name: K54_Solar_GWG_2010
   parameter: byte
@@ -32083,7 +32083,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: KD6_GWG_HKP1_Funktion_ExtSperren
   parameter: byte
@@ -32094,7 +32094,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: KD6_GWG_HKP2_Funktion_ExtSperren
   parameter: byte
@@ -32105,7 +32105,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: KD6_GWG_HKP3_Funktion_ExtSperren
   parameter: byte
@@ -32116,7 +32116,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: KD7_GWG_HKP1_Funktion_ExtAnforderung
   parameter: byte
@@ -32127,7 +32127,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: KD7_GWG_HKP2_Funktion_ExtAnforderung
   parameter: byte
@@ -32138,7 +32138,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 193
+  mapping: 192
   mode: read_write
   name: KD7_GWG_HKP3_Funktion_ExtAnforderung
   parameter: byte
@@ -32149,7 +32149,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 165
+  mapping: 164
   mode: read_write
   name: KD8_GWG_HK1_Zuordnung_BA_auf_DigEingang
   parameter: byte
@@ -32160,7 +32160,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 165
+  mapping: 164
   mode: read_write
   name: KD8_GWG_HK2_Zuordnung_BA_auf_DigEingang
   parameter: byte
@@ -32171,7 +32171,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 165
+  mapping: 164
   mode: read_write
   name: KD8_GWG_HK3_Zuordnung_BA_auf_DigEingang
   parameter: byte
@@ -32182,7 +32182,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 186
+  mapping: 185
   mode: read_write
   name: K35_Konfi_AnzahlKessel_D
   parameter: byte
@@ -33256,7 +33256,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 214
+  mapping: 213
   mode: read_write
   name: K54_Solar_GWG_2010_Info
   parameter: byte
@@ -33267,7 +33267,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_EEV2_vorhanden
   parameter: byte
@@ -33278,7 +33278,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_HK2_vorhanden
   parameter: byte
@@ -33289,7 +33289,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_HK3_vorhanden
   parameter: byte
@@ -33300,7 +33300,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_zweistufig_vorhanden
   parameter: byte
@@ -33311,7 +33311,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Pufferspeicher_vorhanden
   parameter: byte
@@ -33322,7 +33322,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Schwimmbad_vorhanden
   parameter: byte
@@ -33333,7 +33333,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_ActiveCooling_vorhanden
   parameter: byte
@@ -33344,7 +33344,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_EHeizung_vorhanden
   parameter: byte
@@ -33355,7 +33355,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_ExtWE_vorhanden
   parameter: byte
@@ -33366,7 +33366,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Kuehlung_vorhanden
   parameter: byte
@@ -33377,7 +33377,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Solar_int_vorhanden
   parameter: byte
@@ -33388,7 +33388,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Vitosolic100_vorhanden
   parameter: byte
@@ -33399,7 +33399,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Vitosolic200_vorhanden
   parameter: byte
@@ -35154,7 +35154,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 280
+  mapping: 279
   mode: read
   name: KS_Karte_GWG_Typ2
   parameter: byte
@@ -35495,7 +35495,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: Zaehler1angeschlossen
   parameter: byte
@@ -35506,7 +35506,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: Zaehler3angeschlossen
   parameter: byte
@@ -35517,7 +35517,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: Zaehler2angeschlossen
   parameter: byte
@@ -36592,7 +36592,7 @@
   byte_len: 1
   byte_pos: 2
   data_type: Int
-  mapping: 104
+  mapping: 103
   mode: read
   name: HWIndex_SM1
   parameter: byte
@@ -37763,7 +37763,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 276
+  mapping: 275
   mode: read_write
   name: KE5_KonfiKennung_D_PumpeM3_GWG
   parameter: byte
@@ -37787,7 +37787,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 264
+  mapping: 263
   mode: read_write
   name: KA8_KonfiWirkung_aufPumpeM3
   parameter: byte
@@ -38485,7 +38485,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 127
+  mapping: 126
   mode: read_write
   name: K39_NRx_KonfiFesterFuehrungskessel
   parameter: int
@@ -38496,7 +38496,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 127
+  mapping: 126
   mode: read_write
   name: K3A_NRx_KonfiFesterLetzterKessel
   parameter: int
@@ -38586,7 +38586,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRx_Status_Drosselklappe5
   parameter: byte
@@ -38597,7 +38597,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRx_Status_Drosselklappe6
   parameter: byte
@@ -38608,7 +38608,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRx_Status_Drosselklappe7
   parameter: byte
@@ -38619,7 +38619,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 316
+  mapping: 315
   mode: read
   name: NRx_Status_Drosselklappe8
   parameter: byte
@@ -38679,7 +38679,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 153
+  mapping: 152
   mode: read_write
   name: K2E_NRx_KonfiKennungFunkATS
   parameter: int
@@ -38775,7 +38775,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 169
+  mapping: 168
   mode: read_write
   name: NRx_K53_KonfiHydrWeicheKKPumpe
   parameter: byte
@@ -38786,7 +38786,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 175
+  mapping: 174
   mode: read_write
   name: K2F_NRx_KonfiKennungFunkbasis
   parameter: int
@@ -38797,7 +38797,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 185
+  mapping: 184
   mode: read_write
   name: NRx_K5B_Kennung_EA1
   parameter: byte
@@ -38808,7 +38808,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 195
+  mapping: 194
   mode: read_write
   name: NRx_K5C_KonfiEA1FunktionAusgang1
   parameter: byte
@@ -38819,7 +38819,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 155
+  mapping: 154
   mode: read_write
   name: K30_NRx_KonfiKennungSSM1
   parameter: int
@@ -38830,7 +38830,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: NRx_K5D_KonfiExtEingang1
   parameter: int
@@ -38841,7 +38841,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 156
+  mapping: 155
   mode: read_write
   name: K31_NRx_KonfiKennungSSM2
   parameter: int
@@ -38852,7 +38852,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: NRx_K5E_KonfiExtEingang2
   parameter: byte
@@ -38863,7 +38863,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: NRx_K5F_KonfiExtEingang3
   parameter: byte
@@ -38910,7 +38910,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 206
+  mapping: 205
   mode: read_write
   name: K4E_NRx_KonfiVerwendungAusgang52
   parameter: byte
@@ -38974,7 +38974,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: NRx_K8B_KennungKMFeuerungsautomat
   parameter: byte
@@ -38996,7 +38996,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 133
+  mapping: 132
   mode: read_write
   name: NRx_K8F_KonfiSperrenExpert
   parameter: byte
@@ -39111,7 +39111,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 178
+  mapping: 177
   mode: read_write
   name: K32_NRx_Kennung_AM1
   parameter: byte
@@ -39122,7 +39122,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 184
+  mapping: 183
   mode: read_write
   name: K34_NRx_FunktionAusgang2_AM1
   parameter: byte
@@ -39133,7 +39133,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 183
+  mapping: 182
   mode: read_write
   name: K33_NRx_FunktionAusgang1
   parameter: byte
@@ -39213,7 +39213,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 187
+  mapping: 186
   mode: read
   name: K35_NRx_Konfi_AnzahlKessel_D
   parameter: byte
@@ -39889,7 +39889,7 @@
   byte_len: 1
   byte_pos: 2
   data_type: Int
-  mapping: 104
+  mapping: 103
   mode: read
   name: HWIndex_SM1_NRx
   parameter: byte
@@ -40260,7 +40260,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 209
+  mapping: 208
   mode: read_write
   name: K51_KonfiHydrWeicheIntPumpe
   parameter: byte
@@ -40332,7 +40332,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 194
+  mapping: 193
   mode: read_write
   name: K40_KonfiFunktionEingang96
   parameter: byte
@@ -40853,7 +40853,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Kuehlung_HK1_vorhanden
   parameter: byte
@@ -40864,7 +40864,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Kuehlung_HK2_vorhanden
   parameter: byte
@@ -40875,7 +40875,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Kuehlung_HK3_vorhanden
   parameter: byte
@@ -41820,7 +41820,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 170
+  mapping: 169
   mode: read
   name: WPR_Ausstattungsmerkmal_Split
   parameter: byte
@@ -41831,7 +41831,7 @@
   byte_len: 1
   byte_pos: 3
   data_type: Int
-  mapping: 125
+  mapping: 124
   mode: read_write
   name: WPR3_KonfiCelsiusFahrenheit
   parameter: byte
@@ -43849,7 +43849,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 171
+  mapping: 170
   mode: read_write
   name: K2A_KonfiKennungATS1
   parameter: byte
@@ -43882,7 +43882,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 172
+  mapping: 171
   mode: read_write
   name: K2A_KonfiKennungATS1_Neptun_2012
   parameter: byte
@@ -43893,7 +43893,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 262
+  mapping: 261
   mode: read_write
   name: KA0_KonfiKennungFBA1M1_2012
   parameter: byte
@@ -43904,7 +43904,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 262
+  mapping: 261
   mode: read_write
   name: KA0_KonfiKennungFBM2_2012
   parameter: byte
@@ -43915,7 +43915,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 262
+  mapping: 261
   mode: read_write
   name: KA0_KonfiKennungFBM3_2012
   parameter: byte
@@ -44571,7 +44571,7 @@
   byte_len: 1
   byte_pos: 6
   data_type: Int
-  mapping: 323
+  mapping: 322
   mode: read
   name: WPR3_Mischer_ext_Waermerzeuger_Befehl
   parameter: s_int
@@ -44678,7 +44678,7 @@
   byte_len: 1
   byte_pos: 6
   data_type: Double
-  mapping: 323
+  mapping: 322
   mode: read
   name: WPR3_Mischer_Kuehlungpuffer
   parameter: s_int
@@ -52209,7 +52209,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 117
+  mapping: 116
   mode: read_write
   name: SR13_K01_KonfiAnlagentyp
   parameter: byte
@@ -52267,7 +52267,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 126
+  mapping: 125
   mode: read_write
   name: SR13_K04_KonfiKesselSchalthysterese
   parameter: int
@@ -52353,7 +52353,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 151
+  mapping: 150
   mode: read_write
   name: SR13_K0D_ThermControl_100GC1
   parameter: byte
@@ -52559,7 +52559,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 168
+  mapping: 167
   mode: read_write
   name: SR13_K24_KonfiStatusWartung
   parameter: byte
@@ -52596,7 +52596,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: SR13_K28_KonfiIntervallzuendung
   parameter: int
@@ -52659,7 +52659,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 173
+  mapping: 172
   mode: read_write
   name: SR13_K2D_KonfiBeimischpumpeFunktion
   parameter: byte
@@ -57695,7 +57695,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 96
+  mapping: 95
   mode: read
   name: WPR3_RelaisStatus_Ausgang22
   parameter: byte
@@ -60244,7 +60244,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 189
+  mapping: 188
   mode: read_write
   name: K37_GWG_FunktionAusgang_Int_Pumpe
   parameter: int
@@ -60281,79 +60281,6 @@
   mode: read
   name: HO2B_FunktionAusgangInterneH1
   parameter: int
-10458:
-  addr: 53254
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read_write
-  name: HO2B_IP_Adresse
-  parameter: array
-10459:
-  addr: 53274
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 11
-  mode: read_write
-  name: HO2B_DynamicIP
-  parameter: byte
-10460:
-  addr: 53373
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 11
-  mode: read_write
-  name: HO2B_Proxy
-  parameter: byte
-10461:
-  addr: 53374
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 11
-  mode: read_write
-  name: HO2B_LAN_Card_Enabled
-  parameter: byte
-10462:
-  addr: 53380
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: ByteArray
-  mode: read
-  name: HO2B_LAN_Card_Firmware
-  parameter: int4
-10463:
-  addr: 53384
-  bit_pos: 0
-  block_len: 16
-  byte_len: 16
-  byte_pos: 0
-  data_type: Int
-  mode: read
-  name: HO2B_LAN_Card_SN
-  parameter: int
-10464:
-  addr: 53448
-  bit_pos: 0
-  block_len: 16
-  byte_len: 16
-  byte_pos: 0
-  data_type: String
-  mode: read
-  name: HO2B_LAN_Card_ID
-  parameter: string
 10465:
   addr: 57495
   bit_pos: 0
@@ -61112,7 +61039,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 129
+  mapping: 128
   mode: read_write
   name: K05_HO2B_Speichertyp
   parameter: byte
@@ -61145,7 +61072,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 148
+  mapping: 147
   mode: read_write
   name: K0D_HO2B_KonfiNotfunktion
   parameter: byte
@@ -61156,7 +61083,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 152
+  mapping: 151
   mode: read_write
   name: K0E_HO2B_KonfiAnlagenMaximaldruck
   parameter: byte
@@ -61189,7 +61116,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 194
+  mapping: 193
   mode: read_write
   name: K4B_HO2B_KonfiFunktionEingang96
   parameter: byte
@@ -61730,27 +61657,6 @@
   name: HO2B_Ladezustand_Mitte
   parameter: int
   unit: "%"
-10829:
-  addr: 53376
-  bit_pos: 0
-  block_len: 4
-  byte_len: 4
-  byte_pos: 0
-  data_type: Int
-  mode: read
-  name: HO2B_LAN_Card_Error
-  parameter: int4
-10830:
-  addr: 53375
-  bit_pos: 0
-  block_len: 1
-  byte_len: 1
-  byte_pos: 0
-  data_type: Int
-  mapping: 93
-  mode: read
-  name: HO2B_LAN_Card_Status
-  parameter: byte
 10831:
   addr: 24654
   bit_pos: 0
@@ -62858,7 +62764,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: KA5_KonfSommersparSchaltschwelleM4
   parameter: byte
@@ -65381,7 +65287,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 98
+  mapping: 97
   mode: read
   name: HO2B_Lueftung_Betriebsprogramm
   parameter: byte
@@ -65392,7 +65298,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 99
+  mapping: 98
   mode: read
   name: HO2B_Lueftung_Betriebsstatus
   parameter: byte
@@ -65547,7 +65453,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 97
+  mapping: 96
   mode: read_write
   name: HO2B_Lueftung_Bedienung_Programm
   parameter: byte
@@ -65742,7 +65648,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 96
+  mapping: 95
   mode: read
   name: HO2B_Lueftung_Badschalter
   parameter: byte
@@ -65991,7 +65897,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 99
+  mapping: 98
   mode: read_write
   name: HO2B_Lueftung_Stufe_Soll
   parameter: byte
@@ -67086,7 +66992,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 99
+  mapping: 98
   mode: read
   name: WPR3_701F_Wirkung_BA_Umschaltung_auf_Lueftung
   parameter: byte
@@ -69518,7 +69424,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 130
+  mapping: 129
   mode: read_write
   name: K05_HO2B_Speichertyp_2016
   parameter: byte
@@ -70357,7 +70263,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 100
+  mapping: 99
   mode: read_write
   name: HO2B_Lueftung_Status_VHZ_STB
   parameter: byte
@@ -70368,7 +70274,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 101
+  mapping: 100
   mode: read_write
   name: HO2B_Lueftung_Temp_Programm
   parameter: byte
@@ -70390,7 +70296,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 95
+  mapping: 94
   mode: read
   name: HO2B_Lueftung_AZB_Raumsolltemperatur
   parameter: int
@@ -70401,7 +70307,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Aussenlufttemperatur
   parameter: int
@@ -70412,7 +70318,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Zuluft_Bypass
   parameter: int
@@ -70423,7 +70329,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Feuchtekonzentration
   parameter: int
@@ -70434,7 +70340,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_CO2_Konzentration
   parameter: int
@@ -70445,7 +70351,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 95
+  mapping: 94
   mode: read
   name: HO2B_Lueftung_AZB_CO2_Sollwert
   parameter: int
@@ -70456,7 +70362,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Fortlufttemperatur
   parameter: int
@@ -70467,7 +70373,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Zulufttemperatur
   parameter: int
@@ -70478,7 +70384,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Ablufttemperatur
   parameter: int
@@ -70489,7 +70395,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Fortluftventlator_Drehzahl_Prozent
   parameter: int
@@ -70500,7 +70406,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Zuluftventilator_Drehzahl_Prozent
   parameter: int
@@ -70511,7 +70417,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Luefter_Sperrzeit_Frostschutz
   parameter: int
@@ -70522,7 +70428,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Zeit_Anpassung_Stufe
   parameter: int
@@ -70533,7 +70439,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Spannung_Fortluft
   parameter: int
@@ -70544,7 +70450,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Spannung_Zuluft
   parameter: int
@@ -70555,7 +70461,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Zuluft_Bypass_geschaltet
   parameter: int
@@ -70588,7 +70494,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 102
+  mapping: 101
   mode: read_write
   name: HO2B_Vitovent_K02_Nachheizregister
   parameter: int
@@ -70610,7 +70516,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 102
+  mapping: 101
   mode: read_write
   name: HO2B_Vitovent_K01_Vorheizregister
   parameter: int
@@ -70796,7 +70702,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 103
+  mapping: 102
   mode: read_write
   name: HO2B_Vitovent_KA0_Bypassbetrieb
   parameter: int
@@ -70980,7 +70886,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Badschalter
   parameter: int
@@ -70991,7 +70897,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Differenzdruckschalter_Feuerstaette
   parameter: int
@@ -71002,7 +70908,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB__Volumenstrom_Grundlueftung_2
   parameter: int
@@ -71013,7 +70919,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Volumenstrom_Reduzierte_Lueftung_2
   parameter: int
@@ -71024,7 +70930,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Volumenstrom_Normale_Lueftung_2
   parameter: int
@@ -71035,7 +70941,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Volumenstrom_Intensiv_Lueftung_2
   parameter: int
@@ -71046,7 +70952,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Solltemp_Raum
   parameter: int
@@ -71110,7 +71016,7 @@
   byte_len: 2
   byte_pos: 0
   data_type: Int
-  mapping: 94
+  mapping: 93
   mode: read
   name: HO2B_Lueftung_AZB_Feuchtesollwert
   parameter: int
@@ -72721,7 +72627,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 125
+  mapping: 124
   mode: read_write
   name: K03_NRP_KonfiCelsiusFahrenheit
   parameter: byte
@@ -72745,7 +72651,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 155
+  mapping: 154
   mode: read_write
   name: K14_NRP_KonfiKennungSSM1
   parameter: int
@@ -72756,7 +72662,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 156
+  mapping: 155
   mode: read_write
   name: K15_NRP_KonfiKennungSSM2
   parameter: int
@@ -72767,7 +72673,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 158
+  mapping: 157
   mode: read_write
   name: K16_NRP_KennungKMFeuerungsautomat
   parameter: byte
@@ -72778,7 +72684,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 161
+  mapping: 160
   mode: read_write
   name: K1A_NRP_KonfiKennungSolarregelung
   parameter: byte
@@ -72789,7 +72695,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K20_NRP_KonfiSensorHydraulischeWeiche
   parameter: byte
@@ -72827,7 +72733,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 169
+  mapping: 168
   mode: read_write
   name: K24_NRP_KonfiHydrWeicheKKPumpe
   parameter: byte
@@ -72849,7 +72755,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 178
+  mapping: 177
   mode: read_write
   name: K30_NRP_Kennung_AM1
   parameter: byte
@@ -72860,7 +72766,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 179
+  mapping: 178
   mode: read_write
   name: K31_NRP_KonfiAM1FunktionAusgang1
   parameter: byte
@@ -72871,7 +72777,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 179
+  mapping: 178
   mode: read_write
   name: K32_NRP_KonfiAM1FunktionAusgang2
   parameter: byte
@@ -72882,7 +72788,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 185
+  mapping: 184
   mode: read_write
   name: K40_NRP_Kennung_EA1
   parameter: byte
@@ -72893,7 +72799,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 195
+  mapping: 194
   mode: read_write
   name: K41_NRP_KonfiEA1FunktionAusgang1
   parameter: byte
@@ -72904,7 +72810,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: K42_NRP_KonfiExtEingang1
   parameter: int
@@ -72915,7 +72821,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: K43_NRP_KonfiExtEingang2
   parameter: byte
@@ -72926,7 +72832,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 191
+  mapping: 190
   mode: read_write
   name: K44_NRP_KonfiExtEingang3
   parameter: byte
@@ -72937,7 +72843,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 196
+  mapping: 195
   mode: read_write
   name: K45_NRP_EA1_Temperatur_Leistungsanforderung
   parameter: byte
@@ -72948,7 +72854,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 197
+  mapping: 196
   mode: read_write
   name: K46_NRP_KonfiBereichAnalogwertEA1
   parameter: int
@@ -72959,7 +72865,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K51_NRP_KonfiVerwendungEingang17
   parameter: byte
@@ -72970,7 +72876,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 166
+  mapping: 165
   mode: read_write
   name: K52_NRP_KonfiVerwendungEingang17B
   parameter: byte
@@ -72981,7 +72887,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 199
+  mapping: 198
   mode: read_write
   name: K53_NRP_KonfiVerwendungAusgang20
   parameter: byte
@@ -72992,7 +72898,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 212
+  mapping: 211
   mode: read_write
   name: K54_NRP_KonfiVerwendungAusgang29
   parameter: byte
@@ -73003,7 +72909,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 206
+  mapping: 205
   mode: read_write
   name: K55_NRP_KonfiVerwendungAusgang52
   parameter: byte
@@ -73151,7 +73057,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 93
+  mapping: 323
   mode: read
   name: NRP_SA171_LAN_State
   parameter: byte
@@ -73300,7 +73206,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 93
+  mapping: 323
   mode: read
   name: NRP_SA171_APModeEnabled
   parameter: byte
@@ -73496,7 +73402,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 116
+  mapping: 115
   mode: read_write
   name: K00_NRP_KonfiWW_Algorithmus
   parameter: byte
@@ -73507,7 +73413,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 120
+  mapping: 119
   mode: read_write
   name: K01_NRP_KonfiWW_SolltemperaturBereich
   parameter: byte
@@ -73531,7 +73437,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 128
+  mapping: 127
   mode: read_write
   name: K04_NRP_KonfiWW_EinschaltOffset
   parameter: byte
@@ -73542,7 +73448,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K05_NRP_KonfiSpeichersollwertMax
   parameter: byte
@@ -73566,7 +73472,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 135
+  mapping: 134
   mode: read_write
   name: K07_NRP_KonfiLpumpeKTabhaengig
   parameter: byte
@@ -73590,7 +73496,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 140
+  mapping: 139
   mode: read_write
   name: K09_NRP_KonfiWWAL_Haeufigkeit
   parameter: byte
@@ -73873,7 +73779,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Double
-  mapping: 323
+  mapping: 322
   mode: read
   name: NRP_DigitalAusgang_52
   parameter: s_byte
@@ -74205,7 +74111,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 321
+  mapping: 320
   mode: read
   name: NRP_BDE_Brennerzustand
   parameter: int
@@ -74228,7 +74134,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 141
+  mapping: 140
   mode: read
   name: K09_NRP_Reglerkennung_Klartext
   parameter: byte
@@ -74308,7 +74214,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 121
+  mapping: 120
   mode: read_write
   name: K01_NRP_Sperren_FB_HK1
   parameter: byte
@@ -74319,7 +74225,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: K02_NRP_KonfiSpeichervorrangA1M1
   parameter: byte
@@ -74354,7 +74260,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: K05_NRP_KonfSommersparSchaltschwelleA1M1
   parameter: byte
@@ -74463,7 +74369,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: K1F_NRP_KonfiWirkungExtBA_UmschaltungA1M1
   parameter: byte
@@ -74474,7 +74380,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 165
+  mapping: 164
   mode: read_write
   name: K20_NRP_HK1_Zuordnung_BA_auf_DigEingang
   parameter: byte
@@ -74485,7 +74391,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 167
+  mapping: 166
   mode: read_write
   name: K23_NRP_KonfiTemperaturprogrammM1
   parameter: byte
@@ -74573,7 +74479,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 121
+  mapping: 120
   mode: read_write
   name: K01_NRP_Sperren_FB_HK2
   parameter: byte
@@ -74584,7 +74490,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: K02_NRP_KonfiSpeichervorrangM2
   parameter: byte
@@ -74619,7 +74525,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: K05_KonfSommersparSchaltschwelleM2
   parameter: byte
@@ -74728,7 +74634,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: K1F_NRP_KonfiWirkungExtBA_UmschaltungM2
   parameter: byte
@@ -74739,7 +74645,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 165
+  mapping: 164
   mode: read_write
   name: K20_NRP_HK2_Zuordnung_BA_auf_DigEingang
   parameter: byte
@@ -74750,7 +74656,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 167
+  mapping: 166
   mode: read_write
   name: K23_NRP_KonfiTemperaturprogrammM2
   parameter: byte
@@ -74838,7 +74744,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 121
+  mapping: 120
   mode: read_write
   name: K01_NRP_Sperren_FB_HK3
   parameter: byte
@@ -74849,7 +74755,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 123
+  mapping: 122
   mode: read_write
   name: K02_NRP_KonfiSpeichervorrangM3
   parameter: byte
@@ -74884,7 +74790,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 131
+  mapping: 130
   mode: read_write
   name: K05_NRP_KonfSommersparSchaltschwelleM3
   parameter: byte
@@ -74993,7 +74899,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 164
+  mapping: 163
   mode: read_write
   name: K1F_NRP_WirkungExtBA_UmschaltungM3
   parameter: byte
@@ -75004,7 +74910,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 165
+  mapping: 164
   mode: read_write
   name: K20_NRP_HK3_Zuordnung_BA_auf_DigEingang
   parameter: byte
@@ -75015,7 +74921,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 167
+  mapping: 166
   mode: read_write
   name: K23_NRP_KonfiTemperaturprogrammM3
   parameter: byte
@@ -75092,7 +74998,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 153
+  mapping: 152
   mode: read_write
   name: K12_NRP_KonfiKennungFunkATS
   parameter: int
@@ -75103,7 +75009,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 160
+  mapping: 159
   mode: read_write
   name: K19_NRP_KonfiKennungMischermodul
   parameter: byte
@@ -75153,7 +75059,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 223
+  mapping: 222
   mode: read_write
   name: K62_NRP_KonfiZentraleHeizkreisbedienung
   parameter: byte
@@ -75179,7 +75085,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 137
+  mapping: 136
   mode: read_write
   name: K07_NRP_KonfiZuordnungExtMischerZU
   parameter: byte
@@ -75190,7 +75096,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 138
+  mapping: 137
   mode: read_write
   name: K08_NRP_KonfiZuordnungExtBA_Umschaltung
   parameter: byte
@@ -75201,7 +75107,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 144
+  mapping: 143
   mode: read_write
   name: K0A_NRP_KonfiZuordnungExtMischerAUF
   parameter: byte
@@ -75225,7 +75131,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 143
+  mapping: 142
   mode: read_write
   name: K0A_NRP_KonfiWW_BeiPartyDNormal
   parameter: byte
@@ -75236,7 +75142,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 145
+  mapping: 144
   mode: read_write
   name: K0B_NRP_KonfiZugriffWW_Solltemperatur
   parameter: byte
@@ -75269,7 +75175,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 157
+  mapping: 156
   mode: read_write
   name: K15_NRP_KonfiZpumpeIntervallFreigabe
   parameter: byte
@@ -75280,7 +75186,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 159
+  mapping: 158
   mode: read_write
   name: K16_NRP_KonfiZpumpeBeiSparbetrieb
   parameter: byte
@@ -75302,7 +75208,7 @@
   byte_len: 1
   byte_pos: 2
   data_type: Int
-  mapping: 104
+  mapping: 103
   mode: read
   name: HWIndex_SM1_NRP
   parameter: byte
@@ -75631,7 +75537,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 127
+  mapping: 126
   mode: read_write
   name: K04_NRP_KonfiFesterFuehrungskessel
   parameter: int
@@ -75642,7 +75548,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 127
+  mapping: 126
   mode: read_write
   name: K05_NRP_KonfiFesterLetzterKessel
   parameter: int
@@ -75653,7 +75559,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 134
+  mapping: 133
   mode: read_write
   name: K06_NRP_KonfiRegelungsart
   parameter: byte
@@ -75664,7 +75570,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 136
+  mapping: 135
   mode: read_write
   name: K07_NRP_KonfiRegelungsstrategie
   parameter: byte
@@ -75675,7 +75581,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K08_NRP_KonfiLeistungsbilanz
   parameter: byte
@@ -75686,7 +75592,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 139
+  mapping: 138
   mode: read_write
   name: K09_NRP_KonfiAnsteuerungVerteilerpumpe
   parameter: byte
@@ -75697,7 +75603,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 132
+  mapping: 131
   mode: read_write
   name: K0A_NRP_KonfiSpeichervorrang_aufVP
   parameter: byte
@@ -75880,7 +75786,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 207
+  mapping: 206
   mode: read_write
   name: K50_NRP_KonfiZentraleRuecklaufregelung
   parameter: byte
@@ -76069,7 +75975,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 322
+  mapping: 321
   mode: read
   name: NRP_BDE_HK1_Mischerstatus
   parameter: byte
@@ -76081,7 +75987,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 322
+  mapping: 321
   mode: read
   name: NRP_BDE_HK2_Mischerstatus
   parameter: byte
@@ -76093,7 +75999,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 322
+  mapping: 321
   mode: read
   name: NRP_BDE_HK3_Mischerstatus
   parameter: byte
@@ -76410,7 +76316,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 142
+  mapping: 141
   mode: read_write
   name: K0A_NRP_CAN_KonfiSchema
   parameter: int
@@ -76432,7 +76338,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 162
+  mapping: 161
   mode: read_write
   name: K1B_KonfiKennungPumpenmodul
   parameter: byte
@@ -76443,7 +76349,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 238
+  mapping: 237
   mode: read_write
   name: K80_KonfiPumpentyp
   parameter: byte
@@ -76530,7 +76436,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 263
+  mapping: 262
   mode: read_write
   name: KA6_KonfiNetzspannung
   parameter: byte
@@ -76698,7 +76604,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 242
+  mapping: 241
   mode: read_write
   name: K83_KonfiFunktionsauswahl
   parameter: byte
@@ -76709,7 +76615,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 243
+  mapping: 242
   mode: read_write
   name: K84_KonfiStoermeldeeingang
   parameter: byte
@@ -76954,7 +76860,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 266
+  mapping: 265
   mode: read_write
   name: KAB_KonfiAlternativeVerwSensor3
   parameter: byte
@@ -76965,7 +76871,7 @@
   byte_len: 1
   byte_pos: 0
   data_type: Int
-  mapping: 267
+  mapping: 266
   mode: read_write
   name: KAC_KonfiAlternativeVerwSensor4
   parameter: byte
