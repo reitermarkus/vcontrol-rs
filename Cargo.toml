@@ -16,7 +16,7 @@ readme = "ReadMe.md"
 [features]
 cli = ["actix-rt", "clap", "serde_json", "env_logger", "impl_webthing", "impl_json_schema"]
 impl_json_schema = ["schemars"]
-impl_webthing = ["impl_json_schema", "serde_json", "webthing", "tokio"]
+impl_webthing = ["impl_json_schema", "serde_json", "webthing", "tokio", "actix-rt"]
 
 [dependencies]
 actix-rt = { version = "2.7", optional = true }

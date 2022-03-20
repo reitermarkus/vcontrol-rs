@@ -14,9 +14,9 @@ pub struct VControl {
 }
 
 impl VControl {
-  fn renegotiate(&mut self) -> Result<(), Error> {
+  async fn renegotiate(&mut self) -> Result<(), Error> {
     if !self.connected {
-      self.protocol.negotiate(&mut self.optolink)?;
+      self.protocol.negotiate(&mut self.optolink).await?;
       self.connected = true;
     }
 
@@ -24,8 +24,8 @@ impl VControl {
   }
 
   /// Automatically detect the `Device` and `Protocol` and connect to it.
-  pub fn connect(mut optolink: Optolink) -> Result<Self, Error> {
-    let (connected, protocol) = if let Some(protocol) = Protocol::detect(&mut optolink) {
+  pub async fn connect(mut optolink: Optolink) -> Result<Self, Error> {
+    let (connected, protocol) = if let Some(protocol) = Protocol::detect(&mut optolink).await {
       log::debug!("Protocol detected: {:?}", protocol);
       (true, protocol)
     } else {
@@ -34,9 +34,9 @@ impl VControl {
       (false, protocol)
     };
 
-    let (device_id, device_id_f0) = match crate::commands::system::DEVICE_ID.get(&mut optolink, protocol)? {
+    let (device_id, device_id_f0) = match crate::commands::system::DEVICE_ID.get(&mut optolink, protocol).await? {
       Value::DeviceId(device_id) => {
-        let device_id_f0 = match crate::commands::system::DEVICE_ID_F0.get(&mut optolink, protocol) {
+        let device_id_f0 = match crate::commands::system::DEVICE_ID_F0.get(&mut optolink, protocol).await {
           Ok(Value::DeviceIdF0(device_id_f0)) => Some(device_id_f0),
           Ok(Value::Empty) => None,
           Ok(value) => unreachable!("expected DeviceIdF0, got {:?}", value),
@@ -51,7 +51,7 @@ impl VControl {
           log::debug!("Device detected: {}", device.name());
 
           let mut vcontrol = VControl { optolink, device, connected, protocol };
-          vcontrol.renegotiate()?;
+          vcontrol.renegotiate().await?;
           return Ok(vcontrol)
         }
 
@@ -84,11 +84,11 @@ impl VControl {
   /// Gets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
-  pub fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
-    self.renegotiate()?;
+  pub async fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
+    self.renegotiate().await?;
 
     let command = self.command_by_name(command)?;
-    match command.get(&mut self.optolink, self.protocol) {
+    match command.get(&mut self.optolink, self.protocol).await {
       Ok(value) => {
         let mapping = if let Value::Error(ref _error) = value {
           Some(self.device.errors())
@@ -121,11 +121,11 @@ impl VControl {
   /// Sets the value for the given command.
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
-  pub fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
-    self.renegotiate()?;
+  pub async fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
+    self.renegotiate().await?;
 
     let command = self.command_by_name(command)?;
-    let res = command.set(&mut self.optolink, self.protocol, input);
+    let res = command.set(&mut self.optolink, self.protocol, input).await;
     if res.is_err() {
       self.connected = false;
     }

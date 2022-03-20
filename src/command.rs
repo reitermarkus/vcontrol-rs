@@ -161,7 +161,7 @@ impl Command {
     Ok(value)
   }
 
-  pub fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
+  pub async fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
     log::trace!("Command::get(…)");
 
     if !self.mode.is_read() {
@@ -169,7 +169,7 @@ impl Command {
     }
 
     let mut buf = vec![0; self.block_len];
-    protocol.get(o, self.addr, &mut buf)?;
+    protocol.get(o, self.addr, &mut buf).await?;
 
     let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
 
@@ -189,7 +189,7 @@ impl Command {
     }
   }
 
-  pub fn set(&self, o: &mut Optolink, protocol: Protocol, mut input: Value) -> Result<(), Error> {
+  pub async fn set(&self, o: &mut Optolink, protocol: Protocol, mut input: Value) -> Result<(), Error> {
     log::trace!("Command::set(…)");
 
     if !self.mode.is_write() {
@@ -277,6 +277,6 @@ impl Command {
       }
     };
 
-    protocol.set(o, self.addr, &bytes).map_err(Into::into)
+    protocol.set(o, self.addr, &bytes).await.map_err(Into::into)
   }
 }

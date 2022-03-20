@@ -1,3 +1,5 @@
+use core::pin::{Pin};
+use core::task::{Context, Poll};
 use std::fmt;
 use std::ffi::OsStr;
 use std::io::{self, Read, Write};
@@ -7,6 +9,7 @@ use std::os::unix::io::AsRawFd;
 
 use serial_core::{SerialPort, SerialPortSettings, BaudRate::Baud4800, Parity::ParityEven, StopBits::Stop2, CharSize::Bits8};
 use serial::SystemPort;
+use tokio::io::ReadBuf;
 
 enum Device {
   Tty(SystemPort),
@@ -44,7 +47,7 @@ impl Optolink {
   /// # Ok(())
   /// # }
   /// ```
-  pub fn open(port: impl AsRef<OsStr>) -> io::Result<Optolink> {
+  pub async fn open(port: impl AsRef<OsStr>) -> io::Result<Optolink> {
     log::trace!("Optolink::open(…)");
 
     let mut tty = serial::open(&port)
@@ -82,7 +85,7 @@ impl Optolink {
   /// # Ok(())
   /// # }
   /// ```
-  pub fn connect(addr: impl ToSocketAddrs) -> io::Result<Optolink> {
+  pub async fn connect(addr: impl ToSocketAddrs) -> io::Result<Optolink> {
     log::trace!("Optolink::connect(…)");
 
     let addrs: Vec<SocketAddr> = addr.to_socket_addrs()?.collect();
@@ -188,6 +191,43 @@ impl Write for Optolink {
       Device::Tty(tty) => tty.flush(),
       Device::Stream(stream) => stream.flush(),
     }
+  }
+}
+
+impl tokio::io::AsyncWrite for Optolink {
+  fn poll_write(
+      mut self: Pin<&mut Self>,
+      cx: &mut Context<'_>,
+      buf: &[u8]
+  ) -> Poll<tokio::io::Result<usize>> {
+    let size = self.as_mut().write(buf)?;
+    Poll::Ready(Ok(size))
+  }
+  fn poll_flush(
+      mut self: Pin<&mut Self>,
+      cx: &mut Context<'_>
+  ) -> Poll<tokio::io::Result<()>> {
+    self.as_mut().flush()?;
+    Poll::Ready(Ok(()))
+  }
+  fn poll_shutdown(
+      self: Pin<&mut Self>,
+      cx: &mut Context<'_>
+  ) -> Poll<tokio::io::Result<()>> {
+    Poll::Ready(Ok(()))
+  }
+}
+
+impl tokio::io::AsyncRead for Optolink {
+  fn poll_read(
+      mut self: Pin<&mut Self>,
+      cx: &mut Context<'_>,
+      buf: &mut ReadBuf<'_>
+  ) -> Poll<tokio::io::Result<()>> {
+
+    self.as_mut().read(buf.initialize_unfilled())?;
+
+    Poll::Ready(Ok(()))
   }
 }
 

@@ -56,8 +56,10 @@ async fn main() -> std::io::Result<()> {
   let matches = app.get_matches();
 
   let mut vcontrol = if let Some(device) = matches.value_of("device") {
-    Optolink::open(device)
-      .map(|device| VControl::connect(device).unwrap())
+    match Optolink::open(device).await {
+      Ok(device) => VControl::connect(device).await,
+      Err(err) => Err(err.into()),
+    }
   } else if let Some(port) = matches.value_of("port") {
     let host = matches.value_of("host").unwrap_or("localhost");
     let port = port.parse().unwrap_or_else(|_| {
@@ -65,8 +67,10 @@ async fn main() -> std::io::Result<()> {
       exit(1);
     });
 
-    Optolink::connect((host, port))
-      .map(|device| VControl::connect(device).unwrap())
+    match Optolink::connect((host, port)).await {
+      Ok(device) => VControl::connect(device).await,
+      Err(err) => Err(err.into()),
+    }
   } else {
     unreachable!()
   }.unwrap_or_else(|err| {
@@ -79,7 +83,7 @@ async fn main() -> std::io::Result<()> {
   if let Some(matches) = matches.subcommand_matches("get") {
     let command = matches.value_of("command").unwrap();
 
-    match vcontrol.get(command) {
+    match vcontrol.get(command).await {
       Ok(output_value) => {
         println!("{}", serde_json::to_string_pretty(&output_value).unwrap());
       },
@@ -96,7 +100,7 @@ async fn main() -> std::io::Result<()> {
 
     let input_value: Value = serde_json::from_str(&value).unwrap_or(Value::String(value.to_string()));
 
-    match vcontrol.set(command, input_value) {
+    match vcontrol.set(command, input_value).await {
       Ok(()) => {},
       Err(err) => {
         eprintln!("Error: {}", err);
