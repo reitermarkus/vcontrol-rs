@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock, Mutex};
-use std::thread;
+use std::sync::{Arc, Weak, RwLock, Mutex};
 
 use schemars::{schema, schema_for};
 use serde_json::json;
@@ -138,9 +137,9 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<RwLock<Mutex<VControl>>>, de
   )));
 }
 
-pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
+pub fn make_thing(vcontrol: VControl) -> (Arc<RwLock<Mutex<VControl>>>, Arc<RwLock<Box<dyn Thing + 'static>>>, HashMap<&'static str, &'static Command>) {
   let device = vcontrol.device();
-  let mut commands = HashMap::new();
+  let mut commands = HashMap::<&'static str, &'static Command>::new();
 
   for (command_name, command) in crate::commands::system_commands() {
     commands.insert(command_name, command);
@@ -168,50 +167,49 @@ pub fn make_thing(vcontrol: VControl) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
 
   let thing: Box<dyn Thing + 'static> = Box::new(thing);
   let thing = Arc::new(RwLock::new(thing));
-  let weak_thing = Arc::downgrade(&thing);
 
-  thread::spawn(move || {
-    loop {
-      let thing = if let Some(thing) = weak_thing.upgrade() {
-        thing
-      } else {
-        return
+  (vcontrol, thing, commands)
+}
+
+pub async fn update_thread(vcontrol: Arc<RwLock<Mutex<VControl>>>, weak_thing: Weak<RwLock<Box<dyn Thing + 'static>>>, commands: HashMap<&'static str, &'static Command>) {
+  loop {
+    let thing = if let Some(thing) = weak_thing.upgrade() {
+      thing
+    } else {
+      return
+    };
+
+    for (command_name, command) in &commands {
+      if !command.mode.is_read() {
+        continue;
+      }
+
+      let new_value = {
+        let vcontrol = vcontrol.read().unwrap();
+        let mut vcontrol = vcontrol.lock().unwrap();
+        match vcontrol.get(command_name) {
+          Ok(value) => json!(value.value),
+          Err(err) => {
+            log::error!("Failed getting value for property '{}': {}", command_name, err);
+            json!(null)
+          }
+        }
       };
 
-      for (command_name, command) in &commands {
-        if !command.mode.is_read() {
-          continue;
-        }
+      let mut t = thing.write().unwrap();
+      let prop = t.find_property(&command_name.to_string()).unwrap();
 
-        let new_value = {
-          let vcontrol = vcontrol.read().unwrap();
-          let mut vcontrol = vcontrol.lock().unwrap();
-          match vcontrol.get(command_name) {
-            Ok(value) => json!(value.value),
-            Err(err) => {
-              log::error!("Failed getting value for property '{}': {}", command_name, err);
-              json!(null)
-            }
-          }
-        };
+      let old_value = prop.get_value();
 
-        let mut t = thing.write().unwrap();
-        let prop = t.find_property(&command_name.to_string()).unwrap();
-
-        let old_value = prop.get_value();
-
-        if let Err(err) = prop.set_cached_value(new_value.clone()) {
-          log::error!("Failed setting cached value for property '{}': {}", command_name, err)
-        }
-
-        if old_value != new_value {
-          log::info!("Property '{}' changed from {} to {}.", command_name, old_value, new_value);
-        }
-
-        t.property_notify(command_name.to_string(), new_value);
+      if let Err(err) = prop.set_cached_value(new_value.clone()) {
+        log::error!("Failed setting cached value for property '{}': {}", command_name, err)
       }
-    }
-  });
 
-  thing
+      if old_value != new_value {
+        log::info!("Property '{}' changed from {} to {}.", command_name, old_value, new_value);
+      }
+
+      t.property_notify(command_name.to_string(), new_value);
+    }
+  }
 }

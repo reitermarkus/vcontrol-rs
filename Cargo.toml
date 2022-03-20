@@ -16,7 +16,7 @@ readme = "ReadMe.md"
 [features]
 cli = ["actix-rt", "clap", "serde_json", "env_logger", "impl_webthing", "impl_json_schema"]
 impl_json_schema = ["schemars"]
-impl_webthing = ["impl_json_schema", "serde_json", "webthing"]
+impl_webthing = ["impl_json_schema", "serde_json", "webthing", "tokio"]
 
 [dependencies]
 actix-rt = { version = "2.7", optional = true }
@@ -33,6 +33,7 @@ env_logger = { version = "0.9.0", optional = true }
 webthing = { version = "0.15.0", optional = true }
 schemars = { version = "0.8.8", optional = true }
 arrayref = "0.3.6"
+tokio = { version = "1.0", features = ["macros"], optional = true }
 
 [[bin]]
 name = "vcontrol"

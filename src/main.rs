@@ -1,10 +1,10 @@
 use std::process::exit;
-use std::sync::{RwLock, Weak};
+use std::sync::Arc;
 
 use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp};
 use serde_json;
 use webthing::{
-  Action, Thing, ThingsType, WebThingServer,
+  ThingsType, WebThingServer,
   BaseActionGenerator,
 };
 
@@ -108,8 +108,12 @@ async fn main() -> std::io::Result<()> {
   if let Some(_matches) = matches.subcommand_matches("server") {
     let port = 8888;
 
+
+    let (vcontrol, thing, commands) = vcontrol::thing::make_thing(vcontrol);
+    let weak_thing = Arc::downgrade(&thing);
+
     let mut server = WebThingServer::new(
-      ThingsType::Single(vcontrol.into_thing()),
+      ThingsType::Single(thing),
       Some(port),
       None,
       None,
@@ -118,7 +122,11 @@ async fn main() -> std::io::Result<()> {
       Some(true),
     );
 
-    server.start(None).await?;
+    let server_thread = server.start(None);
+    let update_thread = vcontrol::thing::update_thread(vcontrol, weak_thing, commands);
+
+    let (server, _) = tokio::join!(server_thread, update_thread);
+    server?;
   }
 
   Ok(())

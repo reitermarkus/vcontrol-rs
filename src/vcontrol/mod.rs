@@ -1,14 +1,8 @@
-#[cfg(feature = "webthing")]
-use {
-  std::sync::{Arc, RwLock},
-  webthing::Thing
-};
-
 use crate::Command;
 use crate::{Error, Optolink, Device, Protocol, Value, OutputValue};
 
 #[cfg(feature = "webthing")]
-mod thing;
+pub mod thing;
 
 /// Representation of an `Optolink` connection to a specific `Device` using a specific `Protocol`.
 #[derive(Debug)]
@@ -136,10 +130,5 @@ impl VControl {
       self.connected = false;
     }
     res
-  }
-
-  #[cfg(feature = "webthing")]
-  pub fn into_thing(self) -> Arc<RwLock<Box<dyn Thing + 'static>>> {
-    self::thing::make_thing(self)
   }
 }
