@@ -73,7 +73,7 @@ enum Function {
 pub enum Vs2 {}
 
 impl Vs2 {
-  fn write_telegram(o: &mut Optolink, message: &[u8]) -> Result<(), std::io::Error> {
+  async fn write_telegram(o: &mut Optolink, message: &[u8]) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
 
     let message_length = message.len() as u8;
@@ -106,7 +106,7 @@ impl Vs2 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "send telegram timed out"))
   }
 
-  fn read_telegram(o: &mut Optolink) -> Result<Vec<u8>, std::io::Error> {
+  async fn read_telegram(o: &mut Optolink) -> Result<Vec<u8>, std::io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
     let mut buf = [0xff];
@@ -148,7 +148,7 @@ impl Vs2 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "send telegram timed out"))
   }
 
-  pub fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs2::negotiate(…)");
 
     o.write_all(&RESET)?;
@@ -185,7 +185,7 @@ impl Vs2 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "negotiate timed out"))
   }
 
-  pub fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::get(…)");
 
     let addr = addr.to_be_bytes();
@@ -195,9 +195,9 @@ impl Vs2 {
     read_request.extend(addr);
     read_request.extend(&[buf.len() as u8]);
 
-    Self::write_telegram(o, &read_request)?;
+    Self::write_telegram(o, &read_request).await?;
 
-    let read_response = Self::read_telegram(o)?;
+    let read_response = Self::read_telegram(o).await?;
 
     let expected_len: usize = 5 + buf.len();
     if expected_len != read_response.len() {
@@ -218,7 +218,7 @@ impl Vs2 {
     Ok(())
   }
 
-  pub fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::set(…)");
 
     let addr = addr.to_be_bytes();
@@ -229,9 +229,9 @@ impl Vs2 {
     write_request.extend(&[value.len() as u8]);
     write_request.extend(value);
 
-    Self::write_telegram(o, &write_request)?;
+    Self::write_telegram(o, &write_request).await?;
 
-    let write_response = Self::read_telegram(o)?;
+    let write_response = Self::read_telegram(o).await?;
 
     let expected_len: usize = 5;
     if expected_len != write_response.len() {

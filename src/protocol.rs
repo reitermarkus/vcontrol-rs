@@ -17,12 +17,12 @@ pub enum Protocol {
 
 impl Protocol {
   /// Try detecting the protocol automatically.
-  pub fn detect(o: &mut Optolink) -> Option<Self> {
-    if Vs2::negotiate(o).is_ok() {
+  pub async fn detect(o: &mut Optolink) -> Option<Self> {
+    if Vs2::negotiate(o).await.is_ok() {
       return Some(Self::Vs2)
     }
 
-    if Vs1::negotiate(o).is_ok() {
+    if Vs1::negotiate(o).await.is_ok() {
       return Some(Self::Vs1)
     }
 
@@ -30,26 +30,26 @@ impl Protocol {
   }
 
   /// Negotiate the protocol.
-  pub fn negotiate(&self, o: &mut Optolink) -> Result<(), io::Error> {
+  pub async fn negotiate(&self, o: &mut Optolink) -> Result<(), io::Error> {
     match self {
-      Self::Vs1 => Vs1::negotiate(o),
-      Self::Vs2 => Vs2::negotiate(o),
+      Self::Vs1 => Vs1::negotiate(o).await,
+      Self::Vs2 => Vs2::negotiate(o).await,
     }
   }
 
   /// Reads the value at the address `addr` into `buf`.
-  pub fn get(&self, o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub async fn get(&self, o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     match self {
-      Self::Vs1 => Vs1::get(o, addr, buf),
-      Self::Vs2 => Vs2::get(o, addr, buf),
+      Self::Vs1 => Vs1::get(o, addr, buf).await,
+      Self::Vs2 => Vs2::get(o, addr, buf).await,
     }
   }
 
   /// Writes the given value `value` to the the address `addr`.
-  pub fn set(&self, o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub async fn set(&self, o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     match self {
-      Self::Vs1 => Vs1::set(o, addr, value),
-      Self::Vs2 => Vs2::set(o, addr, value),
+      Self::Vs1 => Vs1::set(o, addr, value).await,
+      Self::Vs2 => Vs2::set(o, addr, value).await,
     }
   }
 }

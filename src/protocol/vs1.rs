@@ -22,7 +22,7 @@ enum Function {
 pub enum Vs1 {}
 
 impl Vs1 {
-  fn sync(o: &mut Optolink) -> Result<(), std::io::Error> {
+  async fn sync(o: &mut Optolink) -> Result<(), std::io::Error> {
     log::trace!("Vs1::sync(…)");
 
     let mut buf = [0xff];
@@ -30,7 +30,7 @@ impl Vs1 {
     let start = Instant::now();
 
     // Reset the Optolink connection to get a faster `SYNC` (`0x05`).
-    Self::negotiate(o)?;
+    Self::negotiate(o).await?;
 
     loop {
       log::trace!("Vs1::sync(…) loop");
@@ -50,7 +50,7 @@ impl Vs1 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "sync timed out"))
   }
 
-  pub fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs1::negotiate(…)");
 
     o.purge()?;
@@ -60,7 +60,7 @@ impl Vs1 {
     Ok(())
   }
 
-  pub fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Vs1::get(…)");
 
     let mut vec = Vec::new();
@@ -70,7 +70,7 @@ impl Vs1 {
 
     let start = Instant::now();
 
-    Self::sync(o)?;
+    Self::sync(o).await?;
 
     loop {
       log::trace!("Vs1::get(…) loop");
@@ -111,7 +111,7 @@ impl Vs1 {
     Err(io::Error::new(io::ErrorKind::TimedOut, "get timed out"))
   }
 
-  pub fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Vs1::set(…)");
 
     let mut vec = Vec::new();
@@ -122,7 +122,7 @@ impl Vs1 {
 
     let start = Instant::now();
 
-    Self::sync(o)?;
+    Self::sync(o).await?;
 
     loop {
       o.write_all(&vec)?;

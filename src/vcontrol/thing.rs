@@ -45,7 +45,9 @@ impl ValueForwarder for VcontrolValueForwarder {
     log::info!("Setting property {} to {}.", self.command_name, new_value);
     let vcontrol = self.vcontrol.write().unwrap();
     let mut vcontrol = vcontrol.lock().unwrap();
-    if let Err(err) = vcontrol.set(self.command_name, vcontrol_value) {
+
+    let rt = actix_rt::Runtime::new().unwrap();
+    if let Err(err) = rt.block_on(vcontrol.set(self.command_name, vcontrol_value)) {
       log::error!("Failed setting property {}: {}", self.command_name, err);
       return Err("Failed setting value")
     }
@@ -187,7 +189,7 @@ pub async fn update_thread(vcontrol: Arc<RwLock<Mutex<VControl>>>, weak_thing: W
       let new_value = {
         let vcontrol = vcontrol.read().unwrap();
         let mut vcontrol = vcontrol.lock().unwrap();
-        match vcontrol.get(command_name) {
+        match vcontrol.get(command_name).await {
           Ok(value) => json!(value.value),
           Err(err) => {
             log::error!("Failed getting value for property '{}': {}", command_name, err);
