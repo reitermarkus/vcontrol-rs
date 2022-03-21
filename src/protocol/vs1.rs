@@ -29,8 +29,6 @@ impl Vs1 {
 
     let mut buf = [0xff];
 
-    let start = Instant::now();
-
     // Reset the Optolink connection to get a faster `SYNC` (`0x05`).
     Self::negotiate(o).await?;
 
@@ -41,15 +39,7 @@ impl Vs1 {
         o.purge().await?;
         return Ok(())
       }
-
-      let stop = Instant::now();
-
-      if (stop - start) > Optolink::TIMEOUT {
-        break
-      }
     }
-
-    Err(io::Error::new(io::ErrorKind::TimedOut, "sync timed out"))
   }
 
   pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
@@ -69,8 +59,6 @@ impl Vs1 {
     vec.extend(&[0x01, Function::VirtualRead as u8]);
     vec.extend(addr.to_be_bytes());
     vec.extend(&[buf.len() as u8]);
-
-    let start = Instant::now();
 
     Self::sync(o).await?;
 
@@ -104,13 +92,7 @@ impl Vs1 {
       } else {
         return Ok(())
       }
-
-      if (stop - start) > Optolink::TIMEOUT {
-        break
-      }
     }
-
-    Err(io::Error::new(io::ErrorKind::TimedOut, "get timed out"))
   }
 
   pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
@@ -122,8 +104,6 @@ impl Vs1 {
     vec.extend(&[value.len() as u8]);
     vec.extend(value);
 
-    let start = Instant::now();
-
     Self::sync(o).await?;
 
     loop {
@@ -133,17 +113,9 @@ impl Vs1 {
       let mut buf = [0xff];
       o.read_exact(&mut buf).await?;
 
-      let stop = Instant::now();
-
       if buf == [0x00] {
         return Ok(())
       }
-
-      if (stop - start) > Optolink::TIMEOUT {
-        break
-      }
     }
-
-    Err(io::Error::new(io::ErrorKind::TimedOut, "set timed out"))
   }
 }
