@@ -130,11 +130,18 @@ mod tests {
     let device = Device::detect(device_id, None).unwrap();
     assert_eq!(device.name(), "VScotHO1_4");
   }
-  
+
   #[test]
   fn detect_vscot_ho1_72() {
     let device_id = DeviceId::from_bytes(&[0x20, 0xCB, 0x03, 0x51, 0x00, 0x00, 0x01, 0x46]);
     let device = Device::detect(device_id, None).unwrap();
     assert_eq!(device.name(), "VScotHO1_72");
+  }
+
+  #[test]
+  fn detect_ecotronic() {
+    let device_id = DeviceId::from_bytes(&[0x20, 0x34, 0x00, 0x18, 0x00, 0x00, 0x0f, 0x0f]);
+    let device = Device::detect(device_id, None).unwrap();
+    assert_eq!(device.name(), "Ecotronic");
   }
 }
