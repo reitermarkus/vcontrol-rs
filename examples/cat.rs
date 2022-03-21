@@ -4,17 +4,18 @@ use std::error::Error;
 
 use vcontrol::{Optolink, VControl, Value};
 
-fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
   env_logger::init();
 
   let optolink_port = env::args().nth(1).expect("no serial port specified");
   let optolink = if optolink_port.contains(':') {
-    Optolink::connect(optolink_port)
+    Optolink::connect(optolink_port).await
   } else {
-    Optolink::open(optolink_port)
+    Optolink::open(optolink_port).await
   }?;
 
-  let mut vcontrol = VControl::connect(optolink)?;
+  let mut vcontrol = VControl::connect(optolink).await?;
 
   log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
 
@@ -37,7 +38,7 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
       continue;
     }
 
-    let res = vcontrol.get(key);
+    let res = vcontrol.get(key).await;
 
     match res {
       Ok(value) => {

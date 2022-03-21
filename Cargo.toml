@@ -17,6 +17,7 @@ readme = "ReadMe.md"
 cli = ["actix-rt", "clap", "serde_json", "env_logger", "impl_webthing", "impl_json_schema"]
 impl_json_schema = ["schemars"]
 impl_webthing = ["impl_json_schema", "serde_json", "webthing", "tokio", "actix-rt"]
+cat = ["env_logger", "tokio/rt-multi-thread"]
 
 [dependencies]
 actix-rt = { version = "2.7", optional = true }
@@ -41,7 +42,7 @@ required-features = ["cli"]
 
 [[example]]
 name = "cat"
-required-features = ["env_logger"]
+required-features = ["cat"]
 
 [[example]]
 name = "scan"
