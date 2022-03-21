@@ -1,5 +1,7 @@
-use std::io::{self, Read, Write};
+use std::io;
 use std::time::Instant;
+
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crate::Optolink;
 
@@ -82,14 +84,14 @@ impl Vs2 {
     let start = Instant::now();
 
     loop {
-      o.write_all(&LEADIN)?;
-      o.write_all(&[message_length])?;
-      o.write_all(message)?;
-      o.write_all(&[checksum])?;
-      o.flush()?;
+      o.write_all(&LEADIN).await?;
+      o.write_all(&[message_length]).await?;
+      o.write_all(message).await?;
+      o.write_all(&[checksum]).await?;
+      o.flush().await?;
 
       let mut status = [0xff];
-      o.read_exact(&mut status)?;
+      o.read_exact(&mut status).await?;
       match status {
         ACK => return Ok(()),
         NACK => (),
@@ -114,29 +116,29 @@ impl Vs2 {
     let start = Instant::now();
 
     loop {
-      o.read_exact(&mut buf)?;
+      o.read_exact(&mut buf).await?;
       if buf != LEADIN {
         return Err(io::Error::new(io::ErrorKind::InvalidData, "telegram leadin expected"))
       }
 
-      o.read_exact(&mut buf)?;
+      o.read_exact(&mut buf).await?;
       let message_length = buf[0];
 
       let mut message = vec![0; message_length as usize];
-      o.read_exact(&mut message)?;
+      o.read_exact(&mut message).await?;
       let message = message;
 
       let checksum: u8 = message.iter().fold(message_length, |acc, &x| acc.wrapping_add(x));
 
-      o.read_exact(&mut buf)?;
+      o.read_exact(&mut buf).await?;
       if checksum == buf[0] {
-        o.write_all(&ACK)?;
-        o.flush()?;
+        o.write_all(&ACK).await?;
+        o.flush().await?;
         return Ok(message)
       }
 
-      o.write_all(&NACK)?;
-      o.flush()?;
+      o.write_all(&NACK).await?;
+      o.flush().await?;
 
       let stop = Instant::now();
 
@@ -151,8 +153,8 @@ impl Vs2 {
   pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs2::negotiate(…)");
 
-    o.write_all(&RESET)?;
-    o.flush()?;
+    o.write_all(&RESET).await?;
+    o.flush().await?;
 
     let mut status = [0xff];
 
@@ -165,16 +167,16 @@ impl Vs2 {
         break;
       }
 
-      o.read_exact(&mut status)?;
+      o.read_exact(&mut status).await?;
       match status {
         SYNC => {},
         _ => continue,
       }
 
-      o.write_all(&START)?;
-      o.flush()?;
+      o.write_all(&START).await?;
+      o.flush().await?;
 
-      o.read_exact(&mut status)?;
+      o.read_exact(&mut status).await?;
       match status {
         ACK => return Ok(()),
         NACK => {}

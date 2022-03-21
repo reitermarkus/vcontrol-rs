@@ -1,5 +1,7 @@
-use std::io::{self, Read, Write};
+use std::io;
 use std::time::{Instant, Duration};
+
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crate::Optolink;
 
@@ -35,8 +37,8 @@ impl Vs1 {
     loop {
       log::trace!("Vs1::sync(…) loop");
 
-      if o.read_exact(&mut buf).is_ok() && buf == [SYNC] {
-        o.purge()?;
+      if o.read_exact(&mut buf).await.is_ok() && buf == [SYNC] {
+        o.purge().await?;
         return Ok(())
       }
 
@@ -53,9 +55,9 @@ impl Vs1 {
   pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs1::negotiate(…)");
 
-    o.purge()?;
-    o.write_all(&[RESET])?;
-    o.flush()?;
+    o.purge().await?;
+    o.write_all(&[RESET]).await?;
+    o.flush().await?;
 
     Ok(())
   }
@@ -75,12 +77,12 @@ impl Vs1 {
     loop {
       log::trace!("Vs1::get(…) loop");
 
-      o.write_all(&vec)?;
-      o.flush()?;
+      o.write_all(&vec).await?;
+      o.flush().await?;
 
       let read_start = Instant::now();
 
-      o.read_exact(buf)?;
+      o.read_exact(buf).await?;
 
       let stop = Instant::now();
 
@@ -98,7 +100,7 @@ impl Vs1 {
           return Ok(())
         }
 
-        o.purge()?;
+        o.purge().await?;
       } else {
         return Ok(())
       }
@@ -125,11 +127,11 @@ impl Vs1 {
     Self::sync(o).await?;
 
     loop {
-      o.write_all(&vec)?;
-      o.flush()?;
+      o.write_all(&vec).await?;
+      o.flush().await?;
 
       let mut buf = [0xff];
-      o.read_exact(&mut buf)?;
+      o.read_exact(&mut buf).await?;
 
       let stop = Instant::now();
 
