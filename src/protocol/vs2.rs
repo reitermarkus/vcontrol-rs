@@ -1,5 +1,4 @@
 use std::io;
-use std::time::Instant;
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
@@ -81,8 +80,6 @@ impl Vs2 {
     let message_length = message.len() as u8;
     let checksum: u8 = message.iter().fold(message_length, |acc, &x| acc.wrapping_add(x));
 
-    let start = Instant::now();
-
     loop {
       o.write_all(&LEADIN).await?;
       o.write_all(&[message_length]).await?;
@@ -97,23 +94,13 @@ impl Vs2 {
         NACK => (),
         _ => return Err(io::Error::new(io::ErrorKind::InvalidData, "send telegram failed")),
       }
-
-      let stop = Instant::now();
-
-      if (stop - start) > Optolink::TIMEOUT {
-        break;
-      }
     }
-
-    Err(io::Error::new(io::ErrorKind::TimedOut, "send telegram timed out"))
   }
 
   async fn read_telegram(o: &mut Optolink) -> Result<Vec<u8>, std::io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
     let mut buf = [0xff];
-
-    let start = Instant::now();
 
     loop {
       o.read_exact(&mut buf).await?;
@@ -139,15 +126,7 @@ impl Vs2 {
 
       o.write_all(&NACK).await?;
       o.flush().await?;
-
-      let stop = Instant::now();
-
-      if (stop - start) > Optolink::TIMEOUT {
-        break;
-      }
     }
-
-    Err(io::Error::new(io::ErrorKind::TimedOut, "send telegram timed out"))
   }
 
   pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
@@ -158,15 +137,7 @@ impl Vs2 {
 
     let mut status = [0xff];
 
-    let start = Instant::now();
-
     loop {
-      let stop = Instant::now();
-
-      if (stop - start) > Optolink::TIMEOUT {
-        break;
-      }
-
       o.read_exact(&mut status).await?;
       match status {
         SYNC => {},
@@ -183,8 +154,6 @@ impl Vs2 {
         _ => return Err(io::Error::new(io::ErrorKind::InvalidData, "protocol negotiation failed")),
       }
     }
-
-    Err(io::Error::new(io::ErrorKind::TimedOut, "negotiate timed out"))
   }
 
   pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
@@ -211,7 +180,7 @@ impl Vs2 {
     if read_response[2..4] != addr {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "wrong address"))
     }
-    if read_response[4] != buf.len() as u8 {
+    if read_response[4] as usize != buf.len() {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "wrong data length"))
     }
 
@@ -245,7 +214,7 @@ impl Vs2 {
     if write_response[2..4] != addr {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "wrong address"))
     }
-    if write_response[4] != value.len() as u8 {
+    if write_response[4] as usize != value.len() {
       return Err(io::Error::new(io::ErrorKind::InvalidData, "could not write data"))
     }
 

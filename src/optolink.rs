@@ -82,8 +82,6 @@ pub struct Optolink {
 }
 
 impl Optolink {
-  pub(crate) const TIMEOUT: Duration = Duration::from_secs(60);
-
   /// Opens a serial device.
   ///
   /// # Examples
