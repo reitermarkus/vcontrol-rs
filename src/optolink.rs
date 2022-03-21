@@ -24,6 +24,54 @@ impl fmt::Debug for Device   {
   }
 }
 
+impl AsyncWrite for Device {
+  fn poll_write(
+      self: Pin<&mut Self>,
+      cx: &mut Context<'_>,
+      buf: &[u8]
+  ) -> Poll<tokio::io::Result<usize>> {
+    match self.project() {
+      DeviceProj::Tty(tty) => tty.poll_write(cx, buf),
+      DeviceProj::Stream(stream) => stream.poll_write(cx, buf),
+    }
+  }
+
+  fn poll_flush(
+      self: Pin<&mut Self>,
+      cx: &mut Context<'_>
+  ) -> Poll<tokio::io::Result<()>> {
+    match self.project() {
+      DeviceProj::Tty(tty) => tty.poll_flush(cx),
+      DeviceProj::Stream(stream) => stream.poll_flush(cx),
+    }
+  }
+
+  fn poll_shutdown(
+      self: Pin<&mut Self>,
+      cx: &mut Context<'_>
+  ) -> Poll<tokio::io::Result<()>> {
+    match self.project() {
+      DeviceProj::Tty(tty) => tty.poll_shutdown(cx),
+      DeviceProj::Stream(stream) => stream.poll_shutdown(cx),
+    }
+  }
+}
+
+impl AsyncRead for Device {
+  fn poll_read(
+      self: Pin<&mut Self>,
+      cx: &mut Context<'_>,
+      buf: &mut ReadBuf<'_>
+  ) -> Poll<tokio::io::Result<()>> {
+    let this = self.project();
+
+    match this {
+      DeviceProj::Tty(tty) => tty.poll_read(cx, buf),
+      DeviceProj::Stream(stream) => stream.poll_read(cx, buf),
+    }
+  }
+}
+
 /// An Optolink connection via either a serial or TCP connection.
 #[derive(Debug)]
 #[pin_project]
@@ -100,32 +148,32 @@ impl Optolink {
   pub async fn purge(&mut self) -> Result<(), io::Error> {
     log::trace!("Optolink::purge()");
 
-    match &mut self.device {
-      Device::Tty(tty) => {
-        let mut buf = [0];
+    let mut buf = [0];
 
-        loop {
-          match tty.try_read(&mut buf) {
-            Ok(_) => continue,
-            Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => break,
-            Err(e) => return Err(e),
-          }
-        }
+    loop {
+      let res = match &mut self.device {
+        Device::Tty(tty) => tty.try_read(&mut buf),
+        Device::Stream(stream) => stream.try_read(&mut buf),
+      };
+
+      match res {
+        Ok(_) => continue,
+        Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => break,
+        Err(e) => return Err(e),
       }
-      Device::Stream(stream) => {
-        let mut buf = [0];
-
-        loop {
-          match stream.try_read(&mut buf) {
-            Ok(_) => continue,
-            Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => break,
-            Err(e) => return Err(e),
-          }
-        }
-      },
     }
 
     Ok(())
+  }
+
+  /// Get timeout for operations on the Optolink device.
+  pub fn timeout(&self) -> Option<Duration> {
+    self.timeout
+  }
+
+  /// Set timeout for operations on the Optolink device.
+  pub fn set_timeout(&mut self, timeout: Option<Duration>) {
+    self.timeout = timeout;
   }
 }
 
@@ -136,13 +184,7 @@ impl AsyncWrite for Optolink {
       buf: &[u8]
   ) -> Poll<tokio::io::Result<usize>> {
     log::trace!("Optolink::poll_write(…)");
-
-    let this = self.project();
-
-    match this.device.project() {
-      DeviceProj::Tty(tty) => tty.poll_write(cx, buf),
-      DeviceProj::Stream(stream) => stream.poll_write(cx, buf),
-    }
+    self.project().device.poll_write(cx, buf)
   }
 
   fn poll_flush(
@@ -150,13 +192,7 @@ impl AsyncWrite for Optolink {
       cx: &mut Context<'_>
   ) -> Poll<tokio::io::Result<()>> {
     log::trace!("Optolink::poll_flush()");
-
-    let this = self.project();
-
-    match this.device.project() {
-      DeviceProj::Tty(tty) => tty.poll_flush(cx),
-      DeviceProj::Stream(stream) => stream.poll_flush(cx),
-    }
+    self.project().device.poll_flush(cx)
   }
 
   fn poll_shutdown(
@@ -164,13 +200,7 @@ impl AsyncWrite for Optolink {
       cx: &mut Context<'_>
   ) -> Poll<tokio::io::Result<()>> {
     log::trace!("Optolink::poll_shutdown()");
-
-    let this = self.project();
-
-    match this.device.project() {
-      DeviceProj::Tty(tty) => tty.poll_shutdown(cx),
-      DeviceProj::Stream(stream) => stream.poll_shutdown(cx),
-    }
+    self.project().device.poll_shutdown(cx)
   }
 }
 
@@ -181,12 +211,6 @@ impl AsyncRead for Optolink {
       buf: &mut ReadBuf<'_>
   ) -> Poll<tokio::io::Result<()>> {
     log::trace!("Optolink::poll_read()");
-
-    let this = self.project();
-
-    match this.device.project() {
-      DeviceProj::Tty(tty) => tty.poll_read(cx, buf),
-      DeviceProj::Stream(stream) => stream.poll_read(cx, buf),
-    }
+    self.project().device.poll_read(cx, buf)
   }
 }
