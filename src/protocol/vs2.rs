@@ -100,28 +100,36 @@ enum Function {
 #[derive(Debug)]
 pub enum Vs2 {}
 
+fn wrapping_sum<'a>(iter: impl IntoIterator<Item = &'a u8>) -> u8 {
+  iter.into_iter().fold(0, |acc, &x| acc.wrapping_add(x))
+}
+
 impl Vs2 {
-  async fn write_telegram(o: &mut Optolink, header: &Header, payload: &[u8]) -> Result<(), std::io::Error> {
+  async fn write_telegram(o: &mut Optolink, header: &Header, payload: Option<&[u8]>) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
 
     let message_type = header.message_type as u8;
     let function = header.function as u8;
     let addr = header.addr.to_be_bytes();
 
-    let message_length = 5 + payload.len() as u8;
+    let message_length = 5 + payload.map(|p| p.len() as u8).unwrap_or(0);
     let checksum: u8 = message_length
       .wrapping_add(message_type)
       .wrapping_add(function)
-      .wrapping_add(addr.iter().fold(0, |acc, &x| acc.wrapping_add(x)))
+      .wrapping_add(wrapping_sum(&addr))
       .wrapping_add(header.payload_len as u8)
-      .wrapping_add(payload.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
+      .wrapping_add(payload.map(wrapping_sum).unwrap_or(0));
 
     loop {
       o.write_all(&LEADIN).await?;
       o.write_all(&[message_length, message_type, function]).await?;
       o.write_all(&addr).await?;
       o.write_all(&[header.payload_len]).await?;
-      o.write_all(payload).await?;
+
+      if let Some(payload) = payload {
+        o.write_all(payload).await?;
+      }
+
       o.write_all(&[checksum]).await?;
       o.flush().await?;
 
@@ -135,7 +143,7 @@ impl Vs2 {
     }
   }
 
-  async fn read_telegram(o: &mut Optolink) -> Result<(Header, Vec<u8>), std::io::Error> {
+  async fn read_telegram(o: &mut Optolink, mut payload: Option<&mut [u8]>) -> Result<Header, std::io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
     let mut buf = [0xff];
@@ -166,7 +174,7 @@ impl Vs2 {
 
       let mut addr = [0, 0];
       o.read_exact(&mut addr).await?;
-      checksum = checksum.wrapping_add(addr.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
+      checksum = checksum.wrapping_add(wrapping_sum(&addr));
       let addr = u16::from_be_bytes(addr);
 
       o.read_exact(&mut buf).await?;
@@ -179,15 +187,23 @@ impl Vs2 {
         ))
       }
 
-      let mut message = vec![0; message_length as usize - 5];
-      o.read_exact(&mut message).await?;
-      checksum = checksum.wrapping_add(message.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
+      if let Some(ref mut payload) = payload {
+        if payload.len() != payload_len as usize {
+          return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("wrong payload length, expected {}, got {}", payload.len(), payload_len)
+          ))
+        }
+
+        o.read_exact(*payload).await?;
+        checksum = checksum.wrapping_add(wrapping_sum(&**payload));
+      }
 
       o.read_exact(&mut buf).await?;
       if checksum == buf[0] {
         o.write_all(&ACK).await?;
         o.flush().await?;
-        return Ok((Header { message_type, function, addr, payload_len }, message))
+        return Ok(Header { message_type, function, addr, payload_len })
       }
 
       o.write_all(&NACK).await?;
@@ -232,8 +248,8 @@ impl Vs2 {
       payload_len: buf.len() as u8,
     };
 
-    Self::write_telegram(o, &header, &[]).await?;
-    let (response_header, response) = Self::read_telegram(o).await?;
+    Self::write_telegram(o, &header, None).await?;
+    let response_header = Self::read_telegram(o, Some(buf)).await?;
 
     Self::check_response(&response_header, header.function, addr)?;
 
@@ -242,8 +258,6 @@ impl Vs2 {
     if actual_len != expected_len {
       return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected to read {expected_len}, read {actual_len}")))
     }
-
-    buf.clone_from_slice(&response[0..(0 + expected_len)]);
 
     Ok(())
   }
@@ -258,8 +272,8 @@ impl Vs2 {
       payload_len: value.len() as u8,
     };
 
-    Self::write_telegram(o, &header, value).await?;
-    let (response_header, _) = Self::read_telegram(o).await?;
+    Self::write_telegram(o, &header, Some(value)).await?;
+    let response_header = Self::read_telegram(o, None).await?;
 
     Self::check_response(&response_header, header.function, addr)?;
 
