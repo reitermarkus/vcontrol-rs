@@ -94,16 +94,27 @@ enum Function {
 pub enum Vs2 {}
 
 impl Vs2 {
-  async fn write_telegram(o: &mut Optolink, message: &[u8]) -> Result<(), std::io::Error> {
+  async fn write_telegram(o: &mut Optolink, addr: u16, function: Function, value_len: usize, value: &[u8]) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
 
-    let message_length = message.len() as u8;
-    let checksum: u8 = message.iter().fold(message_length, |acc, &x| acc.wrapping_add(x));
+    let message_type = MessageType::Request as u8;
+    let function = function as u8;
+    let addr = addr.to_be_bytes();
+
+    let message_length = 5 + value.len() as u8;
+    let checksum: u8 = message_length
+      .wrapping_add(message_type)
+      .wrapping_add(function)
+      .wrapping_add(addr.iter().fold(0, |acc, &x| acc.wrapping_add(x)))
+      .wrapping_add(value_len as u8)
+      .wrapping_add(value.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
 
     loop {
       o.write_all(&LEADIN).await?;
-      o.write_all(&[message_length]).await?;
-      o.write_all(message).await?;
+      o.write_all(&[message_length, message_type, function]).await?;
+      o.write_all(&addr).await?;
+      o.write_all(&[value_len as u8]).await?;
+      o.write_all(value).await?;
       o.write_all(&[checksum]).await?;
       o.flush().await?;
 
@@ -181,12 +192,7 @@ impl Vs2 {
 
     let function = Function::VirtualRead;
 
-    let mut read_request = Vec::new();
-    read_request.extend(&[MessageType::Request as u8, function as u8]);
-    read_request.extend(addr.to_be_bytes());
-    read_request.extend(&[buf.len() as u8]);
-
-    Self::write_telegram(o, &read_request).await?;
+    Self::write_telegram(o, addr, function, buf.len(), &[]).await?;
     let response = Self::read_telegram(o).await?;
 
     let response = Self::check_response(&response, function, addr)?;
@@ -207,13 +213,7 @@ impl Vs2 {
 
     let function = Function::VirtualWrite;
 
-    let mut write_request = Vec::new();
-    write_request.extend(&[MessageType::Request as u8, function as u8]);
-    write_request.extend(addr.to_be_bytes());
-    write_request.extend(&[value.len() as u8]);
-    write_request.extend(value);
-
-    Self::write_telegram(o, &write_request).await?;
+    Self::write_telegram(o, addr, function, value.len(), value).await?;
     let response = Self::read_telegram(o).await?;
 
     let response = Self::check_response(&response, function, addr)?;
