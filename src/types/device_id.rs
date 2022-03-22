@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 /// Device identifier.
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct DeviceId {
   pub(crate) group_id: u8,
   pub(crate) id: u8,
@@ -46,7 +46,7 @@ impl DeviceId {
 
 /// Device F0 identifier.
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct DeviceIdF0(pub(crate) u16);
 
 impl DeviceIdF0 {

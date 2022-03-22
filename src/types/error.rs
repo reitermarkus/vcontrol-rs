@@ -9,7 +9,7 @@ use crate::Device;
 use super::DateTime;
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, PartialEq, Deserialize, Serialize)]
 pub struct Error {
   index: u8,
   time: DateTime,
