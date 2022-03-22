@@ -34,6 +34,13 @@ impl fmt::Display for MessageType {
   }
 }
 
+struct Header {
+  message_type: MessageType,
+  function: Function,
+  addr: u16,
+  payload_len: u8,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, TryFromPrimitive)]
 #[allow(unused)]
 #[non_exhaustive]
@@ -94,27 +101,27 @@ enum Function {
 pub enum Vs2 {}
 
 impl Vs2 {
-  async fn write_telegram(o: &mut Optolink, addr: u16, function: Function, value_len: usize, value: &[u8]) -> Result<(), std::io::Error> {
+  async fn write_telegram(o: &mut Optolink, header: &Header, payload: &[u8]) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
 
-    let message_type = MessageType::Request as u8;
-    let function = function as u8;
-    let addr = addr.to_be_bytes();
+    let message_type = header.message_type as u8;
+    let function = header.function as u8;
+    let addr = header.addr.to_be_bytes();
 
-    let message_length = 5 + value.len() as u8;
+    let message_length = 5 + payload.len() as u8;
     let checksum: u8 = message_length
       .wrapping_add(message_type)
       .wrapping_add(function)
       .wrapping_add(addr.iter().fold(0, |acc, &x| acc.wrapping_add(x)))
-      .wrapping_add(value_len as u8)
-      .wrapping_add(value.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
+      .wrapping_add(header.payload_len as u8)
+      .wrapping_add(payload.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
 
     loop {
       o.write_all(&LEADIN).await?;
       o.write_all(&[message_length, message_type, function]).await?;
       o.write_all(&addr).await?;
-      o.write_all(&[value_len as u8]).await?;
-      o.write_all(value).await?;
+      o.write_all(&[header.payload_len]).await?;
+      o.write_all(payload).await?;
       o.write_all(&[checksum]).await?;
       o.flush().await?;
 
@@ -128,7 +135,7 @@ impl Vs2 {
     }
   }
 
-  async fn read_telegram(o: &mut Optolink) -> Result<Vec<u8>, std::io::Error> {
+  async fn read_telegram(o: &mut Optolink) -> Result<(Header, Vec<u8>), std::io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
     let mut buf = [0xff];
@@ -141,18 +148,46 @@ impl Vs2 {
 
       o.read_exact(&mut buf).await?;
       let message_length = buf[0];
+      let mut checksum: u8 = message_length;
 
-      let mut message = vec![0; message_length as usize];
+      o.read_exact(&mut buf).await?;
+      let message_type = buf[0];
+      checksum = checksum.wrapping_add(message_type);
+      let message_type = MessageType::try_from(message_type).map_err(|_| {
+        io::Error::new(io::ErrorKind::InvalidData, "unknown message identifier: {message_type}")
+      })?;
+
+      o.read_exact(&mut buf).await?;
+      let function = buf[0];
+      checksum = checksum.wrapping_add(function);
+      let function = Function::try_from(function).map_err(|_| {
+        io::Error::new(io::ErrorKind::InvalidData, format!("unknown function: {function}"))
+      })?;
+
+      let mut addr = [0, 0];
+      o.read_exact(&mut addr).await?;
+      checksum = checksum.wrapping_add(addr.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
+      let addr = u16::from_be_bytes(addr);
+
+      o.read_exact(&mut buf).await?;
+      let payload_len = buf[0];
+      checksum = checksum.wrapping_add(payload_len);
+      if payload_len != (message_length - 5) {
+        return Err(io::Error::new(
+          io::ErrorKind::InvalidData,
+          format!("wrong payload length, expected {}, got {}", message_length - 5, payload_len)
+        ))
+      }
+
+      let mut message = vec![0; message_length as usize - 5];
       o.read_exact(&mut message).await?;
-      let message = message;
-
-      let checksum: u8 = message.iter().fold(message_length, |acc, &x| acc.wrapping_add(x));
+      checksum = checksum.wrapping_add(message.iter().fold(0, |acc, &x| acc.wrapping_add(x)));
 
       o.read_exact(&mut buf).await?;
       if checksum == buf[0] {
         o.write_all(&ACK).await?;
         o.flush().await?;
-        return Ok(message)
+        return Ok((Header { message_type, function, addr, payload_len }, message))
       }
 
       o.write_all(&NACK).await?;
@@ -190,20 +225,25 @@ impl Vs2 {
   pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::get(…)");
 
-    let function = Function::VirtualRead;
+    let header = Header {
+      message_type: MessageType::Request,
+      function: Function::VirtualRead,
+      addr,
+      payload_len: buf.len() as u8,
+    };
 
-    Self::write_telegram(o, addr, function, buf.len(), &[]).await?;
-    let response = Self::read_telegram(o).await?;
+    Self::write_telegram(o, &header, &[]).await?;
+    let (response_header, response) = Self::read_telegram(o).await?;
 
-    let response = Self::check_response(&response, function, addr)?;
+    Self::check_response(&response_header, header.function, addr)?;
 
     let expected_len = buf.len();
-    let actual_len = response[0] as usize;
+    let actual_len = response_header.payload_len as usize;
     if actual_len != expected_len {
       return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected to read {expected_len}, read {actual_len}")))
     }
 
-    buf.clone_from_slice(&response[1..(1 + expected_len)]);
+    buf.clone_from_slice(&response[0..(0 + expected_len)]);
 
     Ok(())
   }
@@ -211,15 +251,20 @@ impl Vs2 {
   pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::set(…)");
 
-    let function = Function::VirtualWrite;
+    let header = Header {
+      message_type: MessageType::Request,
+      function: Function::VirtualWrite,
+      addr,
+      payload_len: value.len() as u8,
+    };
 
-    Self::write_telegram(o, addr, function, value.len(), value).await?;
-    let response = Self::read_telegram(o).await?;
+    Self::write_telegram(o, &header, value).await?;
+    let (response_header, _) = Self::read_telegram(o).await?;
 
-    let response = Self::check_response(&response, function, addr)?;
+    Self::check_response(&response_header, header.function, addr)?;
 
     let expected_len = value.len();
-    let actual_len = response[0] as usize;
+    let actual_len = response_header.payload_len as usize;
     if actual_len != expected_len {
       return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected to write {expected_len}, wrote {actual_len}")))
     }
@@ -227,44 +272,19 @@ impl Vs2 {
     Ok(())
   }
 
-  fn check_response(bytes: &[u8], expected_function: Function, addr: u16) -> Result<&[u8], io::Error> {
-    if let Some(response) = bytes.get(0) {
-      match MessageType::try_from(*response) {
-        Ok(MessageType::Response) => (),
-        Ok(message_type) => {
-          return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected response message identifier, got {message_type}")))
-        },
-        _ => {
-          return Err(io::Error::new(io::ErrorKind::InvalidData, "unknown message identifier: {response}"))
-        }
-      }
-    } else {
-      return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "expected response message identifier"))
+  fn check_response(header: &Header, function: Function, addr: u16) -> Result<(), io::Error> {
+    if header.message_type != MessageType::Response {
+      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected response message identifier, got {}", header.message_type)))
     }
 
-    if let Some(function) = bytes.get(1) {
-      match Function::try_from(*function) {
-        Ok(function) if function == expected_function => (),
-        Ok(function) => {
-          return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected function {expected_function:?}, got {function:?}")))
-        }
-        _ => {
-          return Err(io::Error::new(io::ErrorKind::InvalidData, format!("unknown function: {function:?}")))
-        }
-      }
-    } else {
-      return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "expected function"))
+    if header.function != function {
+      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected function {:?}, got {:?}", function, header.function)))
     }
 
-    if let Some((a1, a2)) = bytes.get(2).zip(bytes.get(3)) {
-      let actual_addr = u16::from_be_bytes([*a1, *a2]);
-      if actual_addr != addr {
-        return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected address {actual_addr}, {addr}")))
-      }
-    } else {
-      return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "expected address"))
+    if header.addr != addr {
+      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected address {}, got {}", addr, header.addr)))
     }
 
-    Ok(&bytes[4..])
+    Ok(())
   }
 }
