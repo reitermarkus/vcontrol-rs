@@ -7,7 +7,7 @@ use schemars::JsonSchema;
 use serde::{Serialize, Serializer, de, Deserialize, Deserializer};
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CircuitTimes {
   mon: CircuitTime,
   tue: CircuitTime,
@@ -53,7 +53,7 @@ impl CircuitTimes {
 }
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct CircuitTime([Option<TimeSpan>; 4]);
 
 impl CircuitTime {
@@ -111,7 +111,7 @@ impl fmt::Debug for CircuitTime {
 }
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 struct TimeSpan {
   from: Time,
   to: Time,

@@ -16,7 +16,7 @@ fn dec_to_byte(dec: u8) -> u8 {
   dec / 10 * 16 + dec % 10
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Date(pub(crate) NaiveDate);
 
 impl Date {
@@ -101,7 +101,7 @@ impl fmt::Debug for Date {
   }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct DateTime(pub(crate) NaiveDateTime);
 
 impl DateTime {

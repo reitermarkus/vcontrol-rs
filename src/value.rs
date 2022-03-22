@@ -6,7 +6,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, Date, DateTime, CircuitTimes, Error}};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
   DeviceId(DeviceId),
