@@ -28,7 +28,7 @@ impl Command {
     self.mode
   }
 
-  pub(crate) fn parse_value(&self, buf: &[u8], bytes: &[u8]) -> Result<Value, Error> {
+  pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty)
     }
@@ -106,7 +106,7 @@ impl Command {
 
             n <<= 1;
 
-            if (buf[byte] & bit_mask) != 0 {
+            if (bytes[byte] & bit_mask) != 0 {
               n |= 0b1;
             }
           }
@@ -179,13 +179,13 @@ impl Command {
       let mut values = vec![];
       for i in 0..block_count {
         let start = i * block_len;
-        let value = self.parse_value(&buf, &bytes[(start)..(start + block_len)])?;
+        let value = self.parse_value(&bytes[(start)..(start + block_len)])?;
         values.push(value);
       }
 
       Ok(Value::Array(values))
     } else {
-      self.parse_value(&buf, bytes)
+      self.parse_value(bytes)
     }
   }
 
