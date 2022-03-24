@@ -198,13 +198,11 @@ impl Vs2 {
 
         o.read_exact(*payload).await?;
         checksum = checksum.wrapping_add(wrapping_sum(&**payload));
-      } else {
-        if message_len != 5 {
-          return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("invalid message length, expected 5, got {}", message_len)
-          ))
-        }
+      } else if message_len != 5 {
+        return Err(io::Error::new(
+          io::ErrorKind::InvalidData,
+          format!("invalid message length, expected 5, got {}", message_len)
+        ))
       }
 
       o.read_exact(&mut buf).await?;
