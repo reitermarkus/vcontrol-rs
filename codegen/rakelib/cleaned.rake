@@ -245,6 +245,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
   datapoints = datapoint_definitions_raw.fetch('datapoints')
   event_types = datapoint_definitions_raw.fetch('event_types')
   event_value_types = datapoint_definitions_raw.fetch('event_value_types')
+  event_type_groups = datapoint_definitions_raw.fetch('event_type_groups')
   table_extensions = datapoint_definitions_raw.fetch('table_extensions')
   table_extension_values = datapoint_definitions_raw.fetch('table_extension_values')
 
@@ -309,7 +310,9 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
 
       event_type[field_name] = value unless value.nil?
     when 'ecnEventTypeGroup'
-      next
+      next unless event_type_group = event_type_groups[id]
+
+      event_type_group[field_name] = value
     else
       raise "Unknown table: #{table_name}"
     end
@@ -408,6 +411,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
   datapoint_definitions = {
     'datapoints' => datapoints,
     'event_types' => event_types,
+    'event_type_groups' => event_type_groups,
   }
 
   File.write t.name, datapoint_definitions.to_yaml

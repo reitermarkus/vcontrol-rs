@@ -528,6 +528,46 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
       { table_extension_value.delete('id') => table_extension_value }
     },
+    ['ecnEventTypeGroup', 'event_type_groups'] => ->(fragment) {
+      next if fragment.children.empty?
+
+      event_type_group_value = fragment.children.filter_map { |n|
+        value = case name = n.name.underscore
+        when 'id', 'device_type_id', 'data_point_type_id', 'parent_id', 'order_index'
+          Integer(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        when 'entrance_point'
+          parse_bool(n.text)
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value] unless value.nil?
+      }.to_h
+
+      { event_type_group_value.delete('id') => event_type_group_value }
+    },
+    ['ecnEventTypeEventTypeGroupLink', 'event_type_event_type_group_links'] => ->(fragment) {
+      next if fragment.children.empty?
+
+      link = fragment.children.filter_map { |n|
+        value = case name = n.name.underscore
+        when 'event_type_id', 'event_type_group_id', 'event_type_order'
+          Integer(n.text.strip)
+        when 'company_id'
+          assert_company_id(n.text.strip)
+          nil
+        else
+          value_if_non_empty(n)
+        end
+
+        [name, value]
+      }.to_h
+
+      { fragment['id'] => link }
+    },
   }) { |(tag, key), parse_fragment|
     {
       key => (dataset > tag).reduce({}) { |h, fragment|
@@ -546,6 +586,12 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
     event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
     event_type['value_types'] ||= []
     event_type['value_types'].push(link.fetch('event_value_id'))
+  end
+
+  definitions.delete('event_type_event_type_group_links').each do |_, link|
+    event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
+    event_type['groups'] ||= []
+    event_type['groups'].push(link.fetch('event_type_group_id'))
   end
 
   File.write t.name, definitions.to_yaml
