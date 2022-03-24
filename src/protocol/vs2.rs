@@ -112,8 +112,8 @@ impl Vs2 {
     let function = header.function as u8;
     let addr = header.addr.to_be_bytes();
 
-    let message_length = 5 + payload.map(|p| p.len() as u8).unwrap_or(0);
-    let checksum: u8 = message_length
+    let message_len = 5 + payload.map(|p| p.len() as u8).unwrap_or(0);
+    let checksum: u8 = message_len
       .wrapping_add(message_type)
       .wrapping_add(function)
       .wrapping_add(wrapping_sum(&addr))
@@ -122,7 +122,7 @@ impl Vs2 {
 
     loop {
       o.write_all(&LEADIN).await?;
-      o.write_all(&[message_length, message_type, function]).await?;
+      o.write_all(&[message_len, message_type, function]).await?;
       o.write_all(&addr).await?;
       o.write_all(&[header.payload_len]).await?;
 
@@ -155,8 +155,8 @@ impl Vs2 {
       }
 
       o.read_exact(&mut buf).await?;
-      let message_length = buf[0];
-      let mut checksum: u8 = message_length;
+      let message_len = buf[0];
+      let mut checksum: u8 = message_len;
 
       o.read_exact(&mut buf).await?;
       let message_type = buf[0];
@@ -180,23 +180,31 @@ impl Vs2 {
       o.read_exact(&mut buf).await?;
       let payload_len = buf[0];
       checksum = checksum.wrapping_add(payload_len);
-      if payload_len != (message_length - 5) {
-        return Err(io::Error::new(
-          io::ErrorKind::InvalidData,
-          format!("wrong payload length, expected {}, got {}", message_length - 5, payload_len)
-        ))
-      }
 
       if let Some(ref mut payload) = payload {
+        if payload_len != (message_len - 5) {
+          return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len)
+          ))
+        }
+
         if payload.len() != payload_len as usize {
           return Err(io::Error::new(
             io::ErrorKind::InvalidData,
-            format!("wrong payload length, expected {}, got {}", payload.len(), payload_len)
+            format!("invalid payload length, expected {}, got {}", payload.len(), payload_len)
           ))
         }
 
         o.read_exact(*payload).await?;
         checksum = checksum.wrapping_add(wrapping_sum(&**payload));
+      } else {
+        if message_len != 5 {
+          return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("invalid message length, expected 5, got {}", message_len)
+          ))
+        }
       }
 
       o.read_exact(&mut buf).await?;
