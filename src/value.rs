@@ -9,7 +9,9 @@ use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, Date, DateTime
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
+  #[serde(skip_deserializing)]
   DeviceId(DeviceId),
+  #[serde(skip_deserializing)]
   DeviceIdF0(DeviceIdF0),
   Int(i64),
   Double(f64),
