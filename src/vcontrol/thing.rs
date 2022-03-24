@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Weak, RwLock, Mutex};
+use std::sync::{Arc, Weak, RwLock, mpsc::channel};
 
 use schemars::{schema, schema_for};
 use serde_json::json;
@@ -13,7 +13,7 @@ use crate::{VControl, Device, AccessMode, Command, DataType, Value, types::{Devi
 struct VcontrolValueForwarder {
   command_name: &'static str,
   command: &'static Command,
-  vcontrol: Arc<RwLock<Mutex<VControl>>>,
+  vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>,
 }
 
 impl ValueForwarder for VcontrolValueForwarder {
@@ -43,21 +43,36 @@ impl ValueForwarder for VcontrolValueForwarder {
     };
 
     log::info!("Setting property {} to {}.", self.command_name, new_value);
-    let vcontrol = self.vcontrol.write().unwrap();
-    let mut vcontrol = vcontrol.lock().unwrap();
+    let vcontrol = self.vcontrol.clone();
+    let command_name = self.command_name;
 
-    let rt = actix_rt::Runtime::new().unwrap();
-    if let Err(err) = rt.block_on(vcontrol.set(self.command_name, vcontrol_value)) {
-      log::error!("Failed setting property {}: {}", self.command_name, err);
-      return Err("Failed setting value")
+    let (tx, rx) = channel();
+
+    let arbiter = actix_rt::Arbiter::new();
+    arbiter.spawn(async move {
+      let vcontrol = vcontrol.write().await;
+      let mut vcontrol = vcontrol.lock().await;
+      let res = vcontrol.set(command_name, vcontrol_value).await;
+      tx.send(res).unwrap();
+    });
+
+    let res = rx.recv().unwrap();
+    arbiter.stop();
+
+    match res {
+      Ok(_) => {
+        log::info!("Property {} successfully set to {}.", command_name, new_value);
+        Ok(new_value)
+      },
+      Err(err) => {
+        log::error!("Failed setting property {}: {}", command_name, err);
+        Err("Failed setting value")
+      }
     }
-    log::info!("Property {} successfully set to {}.", self.command_name, new_value);
-
-    Ok(new_value)
   }
 }
 
-fn add_command(thing: &mut dyn Thing, vcontrol: Arc<RwLock<Mutex<VControl>>>, device: &Device, command_name: &'static str, command: &'static Command) {
+fn add_command(thing: &mut dyn Thing, vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>, device: &Device, command_name: &'static str, command: &'static Command) {
   let mut root_schema = match command.data_type {
     DataType::DeviceId => schema_for!(DeviceId),
     DataType::DeviceIdF0 => schema_for!(DeviceIdF0),
@@ -139,7 +154,7 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<RwLock<Mutex<VControl>>>, de
   )));
 }
 
-pub fn make_thing(vcontrol: VControl) -> (Arc<RwLock<Mutex<VControl>>>, Arc<RwLock<Box<dyn Thing + 'static>>>, HashMap<&'static str, &'static Command>) {
+pub fn make_thing(vcontrol: VControl) -> (Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>, Arc<RwLock<Box<dyn Thing + 'static>>>, HashMap<&'static str, &'static Command>) {
   let device = vcontrol.device();
   let mut commands = HashMap::<&'static str, &'static Command>::new();
 
@@ -151,7 +166,7 @@ pub fn make_thing(vcontrol: VControl) -> (Arc<RwLock<Mutex<VControl>>>, Arc<RwLo
     commands.insert(command_name, command);
   }
 
-  let vcontrol = Arc::new(RwLock::new(Mutex::new(vcontrol)));
+  let vcontrol = Arc::new(tokio::sync::RwLock::new(tokio::sync::Mutex::new(vcontrol)));
 
   // TODO: Get from `vcontrol`.
   let device_id = 1234;
@@ -173,7 +188,7 @@ pub fn make_thing(vcontrol: VControl) -> (Arc<RwLock<Mutex<VControl>>>, Arc<RwLo
   (vcontrol, thing, commands)
 }
 
-pub async fn update_thread(vcontrol: Arc<RwLock<Mutex<VControl>>>, weak_thing: Weak<RwLock<Box<dyn Thing + 'static>>>, commands: HashMap<&'static str, &'static Command>) {
+pub async fn update_thread(vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>, weak_thing: Weak<RwLock<Box<dyn Thing + 'static>>>, commands: HashMap<&'static str, &'static Command>) {
   loop {
     let thing = if let Some(thing) = weak_thing.upgrade() {
       thing
@@ -181,14 +196,14 @@ pub async fn update_thread(vcontrol: Arc<RwLock<Mutex<VControl>>>, weak_thing: W
       return
     };
 
-    for (command_name, command) in &commands {
+    for (&command_name, &command) in &commands {
       if !command.mode.is_read() {
         continue;
       }
 
       let new_value = {
-        let vcontrol = vcontrol.read().unwrap();
-        let mut vcontrol = vcontrol.lock().unwrap();
+        let vcontrol = vcontrol.read().await;
+        let mut vcontrol = vcontrol.lock().await;
         match vcontrol.get(command_name).await {
           Ok(value) => json!(value.value),
           Err(err) => {
@@ -198,20 +213,23 @@ pub async fn update_thread(vcontrol: Arc<RwLock<Mutex<VControl>>>, weak_thing: W
         }
       };
 
-      let mut t = thing.write().unwrap();
-      let prop = t.find_property(&command_name.to_string()).unwrap();
+      let thing = thing.clone();
+      actix_rt::task::spawn_blocking(move || {
+        let mut t = thing.write().unwrap();
+        let prop = t.find_property(&command_name.to_string()).unwrap();
 
-      let old_value = prop.get_value();
+        let old_value = prop.get_value();
 
-      if let Err(err) = prop.set_cached_value(new_value.clone()) {
-        log::error!("Failed setting cached value for property '{}': {}", command_name, err)
-      }
+        if let Err(err) = prop.set_cached_value(new_value.clone()) {
+          log::error!("Failed setting cached value for property '{}': {}", command_name, err)
+        }
 
-      if old_value != new_value {
-        log::info!("Property '{}' changed from {} to {}.", command_name, old_value, new_value);
-      }
+        if old_value != new_value {
+          log::info!("Property '{}' changed from {} to {}.", command_name, old_value, new_value);
+        }
 
-      t.property_notify(command_name.to_string(), new_value);
+        t.property_notify(command_name.to_string(), new_value);
+      }).await.unwrap();
     }
   }
 }
