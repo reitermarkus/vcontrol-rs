@@ -127,23 +127,23 @@ impl Command {
 
         match t {
           data_type @ DataType::Byte => match &self.parameter {
-            Parameter::SByte => Value::Int(n as i8 as i64),
+            Parameter::SByte => Value::Int(n as u8 as i64),
             Parameter::Byte => Value::Int(n as u8 as i64),
             parameter => unreachable!("Data type {:?} with parameter {:?}.", data_type, parameter),
           },
           data_type @ DataType::Int => match &self.parameter {
-            Parameter::Byte =>  Value::Int(n as u8 as i64),
-            Parameter::Int | Parameter::IntHighByteFirst => Value::Int(n as u16 as i64),
-            Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Int(n as u32 as i64),
-            Parameter::SByte =>  Value::Int(n as i8 as i64),
-            Parameter::SInt | Parameter::SIntHighByteFirst => Value::Int(n as i16 as i64),
-            Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Int(n as i32 as i64),
+            Parameter::Byte =>  Value::Int(n as i64),
+            Parameter::Int | Parameter::IntHighByteFirst => Value::Int(n as i64),
+            Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Int(n as i64),
+            Parameter::SByte =>  Value::Int(n as i64),
+            Parameter::SInt | Parameter::SIntHighByteFirst => Value::Int(n as i64),
+            Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Int(n as i64),
             parameter => unreachable!("Data type {:?} with parameter {:?} ({:?}).", data_type, parameter, bytes),
           },
           data_type @ DataType::Double => match &self.parameter {
-            Parameter::Byte =>  Value::Double(n as f64 as u8 as f64),
-            Parameter::Int | Parameter::IntHighByteFirst => Value::Double(n as f64 as u16 as f64),
-            Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Double(n as f64 as u32 as f64),
+            Parameter::Byte =>  Value::Double(n as f64),
+            Parameter::Int | Parameter::IntHighByteFirst => Value::Double(n as f64),
+            Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Double(n as f64),
             Parameter::SByte =>  Value::Double(n as f64 as i8 as f64),
             Parameter::SInt | Parameter::SIntHighByteFirst => Value::Double(n as f64 as i16 as f64),
             Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Double(n as f64 as i32 as f64),
@@ -278,5 +278,33 @@ impl Command {
     };
 
     protocol.set(o, self.addr, &bytes).await.map_err(Into::into)
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn parse_double_from_int() {
+    let command = Command {
+      addr: 0x0886,
+      mode: AccessMode::Read,
+      data_type: DataType::Double,
+      parameter: Parameter::Int,
+      block_count: None,
+      block_len: 4,
+      byte_len: 4,
+      byte_pos: 0,
+      bit_len: None,
+      bit_pos: 0,
+      conversion: Some(Conversion::SecToHour),
+      lower_bound: None,
+      upper_bound: None,
+      unit: Some("h"),
+      mapping: None,
+    };
+    let value = command.parse_value(&[0x00, 0x95, 0xBA, 0x0A]).unwrap();
+    assert_eq!(value, Value::Double(50000.0));
   }
 }
