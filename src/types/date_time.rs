@@ -1,10 +1,12 @@
 use std::fmt;
 
-use chrono::{NaiveDate, NaiveTime, NaiveDateTime, Datelike, Timelike};
+use chrono::{NaiveDate, NaiveDateTime, Datelike, Timelike};
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
 use serde::ser::{Serialize, Serializer};
 use serde::de::{Deserialize, Deserializer};
+
+use crate::Error;
 
 #[inline]
 fn byte_to_dec(byte: u8) -> u8 {
@@ -20,13 +22,16 @@ fn dec_to_byte(dec: u8) -> u8 {
 pub struct Date(pub(crate) NaiveDate);
 
 impl Date {
-  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
+  pub fn from_bytes(bytes: &[u8; 8]) -> Result<Self, Error> {
     let year = u16::from(byte_to_dec(bytes[0])) * 100 + u16::from(byte_to_dec(bytes[1]));
     let month = byte_to_dec(bytes[2]);
     let day = byte_to_dec(bytes[3]);
-    let date = NaiveDate::from_ymd(year.into(), month.into(), day.into());
 
-    Self(date)
+    if let Some(date) = NaiveDate::from_ymd_opt(year.into(), month.into(), day.into()) {
+      Ok(Self(date))
+    } else {
+      Err(Error::InvalidFormat(format!("invalid date: {year:04}-{month:02}-{day:02}")))
+    }
   }
 
   pub fn to_bytes(&self) -> [u8; 8] {
@@ -43,24 +48,12 @@ impl Date {
   }
 }
 
-impl From<Date> for NaiveDate {
-  fn from(date: Date) -> Self {
-    date.0
-  }
-}
-
-impl From<NaiveDate> for Date {
-  fn from(date: NaiveDate) -> Self {
-    Self(date)
-  }
-}
-
 impl<'de> Deserialize<'de> for Date {
   fn deserialize<D>(deserializer: D) -> Result<Date, D::Error>
   where
       D: Deserializer<'de>,
   {
-    NaiveDate::deserialize(deserializer).map(Into::into)
+    NaiveDate::deserialize(deserializer).map(Self)
   }
 }
 
@@ -105,22 +98,27 @@ impl fmt::Debug for Date {
 pub struct DateTime(pub(crate) NaiveDateTime);
 
 impl DateTime {
-  pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> DateTime {
-    NaiveDate::from_ymd(year.into(), month.into(), day.into()).and_hms(hour.into(), minute.into(), second.into()).into()
+  pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> Result<Self, Error> {
+
+    if let Some(datetime) = NaiveDate::from_ymd_opt(year.into(), month.into(), day.into()).and_then(|date| {
+      date.and_hms_opt(hour.into(), minute.into(), second.into())
+    }) {
+      Ok(Self(datetime))
+    } else {
+      return Err(Error::InvalidFormat(format!("invalid datetime: {year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}")))
+    }
   }
 
-  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
+  pub fn from_bytes(bytes: &[u8; 8]) -> Result<Self, Error> {
     let year = u16::from(byte_to_dec(bytes[0])) * 100 + u16::from(byte_to_dec(bytes[1]));
     let month = byte_to_dec(bytes[2]);
     let day = byte_to_dec(bytes[3]);
-    let date = NaiveDate::from_ymd(year.into(), month.into(), day.into());
 
     let hour = byte_to_dec(bytes[5]);
     let minute = byte_to_dec(bytes[6]);
     let second = byte_to_dec(bytes[7]);
-    let time = NaiveTime::from_hms(hour.into(), minute.into(), second.into());
 
-    Self(NaiveDateTime::new(date, time))
+    Self::new(year, month, day, hour, minute, second)
   }
 
   pub fn to_bytes(&self) -> [u8; 8] {
@@ -137,24 +135,12 @@ impl DateTime {
   }
 }
 
-impl From<DateTime> for NaiveDateTime {
-  fn from(date_time: DateTime) -> Self {
-    date_time.0
-  }
-}
-
-impl From<NaiveDateTime> for DateTime {
-  fn from(date_time: NaiveDateTime) -> Self {
-    Self(date_time)
-  }
-}
-
 impl<'de> Deserialize<'de> for DateTime {
   fn deserialize<D>(deserializer: D) -> Result<DateTime, D::Error>
   where
       D: Deserializer<'de>,
   {
-    NaiveDateTime::deserialize(deserializer).map(Into::into)
+    NaiveDateTime::deserialize(deserializer).map(Self)
   }
 }
 
@@ -207,7 +193,7 @@ mod tests {
 
   #[test]
   fn new() {
-    let time = DateTime::new(2018, 12, 23, 17, 49, 31);
+    let time = DateTime::new(2018, 12, 23, 17, 49, 31).unwrap();
 
     assert_eq!(time.0.year(), 2018);
     assert_eq!(time.0.month(), 12);
@@ -233,7 +219,7 @@ mod tests {
 
   #[test]
   fn from_bytes() {
-    let time = DateTime::from_bytes(&[0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);
+    let time = DateTime::from_bytes(&[0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]).unwrap();
 
     assert_eq!(time.0.year(), 2018);
     assert_eq!(time.0.month(), 12);
@@ -246,7 +232,8 @@ mod tests {
 
   #[test]
   fn to_bytes() {
-    let time = DateTime::new(2018, 12, 23, 17, 49, 31);
+    let time = DateTime::new(2018, 12, 23, 17, 49, 31).unwrap();
+
     assert_eq!(time.to_bytes(), [0x20, 0x18, 0x12, 0x23, 0x07, 0x17, 0x49, 0x31]);
   }
 }

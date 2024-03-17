@@ -22,7 +22,7 @@ cat = ["env_logger", "tokio/rt-multi-thread"]
 [dependencies]
 actix-rt = { version = "2.7", optional = true }
 clap = { version = "2.33", optional = true }
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4.23", features = ["serde"] }
 log = "0.4"
 phf = { version = "0.10", features = ["serde"] }
 phf_shared = "0.10"

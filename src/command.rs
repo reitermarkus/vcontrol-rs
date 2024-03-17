@@ -53,14 +53,14 @@ impl Command {
           return Err(Error::InvalidFormat("array length is not 8".to_string()))
         }
 
-        Value::Date(Date::from_bytes(array_ref![bytes, 0, 8]))
+        Value::Date(Date::from_bytes(array_ref![bytes, 0, 8])?)
       },
       DataType::DateTime => {
         if bytes.len() != 8 {
           return Err(Error::InvalidFormat("array length is not 8".to_string()))
         }
 
-        Value::DateTime(DateTime::from_bytes(array_ref![bytes, 0, 8]))
+        Value::DateTime(DateTime::from_bytes(array_ref![bytes, 0, 8])?)
       },
       DataType::CircuitTimes => {
         if bytes.len() != 56 {
@@ -82,7 +82,7 @@ impl Command {
           return Err(Error::InvalidFormat("array length is not 9".to_string()))
         }
 
-        Value::Error(types::Error::from_bytes(array_ref![bytes, 0, 9]))
+        Value::Error(types::Error::from_bytes(array_ref![bytes, 0, 9])?)
       },
       DataType::String => {
         let end = bytes.iter().position(|&c| c == b'\0').unwrap_or(bytes.len());
