@@ -26,11 +26,11 @@ impl VControl {
   /// Automatically detect the `Device` and `Protocol` and connect to it.
   pub async fn connect(mut optolink: Optolink) -> Result<Self, Error> {
     let (connected, protocol) = if let Some(protocol) = Protocol::detect(&mut optolink).await {
-      log::debug!("Protocol detected: {:?}", protocol);
+      log::debug!("Protocol detected: {protocol}");
       (true, protocol)
     } else {
       let protocol = Protocol::Vs1;
-      log::warn!("No protocol detected, defaulting to {:?}.", protocol);
+      log::warn!("No protocol detected, defaulting to {protocol}.");
       (false, protocol)
     };
 
