@@ -15,6 +15,8 @@ pub struct VControl {
 
 impl VControl {
   async fn renegotiate(&mut self) -> Result<(), Error> {
+    log::trace!("VControl::reneogiate()");
+
     if !self.connected {
       self.protocol.negotiate(&mut self.optolink).await?;
       self.connected = true;
@@ -25,6 +27,8 @@ impl VControl {
 
   /// Automatically detect the `Device` and `Protocol` and connect to it.
   pub async fn connect(mut optolink: Optolink) -> Result<Self, Error> {
+    log::trace!("VControl::connect(…)");
+
     let (connected, protocol) = if let Some(protocol) = Protocol::detect(&mut optolink).await {
       log::debug!("Protocol detected: {protocol}");
       (true, protocol)
@@ -85,6 +89,8 @@ impl VControl {
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
   pub async fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
+    log::trace!("VControl::get({command:?})");
+
     self.renegotiate().await?;
 
     let command = self.command_by_name(command)?;
@@ -122,6 +128,8 @@ impl VControl {
   ///
   /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
   pub async fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
+    log::trace!("VControl::set({command:?}, {input:?})");
+
     self.renegotiate().await?;
 
     let command = self.command_by_name(command)?;
