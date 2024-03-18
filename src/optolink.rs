@@ -155,7 +155,8 @@ impl Optolink {
       };
 
       match res {
-        Ok(_) => continue,
+        Ok(0) => break,
+        Ok(size) => continue,
         Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => break,
         Err(e) => return Err(e),
       }
