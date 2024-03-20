@@ -30,13 +30,7 @@ mod conversion;
 use conversion::Conversion;
 
 fn escape_const_name(s: &str) -> String {
-  s.to_uppercase()
-    .replace('.', "_")
-    .replace('|', "_")
-    .replace(' ', "_")
-    .replace('-', "_")
-    .replace('~', "_")
-    .replace('%', "PERCENT")
+  s.to_uppercase().replace(['.', '|', ' ', '-', '~'], "_").replace('%', "PERCENT")
 }
 
 #[track_caller]
@@ -49,7 +43,7 @@ fn load_yaml<T: DeserializeOwned>(file_name: &str) -> anyhow::Result<T> {
 
 fn output_file(file_name: &str) -> io::Result<BufWriter<File>> {
   let path = Path::new(&env::var("OUT_DIR").expect("OUT_DIR is not set")).join(file_name);
-  Ok(BufWriter::new(File::create(&path)?))
+  Ok(BufWriter::new(File::create(path)?))
 }
 
 fn generate_translations() -> anyhow::Result<()> {

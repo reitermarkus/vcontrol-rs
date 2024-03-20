@@ -172,7 +172,7 @@ impl FromStr for Time {
     let mut chars = s.chars();
 
     fn char_to_u8(c: char) -> Option<u8> {
-      if matches!(c, '0'..='9') {
+      if c.is_ascii_digit() {
         return Some(c as u8 - b'0')
       }
 

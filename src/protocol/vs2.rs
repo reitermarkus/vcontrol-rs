@@ -240,16 +240,11 @@ impl Vs2 {
   async fn wait_for_sync(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs2::wait_for_sync(…)");
 
-    loop {
-      match Self::read_status(o).await? {
-        SYNC => break Ok(()),
-        byte => {
-          return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("expected SYNC (0x{SYNC:02X}), received 0x{byte:02X}"),
-          ));
-        },
-      }
+    match Self::read_status(o).await? {
+      SYNC => Ok(()),
+      byte => {
+        Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected SYNC (0x{SYNC:02X}), received 0x{byte:02X}")))
+      },
     }
   }
 

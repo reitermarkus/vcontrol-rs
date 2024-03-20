@@ -100,7 +100,7 @@ impl DateTime {
     {
       Ok(Self(datetime))
     } else {
-      return Err(Error::InvalidFormat(format!(
+      Err(Error::InvalidFormat(format!(
         "invalid datetime: {year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}"
       )))
     }
