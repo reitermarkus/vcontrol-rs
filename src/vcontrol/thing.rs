@@ -205,10 +205,10 @@ pub async fn update_thread(vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<
         let vcontrol = vcontrol.read().await;
         let mut vcontrol = vcontrol.lock().await;
         match vcontrol.get(command_name).await {
-          Ok(value) => json!(value.value),
+          Ok(value) => Some(value),
           Err(err) => {
             log::error!("Failed getting value for property '{}': {}", command_name, err);
-            json!(null)
+            None
           }
         }
       };
@@ -219,6 +219,33 @@ pub async fn update_thread(vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<
         let prop = t.find_property(&command_name.to_string()).unwrap();
 
         let old_value = prop.get_value();
+
+        let new_value = if let Some(value) = new_value {
+          let new_value = json!(value.value);
+
+          if old_value != new_value {
+            if let Some(mapping) = value.mapping {
+              let mapping_found = match value.value {
+                Value::Int(value) => {
+                  if let Ok(value) = i32::try_from(value) {
+                    mapping.contains_key(&value)
+                  } else {
+                    false
+                  }
+                },
+                _ => false,
+              };
+
+              if !mapping_found {
+                log::warn!("Property '{}' does not have an enum mapping for {:?}.", command_name, value.value);
+              }
+            }
+          }
+
+          new_value
+        } else {
+          json!(null)
+        };
 
         if let Err(err) = prop.set_cached_value(new_value.clone()) {
           log::error!("Failed setting cached value for property '{}': {}", command_name, err)

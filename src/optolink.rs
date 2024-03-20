@@ -3,23 +3,23 @@ use core::task::{Context, Poll};
 use std::fmt;
 use std::io;
 use std::net::{ToSocketAddrs, SocketAddr};
-use std::time::Duration;
 
 use pin_project::pin_project;
 use tokio::{io::{ReadBuf, AsyncRead, AsyncWrite}, net::TcpStream};
 use tokio_serial::{SerialStream, SerialPortBuilderExt, DataBits, FlowControl, StopBits, Parity};
+use serialport::{SerialPort, ClearBuffer};
 
 #[pin_project(project = DeviceProj)]
 enum Device {
-  Tty(#[pin] SerialStream),
+  Tty(#[pin] SerialStream, String),
   Stream(#[pin] TcpStream),
 }
 
 impl fmt::Debug for Device   {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
-      Device::Tty(tty) => tty.fmt(f),
-      Device::Stream(stream) => stream.fmt(f),
+      Self::Tty(tty, _) => tty.fmt(f),
+      Self::Stream(stream) => stream.fmt(f),
     }
   }
 }
@@ -31,7 +31,7 @@ impl AsyncWrite for Device {
       buf: &[u8]
   ) -> Poll<tokio::io::Result<usize>> {
     match self.project() {
-      DeviceProj::Tty(tty) => tty.poll_write(cx, buf),
+      DeviceProj::Tty(tty, _) => tty.poll_write(cx, buf),
       DeviceProj::Stream(stream) => stream.poll_write(cx, buf),
     }
   }
@@ -41,7 +41,7 @@ impl AsyncWrite for Device {
       cx: &mut Context<'_>
   ) -> Poll<tokio::io::Result<()>> {
     match self.project() {
-      DeviceProj::Tty(tty) => tty.poll_flush(cx),
+      DeviceProj::Tty(tty, _) => tty.poll_flush(cx),
       DeviceProj::Stream(stream) => stream.poll_flush(cx),
     }
   }
@@ -51,7 +51,7 @@ impl AsyncWrite for Device {
       cx: &mut Context<'_>
   ) -> Poll<tokio::io::Result<()>> {
     match self.project() {
-      DeviceProj::Tty(tty) => tty.poll_shutdown(cx),
+      DeviceProj::Tty(tty, _) => tty.poll_shutdown(cx),
       DeviceProj::Stream(stream) => stream.poll_shutdown(cx),
     }
   }
@@ -66,7 +66,7 @@ impl AsyncRead for Device {
     let this = self.project();
 
     match this {
-      DeviceProj::Tty(tty) => tty.poll_read(cx, buf),
+      DeviceProj::Tty(tty, _) => tty.poll_read(cx, buf),
       DeviceProj::Stream(stream) => stream.poll_read(cx, buf),
     }
   }
@@ -78,7 +78,6 @@ impl AsyncRead for Device {
 pub struct Optolink {
   #[pin]
   device: Device,
-  timeout: Option<Duration>,
 }
 
 impl Optolink {
@@ -97,7 +96,9 @@ impl Optolink {
   pub async fn open(port: impl AsRef<str>) -> io::Result<Optolink> {
     log::trace!("Optolink::open(…)");
 
-    let serial_port = tokio_serial::new(port.as_ref(), 4800)
+    let port = port.as_ref();
+
+    let serial_port = tokio_serial::new(port, 4800)
       .data_bits(DataBits::Eight)
       .flow_control(FlowControl::None)
       .parity(Parity::Even)
@@ -114,7 +115,7 @@ impl Optolink {
       }
     };
 
-    Ok(Optolink { device: Device::Tty(serial_port), timeout: None })
+    Ok(Optolink { device: Device::Tty(serial_port, port.to_owned()) })
   }
 
   /// Connects to a device via TCP.
@@ -139,40 +140,64 @@ impl Optolink {
         io::Error::new(err.kind(), format!("{}: {}", err, addrs.iter().map(|addr| addr.to_string()).collect::<Vec<String>>().join(", ")))
       })?;
 
-    Ok(Optolink { device: Device::Stream(stream), timeout: None })
+    Ok(Optolink { device: Device::Stream(stream) })
   }
 
   /// Purge all contents of the input buffer.
   pub async fn purge(&mut self) -> Result<(), io::Error> {
     log::trace!("Optolink::purge()");
 
-    let mut buf = [0];
+    match self.device {
+      Device::Tty(ref mut tty, _) => {
+        Ok(tty.clear(ClearBuffer::Input)?)
+      },
+      Device::Stream(ref mut stream) => {
+        let mut buf = [0; 16];
 
-    loop {
-      let res = match &mut self.device {
-        Device::Tty(tty) => tty.try_read(&mut buf),
-        Device::Stream(stream) => stream.try_read(&mut buf),
-      };
+        loop {
+          match stream.try_read(&mut buf) {
+            Ok(0) => break,
+            Ok(_) => continue,
+            Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => break,
+            Err(e) => return Err(e),
+          }
+        }
 
-      match res {
-        Ok(0) => break,
-        Ok(size) => continue,
-        Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => break,
-        Err(e) => return Err(e),
+        Ok(())
       }
     }
-
-    Ok(())
   }
 
-  /// Get timeout for operations on the Optolink device.
-  pub fn timeout(&self) -> Option<Duration> {
-    self.timeout
-  }
+  pub async fn reinitialize(&mut self) -> Result<(), io::Error> {
+    log::trace!("Optolink::reinitialize(…)");
 
-  /// Set timeout for operations on the Optolink device.
-  pub fn set_timeout(&mut self, timeout: Option<Duration>) {
-    self.timeout = timeout;
+    match self.device {
+      Device::Tty(ref mut tty, ref port) => {
+        use tokio::time::{sleep, Duration};
+
+        // Disable exclusive access so the device can be openend again.
+        let _ = tty.set_exclusive(false);
+
+        for _ in 0..10 {
+          let serial_port = tokio_serial::new(port, 4800)
+            .data_bits(DataBits::Eight)
+            .flow_control(FlowControl::None)
+            .parity(Parity::Even)
+            .stop_bits(StopBits::Two)
+            .open_native_async();
+
+          if let Ok(serial_port) = serial_port {
+            *tty = serial_port;
+            return Ok(())
+          }
+
+          sleep(Duration::from_secs(1)).await;
+        }
+
+        Ok(tty.set_exclusive(true)?)
+      },
+      Device::Stream(_) => Ok(()),
+    }
   }
 }
 

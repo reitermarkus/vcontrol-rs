@@ -17,12 +17,30 @@ impl VControl {
   async fn renegotiate(&mut self) -> Result<(), Error> {
     log::trace!("VControl::reneogiate()");
 
-    if !self.connected {
-      self.protocol.negotiate(&mut self.optolink).await?;
-      self.connected = true;
-    }
+    let mut reinitialized = false;
+    loop {
+      match self.protocol.negotiate(&mut self.optolink).await {
+        Ok(()) => {
+          self.connected = true;
+          return Ok(())
+        },
+        Err(err) if reinitialized => return Err(err.into()),
+        Err(err) => {
+          match self.optolink.reinitialize().await {
+            Ok(()) => {
+              log::info!("Optolink port successfully re-initialized after error.");
+              reinitialized = true;
+              continue;
+            },
+            Err(err) => {
+              log::warn!("Failed to re-initialize Optolink port after error: {err}");
+            }
+          }
 
-    Ok(())
+          return Err(err.into())
+        }
+      }
+    }
   }
 
   /// Automatically detect the `Device` and `Protocol` and connect to it.
@@ -89,9 +107,9 @@ impl VControl {
   pub async fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
     log::trace!("VControl::get({command:?})");
 
-    self.renegotiate().await?;
-
     let command = self.command_by_name(command)?;
+
+    self.renegotiate().await?;
     match command.get(&mut self.optolink, self.protocol).await {
       Ok(value) => {
         let mapping = if let Value::Error(ref _error) = value {
@@ -101,13 +119,6 @@ impl VControl {
         } else {
           None
         };
-
-        if let (Value::Int(value), Some(mapping)) = (&value, command.mapping.as_ref()) {
-          let n = *value as i32;
-          if !mapping.contains_key(&n) {
-            return Err(Error::UnknownEnumVariant(format!("No enum mapping found for {}.", n)))
-          }
-        }
 
         Ok(OutputValue {
           value,
@@ -126,13 +137,15 @@ impl VControl {
   pub async fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
     log::trace!("VControl::set({command:?}, {input:?})");
 
-    self.renegotiate().await?;
-
     let command = self.command_by_name(command)?;
-    let res = command.set(&mut self.optolink, self.protocol, input).await;
-    if res.is_err() {
-      self.connected = false;
+
+    self.renegotiate().await?;
+    match command.set(&mut self.optolink, self.protocol, input).await {
+      Ok(()) => Ok(()),
+      Err(err) => {
+        self.connected = false;
+        Err(err)
+      },
     }
-    res
   }
 }
