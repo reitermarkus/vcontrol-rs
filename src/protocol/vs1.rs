@@ -1,22 +1,24 @@
-use std::io;
-use std::time::{Instant, Duration};
+use std::{
+  io,
+  time::{Duration, Instant},
+};
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use crate::Optolink;
 
 const RESET: u8 = 0x04;
-const SYNC: u8  = 0x05;
+const SYNC: u8 = 0x05;
 
 #[allow(unused)]
 #[non_exhaustive]
 #[repr(u8)]
 enum Function {
-  VirtualRead = 247,
+  VirtualRead  = 247,
   VirtualWrite = 244,
-  GfaRead = 107,
-  GfaWrite = 104,
-  ProcessRead = 123,
+  GfaRead      = 107,
+  GfaWrite     = 104,
+  ProcessRead  = 123,
   ProcessWrite = 120,
 }
 
@@ -79,7 +81,10 @@ impl Vs1 {
       if buf.iter().any(|byte| *byte == SYNC) {
         let read_time = stop - read_start;
 
-        log::debug!("Vs1::get(…) buf = {}", buf.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" "));
+        log::debug!(
+          "Vs1::get(…) buf = {}",
+          buf.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" ")
+        );
         log::debug!("Vs1::get(…) read_time = {:?}", read_time);
 
         // Return `Ok` if the response was received in a short amount of time,

@@ -1,12 +1,8 @@
-use std::process::exit;
-use std::sync::Arc;
+use std::{process::exit, sync::Arc};
 
-use clap::{crate_version, Arg, App, SubCommand, AppSettings::ArgRequiredElseHelp};
+use clap::{crate_version, App, AppSettings::ArgRequiredElseHelp, Arg, SubCommand};
 use serde_json;
-use webthing::{
-  ThingsType, WebThingServer,
-  BaseActionGenerator,
-};
+use webthing::{BaseActionGenerator, ThingsType, WebThingServer};
 
 use vcontrol::{Optolink, VControl, Value};
 
@@ -15,43 +11,46 @@ async fn main() -> std::io::Result<()> {
   env_logger::init();
 
   let app = App::new("vcontrol")
-              .version(crate_version!())
-              .setting(ArgRequiredElseHelp)
-              .help_short("?")
-              .arg(Arg::with_name("device")
-                .short("d")
-                .long("device")
-                .takes_value(true)
-                .conflicts_with_all(&["host", "port"])
-                .help("path of the device"))
-              .arg(Arg::with_name("host")
-                .short("h")
-                .long("host")
-                .takes_value(true)
-                .conflicts_with("device")
-                .requires("port")
-                .help("hostname or IP address of the device (default: localhost)"))
-              .arg(Arg::with_name("port")
-                .short("p")
-                .long("port")
-                .takes_value(true)
-                .conflicts_with("device")
-                .help("port of the device"))
-              .subcommand(SubCommand::with_name("get")
-                .about("get value")
-                .arg(Arg::with_name("command")
-                  .help("name of the command")
-                  .required(true)))
-              .subcommand(SubCommand::with_name("set")
-                .about("set value")
-                .arg(Arg::with_name("command")
-                  .help("name of the command")
-                  .required(true))
-                .arg(Arg::with_name("value")
-                  .help("value")
-                  .required(true)))
-              .subcommand(SubCommand::with_name("server")
-                .about("start web server"));
+    .version(crate_version!())
+    .setting(ArgRequiredElseHelp)
+    .help_short("?")
+    .arg(
+      Arg::with_name("device")
+        .short("d")
+        .long("device")
+        .takes_value(true)
+        .conflicts_with_all(&["host", "port"])
+        .help("path of the device"),
+    )
+    .arg(
+      Arg::with_name("host")
+        .short("h")
+        .long("host")
+        .takes_value(true)
+        .conflicts_with("device")
+        .requires("port")
+        .help("hostname or IP address of the device (default: localhost)"),
+    )
+    .arg(
+      Arg::with_name("port")
+        .short("p")
+        .long("port")
+        .takes_value(true)
+        .conflicts_with("device")
+        .help("port of the device"),
+    )
+    .subcommand(
+      SubCommand::with_name("get")
+        .about("get value")
+        .arg(Arg::with_name("command").help("name of the command").required(true)),
+    )
+    .subcommand(
+      SubCommand::with_name("set")
+        .about("set value")
+        .arg(Arg::with_name("command").help("name of the command").required(true))
+        .arg(Arg::with_name("value").help("value").required(true)),
+    )
+    .subcommand(SubCommand::with_name("server").about("start web server"));
 
   let matches = app.get_matches();
 
@@ -73,7 +72,8 @@ async fn main() -> std::io::Result<()> {
     }
   } else {
     unreachable!()
-  }.unwrap_or_else(|err| {
+  }
+  .unwrap_or_else(|err| {
     eprintln!("Error: {}", err);
     exit(1);
   });
@@ -90,7 +90,7 @@ async fn main() -> std::io::Result<()> {
       Err(err) => {
         eprintln!("Error: {}", err);
         exit(1);
-      }
+      },
     }
   }
 
@@ -105,13 +105,12 @@ async fn main() -> std::io::Result<()> {
       Err(err) => {
         eprintln!("Error: {}", err);
         exit(1);
-      }
+      },
     }
   }
 
   if let Some(_matches) = matches.subcommand_matches("server") {
     let port = 8888;
-
 
     let (vcontrol, thing, commands) = vcontrol::thing::make_thing(vcontrol);
     let weak_thing = Arc::downgrade(&thing);

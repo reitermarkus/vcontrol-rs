@@ -1,10 +1,12 @@
 use core::convert::Infallible;
-use std::str::FromStr;
-use std::fmt;
+use std::{fmt, str::FromStr};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, Date, DateTime, CircuitTimes, Error}};
+use crate::{
+  conversion::Conversion,
+  types::{CircuitTimes, Date, DateTime, DeviceId, DeviceIdF0, Error},
+};
 
 #[derive(Debug, Clone)]
 pub(crate) struct ConversionError<'c> {
@@ -34,7 +36,7 @@ pub enum Value {
   DateTime(DateTime),
   CircuitTimes(CircuitTimes),
   Error(Error),
-  Empty
+  Empty,
 }
 
 macro_rules! convert_double {
@@ -75,19 +77,15 @@ impl Value {
           return Ok(Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join(".")))
         }
       },
-      Conversion::RotateBytes => {
-        match self {
-          Value::ByteArray(ref mut array) => {
-            array.reverse();
-            return Ok(self)
-          },
-          Value::Int(n) => {
-            return Ok(Value::Int(n))
-          }
-          _ => (),
-        }
+      Conversion::RotateBytes => match self {
+        Value::ByteArray(ref mut array) => {
+          array.reverse();
+          return Ok(self)
+        },
+        Value::Int(n) => return Ok(Value::Int(n)),
+        _ => (),
       },
-      _ => ()
+      _ => (),
     }
 
     Err(ConversionError { value: self, conversion })
@@ -109,7 +107,7 @@ impl Value {
           return Ok(Value::Double((n - offset) / factor))
         }
       },
-      _ => ()
+      _ => (),
     }
 
     Err(ConversionError { value: self, conversion })

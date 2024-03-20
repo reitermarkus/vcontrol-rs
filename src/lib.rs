@@ -6,14 +6,14 @@ pub use crate::error::Error;
 pub mod types;
 
 mod command;
-pub use crate::command::{Command};
+pub use crate::command::Command;
 
 pub(crate) mod mappings;
 
 pub mod commands;
 
 mod access_mode;
-pub use crate::access_mode::{AccessMode};
+pub use crate::access_mode::AccessMode;
 
 mod optolink;
 pub use crate::optolink::Optolink;
@@ -28,7 +28,7 @@ mod vcontrol;
 pub use crate::vcontrol::*;
 
 mod value;
-pub use crate::value::{Value, OutputValue};
+pub use crate::value::{OutputValue, Value};
 
 mod data_type;
 pub use crate::data_type::DataType;

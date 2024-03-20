@@ -1,10 +1,12 @@
 use std::fmt;
 
-use chrono::{NaiveDate, NaiveDateTime, Datelike, Timelike};
+use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::ser::{Serialize, Serializer};
-use serde::de::{Deserialize, Deserializer};
+use serde::{
+  de::{Deserialize, Deserializer},
+  ser::{Serialize, Serializer},
+};
 
 use crate::Error;
 
@@ -51,7 +53,7 @@ impl Date {
 impl<'de> Deserialize<'de> for Date {
   fn deserialize<D>(deserializer: D) -> Result<Date, D::Error>
   where
-      D: Deserializer<'de>,
+    D: Deserializer<'de>,
   {
     NaiveDate::deserialize(deserializer).map(Self)
   }
@@ -78,19 +80,13 @@ impl Serialize for Date {
 
 impl fmt::Display for Date {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{:04}-{:02}-{:02}",
-      self.0.year(),
-      self.0.month(),
-      self.0.day(),
-    )
+    write!(f, "{:04}-{:02}-{:02}", self.0.year(), self.0.month(), self.0.day())
   }
 }
 
 impl fmt::Debug for Date {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "Date(")?;
-    fmt::Display::fmt(self, f)?;
-    write!(f, ")")
+    write!(f, "Date({})", self)
   }
 }
 
@@ -99,13 +95,14 @@ pub struct DateTime(pub(crate) NaiveDateTime);
 
 impl DateTime {
   pub fn new(year: u16, month: u8, day: u8, hour: u8, minute: u8, second: u8) -> Result<Self, Error> {
-
-    if let Some(datetime) = NaiveDate::from_ymd_opt(year.into(), month.into(), day.into()).and_then(|date| {
-      date.and_hms_opt(hour.into(), minute.into(), second.into())
-    }) {
+    if let Some(datetime) = NaiveDate::from_ymd_opt(year.into(), month.into(), day.into())
+      .and_then(|date| date.and_hms_opt(hour.into(), minute.into(), second.into()))
+    {
       Ok(Self(datetime))
     } else {
-      return Err(Error::InvalidFormat(format!("invalid datetime: {year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}")))
+      return Err(Error::InvalidFormat(format!(
+        "invalid datetime: {year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}"
+      )))
     }
   }
 
@@ -138,7 +135,7 @@ impl DateTime {
 impl<'de> Deserialize<'de> for DateTime {
   fn deserialize<D>(deserializer: D) -> Result<DateTime, D::Error>
   where
-      D: Deserializer<'de>,
+    D: Deserializer<'de>,
   {
     NaiveDateTime::deserialize(deserializer).map(Self)
   }
@@ -165,7 +162,9 @@ impl Serialize for DateTime {
 
 impl fmt::Display for DateTime {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}",
+    write!(
+      f,
+      "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}",
       self.0.year(),
       self.0.month(),
       self.0.day(),
@@ -178,9 +177,7 @@ impl fmt::Display for DateTime {
 
 impl fmt::Debug for DateTime {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "DateTime(")?;
-    fmt::Display::fmt(self, f)?;
-    write!(f, ")")
+    write!(f, "DateTime({})", self)
   }
 }
 
@@ -188,8 +185,7 @@ impl fmt::Debug for DateTime {
 mod tests {
   use super::*;
 
-  use chrono::Timelike;
-  use chrono::Datelike;
+  use chrono::{Datelike, Timelike};
 
   #[test]
   fn new() {

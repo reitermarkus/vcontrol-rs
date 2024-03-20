@@ -1,12 +1,13 @@
-use std::collections::BTreeMap;
-use std::env;
-use std::fmt;
-use std::fs::File;
-use std::io::{self, BufReader, BufWriter, Write};
-use std::path::Path;
+use std::{
+  collections::BTreeMap,
+  env, fmt,
+  fs::File,
+  io::{self, BufReader, BufWriter, Write},
+  path::Path,
+};
 
 use anyhow::Context;
-use serde::{Deserialize, de::DeserializeOwned};
+use serde::{de::DeserializeOwned, Deserialize};
 
 #[path = "src/access_mode.rs"]
 mod access_mode;
@@ -29,7 +30,13 @@ mod conversion;
 use conversion::Conversion;
 
 fn escape_const_name(s: &str) -> String {
-  s.to_uppercase().replace('.', "_").replace('|', "_").replace(' ', "_").replace('-', "_").replace('~', "_").replace('%', "PERCENT")
+  s.to_uppercase()
+    .replace('.', "_")
+    .replace('|', "_")
+    .replace(' ', "_")
+    .replace('-', "_")
+    .replace('~', "_")
+    .replace('%', "PERCENT")
 }
 
 #[track_caller]
@@ -126,8 +133,11 @@ fn generate_system_commands() -> anyhow::Result<()> {
 
   writeln!(file, "\n}}")?;
 
-
-  writeln!(file, "\npub(crate) const SYSTEM_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", map.build())?;
+  writeln!(
+    file,
+    "\npub(crate) const SYSTEM_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};",
+    map.build()
+  )?;
 
   Ok(())
 }
@@ -158,18 +168,34 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<
       let command_name = command_name_map.get(command_id).unwrap();
       map.entry(command_name, &format!("&crate::commands::COMMAND_{}", command_id));
     }
-    writeln!(&mut file, "const {}_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};", escape_const_name(device_id), map.build())?;
+    writeln!(
+      file,
+      "const {}_COMMANDS: ::phf::Map<&'static str, &'static crate::Command> = {};",
+      escape_const_name(device_id),
+      map.build()
+    )?;
 
-    writeln!(file, r#"
+    writeln!(
+      file,
+      r#"
       pub const {}: Device = Device {{
         name: {:?},
         commands: &{}_COMMANDS,
         errors: &crate::mappings::MAPPING_{},
       }};
-    "#, escape_const_name(device_id), device_id, escape_const_name(device_id), device.error_mapping)?;
+    "#,
+      escape_const_name(device_id),
+      device_id,
+      escape_const_name(device_id),
+      device.error_mapping
+    )?;
   }
 
-  writeln!(&mut file, r#"    pub(crate) const DEVICES: ::phf::Map<DeviceIdRange, &'static Device> = {};"#, device_map.build())?;
+  writeln!(
+    file,
+    r#"    pub(crate) const DEVICES: ::phf::Map<DeviceIdRange, &'static Device> = {};"#,
+    device_map.build()
+  )?;
 
   Ok(())
 }
@@ -192,7 +218,7 @@ pub struct Device {
   f0: Option<u16>,
   f0_till: Option<u16>,
   commands: Vec<u16>,
-  error_mapping: u16
+  error_mapping: u16,
 }
 
 /// A command which can be executed on an Optolink connection.
@@ -232,21 +258,21 @@ impl fmt::Debug for Command {
     };
 
     f.debug_struct("crate::Command")
-       .field("addr", &format_args!("0x{:04X}", self.addr))
-       .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
-       .field("data_type", &format_args!("crate::DataType::{:?}", self.data_type))
-       .field("parameter", &format_args!("crate::Parameter::{:?}", self.parameter))
-       .field("block_count", &self.block_count)
-       .field("block_len", &self.block_len)
-       .field("byte_len", &self.byte_len)
-       .field("byte_pos", &self.byte_pos)
-       .field("bit_len", &self.bit_len)
-       .field("bit_pos", &self.bit_pos)
-       .field("conversion", &format_args!("{}", conversion))
-       .field("lower_bound", &self.lower_border)
-       .field("upper_bound", &self.upper_border)
-       .field("unit", &self.unit)
-       .field("mapping", &format_args!("{}", mapping))
-       .finish()
+      .field("addr", &format_args!("0x{:04X}", self.addr))
+      .field("mode", &format_args!("crate::AccessMode::{:?}", self.mode))
+      .field("data_type", &format_args!("crate::DataType::{:?}", self.data_type))
+      .field("parameter", &format_args!("crate::Parameter::{:?}", self.parameter))
+      .field("block_count", &self.block_count)
+      .field("block_len", &self.block_len)
+      .field("byte_len", &self.byte_len)
+      .field("byte_pos", &self.byte_pos)
+      .field("bit_len", &self.bit_len)
+      .field("bit_pos", &self.bit_pos)
+      .field("conversion", &format_args!("{}", conversion))
+      .field("lower_bound", &self.lower_border)
+      .field("upper_bound", &self.upper_border)
+      .field("unit", &self.unit)
+      .field("mapping", &format_args!("{}", mapping))
+      .finish()
   }
 }

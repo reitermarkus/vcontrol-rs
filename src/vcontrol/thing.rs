@@ -1,14 +1,16 @@
-use std::collections::HashMap;
-use std::sync::{Arc, Weak, RwLock, mpsc::channel};
+use std::{
+  collections::HashMap,
+  sync::{mpsc::channel, Arc, RwLock, Weak},
+};
 
 use schemars::{schema, schema_for};
 use serde_json::json;
-use webthing::{
-  BaseProperty, BaseThing, Thing,
-  property::ValueForwarder,
-};
+use webthing::{property::ValueForwarder, BaseProperty, BaseThing, Thing};
 
-use crate::{VControl, Device, AccessMode, Command, DataType, Value, types::{DeviceId, DeviceIdF0, Date, DateTime, Error, CircuitTimes}};
+use crate::{
+  types::{CircuitTimes, Date, DateTime, DeviceId, DeviceIdF0, Error},
+  AccessMode, Command, DataType, Device, VControl, Value,
+};
 
 struct VcontrolValueForwarder {
   command_name: &'static str,
@@ -39,7 +41,7 @@ impl ValueForwarder for VcontrolValueForwarder {
       Err(err) => {
         log::error!("Failed setting property {}: {}", self.command_name, err);
         return Err("Parsing value failed")
-      }
+      },
     };
 
     log::info!("Setting property {} to {}.", self.command_name, new_value);
@@ -67,12 +69,18 @@ impl ValueForwarder for VcontrolValueForwarder {
       Err(err) => {
         log::error!("Failed setting property {}: {}", command_name, err);
         Err("Failed setting value")
-      }
+      },
     }
   }
 }
 
-fn add_command(thing: &mut dyn Thing, vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>, device: &Device, command_name: &'static str, command: &'static Command) {
+fn add_command(
+  thing: &mut dyn Thing,
+  vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>,
+  device: &Device,
+  command_name: &'static str,
+  command: &'static Command,
+) {
   let mut root_schema = match command.data_type {
     DataType::DeviceId => schema_for!(DeviceId),
     DataType::DeviceIdF0 => schema_for!(DeviceIdF0),
@@ -106,23 +114,23 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<tokio::sync::RwLock<tokio::s
   let create_enum = |enum_schema: &mut schema::SchemaObject, mapping: &'static phf::Map<i32, &'static str>| {
     // Use `oneOf` schema in order to add description for enum values.
     // https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-815166515
-    let subschemas = mapping.entries().map(|(k, v)| {
-      schema::SchemaObject {
-        const_value: Some(json!(k)),
-        metadata: Some(Box::new(schemars::schema::Metadata {
-          description: Some(v.to_string()),
+    let subschemas = mapping
+      .entries()
+      .map(|(k, v)| {
+        schema::SchemaObject {
+          const_value: Some(json!(k)),
+          metadata: Some(Box::new(schemars::schema::Metadata {
+            description: Some(v.to_string()),
+            ..Default::default()
+          })),
           ..Default::default()
-        })),
-        ..Default::default()
-      }.into()
-    }).collect();
+        }
+        .into()
+      })
+      .collect();
 
-    enum_schema.subschemas = Some(Box::new(
-      schemars::schema::SubschemaValidation {
-        one_of: Some(subschemas),
-        ..Default::default()
-      }
-    ));
+    enum_schema.subschemas =
+      Some(Box::new(schemars::schema::SubschemaValidation { one_of: Some(subschemas), ..Default::default() }));
   };
 
   if let Some(mapping) = &command.mapping {
@@ -140,11 +148,8 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<tokio::sync::RwLock<tokio::s
   let schema = serde_json::to_value(root_schema).unwrap().as_object().unwrap().clone();
   let description = schema;
 
-  let value_forwarder = VcontrolValueForwarder {
-    command_name: command_name.clone(),
-    command: command.clone(),
-    vcontrol: vcontrol.clone(),
-  };
+  let value_forwarder =
+    VcontrolValueForwarder { command_name: command_name.clone(), command: command.clone(), vcontrol: vcontrol.clone() };
 
   thing.add_property(Box::new(BaseProperty::new(
     command_name.to_string(),
@@ -154,7 +159,13 @@ fn add_command(thing: &mut dyn Thing, vcontrol: Arc<tokio::sync::RwLock<tokio::s
   )));
 }
 
-pub fn make_thing(vcontrol: VControl) -> (Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>, Arc<RwLock<Box<dyn Thing + 'static>>>, HashMap<&'static str, &'static Command>) {
+pub fn make_thing(
+  vcontrol: VControl,
+) -> (
+  Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>,
+  Arc<RwLock<Box<dyn Thing + 'static>>>,
+  HashMap<&'static str, &'static Command>,
+) {
   let device = vcontrol.device();
   let mut commands = HashMap::<&'static str, &'static Command>::new();
 
@@ -188,13 +199,13 @@ pub fn make_thing(vcontrol: VControl) -> (Arc<tokio::sync::RwLock<tokio::sync::M
   (vcontrol, thing, commands)
 }
 
-pub async fn update_thread(vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>, weak_thing: Weak<RwLock<Box<dyn Thing + 'static>>>, commands: HashMap<&'static str, &'static Command>) {
+pub async fn update_thread(
+  vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<VControl>>>,
+  weak_thing: Weak<RwLock<Box<dyn Thing + 'static>>>,
+  commands: HashMap<&'static str, &'static Command>,
+) {
   loop {
-    let thing = if let Some(thing) = weak_thing.upgrade() {
-      thing
-    } else {
-      return
-    };
+    let thing = if let Some(thing) = weak_thing.upgrade() { thing } else { return };
 
     for (&command_name, &command) in &commands {
       if !command.mode.is_read() {
@@ -209,7 +220,7 @@ pub async fn update_thread(vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<
           Err(err) => {
             log::error!("Failed getting value for property '{}': {}", command_name, err);
             None
-          }
+          },
         }
       };
 
@@ -256,7 +267,9 @@ pub async fn update_thread(vcontrol: Arc<tokio::sync::RwLock<tokio::sync::Mutex<
         }
 
         t.property_notify(command_name.to_string(), new_value);
-      }).await.unwrap();
+      })
+      .await
+      .unwrap();
     }
   }
 }

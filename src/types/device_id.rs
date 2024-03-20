@@ -1,6 +1,6 @@
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Device identifier.
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
@@ -29,12 +29,14 @@ impl DeviceId {
     }
   }
 
+  #[rustfmt::skip]
   #[allow(unused)]
   pub fn to_bytes(&self) -> [u8; 8] {
     let developer_version = self.developer_version.to_be_bytes();
 
     [
-      self.group_id, self.id,
+      self.group_id,
+      self.id,
       self.hardware_index,
       self.software_index,
       self.protocol_version_lda,

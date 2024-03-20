@@ -1,11 +1,9 @@
-use std::collections::HashMap;
-use std::env;
-use std::error::Error;
+use std::{collections::HashMap, env, error::Error};
 
 use vcontrol::{Optolink, VControl, Value};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error + Send + Sync>>  {
+async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
   env_logger::init();
 
   let optolink_port = env::args().nth(1).expect("no serial port specified");

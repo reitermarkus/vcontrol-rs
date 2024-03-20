@@ -3,10 +3,10 @@ use core::fmt;
 use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::Device;
 use super::DateTime;
+use crate::Device;
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
 #[derive(Clone, PartialEq, Deserialize, Serialize)]
@@ -38,9 +38,7 @@ impl Error {
     let time = match DateTime::from_bytes(array_ref![bytes, 1, 8]) {
       Ok(time) => Some(time),
       Err(_) if index == 0 => None,
-      Err(err) => {
-        return Err(crate::Error::InvalidFormat(format!("invalid time for error {index}: {err}")))
-      }
+      Err(err) => return Err(crate::Error::InvalidFormat(format!("invalid time for error {index}: {err}"))),
     };
 
     Ok(Self { index, time })
@@ -72,10 +70,7 @@ impl fmt::Display for Error {
 
 impl fmt::Debug for Error {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    f.debug_tuple("Error")
-      .field(&self.index)
-      .field(&self.time)
-      .finish()
+    f.debug_tuple("Error").field(&self.index).field(&self.time).finish()
   }
 }
 
@@ -83,8 +78,7 @@ impl fmt::Debug for Error {
 mod tests {
   use super::*;
 
-  use chrono::Timelike;
-  use chrono::Datelike;
+  use chrono::{Datelike, Timelike};
 
   #[test]
   fn new() {

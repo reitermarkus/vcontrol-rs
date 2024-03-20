@@ -1,5 +1,4 @@
-use crate::Command;
-use crate::{Error, Optolink, Device, Protocol, Value, OutputValue};
+use crate::{Command, Device, Error, Optolink, OutputValue, Protocol, Value};
 
 #[cfg(feature = "webthing")]
 pub mod thing;
@@ -34,11 +33,11 @@ impl VControl {
             },
             Err(err) => {
               log::warn!("Failed to re-initialize Optolink port after error: {err}");
-            }
+            },
           }
 
           return Err(err.into())
-        }
+        },
       }
     }
   }
@@ -120,16 +119,12 @@ impl VControl {
           None
         };
 
-        Ok(OutputValue {
-          value,
-          unit: command.unit,
-          mapping,
-        })
+        Ok(OutputValue { value, unit: command.unit, mapping })
       },
       Err(err) => {
         self.connected = false;
         Err(err)
-      }
+      },
     }
   }
 

@@ -1,5 +1,4 @@
-use std::fmt;
-use std::io;
+use std::{fmt, io};
 
 use crate::Optolink;
 
@@ -59,6 +58,7 @@ impl fmt::Display for Protocol {
     match self {
       Self::Vs1 => "VS1",
       Self::Vs2 => "VS2",
-    }.fmt(f)
+    }
+    .fmt(f)
   }
 }

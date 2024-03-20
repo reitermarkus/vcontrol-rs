@@ -1,10 +1,9 @@
-use core::fmt;
-use core::str::FromStr;
+use core::{fmt, str::FromStr};
 
 use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{Serialize, Serializer, de, Deserialize, Deserializer};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -19,6 +18,7 @@ pub struct CircuitTimes {
 }
 
 impl CircuitTimes {
+  #[rustfmt::skip]
   pub fn from_bytes(bytes: &[u8; 56]) -> Self {
     Self {
       mon: CircuitTime::from_bytes(array_ref![bytes,  0, 8]),
@@ -31,6 +31,7 @@ impl CircuitTimes {
     }
   }
 
+  #[rustfmt::skip]
   pub fn to_bytes(&self) -> [u8; 56] {
     let mon = self.mon.to_bytes();
     let tue = self.tue.to_bytes();
@@ -66,6 +67,7 @@ impl CircuitTime {
     ])
   }
 
+  #[rustfmt::skip]
   pub fn to_bytes(&self) -> [u8; 8] {
     let timespan1 = self.0[0].map(|t| t.to_bytes()).unwrap_or([0xff, 0xff]);
     let timespan2 = self.0[1].map(|t| t.to_bytes()).unwrap_or([0xff, 0xff]);
@@ -202,7 +204,7 @@ impl FromStr for Time {
 impl<'de> Deserialize<'de> for Time {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
   where
-      D: Deserializer<'de>,
+    D: Deserializer<'de>,
   {
     let s = String::deserialize(deserializer)?;
     s.parse::<Time>().map_err(de::Error::custom)

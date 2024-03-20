@@ -4,23 +4,23 @@ use std::io;
 use num_enum::TryFromPrimitive;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::{Optolink, commands::MAX_PAYLOAD_LEN};
+use crate::{commands::MAX_PAYLOAD_LEN, Optolink};
 
 const LEADIN: u8 = 0x41;
 
-const START: [u8; 3] = [0x16, 0x00, 0x00];
 const RESET: [u8; 1] = [0x04];
-const SYNC:  u8 = 0x05;
-const ACK:   u8 = 0x06;
-const NACK:  u8 = 0x15;
+const SYNC: u8 = 0x05;
+const START: [u8; 3] = [0x16, 0x00, 0x00];
+const ACK: u8 = 0x06;
+const NACK: u8 = 0x15;
 
 #[derive(Debug, Clone, Copy, PartialEq, TryFromPrimitive)]
 #[repr(u8)]
 enum MessageType {
-  Request = 0,
-  Response = 1,
+  Request        = 0,
+  Response       = 1,
   Unacknowledged = 2,
-  Error = 3,
+  Error          = 3,
 }
 
 impl fmt::Display for MessageType {
@@ -30,7 +30,8 @@ impl fmt::Display for MessageType {
       Self::Response => "response",
       Self::Unacknowledged => "unacknowledged",
       Self::Error => "error",
-    }.fmt(f)
+    }
+    .fmt(f)
   }
 }
 
@@ -44,58 +45,59 @@ struct Header {
 
 #[derive(Debug, Clone, Copy, PartialEq, TryFromPrimitive)]
 #[allow(unused)]
+#[rustfmt::skip]
 #[non_exhaustive]
 #[repr(u8)]
 enum Function {
-  VirtualRead = 1,
-  VirtualWrite = 2,
-  PhysicalRead = 3,
-  PhysicalWrite = 4,
-  EepromRead = 5,
-  EepromWrite = 6,
-  RemoteProcedureCall = 7,
-  VirtualMbus = 33,
-  VirtualMarketManagerRead = 34,
-  VirtualMarketManagerWrite = 35,
-  VirtualWiloRead = 36,
-  VirtualWiloWrite = 37,
-  XramRead = 49,
-  XramWrite = 50,
-  PortRead = 51,
-  PortWrite = 52,
-  BeRead = 53,
-  BeWrite = 54,
-  KmbusRamRead = 65,
-  KmbusEepromRead = 67,
-  KbusDataelementRead = 81,
-  KbusDataelementWrite = 82,
-  KbusDatablockRead = 83,
-  KbusDatablockWrite = 84,
-  KbusTransparentRead = 85,
-  KbusTransparentWrite = 86,
-  KbusInitializationRead = 87,
-  KbusInitializationWrite = 88,
-  KbusEepromLtRead = 89,
-  KbusEepromLtWrite = 90,
-  KbusControlWrite = 91,
-  KbusMemberlistRead = 93,
-  KbusMemberlistWrite = 94,
-  KbusVirtualRead = 95,
-  KbusVirtualWrite = 96,
-  KbusDirectRead = 97,
-  KbusDirectWrite = 98,
-  KbusIndirectRead = 99,
-  KbusIndirectWrite = 100,
-  KbusGatewayRead = 101,
-  KbusGatewayWrite = 102,
-  ProcessWrite    = 120,
-  ProcessRead     = 123,
-  OtPhysicalRead  = 180,
-  OtVirtualRead   = 181,
-  OtPhysicalWrite = 182,
-  OtVirtualWrite  = 183,
-  GfaRead  = 201,
-  GfaWrite = 202
+  VirtualRead               =   1,
+  VirtualWrite              =   2,
+  PhysicalRead              =   3,
+  PhysicalWrite             =   4,
+  EepromRead                =   5,
+  EepromWrite               =   6,
+  RemoteProcedureCall       =   7,
+  VirtualMbus               =  33,
+  VirtualMarketManagerRead  =  34,
+  VirtualMarketManagerWrite =  35,
+  VirtualWiloRead           =  36,
+  VirtualWiloWrite          =  37,
+  XramRead                  =  49,
+  XramWrite                 =  50,
+  PortRead                  =  51,
+  PortWrite                 =  52,
+  BeRead                    =  53,
+  BeWrite                   =  54,
+  KmbusRamRead              =  65,
+  KmbusEepromRead           =  67,
+  KbusDataelementRead       =  81,
+  KbusDataelementWrite      =  82,
+  KbusDatablockRead         =  83,
+  KbusDatablockWrite        =  84,
+  KbusTransparentRead       =  85,
+  KbusTransparentWrite      =  86,
+  KbusInitializationRead    =  87,
+  KbusInitializationWrite   =  88,
+  KbusEepromLtRead          =  89,
+  KbusEepromLtWrite         =  90,
+  KbusControlWrite          =  91,
+  KbusMemberlistRead        =  93,
+  KbusMemberlistWrite       =  94,
+  KbusVirtualRead           =  95,
+  KbusVirtualWrite          =  96,
+  KbusDirectRead            =  97,
+  KbusDirectWrite           =  98,
+  KbusIndirectRead          =  99,
+  KbusIndirectWrite         = 100,
+  KbusGatewayRead           = 101,
+  KbusGatewayWrite          = 102,
+  ProcessWrite              = 120,
+  ProcessRead               = 123,
+  OtPhysicalRead            = 180,
+  OtVirtualRead             = 181,
+  OtPhysicalWrite           = 182,
+  OtVirtualWrite            = 183,
+  GfaRead                   = 201,
+  GfaWrite                  = 202,
 }
 
 #[derive(Debug)]
@@ -176,18 +178,19 @@ impl Vs2 {
     } else {
       o.write_all(&[NACK]).await?;
       o.flush().await?;
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("invalid checksum: {} != {}", checksum, buffer[checksum_index])))
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("invalid checksum: {} != {}", checksum, buffer[checksum_index]),
+      ))
     }
 
     let message_type = buffer[2];
-    let message_type = MessageType::try_from(message_type).map_err(|_| {
-      io::Error::new(io::ErrorKind::InvalidData, "unknown message identifier: {message_type}")
-    })?;
+    let message_type = MessageType::try_from(message_type)
+      .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "unknown message identifier: {message_type}"))?;
 
     let function = buffer[3];
-    let function = Function::try_from(function).map_err(|_| {
-      io::Error::new(io::ErrorKind::InvalidData, format!("unknown function: {function}"))
-    })?;
+    let function = Function::try_from(function)
+      .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, format!("unknown function: {function}")))?;
 
     let addr = u16::from_be_bytes([buffer[4], buffer[5]]);
 
@@ -197,14 +200,14 @@ impl Vs2 {
       if payload_len != (message_len - 5) {
         return Err(io::Error::new(
           io::ErrorKind::InvalidData,
-          format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len)
+          format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len),
         ))
       }
 
       if payload.len() != payload_len as usize {
         return Err(io::Error::new(
           io::ErrorKind::InvalidData,
-          format!("invalid payload length, expected {}, got {}", payload.len(), payload_len)
+          format!("invalid payload length, expected {}, got {}", payload.len(), payload_len),
         ))
       }
 
@@ -212,7 +215,7 @@ impl Vs2 {
     } else if message_len != 5 {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
-        format!("invalid message length, expected 5, got {}", message_len)
+        format!("invalid message length, expected 5, got {}", message_len),
       ))
     }
 
@@ -241,7 +244,10 @@ impl Vs2 {
       match Self::read_status(o).await? {
         SYNC => break Ok(()),
         byte => {
-          return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected SYNC (0x{SYNC:02X}), received 0x{byte:02X}")));
+          return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("expected SYNC (0x{SYNC:02X}), received 0x{byte:02X}"),
+          ));
         },
       }
     }
@@ -284,7 +290,10 @@ impl Vs2 {
     let expected_len = buf.len();
     let actual_len = response_header.payload_len as usize;
     if actual_len != expected_len {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected to read {expected_len}, read {actual_len}")))
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("expected to read {expected_len}, read {actual_len}"),
+      ))
     }
 
     Ok(())
@@ -308,7 +317,10 @@ impl Vs2 {
     let expected_len = value.len();
     let actual_len = response_header.payload_len as usize;
     if actual_len != expected_len {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected to write {expected_len}, wrote {actual_len}")))
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("expected to write {expected_len}, wrote {actual_len}"),
+      ))
     }
 
     Ok(())
@@ -316,11 +328,17 @@ impl Vs2 {
 
   fn check_response(header: &Header, function: Function, addr: u16) -> Result<(), io::Error> {
     if header.message_type != MessageType::Response {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected response message identifier, got {}", header.message_type)))
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("expected response message identifier, got {}", header.message_type),
+      ))
     }
 
     if header.function != function {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected function {:?}, got {:?}", function, header.function)))
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("expected function {:?}, got {:?}", function, header.function),
+      ))
     }
 
     if header.addr != addr {

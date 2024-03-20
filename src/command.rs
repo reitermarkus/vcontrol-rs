@@ -1,6 +1,11 @@
 use arrayref::array_ref;
 
-use crate::{AccessMode, conversion::Conversion, Parameter, Error, Optolink, protocol::Protocol, DataType, Value, types::{self, DeviceId, DeviceIdF0, Date, DateTime, CircuitTimes}};
+use crate::{
+  conversion::Conversion,
+  protocol::Protocol,
+  types::{self, CircuitTimes, Date, DateTime, DeviceId, DeviceIdF0},
+  AccessMode, DataType, Error, Optolink, Parameter, Value,
+};
 
 /// A command which can be executed on an Optolink connection.
 #[derive(Debug)]
@@ -113,14 +118,18 @@ impl Command {
         } else {
           #[allow(arithmetic_overflow)]
           match self.parameter {
-          	Parameter::IntHighByteFirst |
-            Parameter::Int4HighByteFirst |
-            Parameter::SIntHighByteFirst |
-            Parameter::SInt4HighByteFirst => for &b in bytes.iter().take(4) {
-              n = (n << 8) | (b as i32);
-          	},
-            _ => for &b in bytes.iter().rev().take(4) {
-              n = (n << 8) | (b as i32);
+            Parameter::IntHighByteFirst
+            | Parameter::Int4HighByteFirst
+            | Parameter::SIntHighByteFirst
+            | Parameter::SInt4HighByteFirst => {
+              for &b in bytes.iter().take(4) {
+                n = (n << 8) | (b as i32);
+              }
+            },
+            _ => {
+              for &b in bytes.iter().rev().take(4) {
+                n = (n << 8) | (b as i32);
+              }
             },
           }
         }
@@ -132,26 +141,26 @@ impl Command {
             parameter => unreachable!("Data type {:?} with parameter {:?}.", data_type, parameter),
           },
           data_type @ DataType::Int => match &self.parameter {
-            Parameter::Byte =>  Value::Int(n as i64),
+            Parameter::Byte => Value::Int(n as i64),
             Parameter::Int | Parameter::IntHighByteFirst => Value::Int(n as i64),
             Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Int(n as i64),
-            Parameter::SByte =>  Value::Int(n as i64),
+            Parameter::SByte => Value::Int(n as i64),
             Parameter::SInt | Parameter::SIntHighByteFirst => Value::Int(n as i64),
             Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Int(n as i64),
             parameter => unreachable!("Data type {:?} with parameter {:?} ({:?}).", data_type, parameter, bytes),
           },
           data_type @ DataType::Double => match &self.parameter {
-            Parameter::Byte =>  Value::Double(n as f64),
+            Parameter::Byte => Value::Double(n as f64),
             Parameter::Int | Parameter::IntHighByteFirst => Value::Double(n as f64),
             Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Double(n as f64),
-            Parameter::SByte =>  Value::Double(n as f64 as i8 as f64),
+            Parameter::SByte => Value::Double(n as f64 as i8 as f64),
             Parameter::SInt | Parameter::SIntHighByteFirst => Value::Double(n as f64 as i16 as f64),
             Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Double(n as f64 as i32 as f64),
             parameter => unreachable!("Data type {:?} with parameter {:?}.", data_type, parameter),
           },
           _ => unreachable!(),
         }
-      }
+      },
     };
 
     if let Some(conversion) = &self.conversion {
@@ -160,7 +169,7 @@ impl Command {
         Err(err) => {
           log::warn!("Failed to convert 0x{:04X}: {err}", self.addr);
           err.value
-        }
+        },
       };
     }
 
@@ -207,21 +216,11 @@ impl Command {
     }
 
     let bytes = match (&self.data_type, input) {
-      (DataType::DateTime, Value::DateTime(date_time)) => {
-        date_time.to_bytes().to_vec()
-      },
-      (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => {
-        cycletimes.to_bytes().to_vec()
-      },
-      (DataType::ByteArray, Value::ByteArray(bytes)) => {
-        bytes.to_vec()
-      },
-      (DataType::String, Value::String(s)) => {
-        s.as_bytes().to_vec()
-      },
-      (DataType::Error, Value::Error(error)) => {
-        error.to_bytes().to_vec()
-      }
+      (DataType::DateTime, Value::DateTime(date_time)) => date_time.to_bytes().to_vec(),
+      (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => cycletimes.to_bytes().to_vec(),
+      (DataType::ByteArray, Value::ByteArray(bytes)) => bytes.to_vec(),
+      (DataType::String, Value::String(s)) => s.as_bytes().to_vec(),
+      (DataType::Error, Value::Error(error)) => error.to_bytes().to_vec(),
       (DataType::Int | DataType::Byte, Value::Int(n)) => {
         if let Some(lower_bound) = self.lower_bound {
           let lower_bound = lower_bound as _;
@@ -278,9 +277,7 @@ impl Command {
           _ => unreachable!(),
         }
       },
-      (data_type, input) => {
-        return Err(Error::InvalidArgument(format!("expected {:?}, got {:?}", data_type, input)))
-      }
+      (data_type, input) => return Err(Error::InvalidArgument(format!("expected {:?}, got {:?}", data_type, input))),
     };
 
     protocol.set(o, self.addr, &bytes).await.map_err(Into::into)

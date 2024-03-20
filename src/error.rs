@@ -1,7 +1,4 @@
-use std::io;
-use std::fmt;
-use std::error::Error as StdError;
-use std::string::FromUtf8Error;
+use std::{error::Error as StdError, fmt, io, string::FromUtf8Error};
 
 use crate::types::{DeviceId, DeviceIdF0};
 
@@ -28,7 +25,8 @@ impl fmt::Display for Error {
     match self {
       Error::UnsupportedDevice(device_ident, device_ident_f0) => {
         write!(
-          f, "Device ID 0x{:04X} HX 0x{:02X} SW 0x{:02X}",
+          f,
+          "Device ID 0x{:04X} HX 0x{:02X} SW 0x{:02X}",
           device_ident.id, device_ident.hardware_index, device_ident.software_index
         )?;
 

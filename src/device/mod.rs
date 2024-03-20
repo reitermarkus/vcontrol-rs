@@ -1,7 +1,9 @@
 use phf;
 
-use crate::{Command};
-use crate::types::{DeviceId, DeviceIdF0};
+use crate::{
+  types::{DeviceId, DeviceIdF0},
+  Command,
+};
 
 mod device_id_range;
 pub use device_id_range::DeviceIdRange;
@@ -82,8 +84,11 @@ impl Device {
 
     // Find exact hardware/software index match.
     for (device_id_range, device) in devices.clone() {
-      if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index) {
-        if (!USE_HARDWARE_INDEX || device_id.hardware_index == hardware_index) && device_id.software_index == software_index {
+      if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index)
+      {
+        if (!USE_HARDWARE_INDEX || device_id.hardware_index == hardware_index)
+          && device_id.software_index == software_index
+        {
           log::debug!("Found device with exact ID, hardware index and software index.");
 
           return Some(device)
@@ -95,15 +100,21 @@ impl Device {
 
     // Find match in hardware/software index range.
     for (device_id_range, device) in devices.clone() {
-      if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index) {
-        if let Some((hardware_index_till, software_index_till)) = device_id_range.hardware_index_till.zip(device_id_range.software_index_till) {
+      if let Some((hardware_index, software_index)) = device_id_range.hardware_index.zip(device_id_range.software_index)
+      {
+        if let Some((hardware_index_till, software_index_till)) =
+          device_id_range.hardware_index_till.zip(device_id_range.software_index_till)
+        {
           let hardware_index_range = hardware_index..=hardware_index_till;
           let software_index_range = software_index..=software_index_till;
 
-          if (!USE_HARDWARE_INDEX || hardware_index_range.contains(&device_id.hardware_index)) && software_index_range.contains(&device_id.software_index) {
+          if (!USE_HARDWARE_INDEX || hardware_index_range.contains(&device_id.hardware_index))
+            && software_index_range.contains(&device_id.software_index)
+          {
             log::debug!(
               "Found device with exact ID, hardware index in range {:?} and software index in range {:?}.",
-              hardware_index_range, software_index_range,
+              hardware_index_range,
+              software_index_range,
             );
             return Some(device)
           }

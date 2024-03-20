@@ -18,7 +18,7 @@ pub(crate) enum Conversion {
     #[serde(flatten, rename = "conversion_factor")]
     factor: f64,
     #[serde(flatten, rename = "conversion_offset")]
-    offset: f64
+    offset: f64,
   },
   SecToMinute,
   SecToHour,
