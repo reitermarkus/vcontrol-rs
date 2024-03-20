@@ -69,7 +69,7 @@ impl Device {
             let f0_range = f0..=f0_till;
 
             if f0_range.contains(&device_id_f0.0) {
-              log::debug!("Found device exact ID and F0 in range {:?}.", f0_range);
+              log::debug!("Found device with exact ID and F0 in range {:?}.", f0_range);
 
               return Some(device)
             }
