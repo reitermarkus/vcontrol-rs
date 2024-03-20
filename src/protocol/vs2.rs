@@ -4,15 +4,15 @@ use std::io;
 use num_enum::TryFromPrimitive;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::Optolink;
+use crate::{Optolink, commands::MAX_PAYLOAD_LEN};
 
-const LEADIN: [u8; 1] = [0x41];
+const LEADIN: u8 = 0x41;
 
 const START: [u8; 3] = [0x16, 0x00, 0x00];
 const RESET: [u8; 1] = [0x04];
-const SYNC:  [u8; 1] = [0x05];
-const ACK:   [u8; 1] = [0x06];
-const NACK:  [u8; 1] = [0x15];
+const SYNC:  u8 = 0x05;
+const ACK:   u8 = 0x06;
+const NACK:  u8 = 0x15;
 
 #[derive(Debug, Clone, Copy, PartialEq, TryFromPrimitive)]
 #[repr(u8)]
@@ -34,6 +34,7 @@ impl fmt::Display for MessageType {
   }
 }
 
+#[derive(Debug, Clone, Copy)]
 struct Header {
   message_type: MessageType,
   function: Function,
@@ -113,132 +114,153 @@ impl Vs2 {
     let addr = header.addr.to_be_bytes();
 
     let message_len = 5 + payload.map(|p| p.len() as u8).unwrap_or(0);
-    let checksum: u8 = message_len
-      .wrapping_add(message_type)
-      .wrapping_add(function)
-      .wrapping_add(wrapping_sum(&addr))
-      .wrapping_add(header.payload_len as u8)
-      .wrapping_add(payload.map(wrapping_sum).unwrap_or(0));
+
+    const MAX_TELEGRAM_LEN: usize = 1 + 5 + MAX_PAYLOAD_LEN + 1;
+    let mut buffer = [0; MAX_TELEGRAM_LEN];
+    buffer[0] = LEADIN;
+    buffer[1] = message_len;
+    buffer[2] = message_type;
+    buffer[3] = function;
+    buffer[4] = addr[0];
+    buffer[5] = addr[1];
+    let checksum_index = if let Some(payload) = payload {
+      // FIXME: Support longer payload/return error instead.
+      let payload_len = payload.len();
+      buffer[6] = payload_len.try_into().unwrap();
+      buffer[7..(7 + payload_len)].copy_from_slice(payload);
+      7 + payload_len
+    } else {
+      buffer[6] = header.payload_len;
+      7
+    };
+
+    buffer[checksum_index] = wrapping_sum(&buffer[1..checksum_index]);
+    let telegram_len = checksum_index + 1;
 
     loop {
-      o.write_all(&LEADIN).await?;
-      o.write_all(&[message_len, message_type, function]).await?;
-      o.write_all(&addr).await?;
-      o.write_all(&[header.payload_len]).await?;
-
-      if let Some(payload) = payload {
-        o.write_all(payload).await?;
-      }
-
-      o.write_all(&[checksum]).await?;
+      o.write_all(&buffer[..telegram_len]).await?;
       o.flush().await?;
 
-      let mut status = [0xff];
-      o.read_exact(&mut status).await?;
-      match status {
+      match Self::read_status(o).await? {
         ACK => return Ok(()),
-        NACK => (),
+        NACK => {
+          Self::negotiate(o).await?;
+        },
         _ => return Err(io::Error::new(io::ErrorKind::InvalidData, "send telegram failed")),
       }
     }
   }
 
-  async fn read_telegram(o: &mut Optolink, mut payload: Option<&mut [u8]>) -> Result<Header, std::io::Error> {
+  async fn read_telegram(o: &mut Optolink, mut payload: Option<&mut [u8]>) -> Result<Header, io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
-    let mut buf = [0xff];
+    const MAX_TELEGRAM_LEN: usize = 1 + 5 + MAX_PAYLOAD_LEN + 1;
+    let mut buffer = [0; MAX_TELEGRAM_LEN];
 
-    loop {
-      o.read_exact(&mut buf).await?;
-      if buf != LEADIN {
-        return Err(io::Error::new(io::ErrorKind::InvalidData, "telegram leadin expected"))
-      }
+    o.read_exact(&mut buffer[0..1]).await?;
+    if buffer[0] != LEADIN {
+      return Err(io::Error::new(io::ErrorKind::InvalidData, "telegram leadin expected"))
+    }
 
-      o.read_exact(&mut buf).await?;
-      let message_len = buf[0];
-      let mut checksum: u8 = message_len;
+    o.read_exact(&mut buffer[1..2]).await?;
+    let message_len = buffer[1];
 
-      o.read_exact(&mut buf).await?;
-      let message_type = buf[0];
-      checksum = checksum.wrapping_add(message_type);
-      let message_type = MessageType::try_from(message_type).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, "unknown message identifier: {message_type}")
-      })?;
+    let checksum_index = 2 + message_len as usize;
+    o.read_exact(&mut buffer[2..(checksum_index + 1)]).await?;
 
-      o.read_exact(&mut buf).await?;
-      let function = buf[0];
-      checksum = checksum.wrapping_add(function);
-      let function = Function::try_from(function).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, format!("unknown function: {function}"))
-      })?;
+    let checksum = wrapping_sum(&buffer[1..checksum_index]);
 
-      let mut addr = [0, 0];
-      o.read_exact(&mut addr).await?;
-      checksum = checksum.wrapping_add(wrapping_sum(&addr));
-      let addr = u16::from_be_bytes(addr);
+    if checksum == buffer[checksum_index] {
+      o.write_all(&[ACK]).await?;
+      o.flush().await?;
+    } else {
+      o.write_all(&[NACK]).await?;
+      o.flush().await?;
+      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("invalid checksum: {} != {}", checksum, buffer[checksum_index])))
+    }
 
-      o.read_exact(&mut buf).await?;
-      let payload_len = buf[0];
-      checksum = checksum.wrapping_add(payload_len);
+    let message_type = buffer[2];
+    let message_type = MessageType::try_from(message_type).map_err(|_| {
+      io::Error::new(io::ErrorKind::InvalidData, "unknown message identifier: {message_type}")
+    })?;
 
-      if let Some(ref mut payload) = payload {
-        if payload_len != (message_len - 5) {
-          return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len)
-          ))
-        }
+    let function = buffer[3];
+    let function = Function::try_from(function).map_err(|_| {
+      io::Error::new(io::ErrorKind::InvalidData, format!("unknown function: {function}"))
+    })?;
 
-        if payload.len() != payload_len as usize {
-          return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("invalid payload length, expected {}, got {}", payload.len(), payload_len)
-          ))
-        }
+    let addr = u16::from_be_bytes([buffer[4], buffer[5]]);
 
-        o.read_exact(*payload).await?;
-        checksum = checksum.wrapping_add(wrapping_sum(&**payload));
-      } else if message_len != 5 {
+    let payload_len = buffer[6];
+
+    if let Some(ref mut payload) = payload {
+      if payload_len != (message_len - 5) {
         return Err(io::Error::new(
           io::ErrorKind::InvalidData,
-          format!("invalid message length, expected 5, got {}", message_len)
+          format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len)
         ))
       }
 
-      o.read_exact(&mut buf).await?;
-      if checksum == buf[0] {
-        o.write_all(&ACK).await?;
-        o.flush().await?;
-        return Ok(Header { message_type, function, addr, payload_len })
+      if payload.len() != payload_len as usize {
+        return Err(io::Error::new(
+          io::ErrorKind::InvalidData,
+          format!("invalid payload length, expected {}, got {}", payload.len(), payload_len)
+        ))
       }
 
-      o.write_all(&NACK).await?;
-      o.flush().await?;
+      payload.copy_from_slice(&buffer[7..(7 + payload.len())])
+    } else if message_len != 5 {
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("invalid message length, expected 5, got {}", message_len)
+      ))
+    }
+
+    Ok(Header { message_type, function, addr, payload_len })
+  }
+
+  async fn read_status(o: &mut Optolink) -> Result<u8, io::Error> {
+    log::trace!("Vs2::read_status(…)");
+    let mut status = [0xff];
+    o.read_exact(&mut status).await?;
+    Ok(status[0])
+  }
+
+  async fn reset(o: &mut Optolink) -> Result<(), io::Error> {
+    log::trace!("Vs2::reset(…)");
+
+    o.purge().await?;
+    o.write_all(&RESET).await?;
+    o.flush().await
+  }
+
+  async fn wait_for_sync(o: &mut Optolink) -> Result<(), io::Error> {
+    log::trace!("Vs2::wait_for_sync(…)");
+
+    loop {
+      match Self::read_status(o).await? {
+        SYNC => break Ok(()),
+        byte => {
+          return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected SYNC (0x{SYNC:02X}), received 0x{byte:02X}")));
+        },
+      }
     }
   }
 
   pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs2::negotiate(…)");
 
-    o.write_all(&RESET).await?;
-    o.flush().await?;
-
-    let mut status = [0xff];
-
     loop {
-      o.read_exact(&mut status).await?;
-      match status {
-        SYNC => {},
-        _ => continue,
-      }
+      Self::reset(o).await?;
+
+      Self::wait_for_sync(o).await?;
 
       o.write_all(&START).await?;
       o.flush().await?;
 
-      o.read_exact(&mut status).await?;
-      match status {
+      match Self::read_status(o).await? {
         ACK => return Ok(()),
-        NACK => {}
+        NACK => continue,
         _ => return Err(io::Error::new(io::ErrorKind::InvalidData, "protocol negotiation failed")),
       }
     }
@@ -251,7 +273,7 @@ impl Vs2 {
       message_type: MessageType::Request,
       function: Function::VirtualRead,
       addr,
-      payload_len: buf.len() as u8,
+      payload_len: buf.len().try_into().unwrap(),
     };
 
     Self::write_telegram(o, &header, None).await?;
@@ -275,7 +297,7 @@ impl Vs2 {
       message_type: MessageType::Request,
       function: Function::VirtualWrite,
       addr,
-      payload_len: value.len() as u8,
+      payload_len: value.len().try_into().unwrap(),
     };
 
     Self::write_telegram(o, &header, Some(value)).await?;
