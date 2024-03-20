@@ -89,12 +89,18 @@ fn generate_commands() -> anyhow::Result<BTreeMap<u16, String>> {
 
   let mut file = output_file("commands.rs")?;
 
+  let mut max_payload_len = 0;
+
   for (command_id, command) in mappings {
     let command_name = &command.name;
     writeln!(file, "\npub const COMMAND_{}: crate::Command = {:?};", command_id, command)?;
 
+    max_payload_len = max_payload_len.max(command.block_len);
+
     command_name_map.insert(command_id, command_name.clone());
   }
+
+  writeln!(file, "\npub const MAX_PAYLOAD_LEN: usize = {max_payload_len};")?;
 
   Ok(command_name_map)
 }
