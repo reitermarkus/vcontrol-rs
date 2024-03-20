@@ -155,7 +155,13 @@ impl Command {
     };
 
     if let Some(conversion) = &self.conversion {
-      value.convert(conversion);
+      value = match value.convert(conversion) {
+        Ok(value) => value,
+        Err(err) => {
+          log::warn!("Failed to convert 0x{:04X}: {err}", self.addr);
+          err.value
+        }
+      };
     }
 
     Ok(value)
@@ -197,7 +203,7 @@ impl Command {
     }
 
     if let Some(conversion) = &self.conversion {
-      input.convert_back(conversion);
+      input = input.convert_back(conversion).unwrap();
     }
 
     let bytes = match (&self.data_type, input) {
@@ -306,5 +312,30 @@ mod tests {
     };
     let value = command.parse_value(&[0x00, 0x95, 0xBA, 0x0A]).unwrap();
     assert_eq!(value, Value::Double(50000.0));
+  }
+
+  // `Ecotronic_0D00` specifies `RotateBytes` for `Int`, which doesn't seem to do anything.
+  #[test]
+  fn parse_rotate_bytes_int() {
+    let command = Command {
+      addr: 0x0D00,
+      mode: AccessMode::Read,
+      data_type: DataType::Int,
+      parameter: Parameter::Int,
+      block_count: None,
+      block_len: 2,
+      byte_len: 2,
+      byte_pos: 0,
+      bit_len: None,
+      bit_pos: 0,
+      conversion: Some(Conversion::RotateBytes),
+      lower_bound: None,
+      upper_bound: None,
+      unit: None,
+      mapping: None,
+    };
+
+    let value = command.parse_value(&[0xb3, 0x04]).unwrap();
+    assert_eq!(value, Value::Int(1203));
   }
 }

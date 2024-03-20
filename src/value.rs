@@ -6,6 +6,18 @@ use serde::{Serialize, Deserialize};
 
 use crate::{conversion::Conversion, types::{DeviceId, DeviceIdF0, Date, DateTime, CircuitTimes, Error}};
 
+#[derive(Debug, Clone)]
+pub(crate) struct ConversionError<'c> {
+  pub value: Value,
+  conversion: &'c Conversion,
+}
+
+impl fmt::Display for ConversionError<'_> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "Conversion {:?} not applicable to value {:?}.", self.conversion, self.value)
+  }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
@@ -28,18 +40,13 @@ pub enum Value {
 macro_rules! convert_double {
   ($value:expr, $op:tt, $n:literal) => {
     if let Value::Double(n) = $value {
-      #[allow(clippy::assign_op_pattern)]
-      {
-        *n = *n $op $n;
-      }
-
-      return
+      return Ok(Value::Double(n $op $n))
     }
   }
 }
 
 impl Value {
-  pub(crate) fn convert(&mut self, conversion: &Conversion) {
+  pub(crate) fn convert(mut self, conversion: &Conversion) -> Result<Self, ConversionError<'_>> {
     match conversion {
       Conversion::Div2 => convert_double!(self, /, 2.0),
       Conversion::Div5 => convert_double!(self, /, 5.0),
@@ -52,8 +59,7 @@ impl Value {
       Conversion::Mul100 => convert_double!(self, *, 100.0),
       Conversion::MulOffset { factor, offset } => {
         if let Value::Double(n) = self {
-          *n = *n * factor + offset;
-          return
+          return Ok(Value::Double(n * factor + offset))
         }
       },
       Conversion::SecToMinute => convert_double!(self, /, 60.0),
@@ -61,29 +67,33 @@ impl Value {
       Conversion::HexByteToAsciiByte => {
         if let Value::ByteArray(bytes) = self {
           let s = bytes.iter().filter(|b| **b != b'0').map(|b| char::from(*b)).collect::<String>();
-          *self = Value::String(s);
-          return
+          return Ok(Value::String(s))
         }
       },
       Conversion::HexByteToVersion => {
         if let Value::ByteArray(bytes) = self {
-          *self = Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join("."));
-          return
+          return Ok(Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join(".")))
         }
       },
       Conversion::RotateBytes => {
-        if let Value::ByteArray(array) = self {
-          array.reverse();
-          return
+        match self {
+          Value::ByteArray(ref mut array) => {
+            array.reverse();
+            return Ok(self)
+          },
+          Value::Int(n) => {
+            return Ok(Value::Int(n))
+          }
+          _ => (),
         }
       },
       _ => ()
     }
 
-    log::warn!("Conversion {:?} not applicable to value {:?}.", conversion, self);
+    Err(ConversionError { value: self, conversion })
   }
 
-  pub(crate) fn convert_back(&mut self, conversion: &Conversion) {
+  pub(crate) fn convert_back(self, conversion: &Conversion) -> Result<Self, ConversionError<'_>> {
     match conversion {
       Conversion::Div2 => convert_double!(self, *, 2.0),
       Conversion::Div5 => convert_double!(self, *, 5.0),
@@ -96,14 +106,13 @@ impl Value {
       Conversion::Mul100 => convert_double!(self, /, 100.0),
       Conversion::MulOffset { factor, offset } => {
         if let Value::Double(n) = self {
-          *n = (*n - offset) / factor;
-          return
+          return Ok(Value::Double((n - offset) / factor))
         }
       },
       _ => ()
     }
 
-    unimplemented!("{:?}", self);
+    Err(ConversionError { value: self, conversion })
   }
 }
 
