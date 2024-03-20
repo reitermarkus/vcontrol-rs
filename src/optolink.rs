@@ -190,7 +190,7 @@ impl AsyncWrite for Optolink {
       self: Pin<&mut Self>,
       cx: &mut Context<'_>
   ) -> Poll<tokio::io::Result<()>> {
-    log::trace!("Optolink::poll_flush()");
+    log::trace!("Optolink::poll_flush(…)");
     self.project().device.poll_flush(cx)
   }
 
@@ -198,7 +198,7 @@ impl AsyncWrite for Optolink {
       self: Pin<&mut Self>,
       cx: &mut Context<'_>
   ) -> Poll<tokio::io::Result<()>> {
-    log::trace!("Optolink::poll_shutdown()");
+    log::trace!("Optolink::poll_shutdown(…)");
     self.project().device.poll_shutdown(cx)
   }
 }
@@ -209,7 +209,7 @@ impl AsyncRead for Optolink {
       cx: &mut Context<'_>,
       buf: &mut ReadBuf<'_>
   ) -> Poll<tokio::io::Result<()>> {
-    log::trace!("Optolink::poll_read()");
+    log::trace!("Optolink::poll_read(…)");
     self.project().device.poll_read(cx, buf)
   }
 }
