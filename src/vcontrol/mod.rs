@@ -86,8 +86,6 @@ impl VControl {
   }
 
   /// Gets the value for the given command.
-  ///
-  /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
   pub async fn get(&mut self, command: &str) -> Result<OutputValue, Error> {
     log::trace!("VControl::get({command:?})");
 
@@ -125,8 +123,6 @@ impl VControl {
   }
 
   /// Sets the value for the given command.
-  ///
-  /// If the command specified is not available, an IO error of the kind `AddrNotAvailable` is returned.
   pub async fn set(&mut self, command: &str, input: Value) -> Result<(), Error> {
     log::trace!("VControl::set({command:?}, {input:?})");
 
