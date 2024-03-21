@@ -1,3 +1,6 @@
+[workspace]
+members = ["codegen"]
+
 [package]
 name = "vcontrol"
 description = "A library for communication with Viessmann heating controllers."
