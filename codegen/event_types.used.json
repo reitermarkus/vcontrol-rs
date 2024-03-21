@@ -55816,7 +55816,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55833,7 +55833,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55850,7 +55850,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55867,7 +55867,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55884,7 +55884,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55901,7 +55901,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55918,7 +55918,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
@@ -55935,7 +55935,7 @@
     "byte_pos": 0,
     "conversion": {
       "mul_offset": {
-        "factor": 2.8e-07
+        "factor": 2.8e-7
       }
     },
     "data_type": "Double",
