@@ -139,46 +139,6 @@ impl MemberPrimitiveUnTyped {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct ArrayOfValueWithCode {
-  pub list_of_value_with_code: Vec<ValueWithCode>,
-}
-
-impl ArrayOfValueWithCode {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, length) = le_i32(input)?;
-    let length = usize::try_from(length).unwrap();
-    let (input, list_of_value_with_code) = many_m_n(length, length, ValueWithCode::parse)(input)?;
-
-    Ok((input, Self { list_of_value_with_code }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct BinaryMethodCall<'i> {
-  pub message_enum: MessageFlags,
-  pub method_name: StringValueWithCode<'i>,
-  pub type_name: StringValueWithCode<'i>,
-  pub call_context: Option<StringValueWithCode<'i>>,
-  pub args: Option<ArrayOfValueWithCode>,
-}
-
-impl<'i> BinaryMethodCall<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([21])(input)?;
-
-    let (input, message_enum) = MessageFlags::parse(input)?;
-    let (input, method_name) = StringValueWithCode::parse(input)?;
-    let (input, type_name) = StringValueWithCode::parse(input)?;
-    let (input, call_context) =
-      cond((message_enum.0 .0 & MessageFlags::CONTEXT_INLINE.0) != 0, StringValueWithCode::parse)(input)?;
-    let (input, args) =
-      cond((message_enum.0 .0 & MessageFlags::ARGS_INLINE.0) != 0, ArrayOfValueWithCode::parse)(input)?;
-
-    Ok((input, Self { message_enum, method_name, type_name, call_context, args }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
 pub struct BinaryMethodReturn<'i> {
   _todo: &'i (),
 }

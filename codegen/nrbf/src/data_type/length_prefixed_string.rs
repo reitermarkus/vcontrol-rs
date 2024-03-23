@@ -57,18 +57,21 @@ impl<'i> LengthPrefixedString<'i> {
 }
 
 impl<'s> From<&'s str> for LengthPrefixedString<'s> {
+  #[inline]
   fn from(s: &'s str) -> Self {
     Self(s)
   }
 }
 
 impl<'s> From<&'s String> for LengthPrefixedString<'s> {
+  #[inline]
   fn from(s: &'s String) -> Self {
     Self(s.as_str())
   }
 }
 
 impl<'s> Into<&'s str> for LengthPrefixedString<'s> {
+  #[inline]
   fn into(self) -> &'s str {
     self.0
   }
