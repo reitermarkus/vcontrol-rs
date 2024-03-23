@@ -1,7 +1,7 @@
 use nrbf::{
   parse, AdditionalTypeInfo, BinaryObjectString, BinaryTypeEnumeration, Class, ClassInfo, Classes,
-  LengthPrefixedString, MemberPrimitiveUnTyped, MemberReference2, MemberReference3, MemberTypeInfo,
-  PrimitiveTypeEnumeration, Record, Referenceable, SystemClassWithMembersAndTypes,
+  MemberPrimitiveUnTyped, MemberReference2, MemberReference3, MemberTypeInfo, PrimitiveTypeEnumeration, Record,
+  Referenceable, SystemClassWithMembersAndTypes,
 };
 
 macro_rules! string {
@@ -10,7 +10,7 @@ macro_rules! string {
       [].as_slice(),
       vec![Record::Referenceable(Referenceable::BinaryObjectString(BinaryObjectString {
         object_id: 1,
-        value: LengthPrefixedString { string: $s },
+        value: $s.into(),
       }))],
     )
   };
@@ -23,11 +23,7 @@ macro_rules! int32 {
       vec![Record::Referenceable(Referenceable::Classes(Classes {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-          class_info: ClassInfo {
-            object_id: 1,
-            name: LengthPrefixedString { string: "System.Int32" },
-            member_names: vec![LengthPrefixedString { string: "m_value" }],
-          },
+          class_info: ClassInfo { object_id: 1, name: "System.Int32".into(), member_names: vec!["m_value".into()] },
           member_type_info: MemberTypeInfo {
             binary_type_enums: vec![BinaryTypeEnumeration::Primitive],
             additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Int32))],
@@ -35,7 +31,7 @@ macro_rules! int32 {
         }),
         member_references: vec![MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32($n)),
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32($n.into())),
         }],
       }))],
     )
@@ -49,11 +45,7 @@ macro_rules! double {
       vec![Record::Referenceable(Referenceable::Classes(Classes {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-          class_info: ClassInfo {
-            object_id: 1,
-            name: LengthPrefixedString { string: "System.Double" },
-            member_names: vec![LengthPrefixedString { string: "m_value" }],
-          },
+          class_info: ClassInfo { object_id: 1, name: "System.Double".into(), member_names: vec!["m_value".into()] },
           member_type_info: MemberTypeInfo {
             binary_type_enums: vec![BinaryTypeEnumeration::Primitive],
             additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Double))],
@@ -61,7 +53,7 @@ macro_rules! double {
         }),
         member_references: vec![MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double($n)),
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double($n.into())),
         }],
       }))],
     )
@@ -75,11 +67,7 @@ macro_rules! boolean {
       vec![Record::Referenceable(Referenceable::Classes(Classes {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-          class_info: ClassInfo {
-            object_id: 1,
-            name: LengthPrefixedString { string: "System.Boolean" },
-            member_names: vec![LengthPrefixedString { string: "m_value" }],
-          },
+          class_info: ClassInfo { object_id: 1, name: "System.Boolean".into(), member_names: vec!["m_value".into()] },
           member_type_info: MemberTypeInfo {
             binary_type_enums: vec![BinaryTypeEnumeration::Primitive],
             additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Boolean))],
@@ -87,7 +75,7 @@ macro_rules! boolean {
         }),
         member_references: vec![MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean($b)),
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean($b.into())),
         }],
       }))],
     )
