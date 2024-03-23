@@ -1,8 +1,10 @@
 use nrbf::{
-  data_type::LengthPrefixedString, parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryMethodCall,
-  BinaryObjectString, BinaryTypeEnumeration, CallArray, Class, ClassInfo, ClassWithMembersAndTypes, Classes,
-  MemberReference, MemberReference2, MemberReference3, MemberTypeInfo, MessageFlags, Record, Referenceable,
-  StringValueWithCode,
+  data_type::{Int32, LengthPrefixedString},
+  enumeration::BinaryType,
+  method_invocation::{MessageFlags, StringValueWithCode},
+  parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, CallArray, Class,
+  ClassInfo, ClassWithMembersAndTypes, Classes, MemberReference, MemberReference2, MemberReference3, MemberTypeInfo,
+  Record, Referenceable,
 };
 
 #[test]
@@ -41,14 +43,16 @@ fn message() {
           Record::BinaryMethodCall(
               BinaryMethodCall {
                   message_enum: MessageFlags(
-                      20,
+                      Int32::from(0x00000014),
                   ),
-                  method_name: StringValueWithCode {
-                      string_value: "SendAddress".into(),
-                  },
-                  type_name: StringValueWithCode {
-                      string_value: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null".into(),
-                  },
+                  method_name: StringValueWithCode::from(
+                    LengthPrefixedString::from("SendAddress")
+                  ),
+                  type_name: StringValueWithCode::from(
+                    LengthPrefixedString::from(
+                      "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
+                    )
+                  ),
                   call_context: None,
                   args: None,
               },
@@ -75,7 +79,9 @@ fn message() {
           Record::BinaryLibrary(
               BinaryLibrary {
                   library_id: 3,
-                  library_name: "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null".into(),
+                  library_name: LengthPrefixedString::from(
+                    "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
+                  ),
               },
           ),
           Record::Referenceable(
@@ -86,20 +92,20 @@ fn message() {
                           ClassWithMembersAndTypes {
                               class_info: ClassInfo {
                                   object_id: 2,
-                                  name: "DOJRemotingMetadata.Address".into(),
+                                  name: LengthPrefixedString::from("DOJRemotingMetadata.Address"),
                                   member_names: vec![
-                                    "Street".into(),
-                                    "City".into(),
-                                    "State".into(),
-                                    "Zip".into(),
+                                    LengthPrefixedString::from("Street"),
+                                    LengthPrefixedString::from("City"),
+                                    LengthPrefixedString::from("State"),
+                                    LengthPrefixedString::from("Zip"),
                                   ],
                               },
                               member_type_info: MemberTypeInfo {
                                   binary_type_enums: vec![
-                                      BinaryTypeEnumeration::String,
-                                      BinaryTypeEnumeration::String,
-                                      BinaryTypeEnumeration::String,
-                                      BinaryTypeEnumeration::String,
+                                      BinaryType::String,
+                                      BinaryType::String,
+                                      BinaryType::String,
+                                      BinaryType::String,
                                   ],
                                   additional_infos: vec![
                                       None,
@@ -117,7 +123,7 @@ fn message() {
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 4,
-                                  value: "One Microsoft Way".into(),
+                                  value: LengthPrefixedString::from("One Microsoft Way"),
                               },
                             )
                           },
@@ -126,7 +132,7 @@ fn message() {
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 5,
-                                  value: "Redmond".into(),
+                                  value: LengthPrefixedString::from("Redmond"),
                               },
                             )
                           },
@@ -135,7 +141,7 @@ fn message() {
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 6,
-                                  value: "WA".into(),
+                                  value: LengthPrefixedString::from("WA"),
                               },
                             )
                           },
@@ -144,7 +150,7 @@ fn message() {
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 7,
-                                  value: "98054".into(),
+                                  value: LengthPrefixedString::from("98054"),
                               },
                             )
                           },

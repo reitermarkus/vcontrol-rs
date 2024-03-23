@@ -1,7 +1,8 @@
 use nrbf::{
-  parse, AdditionalTypeInfo, BinaryObjectString, BinaryTypeEnumeration, Class, ClassInfo, Classes,
-  MemberPrimitiveUnTyped, MemberReference2, MemberReference3, MemberTypeInfo, PrimitiveTypeEnumeration, Record,
-  Referenceable, SystemClassWithMembersAndTypes,
+  data_type::LengthPrefixedString,
+  enumeration::{BinaryType, PrimitiveType},
+  parse, AdditionalTypeInfo, BinaryObjectString, Class, ClassInfo, Classes, MemberPrimitiveUnTyped, MemberReference2,
+  MemberReference3, MemberTypeInfo, Record, Referenceable, SystemClassWithMembersAndTypes,
 };
 
 macro_rules! string {
@@ -10,7 +11,7 @@ macro_rules! string {
       [].as_slice(),
       vec![Record::Referenceable(Referenceable::BinaryObjectString(BinaryObjectString {
         object_id: 1,
-        value: $s.into(),
+        value: LengthPrefixedString::from($s),
       }))],
     )
   };
@@ -23,10 +24,14 @@ macro_rules! int32 {
       vec![Record::Referenceable(Referenceable::Classes(Classes {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-          class_info: ClassInfo { object_id: 1, name: "System.Int32".into(), member_names: vec!["m_value".into()] },
+          class_info: ClassInfo {
+            object_id: 1,
+            name: LengthPrefixedString::from("System.Int32"),
+            member_names: vec![LengthPrefixedString::from("m_value")],
+          },
           member_type_info: MemberTypeInfo {
-            binary_type_enums: vec![BinaryTypeEnumeration::Primitive],
-            additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Int32))],
+            binary_type_enums: vec![BinaryType::Primitive],
+            additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32))],
           },
         }),
         member_references: vec![MemberReference2 {
@@ -45,10 +50,14 @@ macro_rules! double {
       vec![Record::Referenceable(Referenceable::Classes(Classes {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-          class_info: ClassInfo { object_id: 1, name: "System.Double".into(), member_names: vec!["m_value".into()] },
+          class_info: ClassInfo {
+            object_id: 1,
+            name: LengthPrefixedString::from("System.Double"),
+            member_names: vec![LengthPrefixedString::from("m_value")],
+          },
           member_type_info: MemberTypeInfo {
-            binary_type_enums: vec![BinaryTypeEnumeration::Primitive],
-            additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Double))],
+            binary_type_enums: vec![BinaryType::Primitive],
+            additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Double))],
           },
         }),
         member_references: vec![MemberReference2 {
@@ -67,10 +76,14 @@ macro_rules! boolean {
       vec![Record::Referenceable(Referenceable::Classes(Classes {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-          class_info: ClassInfo { object_id: 1, name: "System.Boolean".into(), member_names: vec!["m_value".into()] },
+          class_info: ClassInfo {
+            object_id: 1,
+            name: LengthPrefixedString::from("System.Boolean"),
+            member_names: vec![LengthPrefixedString::from("m_value")],
+          },
           member_type_info: MemberTypeInfo {
-            binary_type_enums: vec![BinaryTypeEnumeration::Primitive],
-            additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Boolean))],
+            binary_type_enums: vec![BinaryType::Primitive],
+            additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Boolean))],
           },
         }),
         member_references: vec![MemberReference2 {
