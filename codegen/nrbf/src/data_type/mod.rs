@@ -11,7 +11,7 @@ use nom::{
 };
 
 /// 2.1.1 `BOOLEAN`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Boolean(pub bool);
 
 impl Boolean {
@@ -39,7 +39,7 @@ impl Into<bool> for Boolean {
 }
 
 /// 2.1.1 `BYTE`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Byte(pub u8);
 
 impl Byte {
@@ -61,7 +61,7 @@ impl Into<u8> for Byte {
 }
 
 /// 2.1.1 `INT8`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Int8(pub i8);
 
 impl Int8 {
@@ -83,7 +83,7 @@ impl Into<i8> for Int8 {
 }
 
 /// 2.1.1 `INT16`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Int16(pub i16);
 
 impl Int16 {
@@ -105,7 +105,7 @@ impl Into<i16> for Int16 {
 }
 
 /// 2.1.1 `INT32`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Int32(pub i32);
 
 impl Int32 {
@@ -127,7 +127,7 @@ impl Into<i32> for Int32 {
 }
 
 /// 2.1.1 `INT64`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Int64(pub i64);
 
 impl Int64 {
@@ -149,7 +149,7 @@ impl Into<i64> for Int64 {
 }
 
 /// 2.1.1 `UINT16`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UInt16(pub u16);
 
 impl UInt16 {
@@ -171,7 +171,7 @@ impl Into<u16> for UInt16 {
 }
 
 /// 2.1.1 `UINT32`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UInt32(pub u32);
 
 impl UInt32 {
@@ -193,7 +193,7 @@ impl Into<u32> for UInt32 {
 }
 
 /// 2.1.1 `UINT64`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UInt64(pub u64);
 
 impl UInt64 {
@@ -215,7 +215,7 @@ impl Into<u64> for UInt64 {
 }
 
 /// 2.1.1.1 `Char`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Char(pub char);
 
 impl Char {
@@ -245,7 +245,7 @@ impl Into<char> for Char {
 }
 
 /// 2.1.1.2 `Double`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Double(pub f64);
 
 impl Double {
@@ -267,7 +267,7 @@ impl Into<f64> for Double {
 }
 
 /// 2.1.1.3 `Single`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Single(pub f32);
 
 impl Single {
@@ -289,7 +289,7 @@ impl Into<f32> for Single {
 }
 
 /// 2.1.1.4 `TimeSpan`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct TimeSpan(pub i64);
 
 impl TimeSpan {
@@ -311,7 +311,7 @@ impl Into<i64> for TimeSpan {
 }
 
 /// 2.1.1.5 `DateTime`
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct DateTime(pub i64);
 
 impl DateTime {
