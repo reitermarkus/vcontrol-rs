@@ -1,7 +1,7 @@
 use nrbf::{
-  parse, AdditionalTypeInfo, BinaryObjectString, BinaryTypeEnumeration, Class, ClassInfo, LengthPrefixedString,
-  MemberPrimitiveUnTyped, MemberTypeInfo, PrimitiveTypeEnumeration, Record, Referenceable,
-  SystemClassWithMembersAndTypes,
+  parse, AdditionalTypeInfo, BinaryObjectString, BinaryTypeEnumeration, Class, ClassInfo, Classes,
+  LengthPrefixedString, MemberPrimitiveUnTyped, MemberReference2, MemberReference3, MemberTypeInfo,
+  PrimitiveTypeEnumeration, Record, Referenceable, SystemClassWithMembersAndTypes,
 };
 
 macro_rules! string {
@@ -20,9 +20,9 @@ macro_rules! int32 {
   ($n:expr) => {
     (
       [].as_slice(),
-      vec![Record::Referenceable(Referenceable::Classes(
-        None,
-        Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
+      vec![Record::Referenceable(Referenceable::Classes(Classes {
+        binary_library: None,
+        class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
           class_info: ClassInfo {
             object_id: 1,
             name: LengthPrefixedString { string: "System.Int32" },
@@ -33,8 +33,11 @@ macro_rules! int32 {
             additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Int32))],
           },
         }),
-        vec![Record::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32($n))],
-      ))],
+        member_references: vec![MemberReference2 {
+          binary_library: None,
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32($n)),
+        }],
+      }))],
     )
   };
 }
@@ -43,9 +46,9 @@ macro_rules! double {
   ($n:expr) => {
     (
       [].as_slice(),
-      vec![Record::Referenceable(Referenceable::Classes(
-        None,
-        Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
+      vec![Record::Referenceable(Referenceable::Classes(Classes {
+        binary_library: None,
+        class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
           class_info: ClassInfo {
             object_id: 1,
             name: LengthPrefixedString { string: "System.Double" },
@@ -56,8 +59,11 @@ macro_rules! double {
             additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Double))],
           },
         }),
-        vec![Record::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double($n))],
-      ))],
+        member_references: vec![MemberReference2 {
+          binary_library: None,
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double($n)),
+        }],
+      }))],
     )
   };
 }
@@ -66,9 +72,9 @@ macro_rules! boolean {
   ($b:expr) => {
     (
       [].as_slice(),
-      vec![Record::Referenceable(Referenceable::Classes(
-        None,
-        Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
+      vec![Record::Referenceable(Referenceable::Classes(Classes {
+        binary_library: None,
+        class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
           class_info: ClassInfo {
             object_id: 1,
             name: LengthPrefixedString { string: "System.Boolean" },
@@ -79,8 +85,11 @@ macro_rules! boolean {
             additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveTypeEnumeration::Boolean))],
           },
         }),
-        vec![Record::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean($b))],
-      ))],
+        member_references: vec![MemberReference2 {
+          binary_library: None,
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean($b)),
+        }],
+      }))],
     )
   };
 }
