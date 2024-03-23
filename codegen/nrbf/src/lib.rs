@@ -6,67 +6,23 @@ use nom::{
   combinator::{cond, map, map_opt, map_res, opt, value, verify},
   complete::bool,
   multi::{many0, many_m_n},
-  number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u32, le_u64, u8},
+  number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u24, le_u32, le_u64, u8},
   sequence::{preceded, terminated},
   IResult,
 };
-use rust_decimal::Decimal;
 
-mod length_prefixed_string;
-pub use length_prefixed_string::LengthPrefixedString;
-
-/// 2.6.1 `SerializationHeaderRecord`
-#[derive(Debug, Clone, PartialEq)]
-pub struct SerializationHeader {
-  pub root_id: i32,
-  pub header_id: i32,
-  pub major_version: i32,
-  pub minor_version: i32,
-}
-
-impl SerializationHeader {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([0])(input)?;
-
-    let (input, root_id) = le_i32(input)?;
-    let (input, header_id) = le_i32(input)?;
-    let (input, major_version) = le_i32(input)?;
-    let (input, minor_version) = le_i32(input)?;
-
-    Ok((input, Self { root_id, header_id, major_version, minor_version }))
-  }
-}
-
-/// 2.6.2 `BinaryLibrary`
-#[derive(Debug, Clone, PartialEq)]
-pub struct BinaryLibrary<'i> {
-  pub library_id: i32,
-  pub library_name: LengthPrefixedString<'i>,
-}
-
-impl<'i> BinaryLibrary<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([12])(input)?;
-
-    let (input, library_id) = le_i32(input)?;
-    let (input, library_name) = LengthPrefixedString::parse(input)?;
-
-    Ok((input, Self { library_id, library_name }))
-  }
-}
-
-/// 2.6.3 `MessageEnd`
-#[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
-pub struct MessageEnd;
-
-impl MessageEnd {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([11])(input)?;
-
-    Ok((input, Self))
-  }
-}
+mod binary_library;
+pub use binary_library::BinaryLibrary;
+pub mod data_type;
+use data_type::*;
+pub mod enumeration;
+use enumeration::*;
+mod message_end;
+pub use message_end::MessageEnd;
+mod null_object;
+pub use null_object::{NullObject, ObjectNull, ObjectNullMultiple, ObjectNullMultiple256};
+mod serialization_header;
+pub use serialization_header::SerializationHeader;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassInfo<'i> {
@@ -159,40 +115,40 @@ impl PrimitiveTypeEnumeration {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum MemberPrimitiveUnTyped {
-  Boolean(bool),
-  Byte(u8),
-  Char(char),
+  Boolean(Boolean),
+  Byte(Byte),
+  Char(Char),
   Decimal(Decimal),
-  Double(f64),
-  Int16(i16),
-  Int32(i32),
-  Int64(i64),
-  SByte(i8),
-  Single(f32),
-  TimeSpan(i64),
-  DateTime(i64),
-  UInt16(u16),
-  UInt32(u32),
-  UInt64(u64),
+  Double(Double),
+  Int16(Int16),
+  Int32(Int32),
+  Int64(Int64),
+  SByte(Int8),
+  Single(Single),
+  TimeSpan(TimeSpan),
+  DateTime(DateTime),
+  UInt16(UInt16),
+  UInt32(UInt32),
+  UInt64(UInt64),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum MemberPrimitiveTyped {
-  Boolean(bool),
-  Byte(u8),
-  Char(char),
+  Boolean(Boolean),
+  Byte(Byte),
+  Char(Char),
   Decimal(Decimal),
-  Double(f64),
-  Int16(i16),
-  Int32(i32),
-  Int64(i64),
-  SByte(i8),
-  Single(f32),
-  TimeSpan(i64),
-  DateTime(i64),
-  UInt16(u16),
-  UInt32(u32),
-  UInt64(u64),
+  Double(Double),
+  Int16(Int16),
+  Int32(Int32),
+  Int64(Int64),
+  SByte(Int8),
+  Single(Single),
+  TimeSpan(TimeSpan),
+  DateTime(DateTime),
+  UInt16(UInt16),
+  UInt32(UInt32),
+  UInt64(UInt64),
 }
 
 impl MemberPrimitiveTyped {
@@ -227,57 +183,42 @@ impl MemberPrimitiveTyped {
 impl MemberPrimitiveUnTyped {
   pub fn parse(input: &[u8], primitive_type: PrimitiveTypeEnumeration) -> IResult<&[u8], Self> {
     match primitive_type {
-      PrimitiveTypeEnumeration::Boolean => map_res(u8, |byte| {
-        Ok(Self::Boolean(match byte {
-          0 => false,
-          1 => true,
-          _ => return Err(()),
-        }))
-      })(input),
-      PrimitiveTypeEnumeration::Byte => map(u8, Self::Byte)(input),
-      PrimitiveTypeEnumeration::Char => map(
-        alt((
-          map_opt(u8, |n| char::from_u32(n as u32)),
-          map_opt(le_u16, |n| char::from_u32(n as u32)),
-          map_opt(le_u32, char::from_u32),
-        )),
-        Self::Char,
-      )(input),
-      PrimitiveTypeEnumeration::Decimal => {
-        map_res(LengthPrefixedString::parse, |s| Decimal::from_str(s.string).map(Self::Decimal))(input)
-      },
-      PrimitiveTypeEnumeration::Double => map(le_f64, Self::Double)(input),
-      PrimitiveTypeEnumeration::Int16 => map(le_i16, Self::Int16)(input),
-      PrimitiveTypeEnumeration::Int32 => map(le_i32, Self::Int32)(input),
-      PrimitiveTypeEnumeration::Int64 => map(le_i64, Self::Int64)(input),
-      PrimitiveTypeEnumeration::SByte => map(i8, Self::SByte)(input),
-      PrimitiveTypeEnumeration::Single => map(le_f32, Self::Single)(input),
-      PrimitiveTypeEnumeration::TimeSpan => map(le_i64, Self::TimeSpan)(input),
-      PrimitiveTypeEnumeration::DateTime => map(le_i64, Self::DateTime)(input),
-      PrimitiveTypeEnumeration::UInt16 => map(le_u16, Self::UInt16)(input),
-      PrimitiveTypeEnumeration::UInt32 => map(le_u32, Self::UInt32)(input),
-      PrimitiveTypeEnumeration::UInt64 => map(le_u64, Self::UInt64)(input),
+      PrimitiveTypeEnumeration::Boolean => map(Boolean::parse, Self::Boolean)(input),
+      PrimitiveTypeEnumeration::Byte => map(Byte::parse, Self::Byte)(input),
+      PrimitiveTypeEnumeration::Char => map(Char::parse, Self::Char)(input),
+      PrimitiveTypeEnumeration::Decimal => map(Decimal::parse, Self::Decimal)(input),
+      PrimitiveTypeEnumeration::Double => map(Double::parse, Self::Double)(input),
+      PrimitiveTypeEnumeration::Int16 => map(Int16::parse, Self::Int16)(input),
+      PrimitiveTypeEnumeration::Int32 => map(Int32::parse, Self::Int32)(input),
+      PrimitiveTypeEnumeration::Int64 => map(Int64::parse, Self::Int64)(input),
+      PrimitiveTypeEnumeration::SByte => map(Int8::parse, Self::SByte)(input),
+      PrimitiveTypeEnumeration::Single => map(Single::parse, Self::Single)(input),
+      PrimitiveTypeEnumeration::TimeSpan => map(TimeSpan::parse, Self::TimeSpan)(input),
+      PrimitiveTypeEnumeration::DateTime => map(DateTime::parse, Self::DateTime)(input),
+      PrimitiveTypeEnumeration::UInt16 => map(UInt16::parse, Self::UInt16)(input),
+      PrimitiveTypeEnumeration::UInt32 => map(UInt32::parse, Self::UInt32)(input),
+      PrimitiveTypeEnumeration::UInt64 => map(UInt64::parse, Self::UInt64)(input),
     }
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ValueWithCode {
-  Boolean(bool),
-  Byte(u8),
-  Char(char),
+  Boolean(Boolean),
+  Byte(Byte),
+  Char(Char),
   Decimal(Decimal),
-  Double(f64),
-  Int16(i16),
-  Int32(i32),
-  Int64(i64),
-  SByte(i8),
-  Single(f32),
-  TimeSpan(i64),
-  DateTime(i64),
-  UInt16(u16),
-  UInt32(u32),
-  UInt64(u64),
+  Double(Double),
+  Int16(Int16),
+  Int32(Int32),
+  Int64(Int64),
+  SByte(Int8),
+  Single(Single),
+  TimeSpan(TimeSpan),
+  DateTime(DateTime),
+  UInt16(UInt16),
+  UInt32(UInt32),
+  UInt64(UInt64),
   Null,
 }
 
@@ -393,21 +334,6 @@ impl<'i> BinaryMethodReturn<'i> {
     let (input, _) = tag([22])(input)?;
 
     Ok((input, todo!("BinaryMethodReturn::parse")))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ClassTypeInfo<'i> {
-  pub type_name: LengthPrefixedString<'i>,
-  pub library_id: i32,
-}
-
-impl<'i> ClassTypeInfo<'i> {
-  pub fn parse(mut input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, type_name) = LengthPrefixedString::parse(input)?;
-    let (input, library_id) = le_i32(input)?;
-
-    Ok((input, Self { type_name, library_id }))
   }
 }
 
@@ -565,48 +491,6 @@ impl<'i> SystemClassWithMembersAndTypes<'i> {
     let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)?;
 
     Ok((input, Self { class_info, member_type_info }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
-pub struct ObjectNull;
-
-impl ObjectNull {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([10])(input)?;
-
-    Ok((input, Self))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ObjectNullMultiple {
-  pub null_count: i32,
-}
-
-impl ObjectNullMultiple {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([14])(input)?;
-
-    let (input, null_count) = le_i32(input)?;
-
-    Ok((input, Self { null_count }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ObjectNullMultiple256 {
-  null_count: u8,
-}
-
-impl ObjectNullMultiple256 {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([13])(input)?;
-
-    let (input, null_count) = u8(input)?;
-
-    Ok((input, Self { null_count }))
   }
 }
 
@@ -940,23 +824,6 @@ impl<'i> CallArray<'i> {
     dbg!(&member_references);
 
     Ok((input, Self { binary_library, call_array, member_references }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum NullObject {
-  ObjectNull(ObjectNull),
-  ObjectNullMultiple(ObjectNullMultiple),
-  ObjectNullMultiple256(ObjectNullMultiple256),
-}
-
-impl NullObject {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    alt((
-      map(ObjectNull::parse, Self::ObjectNull),
-      map(ObjectNullMultiple::parse, Self::ObjectNullMultiple),
-      map(ObjectNullMultiple256::parse, Self::ObjectNullMultiple256),
-    ))(input)
   }
 }
 

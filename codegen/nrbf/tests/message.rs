@@ -1,7 +1,8 @@
 use nrbf::{
-  parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, BinaryTypeEnumeration,
-  CallArray, Class, ClassInfo, ClassWithMembersAndTypes, Classes, LengthPrefixedString, MemberReference,
-  MemberReference2, MemberReference3, MemberTypeInfo, MessageFlags, Record, Referenceable, StringValueWithCode,
+  data_type::LengthPrefixedString, parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryMethodCall,
+  BinaryObjectString, BinaryTypeEnumeration, CallArray, Class, ClassInfo, ClassWithMembersAndTypes, Classes,
+  MemberReference, MemberReference2, MemberReference3, MemberTypeInfo, MessageFlags, Record, Referenceable,
+  StringValueWithCode,
 };
 
 #[test]
@@ -34,8 +35,6 @@ fn message() {
     0x30, 0x35, 0x34, 0x0B                                                                          // 054.
   ];
 
-  dbg!(parse(&message).unwrap());
-
   assert_eq!(parse(&message), Ok((
       [].as_slice(),
       vec![
@@ -45,14 +44,10 @@ fn message() {
                       20,
                   ),
                   method_name: StringValueWithCode {
-                      string_value: LengthPrefixedString {
-                          string: "SendAddress",
-                      },
+                      string_value: "SendAddress".into(),
                   },
                   type_name: StringValueWithCode {
-                      string_value: LengthPrefixedString {
-                          string: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
-                      },
+                      string_value: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null".into(),
                   },
                   call_context: None,
                   args: None,
@@ -80,9 +75,7 @@ fn message() {
           Record::BinaryLibrary(
               BinaryLibrary {
                   library_id: 3,
-                  library_name: LengthPrefixedString {
-                      string: "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
-                  },
+                  library_name: "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null".into(),
               },
           ),
           Record::Referenceable(
@@ -93,22 +86,12 @@ fn message() {
                           ClassWithMembersAndTypes {
                               class_info: ClassInfo {
                                   object_id: 2,
-                                  name: LengthPrefixedString {
-                                      string: "DOJRemotingMetadata.Address",
-                                  },
+                                  name: "DOJRemotingMetadata.Address".into(),
                                   member_names: vec![
-                                      LengthPrefixedString {
-                                          string: "Street",
-                                      },
-                                      LengthPrefixedString {
-                                          string: "City",
-                                      },
-                                      LengthPrefixedString {
-                                          string: "State",
-                                      },
-                                      LengthPrefixedString {
-                                          string: "Zip",
-                                      },
+                                    "Street".into(),
+                                    "City".into(),
+                                    "State".into(),
+                                    "Zip".into(),
                                   ],
                               },
                               member_type_info: MemberTypeInfo {
@@ -134,44 +117,36 @@ fn message() {
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 4,
-                                  value: LengthPrefixedString {
-                                      string: "One Microsoft Way",
-                                  },
+                                  value: "One Microsoft Way".into(),
                               },
-                          )
+                            )
                           },
                           MemberReference2 {
                             binary_library: None,
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 5,
-                                  value: LengthPrefixedString {
-                                      string: "Redmond",
-                                  },
+                                  value: "Redmond".into(),
                               },
-                          )
+                            )
                           },
                           MemberReference2 {
                             binary_library: None,
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 6,
-                                  value: LengthPrefixedString {
-                                      string: "WA",
-                                  },
+                                  value: "WA".into(),
                               },
-                          )
+                            )
                           },
                           MemberReference2 {
                             binary_library: None,
                             member_reference: MemberReference3::BinaryObjectString(
                               BinaryObjectString {
                                   object_id: 7,
-                                  value: LengthPrefixedString {
-                                      string: "98054",
-                                  },
+                                  value: "98054".into(),
                               },
-                          )
+                            )
                           },
                       ],
                   },
