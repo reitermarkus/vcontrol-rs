@@ -3,7 +3,7 @@ use std::str::{self, FromStr};
 use nom::{
   branch::alt,
   bytes::complete::{tag, take},
-  combinator::{cond, map, map_opt, map_res, opt, value, verify},
+  combinator::{cond, fail, map, map_opt, map_res, opt, value, verify},
   complete::bool,
   multi::{many0, many_m_n},
   number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u24, le_u32, le_u64, u8},
@@ -17,6 +17,8 @@ pub mod data_type;
 use data_type::*;
 pub mod enumeration;
 use enumeration::*;
+pub mod method_invocation;
+use method_invocation::*;
 mod message_end;
 pub use message_end::MessageEnd;
 mod null_object;
@@ -42,74 +44,6 @@ impl<'i> ClassInfo<'i> {
     let (input, member_names) = many_m_n(member_count, member_count, LengthPrefixedString::parse)(input)?;
 
     Ok((input, Self { object_id, name, member_names }))
-  }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum BinaryTypeEnumeration {
-  Primitive,
-  String,
-  Object,
-  SystemClass,
-  Class,
-  ObjectArray,
-  StringArray,
-  PrimitiveArray,
-}
-
-impl BinaryTypeEnumeration {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    alt((
-      value(Self::Primitive, tag([0])),
-      value(Self::String, tag([1])),
-      value(Self::Object, tag([2])),
-      value(Self::SystemClass, tag([3])),
-      value(Self::Class, tag([4])),
-      value(Self::ObjectArray, tag([5])),
-      value(Self::StringArray, tag([6])),
-      value(Self::PrimitiveArray, tag([7])),
-    ))(input)
-  }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum PrimitiveTypeEnumeration {
-  Boolean,
-  Byte,
-  Char,
-  Decimal,
-  Double,
-  Int16,
-  Int32,
-  Int64,
-  SByte,
-  Single,
-  TimeSpan,
-  DateTime,
-  UInt16,
-  UInt32,
-  UInt64,
-}
-
-impl PrimitiveTypeEnumeration {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    alt((
-      value(Self::Boolean, tag([1])),
-      value(Self::Byte, tag([2])),
-      value(Self::Char, tag([3])),
-      value(Self::Decimal, tag([5])),
-      value(Self::Double, tag([6])),
-      value(Self::Int16, tag([7])),
-      value(Self::Int32, tag([8])),
-      value(Self::Int64, tag([9])),
-      value(Self::SByte, tag([10])),
-      value(Self::Single, tag([11])),
-      value(Self::TimeSpan, tag([12])),
-      value(Self::DateTime, tag([13])),
-      value(Self::UInt16, tag([14])),
-      value(Self::UInt32, tag([15])),
-      value(Self::UInt64, tag([16])),
-    ))(input)
   }
 }
 
@@ -155,7 +89,7 @@ impl MemberPrimitiveTyped {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     let (input, _) = tag([8])(input)?;
 
-    let (input, primitive_type) = PrimitiveTypeEnumeration::parse(input)?;
+    let (input, primitive_type) = PrimitiveType::parse(input)?;
     let (input, primitive_untyped) = MemberPrimitiveUnTyped::parse(input, primitive_type)?;
 
     let primitive_typed = match primitive_untyped {
@@ -181,82 +115,26 @@ impl MemberPrimitiveTyped {
 }
 
 impl MemberPrimitiveUnTyped {
-  pub fn parse(input: &[u8], primitive_type: PrimitiveTypeEnumeration) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8], primitive_type: PrimitiveType) -> IResult<&[u8], Self> {
     match primitive_type {
-      PrimitiveTypeEnumeration::Boolean => map(Boolean::parse, Self::Boolean)(input),
-      PrimitiveTypeEnumeration::Byte => map(Byte::parse, Self::Byte)(input),
-      PrimitiveTypeEnumeration::Char => map(Char::parse, Self::Char)(input),
-      PrimitiveTypeEnumeration::Decimal => map(Decimal::parse, Self::Decimal)(input),
-      PrimitiveTypeEnumeration::Double => map(Double::parse, Self::Double)(input),
-      PrimitiveTypeEnumeration::Int16 => map(Int16::parse, Self::Int16)(input),
-      PrimitiveTypeEnumeration::Int32 => map(Int32::parse, Self::Int32)(input),
-      PrimitiveTypeEnumeration::Int64 => map(Int64::parse, Self::Int64)(input),
-      PrimitiveTypeEnumeration::SByte => map(Int8::parse, Self::SByte)(input),
-      PrimitiveTypeEnumeration::Single => map(Single::parse, Self::Single)(input),
-      PrimitiveTypeEnumeration::TimeSpan => map(TimeSpan::parse, Self::TimeSpan)(input),
-      PrimitiveTypeEnumeration::DateTime => map(DateTime::parse, Self::DateTime)(input),
-      PrimitiveTypeEnumeration::UInt16 => map(UInt16::parse, Self::UInt16)(input),
-      PrimitiveTypeEnumeration::UInt32 => map(UInt32::parse, Self::UInt32)(input),
-      PrimitiveTypeEnumeration::UInt64 => map(UInt64::parse, Self::UInt64)(input),
+      PrimitiveType::Boolean => map(Boolean::parse, Self::Boolean)(input),
+      PrimitiveType::Byte => map(Byte::parse, Self::Byte)(input),
+      PrimitiveType::Char => map(Char::parse, Self::Char)(input),
+      PrimitiveType::Decimal => map(Decimal::parse, Self::Decimal)(input),
+      PrimitiveType::Double => map(Double::parse, Self::Double)(input),
+      PrimitiveType::Int16 => map(Int16::parse, Self::Int16)(input),
+      PrimitiveType::Int32 => map(Int32::parse, Self::Int32)(input),
+      PrimitiveType::Int64 => map(Int64::parse, Self::Int64)(input),
+      PrimitiveType::SByte => map(Int8::parse, Self::SByte)(input),
+      PrimitiveType::Single => map(Single::parse, Self::Single)(input),
+      PrimitiveType::TimeSpan => map(TimeSpan::parse, Self::TimeSpan)(input),
+      PrimitiveType::DateTime => map(DateTime::parse, Self::DateTime)(input),
+      PrimitiveType::UInt16 => map(UInt16::parse, Self::UInt16)(input),
+      PrimitiveType::UInt32 => map(UInt32::parse, Self::UInt32)(input),
+      PrimitiveType::UInt64 => map(UInt64::parse, Self::UInt64)(input),
+      PrimitiveType::Null => fail(input),
+      PrimitiveType::String => fail(input),
     }
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ValueWithCode {
-  Boolean(Boolean),
-  Byte(Byte),
-  Char(Char),
-  Decimal(Decimal),
-  Double(Double),
-  Int16(Int16),
-  Int32(Int32),
-  Int64(Int64),
-  SByte(Int8),
-  Single(Single),
-  TimeSpan(TimeSpan),
-  DateTime(DateTime),
-  UInt16(UInt16),
-  UInt32(UInt32),
-  UInt64(UInt64),
-  Null,
-}
-
-impl ValueWithCode {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    alt((
-      map(MemberPrimitiveTyped::parse, |primitive_typed| match primitive_typed {
-        MemberPrimitiveTyped::Boolean(v) => Self::Boolean(v),
-        MemberPrimitiveTyped::Byte(v) => Self::Byte(v),
-        MemberPrimitiveTyped::Char(v) => Self::Char(v),
-        MemberPrimitiveTyped::Decimal(v) => Self::Decimal(v),
-        MemberPrimitiveTyped::Double(v) => Self::Double(v),
-        MemberPrimitiveTyped::Int16(v) => Self::Int16(v),
-        MemberPrimitiveTyped::Int32(v) => Self::Int32(v),
-        MemberPrimitiveTyped::Int64(v) => Self::Int64(v),
-        MemberPrimitiveTyped::SByte(v) => Self::SByte(v),
-        MemberPrimitiveTyped::Single(v) => Self::Single(v),
-        MemberPrimitiveTyped::TimeSpan(v) => Self::TimeSpan(v),
-        MemberPrimitiveTyped::DateTime(v) => Self::DateTime(v),
-        MemberPrimitiveTyped::UInt16(v) => Self::UInt16(v),
-        MemberPrimitiveTyped::UInt32(v) => Self::UInt32(v),
-        MemberPrimitiveTyped::UInt64(v) => Self::UInt64(v),
-      }),
-      value(Self::Null, tag([17])),
-    ))(input)
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct StringValueWithCode<'i> {
-  pub string_value: LengthPrefixedString<'i>,
-}
-
-impl<'i> StringValueWithCode<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, string_value) = preceded(tag([18]), LengthPrefixedString::parse)(input)?;
-
-    Ok((input, Self { string_value }))
   }
 }
 
@@ -272,31 +150,6 @@ impl ArrayOfValueWithCode {
     let (input, list_of_value_with_code) = many_m_n(length, length, ValueWithCode::parse)(input)?;
 
     Ok((input, Self { list_of_value_with_code }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct MessageFlags(pub i32);
-
-impl MessageFlags {
-  pub const NO_ARGS: i32 = 0x00000001;
-  pub const ARGS_INLINE: i32 = 0x00000002;
-  pub const ARGS_IS_ARRAY: i32 = 0x00000004;
-  pub const ARGS_IN_ARRAY: i32 = 0x00000008;
-  pub const NO_CONTEXT: i32 = 0x00000010;
-  pub const CONTEXT_INLINE: i32 = 0x00000020;
-  pub const CONTEXT_IN_ARRAY: i32 = 0x00000040;
-  pub const METHOD_SIGNATURE_IN_ARRAY: i32 = 0x00000080;
-  pub const PROPERTIES_IN_ARRAY: i32 = 0x00000100;
-  pub const NO_RETURN_VALUE: i32 = 0x00000200;
-  pub const RETURN_VALUE_VOID: i32 = 0x00000400;
-  pub const RETURN_VALUE_INLINE: i32 = 0x00000800;
-  pub const RETURN_VALUE_IN_ARRAY: i32 = 0x00001000;
-  pub const EXCEPTION_IN_ARRAY: i32 = 0x00002000;
-  pub const GENERIC_METHOD: i32 = 0x00008000;
-
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    map(le_i32, Self)(input)
   }
 }
 
@@ -317,8 +170,9 @@ impl<'i> BinaryMethodCall<'i> {
     let (input, method_name) = StringValueWithCode::parse(input)?;
     let (input, type_name) = StringValueWithCode::parse(input)?;
     let (input, call_context) =
-      cond((message_enum.0 & MessageFlags::CONTEXT_INLINE) != 0, StringValueWithCode::parse)(input)?;
-    let (input, args) = cond((message_enum.0 & MessageFlags::ARGS_INLINE) != 0, ArrayOfValueWithCode::parse)(input)?;
+      cond((message_enum.0 .0 & MessageFlags::CONTEXT_INLINE.0) != 0, StringValueWithCode::parse)(input)?;
+    let (input, args) =
+      cond((message_enum.0 .0 & MessageFlags::ARGS_INLINE.0) != 0, ArrayOfValueWithCode::parse)(input)?;
 
     Ok((input, Self { message_enum, method_name, type_name, call_context, args }))
   }
@@ -339,16 +193,13 @@ impl<'i> BinaryMethodReturn<'i> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AdditionalTypeInfo<'i> {
-  Primitive(PrimitiveTypeEnumeration),
+  Primitive(PrimitiveType),
   SystemClass(LengthPrefixedString<'i>),
   Class(ClassTypeInfo<'i>),
 }
 
 impl<'i> AdditionalTypeInfo<'i> {
-  pub fn parse_many(
-    mut input: &'i [u8],
-    binary_type_enums: &[BinaryTypeEnumeration],
-  ) -> IResult<&'i [u8], Vec<Option<Self>>> {
+  pub fn parse_many(mut input: &'i [u8], binary_type_enums: &[BinaryType]) -> IResult<&'i [u8], Vec<Option<Self>>> {
     let mut additional_infos = vec![];
 
     for binary_type_enum in binary_type_enums {
@@ -360,30 +211,30 @@ impl<'i> AdditionalTypeInfo<'i> {
     Ok((input, additional_infos))
   }
 
-  pub fn parse(mut input: &'i [u8], binary_type_enum: BinaryTypeEnumeration) -> IResult<&'i [u8], Option<Self>> {
+  pub fn parse(mut input: &'i [u8], binary_type_enum: BinaryType) -> IResult<&'i [u8], Option<Self>> {
     let additional_info = match binary_type_enum {
-      BinaryTypeEnumeration::Primitive => {
+      BinaryType::Primitive => {
         let primitive_type;
-        (input, primitive_type) = PrimitiveTypeEnumeration::parse(input)?;
+        (input, primitive_type) = PrimitiveType::parse(input)?;
         Some(Self::Primitive(primitive_type))
       },
-      BinaryTypeEnumeration::String => None,
-      BinaryTypeEnumeration::Object => None,
-      BinaryTypeEnumeration::SystemClass => {
+      BinaryType::String => None,
+      BinaryType::Object => None,
+      BinaryType::SystemClass => {
         let class_name;
         (input, class_name) = LengthPrefixedString::parse(input)?;
         Some(Self::SystemClass(class_name))
       },
-      BinaryTypeEnumeration::Class => {
+      BinaryType::Class => {
         let class_type_info;
         (input, class_type_info) = ClassTypeInfo::parse(input)?;
         Some(Self::Class(class_type_info))
       },
-      BinaryTypeEnumeration::ObjectArray => None,
-      BinaryTypeEnumeration::StringArray => None,
-      BinaryTypeEnumeration::PrimitiveArray => {
+      BinaryType::ObjectArray => None,
+      BinaryType::StringArray => None,
+      BinaryType::PrimitiveArray => {
         let primitive_type;
-        (input, primitive_type) = PrimitiveTypeEnumeration::parse(input)?;
+        (input, primitive_type) = PrimitiveType::parse(input)?;
         Some(Self::Primitive(primitive_type))
       },
     };
@@ -394,7 +245,7 @@ impl<'i> AdditionalTypeInfo<'i> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MemberTypeInfo<'i> {
-  pub binary_type_enums: Vec<BinaryTypeEnumeration>,
+  pub binary_type_enums: Vec<BinaryType>,
   pub additional_infos: Vec<Option<AdditionalTypeInfo<'i>>>,
 }
 
@@ -402,7 +253,7 @@ impl<'i> MemberTypeInfo<'i> {
   pub fn parse(input: &'i [u8], class_info: &ClassInfo<'_>) -> IResult<&'i [u8], Self> {
     let count = class_info.member_names.len();
 
-    let (input, binary_type_enums) = many_m_n(count, count, BinaryTypeEnumeration::parse)(input)?;
+    let (input, binary_type_enums) = many_m_n(count, count, BinaryType::parse)(input)?;
     let (input, additional_infos) = AdditionalTypeInfo::parse_many(input, &binary_type_enums)?;
 
     Ok((input, Self { binary_type_enums, additional_infos }))
@@ -559,7 +410,7 @@ impl ArraySingleObject {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArraySinglePrimitive {
   pub array_info: ArrayInfo,
-  pub primitive_type_enum: PrimitiveTypeEnumeration,
+  pub primitive_type_enum: PrimitiveType,
 }
 
 impl ArraySinglePrimitive {
@@ -567,7 +418,7 @@ impl ArraySinglePrimitive {
     let (input, _) = tag([15])(input)?;
 
     let (input, array_info) = ArrayInfo::parse(input)?;
-    let (input, primitive_type_enum) = PrimitiveTypeEnumeration::parse(input)?;
+    let (input, primitive_type_enum) = PrimitiveType::parse(input)?;
 
     Ok((input, Self { array_info, primitive_type_enum }))
   }
@@ -588,8 +439,9 @@ impl ArraySingleString {
   }
 }
 
+/// 2.4.1.1 `BinaryArrayTypeEnumeration`
 #[derive(Debug, Clone, PartialEq)]
-pub enum BinaryArrayTypeEnumeration {
+pub enum BinaryArrayType {
   Single,
   Jagged,
   Rectangular,
@@ -598,7 +450,7 @@ pub enum BinaryArrayTypeEnumeration {
   RectangularOffset,
 }
 
-impl BinaryArrayTypeEnumeration {
+impl BinaryArrayType {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     alt((
       value(Self::Single, tag([0])),
@@ -614,11 +466,11 @@ impl BinaryArrayTypeEnumeration {
 #[derive(Debug, Clone, PartialEq)]
 pub struct BinaryArray<'i> {
   pub object_id: i32,
-  pub binary_array_type_enum: BinaryArrayTypeEnumeration,
+  pub binary_array_type_enum: BinaryArrayType,
   pub rank: i32,
   pub lengths: Vec<i32>,
   pub lower_bounds: Option<Vec<i32>>,
-  pub type_enum: BinaryTypeEnumeration,
+  pub type_enum: BinaryType,
   pub additional_type_info: Option<AdditionalTypeInfo<'i>>,
 }
 
@@ -627,7 +479,7 @@ impl<'i> BinaryArray<'i> {
     let (input, _) = tag([7])(input)?;
 
     let (input, object_id) = verify(le_i32, |&n| n > 0)(input)?;
-    let (input, binary_array_type_enum) = BinaryArrayTypeEnumeration::parse(input)?;
+    let (input, binary_array_type_enum) = BinaryArrayType::parse(input)?;
     let (input, rank) = verify(le_i32, |&n| n >= 0)(input)?;
     let rank_usize = usize::try_from(rank).unwrap();
 
@@ -636,14 +488,12 @@ impl<'i> BinaryArray<'i> {
     let (input, lower_bounds) = cond(
       matches!(
         binary_array_type_enum,
-        BinaryArrayTypeEnumeration::SingleOffset
-          | BinaryArrayTypeEnumeration::JaggedOffset
-          | BinaryArrayTypeEnumeration::RectangularOffset
+        BinaryArrayType::SingleOffset | BinaryArrayType::JaggedOffset | BinaryArrayType::RectangularOffset
       ),
       many_m_n(rank_usize, rank_usize, verify(le_i32, |&n| n >= 0)),
     )(input)?;
 
-    let (input, type_enum) = BinaryTypeEnumeration::parse(input)?;
+    let (input, type_enum) = BinaryType::parse(input)?;
     let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
 
     Ok((
@@ -710,23 +560,23 @@ impl<'i> Classes<'i> {
       member_type_info.binary_type_enums.iter().zip(member_type_info.additional_infos.iter())
     {
       member_references.push(match (binary_type_enum, additional_info) {
-        (BinaryTypeEnumeration::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
+        (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
           let value;
           (input, value) = MemberPrimitiveUnTyped::parse(input, *primitive_type)?;
 
           MemberReference2 { binary_library: None, member_reference: MemberReference3::MemberPrimitiveUnTyped(value) }
         },
-        (BinaryTypeEnumeration::String, None) => {
+        (BinaryType::String, None) => {
           let value;
           (input, value) = BinaryObjectString::parse(input)?;
           MemberReference2 { binary_library: None, member_reference: MemberReference3::BinaryObjectString(value) }
         },
-        (BinaryTypeEnumeration::Object, None) => todo!("Object reference"),
-        (BinaryTypeEnumeration::SystemClass, Some(class_name)) => todo!("SystemClass reference"),
-        (BinaryTypeEnumeration::Class, Some(class_type_info)) => todo!("Class reference"),
-        (BinaryTypeEnumeration::ObjectArray, None) => todo!("ObjectArray reference"),
-        (BinaryTypeEnumeration::StringArray, None) => todo!("StringArray reference"),
-        (BinaryTypeEnumeration::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
+        (BinaryType::Object, None) => todo!("Object reference"),
+        (BinaryType::SystemClass, Some(class_name)) => todo!("SystemClass reference"),
+        (BinaryType::Class, Some(class_type_info)) => todo!("Class reference"),
+        (BinaryType::ObjectArray, None) => todo!("ObjectArray reference"),
+        (BinaryType::StringArray, None) => todo!("StringArray reference"),
+        (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
           todo!("PrimitiveArray reference")
         },
         _ => unreachable!(),
