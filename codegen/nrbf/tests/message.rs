@@ -1,10 +1,10 @@
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
-  method_invocation::{MessageFlags, StringValueWithCode},
-  parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, CallArray, Class,
-  ClassInfo, ClassWithMembersAndTypes, Classes, MemberReference, MemberReference2, MemberReference3, MemberTypeInfo,
-  Record, Referenceable,
+  method_invocation::{BinaryMethodCall, MessageFlags, StringValueWithCode},
+  parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryObjectString, CallArray, Class, ClassInfo,
+  ClassWithMembersAndTypes, Classes, MemberReference, MemberReference2, MemberReference3, MemberTypeInfo, Record,
+  Referenceable,
 };
 
 #[test]

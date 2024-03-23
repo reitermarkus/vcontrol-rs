@@ -27,12 +27,14 @@ impl Boolean {
 }
 
 impl From<bool> for Boolean {
+  #[inline]
   fn from(v: bool) -> Self {
     Self(v)
   }
 }
 
 impl Into<bool> for Boolean {
+  #[inline]
   fn into(self) -> bool {
     self.0
   }
@@ -49,12 +51,14 @@ impl Byte {
 }
 
 impl From<u8> for Byte {
+  #[inline]
   fn from(v: u8) -> Self {
     Self(v)
   }
 }
 
 impl Into<u8> for Byte {
+  #[inline]
   fn into(self) -> u8 {
     self.0
   }
@@ -71,12 +75,14 @@ impl Int8 {
 }
 
 impl From<i8> for Int8 {
+  #[inline]
   fn from(v: i8) -> Self {
     Self(v)
   }
 }
 
 impl Into<i8> for Int8 {
+  #[inline]
   fn into(self) -> i8 {
     self.0
   }
@@ -93,12 +99,14 @@ impl Int16 {
 }
 
 impl From<i16> for Int16 {
+  #[inline]
   fn from(v: i16) -> Self {
     Self(v)
   }
 }
 
 impl Into<i16> for Int16 {
+  #[inline]
   fn into(self) -> i16 {
     self.0
   }
@@ -115,12 +123,14 @@ impl Int32 {
 }
 
 impl From<i32> for Int32 {
+  #[inline]
   fn from(v: i32) -> Self {
     Self(v)
   }
 }
 
 impl Into<i32> for Int32 {
+  #[inline]
   fn into(self) -> i32 {
     self.0
   }
@@ -137,12 +147,14 @@ impl Int64 {
 }
 
 impl From<i64> for Int64 {
+  #[inline]
   fn from(v: i64) -> Self {
     Self(v)
   }
 }
 
 impl Into<i64> for Int64 {
+  #[inline]
   fn into(self) -> i64 {
     self.0
   }
@@ -159,12 +171,14 @@ impl UInt16 {
 }
 
 impl From<u16> for UInt16 {
+  #[inline]
   fn from(v: u16) -> Self {
     Self(v)
   }
 }
 
 impl Into<u16> for UInt16 {
+  #[inline]
   fn into(self) -> u16 {
     self.0
   }
@@ -181,12 +195,14 @@ impl UInt32 {
 }
 
 impl From<u32> for UInt32 {
+  #[inline]
   fn from(v: u32) -> Self {
     Self(v)
   }
 }
 
 impl Into<u32> for UInt32 {
+  #[inline]
   fn into(self) -> u32 {
     self.0
   }
@@ -203,12 +219,14 @@ impl UInt64 {
 }
 
 impl From<u64> for UInt64 {
+  #[inline]
   fn from(v: u64) -> Self {
     Self(v)
   }
 }
 
 impl Into<u64> for UInt64 {
+  #[inline]
   fn into(self) -> u64 {
     self.0
   }
@@ -233,12 +251,14 @@ impl Char {
 }
 
 impl From<char> for Char {
+  #[inline]
   fn from(v: char) -> Self {
     Self(v)
   }
 }
 
 impl Into<char> for Char {
+  #[inline]
   fn into(self) -> char {
     self.0
   }
@@ -255,12 +275,14 @@ impl Double {
 }
 
 impl From<f64> for Double {
+  #[inline]
   fn from(v: f64) -> Self {
     Self(v)
   }
 }
 
 impl Into<f64> for Double {
+  #[inline]
   fn into(self) -> f64 {
     self.0
   }
@@ -277,12 +299,14 @@ impl Single {
 }
 
 impl From<f32> for Single {
+  #[inline]
   fn from(v: f32) -> Self {
     Self(v)
   }
 }
 
 impl Into<f32> for Single {
+  #[inline]
   fn into(self) -> f32 {
     self.0
   }
@@ -299,12 +323,14 @@ impl TimeSpan {
 }
 
 impl From<i64> for TimeSpan {
+  #[inline]
   fn from(v: i64) -> Self {
     Self(v)
   }
 }
 
 impl Into<i64> for TimeSpan {
+  #[inline]
   fn into(self) -> i64 {
     self.0
   }
@@ -321,12 +347,14 @@ impl DateTime {
 }
 
 impl From<i64> for DateTime {
+  #[inline]
   fn from(v: i64) -> Self {
     Self(v)
   }
 }
 
 impl Into<i64> for DateTime {
+  #[inline]
   fn into(self) -> i64 {
     self.0
   }

@@ -3,10 +3,11 @@
 use nom::{
   branch::alt,
   bytes::complete::tag,
-  combinator::{map, map_res, value},
+  combinator::{cond, map, map_res, value},
+  multi::many_m_n,
   number::complete::le_i32,
   sequence::preceded,
-  IResult,
+  IResult, Parser, ToUsize,
 };
 
 use super::{
@@ -14,7 +15,7 @@ use super::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, LengthPrefixedString, Single, TimeSpan,
     UInt16, UInt32, UInt64,
   },
-  enumeration::PrimitiveType,
+  enumeration::{PrimitiveType, RecordType},
 };
 
 /// 2.2.1.1 `MessageFlags`
@@ -150,5 +151,42 @@ impl<'i> StringValueWithCode<'i> {
 impl<'s> From<LengthPrefixedString<'s>> for StringValueWithCode<'s> {
   fn from(s: LengthPrefixedString<'s>) -> Self {
     Self(s)
+  }
+}
+
+/// 2.2.2.3 `ArrayOfValueWithCode`
+#[derive(Debug, Clone, PartialEq)]
+pub struct ArrayOfValueWithCode(Vec<ValueWithCode>);
+
+impl ArrayOfValueWithCode {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+    let (input, length) = map_res(le_i32, u32::try_from)(input)?;
+    map(many_m_n(length.to_usize(), length.to_usize(), ValueWithCode::parse), Self)(input)
+  }
+}
+
+/// 2.2.3.1 `BinaryMethodCall`
+#[derive(Debug, Clone, PartialEq)]
+pub struct BinaryMethodCall<'i> {
+  pub message_enum: MessageFlags,
+  pub method_name: StringValueWithCode<'i>,
+  pub type_name: StringValueWithCode<'i>,
+  pub call_context: Option<StringValueWithCode<'i>>,
+  pub args: Option<ArrayOfValueWithCode>,
+}
+
+impl<'i> BinaryMethodCall<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let (input, _) = RecordType::MethodCall.parse(input)?;
+
+    let (input, message_enum) = MessageFlags::parse(input)?;
+    let (input, method_name) = StringValueWithCode::parse(input)?;
+    let (input, type_name) = StringValueWithCode::parse(input)?;
+    let (input, call_context) =
+      cond((message_enum.0 .0 & MessageFlags::CONTEXT_INLINE.0) != 0, StringValueWithCode::parse)(input)?;
+    let (input, args) =
+      cond((message_enum.0 .0 & MessageFlags::ARGS_INLINE.0) != 0, ArrayOfValueWithCode::parse)(input)?;
+
+    Ok((input, Self { message_enum, method_name, type_name, call_context, args }))
   }
 }
