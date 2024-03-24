@@ -42,9 +42,7 @@ fn message() {
       vec![
           Record::BinaryMethodCall(
               BinaryMethodCall {
-                  message_enum: MessageFlags(
-                      Int32::from(0x00000014),
-                  ),
+                  message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
                   method_name: StringValueWithCode::from(
                     LengthPrefixedString::from("SendAddress")
                   ),
