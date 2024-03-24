@@ -8,7 +8,7 @@ use nom::{
   multi::{many0, many_m_n},
   number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u24, le_u32, le_u64, u8},
   sequence::{preceded, terminated},
-  IResult,
+  IResult, Parser, ToUsize,
 };
 
 mod binary_library;
@@ -135,19 +135,6 @@ impl MemberPrimitiveUnTyped {
       PrimitiveType::Null => fail(input),
       PrimitiveType::String => fail(input),
     }
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct BinaryMethodReturn<'i> {
-  _todo: &'i (),
-}
-
-impl<'i> BinaryMethodReturn<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([22])(input)?;
-
-    Ok((input, todo!("BinaryMethodReturn::parse")))
   }
 }
 
@@ -340,13 +327,13 @@ impl MemberReference {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrayInfo {
   pub object_id: i32,
-  pub length: i32,
+  pub length: u32,
 }
 
 impl ArrayInfo {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     let (input, object_id) = verify(le_i32, |&n| n > 0)(input)?;
-    let (input, length) = verify(le_i32, |&n| n >= 0)(input)?;
+    let (input, length) = map_res(le_i32, u32::try_from)(input)?;
 
     Ok((input, Self { object_id, length }))
   }
@@ -359,7 +346,7 @@ pub struct ArraySingleObject {
 
 impl ArraySingleObject {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([16])(input)?;
+    let (input, _) = RecordType::ArraySingleObject.parse(input)?;
 
     let (input, array_info) = ArrayInfo::parse(input)?;
 
@@ -619,21 +606,70 @@ impl<'i> MemberReference2<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct CallArray<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,
-  pub call_array: ArraySingleObject,
+  pub call_array: MethodCallArray,
   pub member_references: Vec<MemberReference2<'i>>,
 }
 
 impl<'i> CallArray<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-    let (input, call_array) = ArraySingleObject::parse(input)?;
-    dbg!(&call_array);
-    let length = call_array.array_info.length as usize;
-    dbg!(input);
+    let (input, call_array) = MethodCallArray::parse(input)?;
+    let length = call_array.0.array_info.length.to_usize();
     let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
-    dbg!(&member_references);
 
     Ok((input, Self { binary_library, call_array, member_references }))
+  }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MethodCall<'i> {
+  pub binary_library: Option<BinaryLibrary<'i>>,
+  pub binary_method_call: BinaryMethodCall<'i>,
+  pub call_array: Option<CallArray<'i>>,
+}
+
+impl<'i> MethodCall<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
+    let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
+    let (input, call_array) = opt(CallArray::parse)(input)?;
+
+    Ok((input, Self { binary_library, binary_method_call, call_array }))
+  }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ReturnCallArray<'i> {
+  pub binary_library: Option<BinaryLibrary<'i>>,
+  pub return_call_array: MethodReturnCallArray,
+  pub member_references: Vec<MemberReference2<'i>>,
+}
+
+impl<'i> ReturnCallArray<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
+    let (input, return_call_array) = MethodReturnCallArray::parse(input)?;
+    let length = return_call_array.0.array_info.length.to_usize();
+    let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
+
+    Ok((input, Self { binary_library, return_call_array, member_references }))
+  }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MethodReturn<'i> {
+  pub binary_library: Option<BinaryLibrary<'i>>,
+  pub binary_method_return: BinaryMethodReturn<'i>,
+  pub return_call_array: Option<ReturnCallArray<'i>>,
+}
+
+impl<'i> MethodReturn<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
+    let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
+    let (input, return_call_array) = opt(ReturnCallArray::parse)(input)?;
+
+    Ok((input, Self { binary_library, binary_method_return, return_call_array }))
   }
 }
 
@@ -641,8 +677,8 @@ impl<'i> CallArray<'i> {
 pub enum Record<'i> {
   SerializationHeader(SerializationHeader),
   BinaryLibrary(BinaryLibrary<'i>),
-  BinaryMethodReturn(BinaryMethodReturn<'i>),
-  BinaryMethodCall(BinaryMethodCall<'i>, CallArray<'i>),
+  MethodReturn(MethodReturn<'i>),
+  MethodCall(MethodCall<'i>),
   MemberPrimitiveUnTyped(MemberPrimitiveUnTyped),
   MemberPrimitiveTyped(MemberPrimitiveTyped),
   BinaryObjectString(BinaryObjectString<'i>),
@@ -651,31 +687,17 @@ pub enum Record<'i> {
 }
 
 impl<'i> Record<'i> {
-  fn parse_method_call(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-    let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
-    dbg!(&binary_method_call);
-    let (input, call_array) = CallArray::parse(input)?;
-    dbg!(&call_array);
-
-    Ok((input, Self::BinaryMethodCall(binary_method_call, call_array)))
-  }
-
-  fn parse_method_call_or_return(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    alt((Self::parse_method_call, map(BinaryMethodReturn::parse, Self::BinaryMethodReturn)))(input)
-  }
-
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Vec<Self>> {
     let (input, header) = SerializationHeader::parse(input)?;
 
-    terminated(
-      many0(alt((
-        map(BinaryLibrary::parse, Self::BinaryLibrary),
-        map(Referenceable::parse, Self::Referenceable),
-        Self::parse_method_call_or_return,
-      ))),
-      MessageEnd::parse,
-    )(input)
+    let (input, records) = many0(alt((
+      map(Referenceable::parse, Self::Referenceable),
+      alt((map(MethodCall::parse, Self::MethodCall), map(MethodReturn::parse, Self::MethodReturn))),
+    )))(input)?;
+
+    let (input, _) = MessageEnd::parse(input)?;
+
+    Ok((input, records))
   }
 }
 
