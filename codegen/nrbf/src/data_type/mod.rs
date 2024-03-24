@@ -1,6 +1,7 @@
 //! 2.1.1 Common Data Types
 use std::str::FromStr;
 
+use bitflags::Bits;
 use nom::{
   branch::alt,
   bytes::complete::take,
