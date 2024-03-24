@@ -3,8 +3,7 @@
 use bitflags::bitflags;
 use nom::{
   branch::alt,
-  bytes::complete::tag,
-  combinator::{cond, map, map_res, opt, value},
+  combinator::{cond, map, map_res, value},
   multi::many_m_n,
   number::complete::le_i32,
   sequence::preceded,
@@ -17,7 +16,7 @@ use super::{
     UInt16, UInt32, UInt64,
   },
   enumeration::{PrimitiveType, RecordType},
-  ArraySingleObject, BinaryLibrary, MemberReference2,
+  ArraySingleObject,
 };
 
 bitflags! {

@@ -1,13 +1,9 @@
-use std::str::{self, FromStr};
-
 use nom::{
   branch::alt,
-  bytes::complete::{tag, take},
-  combinator::{cond, fail, map, map_opt, map_res, opt, value, verify},
-  complete::bool,
+  bytes::complete::tag,
+  combinator::{cond, fail, map, map_res, opt, value, verify},
   multi::{many0, many_m_n},
-  number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u24, le_u32, le_u64, u8},
-  sequence::{preceded, terminated},
+  number::complete::le_i32,
   IResult, Parser, ToUsize,
 };
 
@@ -688,7 +684,7 @@ pub enum Record<'i> {
 
 impl<'i> Record<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Vec<Self>> {
-    let (input, header) = SerializationHeader::parse(input)?;
+    let (input, _) = SerializationHeader::parse(input)?;
 
     let (input, records) = many0(alt((
       map(Referenceable::parse, Self::Referenceable),
@@ -701,6 +697,6 @@ impl<'i> Record<'i> {
   }
 }
 
-pub fn parse<'i>(mut input: &'i [u8]) -> IResult<&'i [u8], Vec<Record<'i>>> {
+pub fn parse(input: &[u8]) -> IResult<&[u8], Vec<Record<'_>>> {
   Record::parse(input)
 }

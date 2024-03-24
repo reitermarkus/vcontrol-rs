@@ -1,13 +1,10 @@
 //! 2.1.1 Common Data Types
 use std::str::FromStr;
 
-use bitflags::Bits;
 use nom::{
   branch::alt,
-  bytes::complete::take,
   combinator::{map, map_opt, map_res},
   number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u24, le_u32, le_u64, u8},
-  sequence::{pair, preceded},
   IResult,
 };
 
@@ -34,10 +31,10 @@ impl From<bool> for Boolean {
   }
 }
 
-impl Into<bool> for Boolean {
+impl From<Boolean> for bool {
   #[inline]
-  fn into(self) -> bool {
-    self.0
+  fn from(val: Boolean) -> Self {
+    val.0
   }
 }
 
@@ -58,10 +55,10 @@ impl From<u8> for Byte {
   }
 }
 
-impl Into<u8> for Byte {
+impl From<Byte> for u8 {
   #[inline]
-  fn into(self) -> u8 {
-    self.0
+  fn from(val: Byte) -> Self {
+    val.0
   }
 }
 
@@ -82,10 +79,10 @@ impl From<i8> for Int8 {
   }
 }
 
-impl Into<i8> for Int8 {
+impl From<Int8> for i8 {
   #[inline]
-  fn into(self) -> i8 {
-    self.0
+  fn from(val: Int8) -> Self {
+    val.0
   }
 }
 
@@ -106,10 +103,10 @@ impl From<i16> for Int16 {
   }
 }
 
-impl Into<i16> for Int16 {
+impl From<Int16> for i16 {
   #[inline]
-  fn into(self) -> i16 {
-    self.0
+  fn from(val: Int16) -> Self {
+    val.0
   }
 }
 
@@ -130,10 +127,10 @@ impl From<i32> for Int32 {
   }
 }
 
-impl Into<i32> for Int32 {
+impl From<Int32> for i32 {
   #[inline]
-  fn into(self) -> i32 {
-    self.0
+  fn from(val: Int32) -> Self {
+    val.0
   }
 }
 
@@ -154,10 +151,10 @@ impl From<i64> for Int64 {
   }
 }
 
-impl Into<i64> for Int64 {
+impl From<Int64> for i64 {
   #[inline]
-  fn into(self) -> i64 {
-    self.0
+  fn from(val: Int64) -> Self {
+    val.0
   }
 }
 
@@ -178,10 +175,10 @@ impl From<u16> for UInt16 {
   }
 }
 
-impl Into<u16> for UInt16 {
+impl From<UInt16> for u16 {
   #[inline]
-  fn into(self) -> u16 {
-    self.0
+  fn from(val: UInt16) -> Self {
+    val.0
   }
 }
 
@@ -202,10 +199,10 @@ impl From<u32> for UInt32 {
   }
 }
 
-impl Into<u32> for UInt32 {
+impl From<UInt32> for u32 {
   #[inline]
-  fn into(self) -> u32 {
-    self.0
+  fn from(val: UInt32) -> Self {
+    val.0
   }
 }
 
@@ -226,10 +223,10 @@ impl From<u64> for UInt64 {
   }
 }
 
-impl Into<u64> for UInt64 {
+impl From<UInt64> for u64 {
   #[inline]
-  fn into(self) -> u64 {
-    self.0
+  fn from(val: UInt64) -> Self {
+    val.0
   }
 }
 
@@ -243,7 +240,7 @@ impl Char {
       alt((
         map_opt(u8, |n| char::from_u32(n as u32)),
         map_opt(le_u16, |n| char::from_u32(n as u32)),
-        map_opt(le_u24, |n| char::from_u32(n as u32)),
+        map_opt(le_u24, char::from_u32),
         map_opt(le_u32, char::from_u32),
       )),
       Self,
@@ -258,10 +255,10 @@ impl From<char> for Char {
   }
 }
 
-impl Into<char> for Char {
+impl From<Char> for char {
   #[inline]
-  fn into(self) -> char {
-    self.0
+  fn from(val: Char) -> Self {
+    val.0
   }
 }
 
@@ -282,10 +279,10 @@ impl From<f64> for Double {
   }
 }
 
-impl Into<f64> for Double {
+impl From<Double> for f64 {
   #[inline]
-  fn into(self) -> f64 {
-    self.0
+  fn from(val: Double) -> Self {
+    val.0
   }
 }
 
@@ -306,10 +303,10 @@ impl From<f32> for Single {
   }
 }
 
-impl Into<f32> for Single {
+impl From<Single> for f32 {
   #[inline]
-  fn into(self) -> f32 {
-    self.0
+  fn from(val: Single) -> Self {
+    val.0
   }
 }
 
@@ -330,10 +327,10 @@ impl From<i64> for TimeSpan {
   }
 }
 
-impl Into<i64> for TimeSpan {
+impl From<TimeSpan> for i64 {
   #[inline]
-  fn into(self) -> i64 {
-    self.0
+  fn from(val: TimeSpan) -> Self {
+    val.0
   }
 }
 
@@ -354,10 +351,10 @@ impl From<i64> for DateTime {
   }
 }
 
-impl Into<i64> for DateTime {
+impl From<DateTime> for i64 {
   #[inline]
-  fn into(self) -> i64 {
-    self.0
+  fn from(val: DateTime) -> Self {
+    val.0
   }
 }
 
@@ -382,7 +379,7 @@ pub struct ClassTypeInfo<'i> {
 }
 
 impl<'i> ClassTypeInfo<'i> {
-  pub fn parse(mut input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, type_name) = LengthPrefixedString::parse(input)?;
     let (input, library_id) = le_i32(input)?;
 

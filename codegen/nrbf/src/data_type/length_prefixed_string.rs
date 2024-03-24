@@ -3,7 +3,6 @@ use std::str;
 use nom::{
   bytes::complete::take,
   combinator::{map, map_res},
-  number::complete::u8,
   sequence::{pair, preceded},
   IResult,
 };
@@ -45,7 +44,7 @@ impl<'i> LengthPrefixedString<'i> {
     Ok((input, len))
   }
 
-  pub fn parse(mut input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let ((input, _), len) = Self::parse_len((input, 0)).map_err(|err| err.map_input(|(input, _)| input))?;
     map(map_res(take(len), str::from_utf8), Self)(input)
   }
@@ -70,22 +69,20 @@ impl<'s> From<&'s String> for LengthPrefixedString<'s> {
   }
 }
 
-impl<'s> Into<&'s str> for LengthPrefixedString<'s> {
+impl<'s> From<LengthPrefixedString<'s>> for &'s str {
   #[inline]
-  fn into(self) -> &'s str {
-    self.0
+  fn from(val: LengthPrefixedString<'s>) -> Self {
+    val.0
   }
 }
 
 #[cfg(test)]
 mod tests {
-  use std::iter::repeat;
-
   use super::LengthPrefixedString;
 
   #[test]
   fn length_127() {
-    let string = repeat('a').take(127).collect::<String>();
+    let string = "a".repeat(127);
 
     let mut input = vec![0b01111111];
     input.extend(string.as_bytes());
@@ -94,7 +91,7 @@ mod tests {
   }
   #[test]
   fn length_16383() {
-    let string = repeat('a').take(16383).collect::<String>();
+    let string = "a".repeat(16383);
 
     let mut input = vec![0b11111111, 0b01111111];
     input.extend(string.as_bytes());
@@ -104,7 +101,7 @@ mod tests {
 
   #[test]
   fn length_2097151() {
-    let string = repeat('a').take(2097151).collect::<String>();
+    let string = "a".repeat(2097151);
 
     let mut input = vec![0b11111111, 0b11111111, 0b01111111];
     input.extend(string.as_bytes());
@@ -114,7 +111,7 @@ mod tests {
 
   #[test]
   fn length_268435455() {
-    let string = repeat('a').take(268435455).collect::<String>();
+    let string = "a".repeat(268435455);
 
     let mut input = vec![0b11111111, 0b11111111, 0b11111111, 0b01111111];
     input.extend(string.as_bytes());
@@ -125,7 +122,7 @@ mod tests {
   #[ignore = "needs too much memory"]
   #[test]
   fn length_2147483647() {
-    let string = repeat('a').take(2147483647).collect::<String>();
+    let string = "a".repeat(2147483647);
 
     let mut input = vec![0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b00000111];
     input.extend(string.as_bytes());
