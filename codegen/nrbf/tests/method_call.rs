@@ -1,5 +1,5 @@
 use nrbf::{
-  data_type::{Int32, LengthPrefixedString},
+  data_type::LengthPrefixedString,
   enumeration::BinaryType,
   method_invocation::{BinaryMethodCall, MessageFlags, MethodCallArray, StringValueWithCode},
   parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryObjectString, CallArray, Class, ClassInfo,

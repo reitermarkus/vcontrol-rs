@@ -1,8 +1,7 @@
 //! 2.1.2 Enumerations
 
 use nom::{
-  branch::alt, bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputLength, InputTake,
-  Parser,
+  branch::alt, bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser,
 };
 
 /// 2.1.2.1 `RecordTypeEnumeration`
