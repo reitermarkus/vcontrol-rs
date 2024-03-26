@@ -1,9 +1,9 @@
 //! 2.1.1 Common Data Types
-use std::str::FromStr;
+use std::{num::TryFromIntError, str::FromStr};
 
 use nom::{
   branch::alt,
-  combinator::{map, map_opt, map_res},
+  combinator::{map, map_opt, map_res, verify},
   number::complete::{i8, le_f32, le_f64, le_i16, le_i32, le_i64, le_u16, le_u24, le_u32, le_u64, u8},
   IResult,
 };
@@ -59,6 +59,13 @@ impl From<Byte> for u8 {
   #[inline]
   fn from(val: Byte) -> Self {
     val.0
+  }
+}
+
+impl From<Byte> for i32 {
+  #[inline]
+  fn from(val: Byte) -> Self {
+    Self::from(val.0)
   }
 }
 
@@ -118,6 +125,14 @@ impl Int32 {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     map(le_i32, Self)(input)
   }
+
+  pub fn parse_positive(input: &[u8]) -> IResult<&[u8], Self> {
+    verify(Self::parse, |n| n.0 > 0)(input)
+  }
+
+  pub fn parse_positive_or_zero(input: &[u8]) -> IResult<&[u8], Self> {
+    verify(Self::parse, |n| n.0 >= 0)(input)
+  }
 }
 
 impl From<i32> for Int32 {
@@ -131,6 +146,15 @@ impl From<Int32> for i32 {
   #[inline]
   fn from(val: Int32) -> Self {
     val.0
+  }
+}
+
+impl TryFrom<Int32> for usize {
+  type Error = TryFromIntError;
+
+  #[inline]
+  fn try_from(val: Int32) -> Result<Self, Self::Error> {
+    Self::try_from(val.0)
   }
 }
 

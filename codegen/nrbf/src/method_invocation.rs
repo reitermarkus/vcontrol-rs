@@ -205,8 +205,8 @@ pub struct ArrayOfValueWithCode(Vec<ValueWithCode>);
 
 impl ArrayOfValueWithCode {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, length) = map_res(le_i32, u32::try_from)(input)?;
-    map(many_m_n(length.to_usize(), length.to_usize(), ValueWithCode::parse), Self)(input)
+    let (input, length) = map_res(Int32::parse, usize::try_from)(input)?;
+    map(many_m_n(length, length, ValueWithCode::parse), Self)(input)
   }
 }
 
@@ -237,10 +237,10 @@ impl<'i> BinaryMethodCall<'i> {
 
 /// 2.2.3.2 `MethodCallArray`
 #[derive(Debug, Clone, PartialEq)]
-pub struct MethodCallArray(pub ArraySingleObject);
+pub struct MethodCallArray<'i>(pub ArraySingleObject<'i>);
 
-impl MethodCallArray {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+impl<'i> MethodCallArray<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     map(ArraySingleObject::parse, Self)(input)
   }
 }
@@ -276,10 +276,10 @@ impl<'i> BinaryMethodReturn<'i> {
 
 /// 2.2.3.4 `MethodReturnCallArray`
 #[derive(Debug, Clone, PartialEq)]
-pub struct MethodReturnCallArray(pub ArraySingleObject);
+pub struct MethodReturnCallArray<'i>(pub ArraySingleObject<'i>);
 
-impl MethodReturnCallArray {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+impl<'i> MethodReturnCallArray<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     map(ArraySingleObject::parse, Self)(input)
   }
 }
