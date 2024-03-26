@@ -1,11 +1,8 @@
 use nrbf::{
-  data_type::{Byte, Int32, Int64, LengthPrefixedString},
+  data_type::Int32,
   enumeration::{BinaryType, PrimitiveType},
-  method_invocation::{BinaryMethodCall, MessageFlags, MethodCallArray, StringValueWithCode},
-  parse, AdditionalTypeInfo, Array, ArrayInfo, ArraySingleObject, ArraySinglePrimitive, ArraySingleString, Arrays,
-  BinaryArray, BinaryArrayType, BinaryLibrary, BinaryObjectString, CallArray, Class, ClassInfo,
-  ClassWithMembersAndTypes, Classes, MemberPrimitiveUnTyped, MemberReference, MemberReference2, MemberReference3,
-  MemberTypeInfo, MethodCall, NullObject, ObjectNullMultiple256, Record, Referenceable, SystemClassWithMembersAndTypes,
+  parse, AdditionalTypeInfo, Array, ArrayInfo, ArraySinglePrimitive, Arrays, BinaryArray, BinaryArrayType,
+  MemberPrimitiveUnTyped, MemberReference, MemberReference2, MemberReference3, Record, Referenceable,
 };
 
 #[test]
@@ -94,10 +91,7 @@ fn binary_array_jagged_offset() {
           binary_library: None,
           array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
             array_info: ArrayInfo { object_id: Int32(3), length: Int32(2) },
-            members: vec![
-              MemberPrimitiveUnTyped::Int32(Int32(2)),
-              MemberPrimitiveUnTyped::Int32(Int32(3)),
-            ],
+            members: vec![MemberPrimitiveUnTyped::Int32(Int32(2)), MemberPrimitiveUnTyped::Int32(Int32(3))],
           }),
         })),
         Record::Referenceable(Referenceable::Arrays(Arrays {
