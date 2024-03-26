@@ -5,9 +5,8 @@ use nom::{
   branch::alt,
   combinator::{cond, map, map_res, value},
   multi::many_m_n,
-  number::complete::le_i32,
   sequence::preceded,
-  IResult, Parser, ToUsize,
+  IResult, Parser,
 };
 
 use super::{

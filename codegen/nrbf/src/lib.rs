@@ -1,7 +1,7 @@
 use nom::{
   branch::alt,
   bytes::complete::tag,
-  combinator::{cond, fail, map, map_res, opt, value, verify},
+  combinator::{cond, fail, map, opt, value},
   multi::{many0, many_m_n},
   number::complete::le_i32,
   IResult, Parser, ToUsize,
@@ -369,7 +369,7 @@ impl ArraySinglePrimitive {
     let (input, _) = RecordType::ArraySinglePrimitive.parse(input)?;
 
     let (input, array_info) = ArrayInfo::parse(input)?;
-    let (mut input, primitive_type) = PrimitiveType::parse(input)?;
+    let (input, primitive_type) = PrimitiveType::parse(input)?;
     let length = array_info.len();
     let (input, members) =
       many_m_n(length, length, |input| MemberPrimitiveUnTyped::parse(input, primitive_type))(input)?;
@@ -466,13 +466,10 @@ impl<'i> BinaryArray<'i> {
           member_reference: MemberReference3::MemberPrimitiveUnTyped(value),
         },
       )(input),
-      (BinaryType::String, None) => map(
-        |input| BinaryObjectString::parse(input),
-        |value| MemberReference2 {
-          binary_library: None,
-          member_reference: MemberReference3::BinaryObjectString(value),
-        },
-      )(input),
+      (BinaryType::String, None) => map(BinaryObjectString::parse, |value| MemberReference2 {
+        binary_library: None,
+        member_reference: MemberReference3::BinaryObjectString(value),
+      })(input),
       (BinaryType::Object, None) => MemberReference2::parse(input),
       (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input),
       (BinaryType::Class, Some(_class_type_info)) => MemberReference2::parse(input),
@@ -501,15 +498,14 @@ impl<'i> BinaryArray<'i> {
       many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero),
     )(input)?;
     let (input, type_enum) = BinaryType::parse(input)?;
-    let (mut input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
+    let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
 
     let member_count = match binary_array_type_enum {
       BinaryArrayType::Single | BinaryArrayType::SingleOffset => lengths.first().map(|n| i32::from(*n) as u32),
       BinaryArrayType::Rectangular | BinaryArrayType::RectangularOffset => {
-        lengths.iter().fold(Some(1u32), |acc, n| acc.and_then(|acc| acc.checked_mul(i32::from(*n) as u32)))
+        lengths.iter().try_fold(1u32, |acc, n| acc.checked_mul(i32::from(*n) as u32))
       },
       BinaryArrayType::Jagged | BinaryArrayType::JaggedOffset => lengths.first().map(|n| i32::from(*n) as u32),
-      _ => None,
     };
     let member_count = match member_count {
       Some(member_count) => member_count.to_usize(),
@@ -549,7 +545,7 @@ impl<'i> Array<'i> {
       map(ArraySingleObject::parse, Self::ArraySingleObject),
       map(ArraySinglePrimitive::parse, Self::ArraySinglePrimitive),
       map(ArraySingleString::parse, Self::ArraySingleString),
-      map(BinaryArray::parse, |a| Self::BinaryArray(a)),
+      map(BinaryArray::parse, Self::BinaryArray),
     ))(input)
   }
 }
@@ -623,10 +619,10 @@ impl<'i> Classes<'i> {
     ))(input)?;
 
     let (input, member_references) = match class {
-      Class::ClassWithId(ref class) => many0(MemberReference2::parse)(input)?,
-      Class::ClassWithMembers(ref class) => many0(MemberReference2::parse)(input)?,
+      Class::ClassWithId(ref _class) => many0(MemberReference2::parse)(input)?,
+      Class::ClassWithMembers(ref _class) => many0(MemberReference2::parse)(input)?,
       Class::ClassWithMembersAndTypes(ref class) => Self::parse_member_references(input, &class.member_type_info)?,
-      Class::SystemClassWithMembers(ref class) => many0(MemberReference2::parse)(input)?,
+      Class::SystemClassWithMembers(ref _class) => many0(MemberReference2::parse)(input)?,
       Class::SystemClassWithMembersAndTypes(ref class) => {
         Self::parse_member_references(input, &class.member_type_info)?
       },
@@ -648,8 +644,6 @@ pub enum MemberReference3<'i> {
 
 impl<'i> MemberReference3<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-
     alt((
       map(MemberPrimitiveTyped::parse, Self::MemberPrimitiveTyped),
       map(MemberReference::parse, Self::MemberReference),
