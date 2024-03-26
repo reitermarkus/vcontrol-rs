@@ -90,7 +90,7 @@ fn list_of_customers() {
       member_references: vec![
         MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberReference(MemberReference { id_ref: 2 })
+          member_reference: MemberReference3::MemberReference(MemberReference { id_ref: Int32(2) })
         },
         MemberReference2 {
           binary_library: None,

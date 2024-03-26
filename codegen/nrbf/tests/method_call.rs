@@ -68,7 +68,7 @@ fn method_call() {
                   binary_library: None,
                   member_reference: MemberReference3::MemberReference(
                     MemberReference {
-                      id_ref: 2,
+                      id_ref: Int32(2),
                     },
                   ),
                 },
