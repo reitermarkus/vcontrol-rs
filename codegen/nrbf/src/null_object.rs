@@ -1,10 +1,4 @@
-use nom::{
-  branch::alt,
-  bytes::complete::tag,
-  combinator::{map, verify},
-  number::complete::{le_i32, u8},
-  IResult, Parser, ToUsize,
-};
+use nom::{branch::alt, combinator::map, IResult, Parser, ToUsize};
 
 use super::{
   data_type::{Byte, Int32},
