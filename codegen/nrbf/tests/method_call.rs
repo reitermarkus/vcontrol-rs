@@ -1,5 +1,5 @@
 use nrbf::{
-  data_type::LengthPrefixedString,
+  data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
   method_invocation::{BinaryMethodCall, MessageFlags, MethodCallArray, StringValueWithCode},
   parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryObjectString, CallArray, Class, ClassInfo,
@@ -60,20 +60,20 @@ fn method_call() {
             binary_library: None,
             call_array: MethodCallArray(ArraySingleObject {
               array_info: ArrayInfo {
-                object_id: 1,
-                length: 1,
+                object_id: Int32(1),
+                length: Int32(1),
               },
+              member_references: vec![
+                MemberReference2 {
+                  binary_library: None,
+                  member_reference: MemberReference3::MemberReference(
+                    MemberReference {
+                      id_ref: 2,
+                    },
+                  ),
+                },
+              ],
             }),
-            member_references: vec![
-              MemberReference2 {
-                binary_library: None,
-                member_reference: MemberReference3::MemberReference(
-                  MemberReference {
-                    id_ref: 2,
-                  },
-                ),
-              },
-            ],
           }),
         },
       ),

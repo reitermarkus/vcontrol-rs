@@ -322,63 +322,97 @@ impl MemberReference {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrayInfo {
-  pub object_id: i32,
-  pub length: u32,
+  pub object_id: Int32,
+  pub length: Int32,
 }
 
 impl ArrayInfo {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, object_id) = verify(le_i32, |&n| n > 0)(input)?;
-    let (input, length) = map_res(le_i32, u32::try_from)(input)?;
+    let (input, object_id) = Int32::parse_positive(input)?;
+    let (input, length) = Int32::parse_positive_or_zero(input)?;
 
     Ok((input, Self { object_id, length }))
+  }
+
+  #[inline]
+  pub(crate) fn len(&self) -> usize {
+    (i32::from(self.length) as u32).to_usize()
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct ArraySingleObject {
+pub struct ArraySingleObject<'i> {
   pub array_info: ArrayInfo,
+  pub member_references: Vec<MemberReference2<'i>>,
 }
 
-impl ArraySingleObject {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+impl<'i> ArraySingleObject<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::ArraySingleObject.parse(input)?;
 
     let (input, array_info) = ArrayInfo::parse(input)?;
+    let length = array_info.len();
+    let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
 
-    Ok((input, Self { array_info }))
+    Ok((input, Self { array_info, member_references }))
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArraySinglePrimitive {
   pub array_info: ArrayInfo,
-  pub primitive_type_enum: PrimitiveType,
+  pub members: Vec<MemberPrimitiveUnTyped>,
 }
 
 impl ArraySinglePrimitive {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([15])(input)?;
+    let (input, _) = RecordType::ArraySinglePrimitive.parse(input)?;
 
     let (input, array_info) = ArrayInfo::parse(input)?;
-    let (input, primitive_type_enum) = PrimitiveType::parse(input)?;
+    let (mut input, primitive_type) = PrimitiveType::parse(input)?;
+    let length = array_info.len();
+    let (input, members) =
+      many_m_n(length, length, |input| MemberPrimitiveUnTyped::parse(input, primitive_type))(input)?;
 
-    Ok((input, Self { array_info, primitive_type_enum }))
+    Ok((input, Self { array_info, members }))
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct ArraySingleString {
+pub struct ArraySingleString<'i> {
   pub array_info: ArrayInfo,
+  pub members: Vec<MemberReference3<'i>>,
 }
 
-impl ArraySingleString {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([17])(input)?;
+impl<'i> ArraySingleString<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let (input, _) = RecordType::ArraySingleString.parse(input)?;
 
-    let (input, array_info) = ArrayInfo::parse(input)?;
+    let (mut input, array_info) = ArrayInfo::parse(input)?;
 
-    Ok((input, Self { array_info }))
+    let mut members = vec![];
+
+    let mut len_remaining = array_info.len();
+    while len_remaining > 0 {
+      let (member, count);
+      (input, (member, count)) = alt((
+        map(BinaryObjectString::parse, |s| (MemberReference3::BinaryObjectString(s), 1)),
+        map(MemberReference::parse, |m| (MemberReference3::MemberReference(m), 1)),
+        map(NullObject::parse, |null_object| {
+          let null_count = match null_object {
+            NullObject::ObjectNull(_) => 1,
+            NullObject::ObjectNullMultiple(ref n) => n.null_count(),
+            NullObject::ObjectNullMultiple256(ref n) => n.null_count(),
+          };
+
+          (MemberReference3::NullObject(null_object), null_count)
+        }),
+      ))(input)?;
+      members.push(member);
+      len_remaining -= count;
+    }
+
+    Ok((input, Self { array_info, members }))
   }
 }
 
@@ -410,38 +444,86 @@ impl BinaryArrayType {
 pub struct BinaryArray<'i> {
   pub object_id: i32,
   pub binary_array_type_enum: BinaryArrayType,
-  pub rank: i32,
-  pub lengths: Vec<i32>,
-  pub lower_bounds: Option<Vec<i32>>,
+  pub rank: u32,
+  pub lengths: Vec<u32>,
+  pub lower_bounds: Option<Vec<u32>>,
   pub type_enum: BinaryType,
   pub additional_type_info: Option<AdditionalTypeInfo<'i>>,
+  pub members: Vec<Vec<MemberReference2<'i>>>,
 }
 
 impl<'i> BinaryArray<'i> {
+  pub(self) fn parse_member(
+    input: &'i [u8],
+    type_enum: BinaryType,
+    additional_type_info: Option<&AdditionalTypeInfo<'i>>,
+  ) -> IResult<&'i [u8], MemberReference2<'i>> {
+    match (type_enum, additional_type_info) {
+      (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
+        |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
+        |value| MemberReference2 {
+          binary_library: None,
+          member_reference: MemberReference3::MemberPrimitiveUnTyped(value),
+        },
+      )(input),
+      (BinaryType::String, None) => map(
+        |input| BinaryObjectString::parse(input),
+        |value| MemberReference2 {
+          binary_library: None,
+          member_reference: MemberReference3::BinaryObjectString(value),
+        },
+      )(input),
+      (BinaryType::Object, None) => todo!("Object reference"),
+      (BinaryType::SystemClass, Some(class_name)) => todo!("SystemClass reference"),
+      (BinaryType::Class, Some(class_type_info)) => todo!("Class reference"),
+      (BinaryType::ObjectArray, None) => todo!("ObjectArray reference"),
+      (BinaryType::StringArray, None) => MemberReference2::parse(input),
+      (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
+        let (input, array_info) = ArrayInfo::parse(input)?;
+        let length = array_info.len();
+        let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
+
+        todo!("PrimitiveArray reference")
+      },
+      _ => unreachable!(),
+    }
+  }
+
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([7])(input)?;
+    let (input, _) = RecordType::BinaryArray.parse(input)?;
 
     let (input, object_id) = verify(le_i32, |&n| n > 0)(input)?;
     let (input, binary_array_type_enum) = BinaryArrayType::parse(input)?;
-    let (input, rank) = verify(le_i32, |&n| n >= 0)(input)?;
-    let rank_usize = usize::try_from(rank).unwrap();
+    let (input, rank) = map_res(le_i32, u32::try_from)(input)?;
 
-    let (input, lengths) = many_m_n(rank_usize, rank_usize, verify(le_i32, |&n| n >= 0))(input)?;
+    let (input, lengths) = many_m_n(rank.to_usize(), rank.to_usize(), map_res(le_i32, u32::try_from))(input)?;
 
     let (input, lower_bounds) = cond(
       matches!(
         binary_array_type_enum,
         BinaryArrayType::SingleOffset | BinaryArrayType::JaggedOffset | BinaryArrayType::RectangularOffset
       ),
-      many_m_n(rank_usize, rank_usize, verify(le_i32, |&n| n >= 0)),
+      many_m_n(rank.to_usize(), rank.to_usize(), map_res(le_i32, u32::try_from)),
     )(input)?;
 
     let (input, type_enum) = BinaryType::parse(input)?;
-    let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
+    let (mut input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
+
+    let mut members = vec![];
+
+    for length in lengths.iter().copied() {
+      let mut member = vec![];
+
+      for _ in 0..length {
+        let member2;
+        (input, member2) = Self::parse_member(input, type_enum, additional_type_info.as_ref())?;
+        member.push(member2);
+      }
+    }
 
     Ok((
       input,
-      Self { object_id, binary_array_type_enum, rank, lengths, lower_bounds, type_enum, additional_type_info },
+      Self { object_id, binary_array_type_enum, rank, lengths, lower_bounds, type_enum, additional_type_info, members },
     ))
   }
 }
@@ -456,30 +538,51 @@ pub enum Class<'i> {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum Array<'i> {
+  ArraySingleObject(ArraySingleObject<'i>),
+  ArraySinglePrimitive(ArraySinglePrimitive),
+  ArraySingleString(ArraySingleString<'i>),
+  BinaryArray(BinaryArray<'i>),
+}
+
+impl<'i> Array<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    alt((
+      map(ArraySingleObject::parse, Self::ArraySingleObject),
+      map(ArraySinglePrimitive::parse, Self::ArraySinglePrimitive),
+      map(ArraySingleString::parse, Self::ArraySingleString),
+      map(BinaryArray::parse, |a| Self::BinaryArray(a)),
+    ))(input)
+  }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Arrays<'i> {
+  pub binary_library: Option<BinaryLibrary<'i>>,
+  pub array: Array<'i>,
+}
+
+impl<'i> Arrays<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
+    let (input, array) = Array::parse(input)?;
+
+    Ok((input, Self { binary_library, array }))
+  }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Referenceable<'i> {
   Classes(Classes<'i>),
-  Arrays(Option<BinaryLibrary<'i>>, Vec<Record<'i>>),
+  Arrays(Arrays<'i>),
   BinaryObjectString(BinaryObjectString<'i>),
 }
 
 impl<'i> Referenceable<'i> {
-  fn parse_arrays(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-
-    let (input, array) = alt((
-      map(ArraySingleObject::parse, |_| todo!("ArraySingleObject")),
-      map(ArraySinglePrimitive::parse, |_| todo!("ArraySinglePrimitive")),
-      map(ArraySingleString::parse, |_| todo!("ArraySingleString")),
-      map(BinaryArray::parse, |_| todo!("BinaryArray")),
-    ))(input)?;
-
-    Ok((input, Self::Arrays(binary_library, array)))
-  }
-
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     alt((
       map(Classes::parse, Self::Classes),
-      Self::parse_arrays,
+      map(Arrays::parse, Self::Arrays),
       map(BinaryObjectString::parse, Self::BinaryObjectString),
     ))(input)
   }
@@ -495,35 +598,16 @@ pub struct Classes<'i> {
 impl<'i> Classes<'i> {
   fn parse_member_references(
     mut input: &'i [u8],
-    member_type_info: &MemberTypeInfo<'_>,
+    member_type_info: &MemberTypeInfo<'i>,
   ) -> IResult<&'i [u8], Vec<MemberReference2<'i>>> {
     let mut member_references = vec![];
 
     for (binary_type_enum, additional_info) in
       member_type_info.binary_type_enums.iter().zip(member_type_info.additional_infos.iter())
     {
-      member_references.push(match (binary_type_enum, additional_info) {
-        (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
-          let value;
-          (input, value) = MemberPrimitiveUnTyped::parse(input, *primitive_type)?;
-
-          MemberReference2 { binary_library: None, member_reference: MemberReference3::MemberPrimitiveUnTyped(value) }
-        },
-        (BinaryType::String, None) => {
-          let value;
-          (input, value) = BinaryObjectString::parse(input)?;
-          MemberReference2 { binary_library: None, member_reference: MemberReference3::BinaryObjectString(value) }
-        },
-        (BinaryType::Object, None) => todo!("Object reference"),
-        (BinaryType::SystemClass, Some(class_name)) => todo!("SystemClass reference"),
-        (BinaryType::Class, Some(class_type_info)) => todo!("Class reference"),
-        (BinaryType::ObjectArray, None) => todo!("ObjectArray reference"),
-        (BinaryType::StringArray, None) => todo!("StringArray reference"),
-        (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
-          todo!("PrimitiveArray reference")
-        },
-        _ => unreachable!(),
-      });
+      let member;
+      (input, member) = BinaryArray::parse_member(input, *binary_type_enum, additional_info.as_ref())?;
+      member_references.push(member);
     }
 
     Ok((input, member_references))
@@ -602,18 +686,15 @@ impl<'i> MemberReference2<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct CallArray<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,
-  pub call_array: MethodCallArray,
-  pub member_references: Vec<MemberReference2<'i>>,
+  pub call_array: MethodCallArray<'i>,
 }
 
 impl<'i> CallArray<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
     let (input, call_array) = MethodCallArray::parse(input)?;
-    let length = call_array.0.array_info.length.to_usize();
-    let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
 
-    Ok((input, Self { binary_library, call_array, member_references }))
+    Ok((input, Self { binary_library, call_array }))
   }
 }
 
@@ -637,7 +718,7 @@ impl<'i> MethodCall<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ReturnCallArray<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,
-  pub return_call_array: MethodReturnCallArray,
+  pub return_call_array: MethodReturnCallArray<'i>,
   pub member_references: Vec<MemberReference2<'i>>,
 }
 
@@ -645,7 +726,7 @@ impl<'i> ReturnCallArray<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
     let (input, return_call_array) = MethodReturnCallArray::parse(input)?;
-    let length = return_call_array.0.array_info.length.to_usize();
+    let length = return_call_array.0.array_info.len();
     let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
 
     Ok((input, Self { binary_library, return_call_array, member_references }))
