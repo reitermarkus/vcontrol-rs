@@ -1,9 +1,14 @@
 use nom::{
   branch::alt,
   bytes::complete::tag,
-  combinator::map,
+  combinator::{map, verify},
   number::complete::{le_i32, u8},
-  IResult,
+  IResult, Parser, ToUsize,
+};
+
+use super::{
+  data_type::{Byte, Int32},
+  RecordType,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +17,7 @@ pub struct ObjectNull;
 
 impl ObjectNull {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([10])(input)?;
+    let (input, _) = RecordType::ObjectNull.parse(input)?;
 
     Ok((input, Self))
   }
@@ -20,31 +25,39 @@ impl ObjectNull {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ObjectNullMultiple {
-  pub null_count: i32,
+  pub null_count: Int32,
 }
 
 impl ObjectNullMultiple {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([14])(input)?;
+    let (input, _) = RecordType::ObjectNullMultiple.parse(input)?;
 
-    let (input, null_count) = le_i32(input)?;
+    let (input, null_count) = Int32::parse_positive(input)?;
 
     Ok((input, Self { null_count }))
+  }
+
+  pub(crate) fn null_count(&self) -> usize {
+    (i32::from(self.null_count) as u32).to_usize()
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ObjectNullMultiple256 {
-  null_count: u8,
+  pub null_count: Byte,
 }
 
 impl ObjectNullMultiple256 {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([13])(input)?;
+    let (input, _) = RecordType::ObjectNullMultiple256.parse(input)?;
 
-    let (input, null_count) = u8(input)?;
+    let (input, null_count) = Byte::parse(input)?;
 
     Ok((input, Self { null_count }))
+  }
+
+  pub(crate) fn null_count(&self) -> usize {
+    u8::from(self.null_count).to_usize()
   }
 }
 
