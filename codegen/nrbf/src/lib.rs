@@ -307,14 +307,14 @@ impl<'i> BinaryObjectString<'i> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MemberReference {
-  pub id_ref: i32,
+  pub id_ref: Int32,
 }
 
 impl MemberReference {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([9])(input)?;
+    let (input, _) = RecordType::MemberReference.parse(input)?;
 
-    let (input, id_ref) = le_i32(input)?;
+    let (input, id_ref) = Int32::parse_positive(input)?;
 
     Ok((input, Self { id_ref }))
   }
@@ -442,14 +442,14 @@ impl BinaryArrayType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct BinaryArray<'i> {
-  pub object_id: i32,
+  pub object_id: Int32,
   pub binary_array_type_enum: BinaryArrayType,
-  pub rank: u32,
-  pub lengths: Vec<u32>,
-  pub lower_bounds: Option<Vec<u32>>,
+  pub rank: Int32,
+  pub lengths: Vec<Int32>,
+  pub lower_bounds: Option<Vec<Int32>>,
   pub type_enum: BinaryType,
   pub additional_type_info: Option<AdditionalTypeInfo<'i>>,
-  pub members: Vec<Vec<MemberReference2<'i>>>,
+  pub members: Vec<MemberReference2<'i>>,
 }
 
 impl<'i> BinaryArray<'i> {
@@ -473,18 +473,12 @@ impl<'i> BinaryArray<'i> {
           member_reference: MemberReference3::BinaryObjectString(value),
         },
       )(input),
-      (BinaryType::Object, None) => todo!("Object reference"),
-      (BinaryType::SystemClass, Some(class_name)) => todo!("SystemClass reference"),
-      (BinaryType::Class, Some(class_type_info)) => todo!("Class reference"),
-      (BinaryType::ObjectArray, None) => todo!("ObjectArray reference"),
+      (BinaryType::Object, None) => MemberReference2::parse(input),
+      (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input),
+      (BinaryType::Class, Some(_class_type_info)) => MemberReference2::parse(input),
+      (BinaryType::ObjectArray, None) => MemberReference2::parse(input),
       (BinaryType::StringArray, None) => MemberReference2::parse(input),
-      (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
-        let (input, array_info) = ArrayInfo::parse(input)?;
-        let length = array_info.len();
-        let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
-
-        todo!("PrimitiveArray reference")
-      },
+      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReference2::parse(input),
       _ => unreachable!(),
     }
   }
@@ -492,34 +486,38 @@ impl<'i> BinaryArray<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::BinaryArray.parse(input)?;
 
-    let (input, object_id) = verify(le_i32, |&n| n > 0)(input)?;
+    let (input, object_id) = Int32::parse_positive(input)?;
     let (input, binary_array_type_enum) = BinaryArrayType::parse(input)?;
-    let (input, rank) = map_res(le_i32, u32::try_from)(input)?;
+    let (input, rank) = Int32::parse_positive_or_zero(input)?;
 
-    let (input, lengths) = many_m_n(rank.to_usize(), rank.to_usize(), map_res(le_i32, u32::try_from))(input)?;
+    let rank_usize = (i32::from(rank) as u32).to_usize();
 
+    let (input, lengths) = many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero)(input)?;
     let (input, lower_bounds) = cond(
       matches!(
         binary_array_type_enum,
         BinaryArrayType::SingleOffset | BinaryArrayType::JaggedOffset | BinaryArrayType::RectangularOffset
       ),
-      many_m_n(rank.to_usize(), rank.to_usize(), map_res(le_i32, u32::try_from)),
+      many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero),
     )(input)?;
-
     let (input, type_enum) = BinaryType::parse(input)?;
     let (mut input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
 
-    let mut members = vec![];
-
-    for length in lengths.iter().copied() {
-      let mut member = vec![];
-
-      for _ in 0..length {
-        let member2;
-        (input, member2) = Self::parse_member(input, type_enum, additional_type_info.as_ref())?;
-        member.push(member2);
-      }
-    }
+    let member_count = match binary_array_type_enum {
+      BinaryArrayType::Single | BinaryArrayType::SingleOffset => lengths.first().map(|n| i32::from(*n) as u32),
+      BinaryArrayType::Rectangular | BinaryArrayType::RectangularOffset => {
+        lengths.iter().fold(Some(1u32), |acc, n| acc.and_then(|acc| acc.checked_mul(i32::from(*n) as u32)))
+      },
+      BinaryArrayType::Jagged | BinaryArrayType::JaggedOffset => lengths.first().map(|n| i32::from(*n) as u32),
+      _ => None,
+    };
+    let member_count = match member_count {
+      Some(member_count) => member_count.to_usize(),
+      None => return fail(input),
+    };
+    let (input, members) = many_m_n(member_count, member_count, |input| {
+      Self::parse_member(input, type_enum, additional_type_info.as_ref())
+    })(input)?;
 
     Ok((
       input,
@@ -616,7 +614,7 @@ impl<'i> Classes<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
 
-    let (mut input, class) = alt((
+    let (input, class) = alt((
       map(ClassWithId::parse, Class::ClassWithId),
       map(ClassWithMembers::parse, Class::ClassWithMembers),
       map(ClassWithMembersAndTypes::parse, Class::ClassWithMembersAndTypes),
@@ -624,19 +622,13 @@ impl<'i> Classes<'i> {
       map(SystemClassWithMembersAndTypes::parse, Class::SystemClassWithMembersAndTypes),
     ))(input)?;
 
-    let member_references = match class {
-      Class::ClassWithId(ref class) => todo!("ClassWithId"),
-      Class::ClassWithMembers(ref class) => todo!("ClassWithMembers"),
-      Class::ClassWithMembersAndTypes(ref class) => {
-        let member_references;
-        (input, member_references) = Self::parse_member_references(input, &class.member_type_info)?;
-        member_references
-      },
-      Class::SystemClassWithMembers(ref class) => todo!("SystemClassWithMembers"),
+    let (input, member_references) = match class {
+      Class::ClassWithId(ref class) => many0(MemberReference2::parse)(input)?,
+      Class::ClassWithMembers(ref class) => many0(MemberReference2::parse)(input)?,
+      Class::ClassWithMembersAndTypes(ref class) => Self::parse_member_references(input, &class.member_type_info)?,
+      Class::SystemClassWithMembers(ref class) => many0(MemberReference2::parse)(input)?,
       Class::SystemClassWithMembersAndTypes(ref class) => {
-        let member_references;
-        (input, member_references) = Self::parse_member_references(input, &class.member_type_info)?;
-        member_references
+        Self::parse_member_references(input, &class.member_type_info)?
       },
     };
 
