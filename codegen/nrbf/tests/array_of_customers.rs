@@ -34,11 +34,11 @@ fn array_of_customers() {
           array_info: ArrayInfo { object_id: Int32(1), length: Int32(2) },
           members: vec![
             MemberReference3::BinaryObjectString(BinaryObjectString {
-              object_id: 2,
+              object_id: Int32(2),
               value: LengthPrefixedString::from("Bob"),
             }),
             MemberReference3::BinaryObjectString(BinaryObjectString {
-              object_id: 3,
+              object_id: Int32(3),
               value: LengthPrefixedString::from("Rob"),
             }),
           ],

@@ -4,42 +4,6 @@ use nom::{
   branch::alt, bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser,
 };
 
-/// 2.1.2.1 `RecordTypeEnumeration`
-#[derive(Debug, Clone, Copy, PartialEq)]
-#[repr(u8)]
-pub enum RecordType {
-  SerializedStreamHeader         = 0,
-  ClassWithId                    = 1,
-  SystemClassWithMembers         = 2,
-  ClassWithMembers               = 3,
-  SystemClassWithMembersAndTypes = 4,
-  ClassWithMembersAndTypes       = 5,
-  BinaryObjectString             = 6,
-  BinaryArray                    = 7,
-  MemberPrimitiveTyped           = 8,
-  MemberReference                = 9,
-  ObjectNull                     = 10,
-  MessageEnd                     = 11,
-  BinaryLibrary                  = 12,
-  ObjectNullMultiple256          = 13,
-  ObjectNullMultiple             = 14,
-  ArraySinglePrimitive           = 15,
-  ArraySingleObject              = 16,
-  ArraySingleString              = 17,
-  MethodCall                     = 21,
-  MethodReturn                   = 22,
-}
-
-impl<I, E> Parser<I, Self, E> for RecordType
-where
-  I: InputTake + Compare<[u8; 1]>,
-  E: ParseError<I>,
-{
-  fn parse(&mut self, input: I) -> IResult<I, Self, E> {
-    value(*self, tag([*self as u8]))(input)
-  }
-}
-
 /// 2.1.2.2 `BinaryTypeEnumeration`
 #[derive(Debug, Clone, Copy, PartialEq)]
 #[repr(u8)]
