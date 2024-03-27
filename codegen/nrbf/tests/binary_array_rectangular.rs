@@ -1,8 +1,11 @@
 use nrbf::{
+  common::AdditionalTypeInfo,
   data_type::{Int32, Int64},
-  enumeration::{BinaryType, PrimitiveType},
-  parse, AdditionalTypeInfo, Array, Arrays, BinaryArray, BinaryArrayType, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, Record, Referenceable,
+  enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
+  grammar::{Array, Arrays, MemberReference2, MemberReferenceInner, Referenceable},
+  parse,
+  record::{BinaryArray, MemberPrimitiveUnTyped},
+  Record,
 };
 
 #[test]
@@ -44,11 +47,11 @@ fn binary_array_rectangular() {
           members: vec![
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(67))),
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(67))),
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(42)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(42)))
             },
           ],
         }),

@@ -1,10 +1,6 @@
-use nom::{branch::alt, combinator::map, IResult, Parser, ToUsize};
+use nom::{IResult, Parser};
 
-use crate::{
-  data_type::{Byte, Int32},
-  record::RecordType,
-  ClassInfo, MemberTypeInfo,
-};
+use crate::{common::ClassInfo, record::RecordType, MemberTypeInfo};
 
 /// 2.3.2.3 `SystemClassWithMembersAndTypes`
 #[derive(Debug, Clone, PartialEq)]

@@ -1,22 +1,16 @@
-use nom::{
-  branch::alt,
-  combinator::{cond, fail, map},
-  multi::many_m_n,
-  IResult, Parser, ToUsize,
-};
+use nom::{branch::alt, combinator::map, IResult, Parser};
 
 use crate::{
-  data_type::{Byte, Int32},
+  common::ArrayInfo,
+  grammar::{MemberReferenceInner, NullObject},
   record::{BinaryObjectString, MemberReference, RecordType},
-  AdditionalTypeInfo, ArrayInfo, BinaryArrayType, BinaryType, ClassInfo, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, MemberTypeInfo, NullObject,
 };
 
 /// 2.4.3.4 `ArraySingleString`
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArraySingleString<'i> {
   pub array_info: ArrayInfo,
-  pub members: Vec<MemberReference3<'i>>,
+  pub members: Vec<MemberReferenceInner<'i>>,
 }
 
 impl<'i> ArraySingleString<'i> {
@@ -31,8 +25,8 @@ impl<'i> ArraySingleString<'i> {
     while len_remaining > 0 {
       let (member, count);
       (input, (member, count)) = alt((
-        map(BinaryObjectString::parse, |s| (MemberReference3::BinaryObjectString(s), 1)),
-        map(MemberReference::parse, |m| (MemberReference3::MemberReference(m), 1)),
+        map(BinaryObjectString::parse, |s| (MemberReferenceInner::BinaryObjectString(s), 1)),
+        map(MemberReference::parse, |m| (MemberReferenceInner::MemberReference(m), 1)),
         map(NullObject::parse, |null_object| {
           let null_count = match null_object {
             NullObject::ObjectNull(_) => 1,
@@ -40,7 +34,7 @@ impl<'i> ArraySingleString<'i> {
             NullObject::ObjectNullMultiple256(ref n) => n.null_count(),
           };
 
-          (MemberReference3::NullObject(null_object), null_count)
+          (MemberReferenceInner::NullObject(null_object), null_count)
         }),
       ))(input)?;
       members.push(member);

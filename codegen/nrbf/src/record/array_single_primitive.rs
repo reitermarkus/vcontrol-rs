@@ -1,15 +1,9 @@
-use nom::{
-  branch::alt,
-  combinator::{cond, fail, map},
-  multi::many_m_n,
-  IResult, Parser, ToUsize,
-};
+use nom::{multi::many_m_n, IResult, Parser};
 
 use crate::{
-  data_type::{Byte, Int32},
-  record::{BinaryObjectString, MemberReference, RecordType},
-  AdditionalTypeInfo, ArrayInfo, BinaryArrayType, BinaryType, ClassInfo, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, MemberTypeInfo, PrimitiveType,
+  common::ArrayInfo,
+  enumeration::PrimitiveType,
+  record::{MemberPrimitiveUnTyped, RecordType},
 };
 
 /// 2.4.3.3 `ArraySinglePrimitive`

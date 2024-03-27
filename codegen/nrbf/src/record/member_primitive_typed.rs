@@ -1,18 +1,11 @@
-use nom::{
-  branch::alt,
-  combinator::{cond, fail, map},
-  multi::many_m_n,
-  IResult, Parser, ToUsize,
-};
+use nom::{IResult, Parser};
 
 use crate::{
   data_type::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, Single, TimeSpan, UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
-  record::{BinaryObjectString, RecordType},
-  AdditionalTypeInfo, BinaryArrayType, BinaryType, ClassInfo, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, MemberTypeInfo,
+  record::{MemberPrimitiveUnTyped, RecordType},
 };
 
 /// 2.5.1 `MemberPrimitiveTyped`

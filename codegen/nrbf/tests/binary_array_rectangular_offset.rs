@@ -1,8 +1,11 @@
 use nrbf::{
+  common::AdditionalTypeInfo,
   data_type::Int32,
-  enumeration::{BinaryType, PrimitiveType},
-  parse, AdditionalTypeInfo, Array, Arrays, BinaryArray, BinaryArrayType, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, Record, Referenceable,
+  enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
+  grammar::{Array, Arrays, MemberReference2, MemberReferenceInner, Referenceable},
+  parse,
+  record::{BinaryArray, MemberPrimitiveUnTyped},
+  Record,
 };
 
 #[test]
@@ -84,163 +87,163 @@ fn binary_array_rectangular_offset() {
           members: vec![
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             },
             MemberReference2 {
               binary_library: None,
-              member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
+              member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0)))
             }
           ]
         })
