@@ -4,7 +4,6 @@ use crate::record::RecordType;
 
 /// 2.6.3 `MessageEnd`
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub struct MessageEnd;
 
 impl MessageEnd {

@@ -4,7 +4,6 @@ use crate::record::RecordType;
 
 /// 2.5.4 `ObjectNull`
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub struct ObjectNull;
 
 impl ObjectNull {

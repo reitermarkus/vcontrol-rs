@@ -2,14 +2,15 @@ use nrbf::{
   common::{ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
-  grammar::{CallArray, Class, Classes, MemberReference2, MemberReferenceInner, MethodCall, Referenceable},
+  grammar::{
+    CallArray, Class, Classes, MemberReference2, MemberReferenceInner, MethodCall, MethodCallOrReturn, Referenceable,
+    RemotingMessage,
+  },
   method_invocation::{MessageFlags, StringValueWithCode},
-  parse,
   record::{
     ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference,
-    MethodCallArray,
+    MessageEnd, MethodCallArray, SerializationHeader,
   },
-  Record,
 };
 
 #[test]
@@ -42,125 +43,132 @@ fn method_call() {
     0x30, 0x35, 0x34, 0x0B                                                                          // 054.
   ];
 
-  assert_eq!(parse(&input), Ok((
-    [].as_slice(),
-    vec![
-      Record::MethodCall(
-        MethodCall {
-          binary_library: None,
-          binary_method_call: BinaryMethodCall {
-            message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
-            method_name: StringValueWithCode::from(
-              LengthPrefixedString::from("SendAddress")
-            ),
-            type_name: StringValueWithCode::from(
-              LengthPrefixedString::from(
-                "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
-              )
-            ),
-            call_context: None,
-            args: None,
-          },
-          call_array: Some(CallArray {
-            binary_library: None,
-            call_array: MethodCallArray(ArraySingleObject {
-              array_info: ArrayInfo {
-                object_id: Int32(1),
-                length: Int32(1),
-              },
-              member_references: vec![
-                MemberReference2 {
-                  binary_library: None,
-                  member_reference: MemberReferenceInner::MemberReference(
-                    MemberReference {
-                      id_ref: Int32(2),
-                    },
-                  ),
-                },
-              ],
-            }),
-          }),
+  let output = RemotingMessage {
+    header: SerializationHeader {
+      root_id: Int32(1),
+      header_id: Int32(-1),
+      major_version: Int32(1),
+      minor_version: Int32(0),
+    },
+    pre_method_referenceables: vec![],
+    method_call_or_return: Some(MethodCallOrReturn::MethodCall(
+      MethodCall {
+        binary_library: None,
+        binary_method_call: BinaryMethodCall {
+          message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
+          method_name: StringValueWithCode::from(
+            LengthPrefixedString::from("SendAddress")
+          ),
+          type_name: StringValueWithCode::from(
+            LengthPrefixedString::from(
+              "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
+            )
+          ),
+          call_context: None,
+          args: None,
         },
-      ),
-      Record::Referenceable(
-        Referenceable::Classes(
-          Classes {
-            binary_library: Some(BinaryLibrary {
-              library_id: Int32(3),
-              library_name: LengthPrefixedString::from(
-                "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
-              ),
-            }),
-            class: Class::ClassWithMembersAndTypes(
-              ClassWithMembersAndTypes {
-                class_info: ClassInfo {
-                  object_id: Int32(2),
-                  name: LengthPrefixedString::from("DOJRemotingMetadata.Address"),
-                  member_names: vec![
-                    LengthPrefixedString::from("Street"),
-                    LengthPrefixedString::from("City"),
-                    LengthPrefixedString::from("State"),
-                    LengthPrefixedString::from("Zip"),
-                  ],
-                },
-                member_type_info: MemberTypeInfo {
-                  binary_type_enums: vec![
-                    BinaryType::String,
-                    BinaryType::String,
-                    BinaryType::String,
-                    BinaryType::String,
-                  ],
-                  additional_infos: vec![
-                    None,
-                    None,
-                    None,
-                    None,
-                  ],
-                },
-                library_id: Int32(3),
-              },
-            ),
+        call_array: Some(CallArray {
+          binary_library: None,
+          call_array: MethodCallArray(ArraySingleObject {
+            array_info: ArrayInfo {
+              object_id: Int32(1),
+              length: Int32(1),
+            },
             member_references: vec![
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReferenceInner::BinaryObjectString(
-                  BinaryObjectString {
-                    object_id: Int32(4),
-                    value: LengthPrefixedString::from("One Microsoft Way"),
+                member_reference: MemberReferenceInner::MemberReference(
+                  MemberReference {
+                    id_ref: Int32(2),
                   },
-                )
-              },
-              MemberReference2 {
-                binary_library: None,
-                member_reference: MemberReferenceInner::BinaryObjectString(
-                  BinaryObjectString {
-                    object_id: Int32(5),
-                    value: LengthPrefixedString::from("Redmond"),
-                  },
-                )
-              },
-              MemberReference2 {
-                binary_library: None,
-                member_reference: MemberReferenceInner::BinaryObjectString(
-                  BinaryObjectString {
-                    object_id: Int32(6),
-                    value: LengthPrefixedString::from("WA"),
-                  },
-                )
-              },
-              MemberReference2 {
-                binary_library: None,
-                member_reference: MemberReferenceInner::BinaryObjectString(
-                  BinaryObjectString {
-                    object_id: Int32(7),
-                    value: LengthPrefixedString::from("98054"),
-                  },
-                )
+                ),
               },
             ],
-          },
-        ),
+          }),
+        }),
+      },
+    )),
+    post_method_referenceables: vec![
+      Referenceable::Classes(
+        Classes {
+          binary_library: Some(BinaryLibrary {
+            library_id: Int32(3),
+            library_name: LengthPrefixedString::from(
+              "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
+            ),
+          }),
+          class: Class::ClassWithMembersAndTypes(
+            ClassWithMembersAndTypes {
+              class_info: ClassInfo {
+                object_id: Int32(2),
+                name: LengthPrefixedString::from("DOJRemotingMetadata.Address"),
+                member_names: vec![
+                  LengthPrefixedString::from("Street"),
+                  LengthPrefixedString::from("City"),
+                  LengthPrefixedString::from("State"),
+                  LengthPrefixedString::from("Zip"),
+                ],
+              },
+              member_type_info: MemberTypeInfo {
+                binary_type_enums: vec![
+                  BinaryType::String,
+                  BinaryType::String,
+                  BinaryType::String,
+                  BinaryType::String,
+                ],
+                additional_infos: vec![
+                  None,
+                  None,
+                  None,
+                  None,
+                ],
+              },
+              library_id: Int32(3),
+            },
+          ),
+          member_references: vec![
+            MemberReference2 {
+              binary_library: None,
+              member_reference: MemberReferenceInner::BinaryObjectString(
+                BinaryObjectString {
+                  object_id: Int32(4),
+                  value: LengthPrefixedString::from("One Microsoft Way"),
+                },
+              )
+            },
+            MemberReference2 {
+              binary_library: None,
+              member_reference: MemberReferenceInner::BinaryObjectString(
+                BinaryObjectString {
+                  object_id: Int32(5),
+                  value: LengthPrefixedString::from("Redmond"),
+                },
+              )
+            },
+            MemberReference2 {
+              binary_library: None,
+              member_reference: MemberReferenceInner::BinaryObjectString(
+                BinaryObjectString {
+                  object_id: Int32(6),
+                  value: LengthPrefixedString::from("WA"),
+                },
+              )
+            },
+            MemberReference2 {
+              binary_library: None,
+              member_reference: MemberReferenceInner::BinaryObjectString(
+                BinaryObjectString {
+                  object_id: Int32(7),
+                  value: LengthPrefixedString::from("98054"),
+                },
+              )
+            },
+          ],
+        },
       ),
     ],
-  )))
+    end: MessageEnd,
+  };
+
+  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)))
 }
