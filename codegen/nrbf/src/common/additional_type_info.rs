@@ -13,18 +13,6 @@ pub enum AdditionalTypeInfo<'i> {
 }
 
 impl<'i> AdditionalTypeInfo<'i> {
-  pub fn parse_many(mut input: &'i [u8], binary_type_enums: &[BinaryType]) -> IResult<&'i [u8], Vec<Option<Self>>> {
-    let mut additional_infos = vec![];
-
-    for binary_type_enum in binary_type_enums {
-      let additional_info;
-      (input, additional_info) = Self::parse(input, *binary_type_enum)?;
-      additional_infos.push(additional_info);
-    }
-
-    Ok((input, additional_infos))
-  }
-
   pub fn parse(mut input: &'i [u8], binary_type_enum: BinaryType) -> IResult<&'i [u8], Option<Self>> {
     let additional_info = match binary_type_enum {
       BinaryType::Primitive => {

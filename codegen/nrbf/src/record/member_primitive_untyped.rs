@@ -10,6 +10,7 @@ use crate::{
   enumeration::PrimitiveType,
 };
 
+/// 2.5.2 `MemberPrimitiveUnTyped`
 #[derive(Debug, Clone, PartialEq)]
 pub enum MemberPrimitiveUnTyped {
   Boolean(Boolean),

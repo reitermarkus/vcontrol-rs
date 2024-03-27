@@ -1,3 +1,5 @@
+//! 2.4.3 Record Definitions
+
 use nom::{bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser};
 
 mod serialization_header;
