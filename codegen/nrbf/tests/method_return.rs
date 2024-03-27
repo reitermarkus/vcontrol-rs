@@ -1,7 +1,7 @@
 use nrbf::{
   data_type::LengthPrefixedString,
-  method_invocation::{AnyValueWithCode, BinaryMethodReturn, MessageFlags, StringValueWithCode},
-  parse, MethodReturn, Record,
+  method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
+  parse, BinaryMethodReturn, MethodReturn, Record,
 };
 
 #[test]
