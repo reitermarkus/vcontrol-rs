@@ -14,3 +14,5 @@ mod method_return;
 pub use method_return::{MethodReturn, ReturnCallArray};
 mod member_reference;
 pub use member_reference::{MemberReference2, MemberReferenceInner};
+mod remoting_message;
+pub use remoting_message::{MethodCallOrReturn, RemotingMessage};

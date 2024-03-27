@@ -7,21 +7,15 @@ pub mod data_type;
 pub mod enumeration;
 pub mod method_invocation;
 pub mod record;
-use record::{
-  BinaryLibrary, BinaryObjectString, MemberPrimitiveTyped, MemberPrimitiveUnTyped, MessageEnd, SerializationHeader,
-};
+use record::{MessageEnd, SerializationHeader};
 pub mod grammar;
 use grammar::{MethodCall, MethodReturn, Referenceable};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Record<'i> {
   SerializationHeader(SerializationHeader),
-  BinaryLibrary(BinaryLibrary<'i>),
   MethodReturn(MethodReturn<'i>),
   MethodCall(MethodCall<'i>),
-  MemberPrimitiveUnTyped(MemberPrimitiveUnTyped),
-  MemberPrimitiveTyped(MemberPrimitiveTyped),
-  BinaryObjectString(BinaryObjectString<'i>),
   MessageEnd(MessageEnd),
   Referenceable(Referenceable<'i>),
 }
