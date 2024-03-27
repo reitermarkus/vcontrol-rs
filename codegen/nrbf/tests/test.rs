@@ -1,5 +1,5 @@
 use nrbf::{
-  data_type::LengthPrefixedString,
+  data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
   parse, AdditionalTypeInfo, BinaryObjectString, Class, ClassInfo, Classes, MemberPrimitiveUnTyped, MemberReference2,
   MemberReference3, MemberTypeInfo, Record, Referenceable, SystemClassWithMembersAndTypes,
@@ -10,7 +10,7 @@ macro_rules! string {
     (
       [].as_slice(),
       vec![Record::Referenceable(Referenceable::BinaryObjectString(BinaryObjectString {
-        object_id: 1,
+        object_id: Int32(1),
         value: LengthPrefixedString::from($s),
       }))],
     )
@@ -25,7 +25,7 @@ macro_rules! int32 {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
           class_info: ClassInfo {
-            object_id: 1,
+            object_id: Int32(1),
             name: LengthPrefixedString::from("System.Int32"),
             member_names: vec![LengthPrefixedString::from("m_value")],
           },
@@ -51,7 +51,7 @@ macro_rules! double {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
           class_info: ClassInfo {
-            object_id: 1,
+            object_id: Int32(1),
             name: LengthPrefixedString::from("System.Double"),
             member_names: vec![LengthPrefixedString::from("m_value")],
           },
@@ -77,7 +77,7 @@ macro_rules! boolean {
         binary_library: None,
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
           class_info: ClassInfo {
-            object_id: 1,
+            object_id: Int32(1),
             name: LengthPrefixedString::from("System.Boolean"),
             member_names: vec![LengthPrefixedString::from("m_value")],
           },

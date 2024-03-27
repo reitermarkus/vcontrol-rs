@@ -62,7 +62,7 @@ fn list_of_customers() {
       binary_library: None,
       class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
         class_info: ClassInfo {
-          object_id: 1,
+          object_id: Int32(1),
           name: LengthPrefixedString::from(
             "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
           ),
@@ -109,11 +109,11 @@ fn list_of_customers() {
         },
         members: vec![
           MemberReference3::BinaryObjectString(BinaryObjectString {
-            object_id: 3,
+            object_id: Int32(3),
             value: LengthPrefixedString::from("Bob"),
           }),
           MemberReference3::BinaryObjectString(BinaryObjectString {
-            object_id: 4,
+            object_id: Int32(4),
             value: LengthPrefixedString::from("Rob"),
           }),
           MemberReference3::NullObject(NullObject::ObjectNullMultiple256(

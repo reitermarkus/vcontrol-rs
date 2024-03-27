@@ -7,35 +7,31 @@ use nom::{
   IResult, Parser, ToUsize,
 };
 
-mod binary_library;
-pub use binary_library::BinaryLibrary;
 pub mod data_type;
 use data_type::*;
 pub mod enumeration;
 use enumeration::*;
 pub mod method_invocation;
 use method_invocation::*;
-mod message_end;
-pub use message_end::MessageEnd;
-mod null_object;
-pub use null_object::{NullObject, ObjectNull, ObjectNullMultiple, ObjectNullMultiple256};
-mod serialization_header;
-pub use serialization_header::SerializationHeader;
+mod record;
+pub use record::*;
+mod grammar;
+pub use grammar::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassInfo<'i> {
-  pub object_id: i32,
+  pub object_id: Int32,
   pub name: LengthPrefixedString<'i>,
   pub member_names: Vec<LengthPrefixedString<'i>>,
 }
 
 impl<'i> ClassInfo<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, object_id) = le_i32(input)?;
+    let (input, object_id) = Int32::parse_positive(input)?;
     let (input, name) = LengthPrefixedString::parse(input)?;
-    let (input, member_count) = le_i32(input)?;
+    let (input, member_count) = Int32::parse_positive_or_zero(input)?;
 
-    let member_count = usize::try_from(member_count).unwrap();
+    let member_count = (i32::from(member_count) as u32).to_usize();
 
     let (input, member_names) = many_m_n(member_count, member_count, LengthPrefixedString::parse)(input)?;
 
@@ -60,54 +56,6 @@ pub enum MemberPrimitiveUnTyped {
   UInt16(UInt16),
   UInt32(UInt32),
   UInt64(UInt64),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum MemberPrimitiveTyped {
-  Boolean(Boolean),
-  Byte(Byte),
-  Char(Char),
-  Decimal(Decimal),
-  Double(Double),
-  Int16(Int16),
-  Int32(Int32),
-  Int64(Int64),
-  SByte(Int8),
-  Single(Single),
-  TimeSpan(TimeSpan),
-  DateTime(DateTime),
-  UInt16(UInt16),
-  UInt32(UInt32),
-  UInt64(UInt64),
-}
-
-impl MemberPrimitiveTyped {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([8])(input)?;
-
-    let (input, primitive_type) = PrimitiveType::parse(input)?;
-    let (input, primitive_untyped) = MemberPrimitiveUnTyped::parse(input, primitive_type)?;
-
-    let primitive_typed = match primitive_untyped {
-      MemberPrimitiveUnTyped::Boolean(v) => Self::Boolean(v),
-      MemberPrimitiveUnTyped::Byte(v) => Self::Byte(v),
-      MemberPrimitiveUnTyped::Char(v) => Self::Char(v),
-      MemberPrimitiveUnTyped::Decimal(v) => Self::Decimal(v),
-      MemberPrimitiveUnTyped::Double(v) => Self::Double(v),
-      MemberPrimitiveUnTyped::Int16(v) => Self::Int16(v),
-      MemberPrimitiveUnTyped::Int32(v) => Self::Int32(v),
-      MemberPrimitiveUnTyped::Int64(v) => Self::Int64(v),
-      MemberPrimitiveUnTyped::SByte(v) => Self::SByte(v),
-      MemberPrimitiveUnTyped::Single(v) => Self::Single(v),
-      MemberPrimitiveUnTyped::TimeSpan(v) => Self::TimeSpan(v),
-      MemberPrimitiveUnTyped::DateTime(v) => Self::DateTime(v),
-      MemberPrimitiveUnTyped::UInt16(v) => Self::UInt16(v),
-      MemberPrimitiveUnTyped::UInt32(v) => Self::UInt32(v),
-      MemberPrimitiveUnTyped::UInt64(v) => Self::UInt64(v),
-    };
-
-    Ok((input, primitive_typed))
-  }
 }
 
 impl MemberPrimitiveUnTyped {
@@ -204,123 +152,6 @@ impl<'i> MemberTypeInfo<'i> {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct ClassWithId {
-  pub object_id: i32,
-  pub metadata_id: i32,
-}
-
-impl ClassWithId {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([1])(input)?;
-
-    let (input, object_id) = le_i32(input)?;
-    let (input, metadata_id) = le_i32(input)?;
-
-    Ok((input, Self { object_id, metadata_id }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ClassWithMembers<'i> {
-  pub class_info: ClassInfo<'i>,
-  pub library_id: i32,
-}
-
-impl<'i> ClassWithMembers<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([3])(input)?;
-
-    let (input, class_info) = ClassInfo::parse(input)?;
-    let (input, library_id) = le_i32(input)?;
-
-    Ok((input, Self { class_info, library_id }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ClassWithMembersAndTypes<'i> {
-  pub class_info: ClassInfo<'i>,
-  pub member_type_info: MemberTypeInfo<'i>,
-  pub library_id: i32,
-}
-
-impl<'i> ClassWithMembersAndTypes<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([5])(input)?;
-
-    let (input, class_info) = ClassInfo::parse(input)?;
-    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)?;
-    let (input, library_id) = le_i32(input)?;
-
-    Ok((input, Self { class_info, member_type_info, library_id }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct SystemClassWithMembers<'i> {
-  pub class_info: ClassInfo<'i>,
-}
-
-impl<'i> SystemClassWithMembers<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([2])(input)?;
-
-    let (input, class_info) = ClassInfo::parse(input)?;
-
-    Ok((input, Self { class_info }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct SystemClassWithMembersAndTypes<'i> {
-  pub class_info: ClassInfo<'i>,
-  pub member_type_info: MemberTypeInfo<'i>,
-}
-
-impl<'i> SystemClassWithMembersAndTypes<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([4])(input)?;
-
-    let (input, class_info) = ClassInfo::parse(input)?;
-    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)?;
-
-    Ok((input, Self { class_info, member_type_info }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct BinaryObjectString<'s> {
-  pub object_id: i32,
-  pub value: LengthPrefixedString<'s>,
-}
-
-impl<'i> BinaryObjectString<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = tag([6])(input)?;
-
-    let (input, object_id) = le_i32(input)?;
-    let (input, value) = LengthPrefixedString::parse(input)?;
-
-    Ok((input, Self { object_id, value }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct MemberReference {
-  pub id_ref: Int32,
-}
-
-impl MemberReference {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = RecordType::MemberReference.parse(input)?;
-
-    let (input, id_ref) = Int32::parse_positive(input)?;
-
-    Ok((input, Self { id_ref }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
 pub struct ArrayInfo {
   pub object_id: Int32,
   pub length: Int32,
@@ -337,82 +168,6 @@ impl ArrayInfo {
   #[inline]
   pub(crate) fn len(&self) -> usize {
     (i32::from(self.length) as u32).to_usize()
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ArraySingleObject<'i> {
-  pub array_info: ArrayInfo,
-  pub member_references: Vec<MemberReference2<'i>>,
-}
-
-impl<'i> ArraySingleObject<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::ArraySingleObject.parse(input)?;
-
-    let (input, array_info) = ArrayInfo::parse(input)?;
-    let length = array_info.len();
-    let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
-
-    Ok((input, Self { array_info, member_references }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ArraySinglePrimitive {
-  pub array_info: ArrayInfo,
-  pub members: Vec<MemberPrimitiveUnTyped>,
-}
-
-impl ArraySinglePrimitive {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = RecordType::ArraySinglePrimitive.parse(input)?;
-
-    let (input, array_info) = ArrayInfo::parse(input)?;
-    let (input, primitive_type) = PrimitiveType::parse(input)?;
-    let length = array_info.len();
-    let (input, members) =
-      many_m_n(length, length, |input| MemberPrimitiveUnTyped::parse(input, primitive_type))(input)?;
-
-    Ok((input, Self { array_info, members }))
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ArraySingleString<'i> {
-  pub array_info: ArrayInfo,
-  pub members: Vec<MemberReference3<'i>>,
-}
-
-impl<'i> ArraySingleString<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::ArraySingleString.parse(input)?;
-
-    let (mut input, array_info) = ArrayInfo::parse(input)?;
-
-    let mut members = vec![];
-
-    let mut len_remaining = array_info.len();
-    while len_remaining > 0 {
-      let (member, count);
-      (input, (member, count)) = alt((
-        map(BinaryObjectString::parse, |s| (MemberReference3::BinaryObjectString(s), 1)),
-        map(MemberReference::parse, |m| (MemberReference3::MemberReference(m), 1)),
-        map(NullObject::parse, |null_object| {
-          let null_count = match null_object {
-            NullObject::ObjectNull(_) => 1,
-            NullObject::ObjectNullMultiple(ref n) => n.null_count(),
-            NullObject::ObjectNullMultiple256(ref n) => n.null_count(),
-          };
-
-          (MemberReference3::NullObject(null_object), null_count)
-        }),
-      ))(input)?;
-      members.push(member);
-      len_remaining -= count;
-    }
-
-    Ok((input, Self { array_info, members }))
   }
 }
 
@@ -437,88 +192,6 @@ impl BinaryArrayType {
       value(Self::JaggedOffset, tag([4])),
       value(Self::RectangularOffset, tag([5])),
     ))(input)
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct BinaryArray<'i> {
-  pub object_id: Int32,
-  pub binary_array_type_enum: BinaryArrayType,
-  pub rank: Int32,
-  pub lengths: Vec<Int32>,
-  pub lower_bounds: Option<Vec<Int32>>,
-  pub type_enum: BinaryType,
-  pub additional_type_info: Option<AdditionalTypeInfo<'i>>,
-  pub members: Vec<MemberReference2<'i>>,
-}
-
-impl<'i> BinaryArray<'i> {
-  pub(self) fn parse_member(
-    input: &'i [u8],
-    type_enum: BinaryType,
-    additional_type_info: Option<&AdditionalTypeInfo<'i>>,
-  ) -> IResult<&'i [u8], MemberReference2<'i>> {
-    match (type_enum, additional_type_info) {
-      (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
-        |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
-        |value| MemberReference2 {
-          binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(value),
-        },
-      )(input),
-      (BinaryType::String, None) => map(BinaryObjectString::parse, |value| MemberReference2 {
-        binary_library: None,
-        member_reference: MemberReference3::BinaryObjectString(value),
-      })(input),
-      (BinaryType::Object, None) => MemberReference2::parse(input),
-      (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input),
-      (BinaryType::Class, Some(_class_type_info)) => MemberReference2::parse(input),
-      (BinaryType::ObjectArray, None) => MemberReference2::parse(input),
-      (BinaryType::StringArray, None) => MemberReference2::parse(input),
-      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReference2::parse(input),
-      _ => unreachable!(),
-    }
-  }
-
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::BinaryArray.parse(input)?;
-
-    let (input, object_id) = Int32::parse_positive(input)?;
-    let (input, binary_array_type_enum) = BinaryArrayType::parse(input)?;
-    let (input, rank) = Int32::parse_positive_or_zero(input)?;
-
-    let rank_usize = (i32::from(rank) as u32).to_usize();
-
-    let (input, lengths) = many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero)(input)?;
-    let (input, lower_bounds) = cond(
-      matches!(
-        binary_array_type_enum,
-        BinaryArrayType::SingleOffset | BinaryArrayType::JaggedOffset | BinaryArrayType::RectangularOffset
-      ),
-      many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero),
-    )(input)?;
-    let (input, type_enum) = BinaryType::parse(input)?;
-    let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
-
-    let member_count = match binary_array_type_enum {
-      BinaryArrayType::Single | BinaryArrayType::SingleOffset => lengths.first().map(|n| i32::from(*n) as u32),
-      BinaryArrayType::Rectangular | BinaryArrayType::RectangularOffset => {
-        lengths.iter().try_fold(1u32, |acc, n| acc.checked_mul(i32::from(*n) as u32))
-      },
-      BinaryArrayType::Jagged | BinaryArrayType::JaggedOffset => lengths.first().map(|n| i32::from(*n) as u32),
-    };
-    let member_count = match member_count {
-      Some(member_count) => member_count.to_usize(),
-      None => return fail(input),
-    };
-    let (input, members) = many_m_n(member_count, member_count, |input| {
-      Self::parse_member(input, type_enum, additional_type_info.as_ref())
-    })(input)?;
-
-    Ok((
-      input,
-      Self { object_id, binary_array_type_enum, rank, lengths, lower_bounds, type_enum, additional_type_info, members },
-    ))
   }
 }
 
