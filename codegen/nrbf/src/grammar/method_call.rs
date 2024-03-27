@@ -17,6 +17,7 @@ impl<'i> CallArray<'i> {
   }
 }
 
+/// 2.7 Binary Record Grammar - `methodCall`
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodCall<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,

@@ -35,6 +35,7 @@ impl<'i> Class<'i> {
   }
 }
 
+/// 2.7 Binary Record Grammar - `Classes`
 #[derive(Debug, Clone, PartialEq)]
 pub struct Classes<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,

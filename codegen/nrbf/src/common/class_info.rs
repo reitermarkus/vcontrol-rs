@@ -2,6 +2,7 @@ use nom::{multi::many_m_n, IResult, ToUsize};
 
 use crate::data_type::{Int32, LengthPrefixedString};
 
+/// 2.3.1.1 `ClassInfo`
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassInfo<'i> {
   pub object_id: Int32,

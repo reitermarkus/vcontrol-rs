@@ -1,3 +1,5 @@
+//! 2.7 Binary Record Grammar
+
 mod classes;
 pub use classes::{Class, Classes};
 mod arrays;
