@@ -1,10 +1,8 @@
 use nrbf::{
-  data_type::LengthPrefixedString,
-  grammar::MethodReturn,
+  data_type::{LengthPrefixedString, Int32},
+  grammar::{MethodCallOrReturn, MethodReturn, RemotingMessage},
   method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
-  parse,
-  record::BinaryMethodReturn,
-  Record,
+  record::{BinaryMethodReturn, MessageEnd, SerializationHeader},
 };
 
 #[test]
@@ -16,22 +14,29 @@ fn method_return() {
     0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x0B,                                           // received.
   ];
 
-  assert_eq!(
-    parse(&input),
-    Ok((
-      [].as_slice(),
-      vec![Record::MethodReturn(MethodReturn {
-        binary_library: None,
-        binary_method_return: BinaryMethodReturn {
-          message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
-          return_value: Some(AnyValueWithCode::String(StringValueWithCode::from(LengthPrefixedString::from(
-            "Address received"
-          )),),),
-          call_context: None,
-          args: None,
-        },
-        return_call_array: None,
-      })],
-    ))
-  )
+  let output = RemotingMessage {
+    header: SerializationHeader {
+      root_id: Int32(0),
+      header_id: Int32(0),
+      major_version: Int32(1),
+      minor_version: Int32(0),
+    },
+    pre_method_referenceables: vec![],
+    method_call_or_return: Some(MethodCallOrReturn::MethodReturn(MethodReturn {
+      binary_library: None,
+      binary_method_return: BinaryMethodReturn {
+        message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
+        return_value: Some(AnyValueWithCode::String(StringValueWithCode::from(LengthPrefixedString::from(
+          "Address received",
+        )))),
+        call_context: None,
+        args: None,
+      },
+      return_call_array: None,
+    })),
+    post_method_referenceables: vec![],
+    end: MessageEnd,
+  };
+
+  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)))
 }
