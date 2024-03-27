@@ -1,4 +1,4 @@
-use nom::{bytes::complete::tag, number::complete::le_i32, IResult, Parser};
+use nom::{IResult, Parser};
 
 use crate::data_type::{Int32, LengthPrefixedString};
 

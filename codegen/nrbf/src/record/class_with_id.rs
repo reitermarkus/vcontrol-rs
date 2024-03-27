@@ -1,9 +1,6 @@
-use nom::{branch::alt, combinator::map, IResult, Parser, ToUsize};
+use nom::{IResult, Parser};
 
-use crate::{
-  data_type::{Byte, Int32},
-  record::RecordType,
-};
+use crate::{data_type::Int32, record::RecordType};
 
 /// 2.3.2.5 `ClassWithId`
 #[derive(Debug, Clone, PartialEq)]

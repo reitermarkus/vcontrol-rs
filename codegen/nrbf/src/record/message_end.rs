@@ -1,4 +1,4 @@
-use nom::{bytes::complete::tag, IResult, Parser};
+use nom::{IResult, Parser};
 
 use crate::record::RecordType;
 

@@ -1,6 +1,4 @@
-use nom::{
-  branch::alt, bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser,
-};
+use nom::{bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser};
 
 mod serialization_header;
 pub use serialization_header::SerializationHeader;
@@ -18,8 +16,10 @@ mod binary_object_string;
 pub use binary_object_string::BinaryObjectString;
 mod binary_array;
 pub use binary_array::BinaryArray;
-mod member_primitive_types;
-pub use member_primitive_types::MemberPrimitiveTyped;
+mod member_primitive_typed;
+pub use member_primitive_typed::MemberPrimitiveTyped;
+mod member_primitive_untyped;
+pub use member_primitive_untyped::MemberPrimitiveUnTyped;
 mod member_reference;
 pub use member_reference::MemberReference;
 mod object_null;
@@ -39,9 +39,9 @@ pub use array_single_object::ArraySingleObject;
 mod array_single_string;
 pub use array_single_string::ArraySingleString;
 mod binary_method_call;
-pub use binary_method_call::BinaryMethodCall;
+pub use binary_method_call::{BinaryMethodCall, MethodCallArray};
 mod binary_method_return;
-pub use binary_method_return::BinaryMethodReturn;
+pub use binary_method_return::{BinaryMethodReturn, MethodReturnCallArray};
 
 /// 2.1.2.1 `RecordTypeEnumeration`
 #[derive(Debug, Clone, Copy, PartialEq)]

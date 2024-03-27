@@ -1,8 +1,11 @@
 use nrbf::{
+  common::{AdditionalTypeInfo, ArrayInfo},
   data_type::Int32,
-  enumeration::{BinaryType, PrimitiveType},
-  parse, AdditionalTypeInfo, Array, ArrayInfo, ArraySinglePrimitive, Arrays, BinaryArray, BinaryArrayType,
-  MemberPrimitiveUnTyped, MemberReference, MemberReference2, MemberReference3, Record, Referenceable,
+  enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
+  grammar::{Array, Arrays, MemberReference2, MemberReferenceInner, Referenceable},
+  parse,
+  record::{ArraySinglePrimitive, BinaryArray, MemberPrimitiveUnTyped, MemberReference},
+  Record,
 };
 
 #[test]
@@ -67,15 +70,15 @@ fn binary_array_jagged_offset() {
             members: vec![
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::MemberReference(MemberReference { id_ref: Int32(2) }),
+                member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
               },
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::MemberReference(MemberReference { id_ref: Int32(3) }),
+                member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(3) }),
               },
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::MemberReference(MemberReference { id_ref: Int32(4) }),
+                member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(4) }),
               },
             ],
           }),

@@ -99,3 +99,38 @@ where
     value(*self, tag([*self as u8]))(input)
   }
 }
+
+/// 2.4.1.1 `BinaryArrayTypeEnumeration`
+#[derive(Debug, Clone, Copy, PartialEq)]
+#[repr(u8)]
+pub enum BinaryArrayType {
+  Single            = 0,
+  Jagged            = 1,
+  Rectangular       = 2,
+  SingleOffset      = 3,
+  JaggedOffset      = 4,
+  RectangularOffset = 5,
+}
+
+impl BinaryArrayType {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+    alt((
+      Self::Single,
+      Self::Jagged,
+      Self::Rectangular,
+      Self::SingleOffset,
+      Self::JaggedOffset,
+      Self::RectangularOffset,
+    ))(input)
+  }
+}
+
+impl<I, E> Parser<I, Self, E> for BinaryArrayType
+where
+  I: InputTake + Compare<[u8; 1]>,
+  E: ParseError<I>,
+{
+  fn parse(&mut self, input: I) -> IResult<I, Self, E> {
+    value(*self, tag([*self as u8]))(input)
+  }
+}

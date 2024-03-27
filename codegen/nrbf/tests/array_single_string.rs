@@ -1,10 +1,14 @@
 use nrbf::{
+  common::ArrayInfo,
   data_type::{Int32, LengthPrefixedString},
-  parse, Array, ArrayInfo, ArraySingleString, Arrays, BinaryObjectString, MemberReference3, Record, Referenceable,
+  grammar::{Array, Arrays, MemberReferenceInner, Referenceable},
+  parse,
+  record::{ArraySingleString, BinaryObjectString},
+  Record,
 };
 
 #[test]
-fn array_of_customers() {
+fn array_single_string() {
   #[rustfmt::skip]
   let input = [
     0,
@@ -33,11 +37,11 @@ fn array_of_customers() {
         array: Array::ArraySingleString(ArraySingleString {
           array_info: ArrayInfo { object_id: Int32(1), length: Int32(2) },
           members: vec![
-            MemberReference3::BinaryObjectString(BinaryObjectString {
+            MemberReferenceInner::BinaryObjectString(BinaryObjectString {
               object_id: Int32(2),
               value: LengthPrefixedString::from("Bob"),
             }),
-            MemberReference3::BinaryObjectString(BinaryObjectString {
+            MemberReferenceInner::BinaryObjectString(BinaryObjectString {
               object_id: Int32(3),
               value: LengthPrefixedString::from("Rob"),
             }),

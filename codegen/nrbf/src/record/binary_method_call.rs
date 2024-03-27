@@ -1,20 +1,11 @@
-use bitflags::bitflags;
 use nom::{
-  branch::alt,
-  combinator::{cond, map, map_res, value},
-  multi::many_m_n,
-  sequence::preceded,
+  combinator::{cond, map},
   IResult, Parser,
 };
 
 use crate::{
-  data_type::{
-    Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, LengthPrefixedString, Single, TimeSpan,
-    UInt16, UInt32, UInt64,
-  },
-  enumeration::PrimitiveType,
-  record::RecordType,
-  ArrayOfValueWithCode, ArraySingleObject, MessageFlags, StringValueWithCode,
+  method_invocation::{ArrayOfValueWithCode, MessageFlags, StringValueWithCode},
+  record::{ArraySingleObject, RecordType},
 };
 
 /// 2.2.3.1 `BinaryMethodCall`
@@ -39,5 +30,15 @@ impl<'i> BinaryMethodCall<'i> {
     let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)?;
 
     Ok((input, Self { message_enum, method_name, type_name, call_context, args }))
+  }
+}
+
+/// 2.2.3.2 `MethodCallArray`
+#[derive(Debug, Clone, PartialEq)]
+pub struct MethodCallArray<'i>(pub ArraySingleObject<'i>);
+
+impl<'i> MethodCallArray<'i> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    map(ArraySingleObject::parse, Self)(input)
   }
 }

@@ -1,9 +1,6 @@
-use nom::{branch::alt, combinator::map, IResult, Parser, ToUsize};
+use nom::{IResult, Parser};
 
-use crate::{
-  data_type::{Byte, Int32},
-  record::RecordType,
-};
+use crate::record::RecordType;
 
 /// 2.5.4 `ObjectNull`
 #[derive(Debug, Clone, PartialEq)]

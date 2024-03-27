@@ -1,16 +1,6 @@
-use nom::{
-  branch::alt,
-  combinator::{cond, fail, map},
-  multi::many_m_n,
-  IResult, Parser, ToUsize,
-};
+use nom::{multi::many_m_n, IResult, Parser};
 
-use crate::{
-  data_type::{Byte, Int32},
-  record::{BinaryObjectString, MemberReference, RecordType},
-  AdditionalTypeInfo, ArrayInfo, BinaryArrayType, BinaryType, ClassInfo, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, MemberTypeInfo, PrimitiveType,
-};
+use crate::{common::ArrayInfo, grammar::MemberReference2, record::RecordType};
 
 /// 2.4.3.2 `ArraySingleObject`
 #[derive(Debug, Clone, PartialEq)]

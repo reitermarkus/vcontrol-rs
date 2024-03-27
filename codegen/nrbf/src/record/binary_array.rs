@@ -1,15 +1,15 @@
 use nom::{
-  branch::alt,
   combinator::{cond, fail, map},
   multi::many_m_n,
   IResult, Parser, ToUsize,
 };
 
 use crate::{
-  data_type::{Byte, Int32},
-  record::{BinaryObjectString, RecordType},
-  AdditionalTypeInfo, BinaryArrayType, BinaryType, ClassInfo, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, MemberTypeInfo,
+  common::AdditionalTypeInfo,
+  data_type::Int32,
+  enumeration::{BinaryArrayType, BinaryType},
+  grammar::{MemberReference2, MemberReferenceInner},
+  record::{BinaryObjectString, MemberPrimitiveUnTyped, RecordType},
 };
 
 /// 2.4.3.1 `BinaryArray`
@@ -36,12 +36,12 @@ impl<'i> BinaryArray<'i> {
         |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
         |value| MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(value),
+          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(value),
         },
       )(input),
       (BinaryType::String, None) => map(BinaryObjectString::parse, |value| MemberReference2 {
         binary_library: None,
-        member_reference: MemberReference3::BinaryObjectString(value),
+        member_reference: MemberReferenceInner::BinaryObjectString(value),
       })(input),
       (BinaryType::Object, None) => MemberReference2::parse(input),
       (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input),
