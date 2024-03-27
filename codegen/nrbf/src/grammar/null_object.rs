@@ -1,9 +1,6 @@
-use nom::{branch::alt, combinator::map, IResult, Parser, ToUsize};
+use nom::{branch::alt, combinator::map, IResult};
 
-use crate::{
-  data_type::{Byte, Int32},
-  record::{ObjectNull, ObjectNullMultiple, ObjectNullMultiple256, RecordType},
-};
+use crate::record::{ObjectNull, ObjectNullMultiple, ObjectNullMultiple256};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum NullObject {

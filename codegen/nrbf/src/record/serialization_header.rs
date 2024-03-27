@@ -1,6 +1,6 @@
-use nom::{bytes::complete::tag, IResult, Parser};
+use nom::{IResult, Parser};
 
-use crate::data_type::Int32;
+use crate::{data_type::Int32, record::RecordType};
 
 /// 2.6.1 `SerializationHeaderRecord`
 #[derive(Debug, Clone, PartialEq)]
@@ -13,7 +13,7 @@ pub struct SerializationHeader {
 
 impl SerializationHeader {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = tag([0])(input)?;
+    let (input, _) = RecordType::SerializedStreamHeader.parse(input)?;
 
     let (input, root_id) = Int32::parse(input)?;
     let (input, header_id) = Int32::parse(input)?;

@@ -1,10 +1,15 @@
 use nrbf::{
+  common::{ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
-  method_invocation::{MessageFlags, MethodCallArray, StringValueWithCode},
-  parse, ArrayInfo, ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, CallArray, Class,
-  ClassInfo, ClassWithMembersAndTypes, Classes, MemberReference, MemberReference2, MemberReference3, MemberTypeInfo,
-  MethodCall, Record, Referenceable,
+  grammar::{CallArray, Class, Classes, MemberReference2, MemberReferenceInner, MethodCall, Referenceable},
+  method_invocation::{MessageFlags, StringValueWithCode},
+  parse,
+  record::{
+    ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference,
+    MethodCallArray,
+  },
+  Record,
 };
 
 #[test]
@@ -66,7 +71,7 @@ fn method_call() {
               member_references: vec![
                 MemberReference2 {
                   binary_library: None,
-                  member_reference: MemberReference3::MemberReference(
+                  member_reference: MemberReferenceInner::MemberReference(
                     MemberReference {
                       id_ref: Int32(2),
                     },
@@ -118,7 +123,7 @@ fn method_call() {
             member_references: vec![
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::BinaryObjectString(
+                member_reference: MemberReferenceInner::BinaryObjectString(
                   BinaryObjectString {
                     object_id: Int32(4),
                     value: LengthPrefixedString::from("One Microsoft Way"),
@@ -127,7 +132,7 @@ fn method_call() {
               },
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::BinaryObjectString(
+                member_reference: MemberReferenceInner::BinaryObjectString(
                   BinaryObjectString {
                     object_id: Int32(5),
                     value: LengthPrefixedString::from("Redmond"),
@@ -136,7 +141,7 @@ fn method_call() {
               },
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::BinaryObjectString(
+                member_reference: MemberReferenceInner::BinaryObjectString(
                   BinaryObjectString {
                     object_id: Int32(6),
                     value: LengthPrefixedString::from("WA"),
@@ -145,7 +150,7 @@ fn method_call() {
               },
               MemberReference2 {
                 binary_library: None,
-                member_reference: MemberReference3::BinaryObjectString(
+                member_reference: MemberReferenceInner::BinaryObjectString(
                   BinaryObjectString {
                     object_id: Int32(7),
                     value: LengthPrefixedString::from("98054"),

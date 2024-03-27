@@ -1,9 +1,14 @@
 use nrbf::{
+  common::{AdditionalTypeInfo, ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Byte, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  parse, AdditionalTypeInfo, Array, ArrayInfo, ArraySingleString, Arrays, BinaryObjectString, Class, ClassInfo,
-  Classes, MemberPrimitiveUnTyped, MemberReference, MemberReference2, MemberReference3, MemberTypeInfo, NullObject,
-  ObjectNullMultiple256, Record, Referenceable, SystemClassWithMembersAndTypes,
+  grammar::{Array, Arrays, Class, Classes, MemberReference2, MemberReferenceInner, NullObject, Referenceable},
+  parse,
+  record::{
+    ArraySingleString, BinaryObjectString, MemberPrimitiveUnTyped, MemberReference, ObjectNullMultiple256,
+    SystemClassWithMembersAndTypes,
+  },
+  Record,
 };
 
 #[test]
@@ -88,15 +93,15 @@ fn list_of_customers() {
       member_references: vec![
         MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberReference(MemberReference { id_ref: Int32(2) })
+          member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) })
         },
         MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
+          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
         },
         MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
+          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
         },
       ],
     })),
@@ -108,15 +113,15 @@ fn list_of_customers() {
           length: Int32(4),
         },
         members: vec![
-          MemberReference3::BinaryObjectString(BinaryObjectString {
+          MemberReferenceInner::BinaryObjectString(BinaryObjectString {
             object_id: Int32(3),
             value: LengthPrefixedString::from("Bob"),
           }),
-          MemberReference3::BinaryObjectString(BinaryObjectString {
+          MemberReferenceInner::BinaryObjectString(BinaryObjectString {
             object_id: Int32(4),
             value: LengthPrefixedString::from("Rob"),
           }),
-          MemberReference3::NullObject(NullObject::ObjectNullMultiple256(
+          MemberReferenceInner::NullObject(NullObject::ObjectNullMultiple256(
             ObjectNullMultiple256 {
               null_count: Byte(2),
             },

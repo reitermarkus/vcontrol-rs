@@ -1,8 +1,11 @@
 use nrbf::{
+  common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  parse, AdditionalTypeInfo, BinaryObjectString, Class, ClassInfo, Classes, MemberPrimitiveUnTyped, MemberReference2,
-  MemberReference3, MemberTypeInfo, Record, Referenceable, SystemClassWithMembersAndTypes,
+  grammar::{Class, Classes, MemberReference2, MemberReferenceInner, Referenceable},
+  parse,
+  record::{BinaryObjectString, MemberPrimitiveUnTyped, SystemClassWithMembersAndTypes},
+  Record,
 };
 
 macro_rules! string {
@@ -36,7 +39,7 @@ macro_rules! int32 {
         }),
         member_references: vec![MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32($n.into())),
+          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32($n.into())),
         }],
       }))],
     )
@@ -62,7 +65,7 @@ macro_rules! double {
         }),
         member_references: vec![MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double($n.into())),
+          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double($n.into())),
         }],
       }))],
     )
@@ -88,7 +91,7 @@ macro_rules! boolean {
         }),
         member_references: vec![MemberReference2 {
           binary_library: None,
-          member_reference: MemberReference3::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean($b.into())),
+          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean($b.into())),
         }],
       }))],
     )

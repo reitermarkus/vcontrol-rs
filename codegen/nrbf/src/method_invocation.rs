@@ -3,10 +3,10 @@
 use bitflags::bitflags;
 use nom::{
   branch::alt,
-  combinator::{cond, map, map_res, value},
+  combinator::{map, map_res, value},
   multi::many_m_n,
   sequence::preceded,
-  IResult, Parser,
+  IResult,
 };
 
 use super::{
@@ -15,8 +15,6 @@ use super::{
     UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
-  record::RecordType,
-  ArraySingleObject,
 };
 
 bitflags! {
@@ -207,25 +205,5 @@ impl ArrayOfValueWithCode {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     let (input, length) = map_res(Int32::parse, usize::try_from)(input)?;
     map(many_m_n(length, length, ValueWithCode::parse), Self)(input)
-  }
-}
-
-/// 2.2.3.2 `MethodCallArray`
-#[derive(Debug, Clone, PartialEq)]
-pub struct MethodCallArray<'i>(pub ArraySingleObject<'i>);
-
-impl<'i> MethodCallArray<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(ArraySingleObject::parse, Self)(input)
-  }
-}
-
-/// 2.2.3.4 `MethodReturnCallArray`
-#[derive(Debug, Clone, PartialEq)]
-pub struct MethodReturnCallArray<'i>(pub ArraySingleObject<'i>);
-
-impl<'i> MethodReturnCallArray<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(ArraySingleObject::parse, Self)(input)
   }
 }
