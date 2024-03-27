@@ -31,6 +31,7 @@ impl<'i> MemberReferenceInner<'i> {
   }
 }
 
+/// 2.7 Binary Record Grammar - `memberReference`
 #[derive(Debug, Clone, PartialEq)]
 pub struct MemberReference2<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,

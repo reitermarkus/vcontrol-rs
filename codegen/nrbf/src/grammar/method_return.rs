@@ -23,6 +23,7 @@ impl<'i> ReturnCallArray<'i> {
   }
 }
 
+/// 2.7 Binary Record Grammar - `methodReturn`
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodReturn<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,

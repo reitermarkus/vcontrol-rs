@@ -25,6 +25,7 @@ impl<'i> Array<'i> {
   }
 }
 
+/// 2.7 Binary Record Grammar - `Arrays`
 #[derive(Debug, Clone, PartialEq)]
 pub struct Arrays<'i> {
   pub binary_library: Option<BinaryLibrary<'i>>,

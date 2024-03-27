@@ -2,6 +2,7 @@ use nom::{IResult, Parser};
 
 use crate::{data_type::Int32, record::RecordType};
 
+/// 2.5.3 `MemberReference`
 #[derive(Debug, Clone, PartialEq)]
 pub struct MemberReference {
   pub id_ref: Int32,

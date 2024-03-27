@@ -5,6 +5,7 @@ use crate::{
   record::BinaryObjectString,
 };
 
+/// 2.7 Binary Record Grammar - `referenceable`
 #[derive(Debug, Clone, PartialEq)]
 pub enum Referenceable<'i> {
   Classes(Classes<'i>),
