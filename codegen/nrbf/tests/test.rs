@@ -2,8 +2,10 @@ use nrbf::{
   common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  grammar::{Class, Classes, MemberReference2, MemberReferenceInner, Referenceable},
-  record::{BinaryObjectString, MemberPrimitiveUnTyped, SystemClassWithMembersAndTypes},
+  grammar::{Class, Classes, MemberReference2, MemberReferenceInner, Referenceable, RemotingMessage},
+  record::{
+    BinaryObjectString, MemberPrimitiveUnTyped, MessageEnd, SerializationHeader, SystemClassWithMembersAndTypes,
+  },
 };
 
 macro_rules! string {
@@ -2374,7 +2376,7 @@ fn test356() {
 fn test357() {
   let bytes = b"\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x00\x00\x00\x00\x06\x01\x00\x00\x00WVitodens 200 / 300  mit Vitotronic 100 (Typ HC2), Vitodens 333 mit Vitotronic 100 (HC2)\x0B";
   assert_eq!(
-    parse(bytes),
+    RemotingMessage::parse(bytes),
     Ok(string!("Vitodens 200 / 300  mit Vitotronic 100 (Typ HC2), Vitodens 333 mit Vitotronic 100 (HC2)"))
   )
 }
@@ -2383,7 +2385,7 @@ fn test357() {
 fn test358() {
   let bytes = b"\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x00\x00\x00\x00\x06\x01\x00\x00\x00VVitodens 200 / 300 mit Vitotronic 200 (Typ HO1), Vitodens 333 mit Vitotronic 200 (HO1)\x0B";
   assert_eq!(
-    parse(bytes),
+    RemotingMessage::parse(bytes),
     Ok(string!("Vitodens 200 / 300 mit Vitotronic 200 (Typ HO1), Vitodens 333 mit Vitotronic 200 (HO1)"))
   )
 }
@@ -2392,7 +2394,7 @@ fn test358() {
 fn test359() {
   let bytes = b"\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x00\x00\x00\x00\x06\x01\x00\x00\x00YVitodens 200/300  mit Vitotronic 100 (Typ HC1), Vitodens 333 mit Vitotronic 100/200 (HC1)\x0B";
   assert_eq!(
-    parse(bytes),
+    RemotingMessage::parse(bytes),
     Ok(string!("Vitodens 200/300  mit Vitotronic 100 (Typ HC1), Vitodens 333 mit Vitotronic 100/200 (HC1)"))
   )
 }
@@ -2514,7 +2516,7 @@ fn test377() {
 fn test378() {
   let bytes = b"\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x00\x00\x00\x00\x06\x01\x00\x00\x00mVitoladens 333-F mit Vitotronic 200 (Typ HO1A / HO1B), Vitoloadens 300-C mit Vitotronic 200 (Typ KW6A / KW6B)\x0B";
   assert_eq!(
-    parse(bytes),
+    RemotingMessage::parse(bytes),
     Ok(string!(
       "Vitoladens 333-F mit Vitotronic 200 (Typ HO1A / HO1B), Vitoloadens 300-C mit Vitotronic 200 (Typ KW6A / KW6B)"
     ))
@@ -2562,7 +2564,7 @@ fn test384() {
 fn test385() {
   let bytes = b"\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x00\x00\x00\x00\x06\x01\x00\x00\x00nVitocal 2xx-G / 3xx-G mit Vitotronic 200 (Typ WO1A / WO1B), Vitocal 3xx-A mit Vitotronic 200 (Typ WO1A / WO1B)\x0B";
   assert_eq!(
-    parse(bytes),
+    RemotingMessage::parse(bytes),
     Ok(string!(
       "Vitocal 2xx-G / 3xx-G mit Vitotronic 200 (Typ WO1A / WO1B), Vitocal 3xx-A mit Vitotronic 200 (Typ WO1A / WO1B)"
     ))
@@ -2715,7 +2717,7 @@ fn test408() {
 fn test409() {
   let bytes = b"\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x00\x00\x00\x00\x06\x01\x00\x00\x00dVitocal 222 / 242 G mit Vitotronic 200 (Typ W01A), Vitocal 333 / 343 G mit Vitotronic 200 (Typ W01A)\x0B";
   assert_eq!(
-    parse(bytes),
+    RemotingMessage::parse(bytes),
     Ok(string!("Vitocal 222 / 242 G mit Vitotronic 200 (Typ W01A), Vitocal 333 / 343 G mit Vitotronic 200 (Typ W01A)"))
   )
 }
