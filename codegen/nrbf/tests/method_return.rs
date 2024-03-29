@@ -1,5 +1,5 @@
 use nrbf::{
-  data_type::{LengthPrefixedString, Int32},
+  data_type::{Int32, LengthPrefixedString},
   grammar::{MethodCallOrReturn, MethodReturn, RemotingMessage},
   method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
   record::{BinaryMethodReturn, MessageEnd, SerializationHeader},

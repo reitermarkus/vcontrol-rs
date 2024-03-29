@@ -2,13 +2,13 @@ use nrbf::{
   common::{AdditionalTypeInfo, ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Byte, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  grammar::{Array, Arrays, Class, Classes, MemberReference2, MemberReferenceInner, NullObject, Referenceable},
-  parse,
-  record::{
-    ArraySingleString, BinaryObjectString, MemberPrimitiveUnTyped, MemberReference, ObjectNullMultiple256,
-    SystemClassWithMembersAndTypes,
+  grammar::{
+    Array, Arrays, Class, Classes, MemberReference2, MemberReferenceInner, NullObject, Referenceable, RemotingMessage,
   },
-  Record,
+  record::{
+    ArraySingleString, BinaryObjectString, MemberPrimitiveUnTyped, MemberReference, MessageEnd, ObjectNullMultiple256,
+    SerializationHeader, SystemClassWithMembersAndTypes,
+  },
 };
 
 #[test]
@@ -62,8 +62,14 @@ fn list_of_customers() {
     11
   ];
 
-  assert_eq!(parse(&input), Ok(([].as_slice(), vec![
-    Record::Referenceable(Referenceable::Classes(Classes {
+  let output = RemotingMessage {
+    header: SerializationHeader {
+      root_id: Int32(1),
+      header_id: Int32(-1),
+      major_version: Int32(1),
+      minor_version: Int32(0),
+    },
+    pre_method_referenceables: vec![Referenceable::Classes(Classes {
       binary_library: None,
       class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
         class_info: ClassInfo {
@@ -104,8 +110,8 @@ fn list_of_customers() {
           member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
         },
       ],
-    })),
-    Record::Referenceable(Referenceable::Arrays(Arrays {
+    }),
+    Referenceable::Arrays(Arrays {
       binary_library: None,
       array: Array::ArraySingleString(ArraySingleString {
         array_info: ArrayInfo {
@@ -128,6 +134,12 @@ fn list_of_customers() {
           )),
         ],
       }),
-    })),
-  ])));
+    })
+  ],
+    method_call_or_return: None,
+    post_method_referenceables: vec![],
+    end: MessageEnd,
+  };
+
+  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
 }

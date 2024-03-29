@@ -1,6 +1,9 @@
 use nom::{multi::many_m_n, IResult};
 
-use crate::{common::ClassInfo, enumeration::BinaryType, AdditionalTypeInfo};
+use crate::{
+  common::{AdditionalTypeInfo, ClassInfo},
+  enumeration::BinaryType,
+};
 
 /// 2.3.1.2 `MemberTypeInfo`
 #[derive(Debug, Clone, PartialEq)]
