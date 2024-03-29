@@ -1,6 +1,10 @@
 use nom::{IResult, Parser};
 
-use crate::{common::ClassInfo, data_type::Int32, record::RecordType, MemberTypeInfo};
+use crate::{
+  common::{ClassInfo, MemberTypeInfo},
+  data_type::Int32,
+  record::RecordType,
+};
 
 /// 2.3.2.1 `ClassWithMembersAndTypes`
 #[derive(Debug, Clone, PartialEq)]
