@@ -6,12 +6,12 @@ use nom::{
 };
 
 use crate::{
+  common::MemberTypeInfo,
   grammar::MemberReference2,
   record::{
     BinaryArray, BinaryLibrary, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers,
     SystemClassWithMembersAndTypes,
   },
-  MemberTypeInfo,
 };
 
 #[derive(Debug, Clone, PartialEq)]

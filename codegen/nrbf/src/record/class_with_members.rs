@@ -1,6 +1,6 @@
 use nom::{IResult, Parser};
 
-use crate::{data_type::Int32, record::RecordType, ClassInfo};
+use crate::{common::ClassInfo, data_type::Int32, record::RecordType};
 
 /// 2.3.2.2 `ClassWithMembers`
 #[derive(Debug, Clone, PartialEq)]

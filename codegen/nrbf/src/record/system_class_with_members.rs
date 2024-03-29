@@ -1,6 +1,6 @@
 use nom::{IResult, Parser};
 
-use crate::{record::RecordType, ClassInfo};
+use crate::{common::ClassInfo, record::RecordType};
 
 /// 2.3.2.4 `SystemClassWithMembers`
 #[derive(Debug, Clone, PartialEq)]
