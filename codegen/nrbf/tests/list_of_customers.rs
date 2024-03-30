@@ -1,3 +1,4 @@
+use const_str::concat_bytes;
 use nrbf::{
   common::{AdditionalTypeInfo, ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Byte, Int32, LengthPrefixedString},
@@ -14,53 +15,38 @@ use nrbf::{
 #[test]
 fn list_of_customers() {
   #[rustfmt::skip]
-  let input = [
+  let input = concat_bytes!(
     0,
-      1, 0, 0, 0,
-      255, 255, 255, 255,
-      1, 0, 0, 0,
-      0, 0, 0, 0,
+      0x01, 0x00, 0x00, 0x00,
+      0xFF, 0xFF, 0xFF, 0xFF,
+      0x01, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00,
       4,
-        1, 0, 0, 0,
-        127,
-          83, 121, 115, 116, 101, 109, 46, 67, 111, 108, 108, 101,
-          99, 116, 105, 111, 110, 115, 46, 71, 101, 110, 101, 114,
-          105, 99, 46, 76, 105, 115, 116, 96, 49, 91, 91, 83, 121,
-          115, 116, 101, 109, 46, 83, 116, 114, 105, 110, 103, 44,
-          32, 109, 115, 99, 111, 114, 108, 105, 98, 44, 32, 86, 101,
-          114, 115, 105, 111, 110, 61, 52, 46, 48, 46, 48, 46, 48,
-          44, 32, 67, 117, 108, 116, 117, 114, 101, 61, 110, 101, 117,
-          116, 114, 97, 108, 44, 32, 80, 117, 98, 108, 105, 99, 75,
-          101, 121, 84, 111, 107, 101, 110, 61, 98, 55, 55, 97, 53,
-          99, 53, 54, 49, 57, 51, 52, 101, 48, 56, 57, 93, 93,
-        3, 0, 0, 0,
-        6,
-          95, 105, 116, 101, 109, 115,
-        5,
-          95, 115, 105, 122, 101,
-        8,
-          95, 118, 101, 114, 115, 105, 111, 110,
+        0x01, 0x00, 0x00, 0x00,
+        127, "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]",
+        0x03, 0x00, 0x00, 0x00,
+        6, "_items",
+        5, "_size",
+        8, "_version",
       6, 0, 0,
       8, 8,
       9,
-        2, 0, 0, 0,
-      2, 0, 0, 0,
-      2, 0, 0, 0,
+        0x02, 0x00, 0x00, 0x00,
+      0x02, 0x00, 0x00, 0x00,
+      0x02, 0x00, 0x00, 0x00,
     17,
-      2, 0, 0, 0,
-      4, 0, 0, 0,
+      0x02, 0x00, 0x00, 0x00,
+      0x04, 0x00, 0x00, 0x00,
     6,
-      3, 0, 0, 0,
-      3,
-        66, 111, 98,
+      0x03, 0x00, 0x00, 0x00,
+      3, "Bob",
     6,
-      4, 0, 0, 0,
-      3,
-        82, 111, 98,
+      0x04, 0x00, 0x00, 0x00,
+      3, "Rob",
     13,
       2,
     11
-  ];
+  );
 
   let output = RemotingMessage {
     header: SerializationHeader {
@@ -141,5 +127,5 @@ fn list_of_customers() {
     end: MessageEnd,
   };
 
-  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
 }

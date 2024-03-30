@@ -1,3 +1,4 @@
+use const_str::concat_bytes;
 use nrbf::{
   common::ArrayInfo,
   data_type::{Int32, LengthPrefixedString},
@@ -8,23 +9,23 @@ use nrbf::{
 #[test]
 fn array_single_string() {
   #[rustfmt::skip]
-  let input = [
+  let input = concat_bytes!(
     0,
-      1, 0, 0, 0,
-      255, 255, 255, 255,
-      1, 0, 0, 0,
-      0, 0, 0, 0,
+      0x01, 0x00, 0x00, 0x00,
+      0xFF, 0xFF, 0xFF, 0xFF,
+      0x01, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00,
     17,
-      1, 0, 0, 0,
-      2, 0, 0, 0,
+      0x01, 0x00, 0x00, 0x00,
+      0x02, 0x00, 0x00, 0x00,
       6,
-        2, 0, 0, 0,
-        3, 66, 111, 98,
+        0x02, 0x00, 0x00, 0x00,
+        3, "Bob",
       6,
-        3, 0, 0, 0,
-        3, 82, 111, 98,
+        0x03, 0x00, 0x00, 0x00,
+        3, "Rob",
     11,
-  ];
+  );
 
   let output = RemotingMessage {
     header: SerializationHeader {
@@ -54,5 +55,5 @@ fn array_single_string() {
     end: MessageEnd,
   };
 
-  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
 }
