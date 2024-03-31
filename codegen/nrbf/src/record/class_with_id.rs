@@ -13,7 +13,7 @@ impl ClassWithId {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     let (input, _) = RecordType::ClassWithId.parse(input)?;
 
-    let (input, object_id) = Int32::parse(input)?;
+    let (input, object_id) = Int32::parse_positive(input)?;
     let (input, metadata_id) = Int32::parse(input)?;
 
     Ok((input, Self { object_id, metadata_id }))
