@@ -9,7 +9,7 @@ use nom::{
 
 /// 2.1.1.6 `LengthPrefixedString`
 #[derive(Debug, Clone, PartialEq)]
-pub struct LengthPrefixedString<'s>(&'s str);
+pub struct LengthPrefixedString<'s>(pub(crate) &'s str);
 
 impl<'i> LengthPrefixedString<'i> {
   fn parse_len(mut input: (&[u8], usize)) -> IResult<(&[u8], usize), u32> {
