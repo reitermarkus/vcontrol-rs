@@ -6,27 +6,27 @@ use nrbf::{
   record::{ArraySingleString, BinaryObjectString, MessageEnd, SerializationHeader},
 };
 
+#[rustfmt::skip]
+const INPUT: &[u8] = concat_bytes!(
+  0,
+    0x01, 0x00, 0x00, 0x00,
+    0xFF, 0xFF, 0xFF, 0xFF,
+    0x01, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00,
+  17,
+    0x01, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00,
+    6,
+      0x02, 0x00, 0x00, 0x00,
+      3, "Bob",
+    6,
+      0x03, 0x00, 0x00, 0x00,
+      3, "Rob",
+  11,
+);
+
 #[test]
 fn array_single_string() {
-  #[rustfmt::skip]
-  let input = concat_bytes!(
-    0,
-      0x01, 0x00, 0x00, 0x00,
-      0xFF, 0xFF, 0xFF, 0xFF,
-      0x01, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00,
-    17,
-      0x01, 0x00, 0x00, 0x00,
-      0x02, 0x00, 0x00, 0x00,
-      6,
-        0x02, 0x00, 0x00, 0x00,
-        3, "Bob",
-      6,
-        0x03, 0x00, 0x00, 0x00,
-        3, "Rob",
-    11,
-  );
-
   let output = RemotingMessage {
     header: SerializationHeader {
       root_id: Int32(1),
@@ -55,5 +55,11 @@ fn array_single_string() {
     end: MessageEnd,
   };
 
-  assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn array_single_string_deserialize() {
+  assert_eq!(nrbf::from_stream(INPUT), Ok(vec![String::from("Bob"), String::from("Rob")]));
 }

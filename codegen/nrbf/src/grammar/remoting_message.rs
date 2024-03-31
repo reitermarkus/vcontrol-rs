@@ -11,7 +11,7 @@ use serde::{
 };
 
 use crate::{
-  grammar::{MethodCall, MethodReturn, Referenceable},
+  grammar::{MemberReferenceInner, MethodCall, MethodReturn, Referenceable},
   record::{MessageEnd, SerializationHeader},
 };
 
@@ -57,7 +57,7 @@ impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
   where
     V: Visitor<'de>,
   {
-    use serde::de::{value::SeqDeserializer, Unexpected};
+    use serde::de::{value::SeqDeserializer, Error, Unexpected};
 
     use crate::{
       grammar::{Array, Arrays},
@@ -66,10 +66,10 @@ impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
 
     match self.method_call_or_return {
       Some(MethodCallOrReturn::MethodCall(_)) => {
-        return Err(de::Error::invalid_type(Unexpected::Custom("method call"), &visitor))
+        return Err(Error::invalid_type(Unexpected::Other("method call"), &visitor))
       },
-      Some(MethodCallOrReturn::MethodCall(_)) => {
-        return Err(de::Error::invalid_type(Unexpected::Custom("method return"), &visitor))
+      Some(MethodCallOrReturn::MethodReturn(_)) => {
+        return Err(Error::invalid_type(Unexpected::Other("method return"), &visitor))
       },
       None => (),
     }
@@ -85,10 +85,23 @@ impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
           deserializer.end()?;
           Ok(seq)
         },
-        Array::ArraySingleString(ArraySingleString { array_info, members: _ }) => {
-          let mut it = members.iter().filter_map(|member| match member {});
+        Array::ArraySingleString(ArraySingleString { array_info, members }) => {
+          let mut it = members.iter().filter_map(|member| match member {
+            MemberReferenceInner::BinaryObjectString(s) => Some(s.as_str()),
+            MemberReferenceInner::MemberReference(member) => {
+              match self.pre_method_referenceables.iter().find(|r| r.object_id() == member.id_ref) {
+                Some(Referenceable::BinaryObjectString(s)) => Some(s.as_str()),
+                _ => unimplemented!(),
+              }
+            },
+            MemberReferenceInner::NullObject(_) => unimplemented!(),
+            _ => unreachable!(),
+          });
 
-          unimplemented!()
+          let mut deserializer = SeqDeserializer::new(&mut it);
+          let seq = visitor.visit_seq(&mut deserializer)?;
+          deserializer.end()?;
+          Ok(seq)
         },
         _ => unimplemented!(),
       },
