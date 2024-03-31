@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use nom::{
   branch::alt,
   combinator::{map, opt},
@@ -50,7 +52,7 @@ impl<'i> RemotingMessage<'i> {
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
+impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   type Error = Error;
 
   fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -74,34 +76,28 @@ impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
       None => (),
     }
 
-    let root_item = self.pre_method_referenceables.iter().find(|r| r.object_id() == self.header.root_id);
+    let mut referenceables =
+      BTreeMap::from_iter(self.pre_method_referenceables.into_iter().map(|r| (i32::from(r.object_id()), r)));
+
+    let root_item = referenceables.remove(&(self.header.root_id.into()));
 
     match root_item {
       Some(Referenceable::Arrays(Arrays { binary_library: None, array })) => match array {
-        Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info, members }) => {
-          let mut it = members.iter();
-          let mut deserializer = SeqDeserializer::new(&mut it);
-          let seq = visitor.visit_seq(&mut deserializer)?;
-          deserializer.end()?;
-          Ok(seq)
+        Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info: _, members }) => {
+          let it = members.into_iter();
+          SeqDeserializer::new(it).deserialize_any(visitor)
         },
-        Array::ArraySingleString(ArraySingleString { array_info, members }) => {
-          let mut it = members.iter().filter_map(|member| match member {
-            MemberReferenceInner::BinaryObjectString(s) => Some(s.as_str()),
-            MemberReferenceInner::MemberReference(member) => {
-              match self.pre_method_referenceables.iter().find(|r| r.object_id() == member.id_ref) {
-                Some(Referenceable::BinaryObjectString(s)) => Some(s.as_str()),
-                _ => unimplemented!(),
-              }
+        Array::ArraySingleString(ArraySingleString { array_info: _, members }) => {
+          let it = members.into_iter().map(|member| match member {
+            MemberReferenceInner::BinaryObjectString(s) => s,
+            MemberReferenceInner::MemberReference(member) => match referenceables.remove(&(member.id_ref.into())) {
+              Some(Referenceable::BinaryObjectString(s)) => s,
+              _ => unimplemented!(),
             },
             MemberReferenceInner::NullObject(_) => unimplemented!(),
             _ => unreachable!(),
           });
-
-          let mut deserializer = SeqDeserializer::new(&mut it);
-          let seq = visitor.visit_seq(&mut deserializer)?;
-          deserializer.end()?;
-          Ok(seq)
+          SeqDeserializer::new(it).deserialize_any(visitor)
         },
         _ => unimplemented!(),
       },
