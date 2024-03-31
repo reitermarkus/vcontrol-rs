@@ -9,7 +9,7 @@ pub mod method_invocation;
 pub mod record;
 
 #[cfg(feature = "serde")]
-pub fn from_stream<T>(bytes: &[u8]) -> Result<T, Error>
+pub fn from_stream<'i, T>(bytes: &'i [u8]) -> Result<T, Error>
 where
   T: DeserializeOwned,
 {

@@ -22,6 +22,10 @@ impl<'i> BinaryObjectString<'i> {
     Ok((input, Self { object_id, value }))
   }
 
+  pub fn as_str(&self) -> &'i str {
+    self.value.as_str()
+  }
+
   #[inline]
   pub(crate) fn object_id(&self) -> Int32 {
     self.object_id
