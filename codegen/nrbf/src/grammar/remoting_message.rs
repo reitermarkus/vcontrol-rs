@@ -57,12 +57,22 @@ impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
   where
     V: Visitor<'de>,
   {
-    use serde::de::value::SeqDeserializer;
+    use serde::de::{value::SeqDeserializer, Unexpected};
 
     use crate::{
       grammar::{Array, Arrays},
       record::{ArraySinglePrimitive, ArraySingleString},
     };
+
+    match self.method_call_or_return {
+      Some(MethodCallOrReturn::MethodCall(_)) => {
+        return Err(de::Error::invalid_type(Unexpected::Custom("method call"), &visitor))
+      },
+      Some(MethodCallOrReturn::MethodCall(_)) => {
+        return Err(de::Error::invalid_type(Unexpected::Custom("method return"), &visitor))
+      },
+      None => (),
+    }
 
     let root_item = self.pre_method_referenceables.iter().find(|r| r.object_id() == self.header.root_id);
 
