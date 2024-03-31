@@ -1,7 +1,7 @@
 use const_str::concat_bytes;
 use nrbf::{
   common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
-  data_type::{Boolean, Int32, LengthPrefixedString},
+  data_type::{Int16, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
   grammar::{Class, Classes, MemberReference2, MemberReferenceInner, Referenceable, RemotingMessage},
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader, SystemClassWithMembersAndTypes},
@@ -16,17 +16,16 @@ const INPUT: &[u8] = concat_bytes!(
     b"\x00\x00\x00\x00",
   4,
     b"\x01\x00\x00\x00",
-    14, "System.Boolean",
+    12, "System.Int16",
     b"\x01\x00\x00\x00",
     7, "m_value",
     0,
-    1,
-    0x01,
+    b"\x07\x70\xff",
   11
 );
 
 #[test]
-fn boolean() {
+fn int16() {
   let output = RemotingMessage {
     header: SerializationHeader {
       root_id: Int32(1),
@@ -39,17 +38,17 @@ fn boolean() {
       class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
         class_info: ClassInfo {
           object_id: Int32(1),
-          name: LengthPrefixedString::from("System.Boolean"),
+          name: LengthPrefixedString::from("System.Int16"),
           member_names: vec![LengthPrefixedString::from("m_value")],
         },
         member_type_info: MemberTypeInfo {
           binary_type_enums: vec![BinaryType::Primitive],
-          additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Boolean))],
+          additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int16))],
         },
       }),
       member_references: vec![MemberReference2 {
         binary_library: None,
-        member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(Boolean(true))),
+        member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(Int16(-144))),
       }],
     })],
     method_call_or_return: None,
@@ -62,6 +61,6 @@ fn boolean() {
 
 #[cfg(feature = "serde")]
 #[test]
-fn int32_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(true));
+fn int16_deserialize() {
+  assert_eq!(nrbf::from_stream(INPUT), Ok(-144));
 }
