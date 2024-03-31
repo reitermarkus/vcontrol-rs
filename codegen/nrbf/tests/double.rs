@@ -62,6 +62,6 @@ fn double() {
 
 #[cfg(feature = "serde")]
 #[test]
-fn int32_deserialize() {
+fn double_deserialize() {
   assert_eq!(nrbf::from_stream(INPUT), Ok(-0.1067));
 }
