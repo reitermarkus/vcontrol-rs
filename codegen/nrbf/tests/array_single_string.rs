@@ -61,5 +61,6 @@ fn array_single_string() {
 #[cfg(feature = "serde")]
 #[test]
 fn array_single_string_deserialize() {
+  assert_eq!(nrbf::from_stream(INPUT), Ok(["Bob", "Rob"]));
   assert_eq!(nrbf::from_stream(INPUT), Ok(vec![String::from("Bob"), String::from("Rob")]));
 }

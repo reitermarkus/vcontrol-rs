@@ -90,7 +90,7 @@ impl Serialize for MemberPrimitiveUnTyped {
 }
 
 #[cfg(feature = "serde")]
-impl<'de> IntoDeserializer<'de, Error> for &'de MemberPrimitiveUnTyped {
+impl<'de> IntoDeserializer<'de, Error> for MemberPrimitiveUnTyped {
   type Deserializer = Self;
 
   fn into_deserializer(self) -> Self::Deserializer {
@@ -99,7 +99,7 @@ impl<'de> IntoDeserializer<'de, Error> for &'de MemberPrimitiveUnTyped {
 }
 
 #[cfg(feature = "serde")]
-impl<'de> Deserializer<'de> for &'de MemberPrimitiveUnTyped {
+impl<'de> Deserializer<'de> for MemberPrimitiveUnTyped {
   type Error = Error;
 
   fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -107,21 +107,21 @@ impl<'de> Deserializer<'de> for &'de MemberPrimitiveUnTyped {
     V: Visitor<'de>,
   {
     match self {
-      MemberPrimitiveUnTyped::Boolean(v) => visitor.visit_bool((*v).into()),
-      MemberPrimitiveUnTyped::SByte(v) => visitor.visit_i8((*v).into()),
-      MemberPrimitiveUnTyped::Int16(v) => visitor.visit_i16((*v).into()),
-      MemberPrimitiveUnTyped::Int32(v) => visitor.visit_i32((*v).into()),
-      MemberPrimitiveUnTyped::Int64(v) => visitor.visit_i64((*v).into()),
-      MemberPrimitiveUnTyped::Byte(v) => visitor.visit_u8((*v).into()),
-      MemberPrimitiveUnTyped::UInt16(v) => visitor.visit_u16((*v).into()),
-      MemberPrimitiveUnTyped::UInt32(v) => visitor.visit_u32((*v).into()),
-      MemberPrimitiveUnTyped::UInt64(v) => visitor.visit_u64((*v).into()),
-      MemberPrimitiveUnTyped::Single(v) => visitor.visit_f32((*v).into()),
-      MemberPrimitiveUnTyped::Double(v) => visitor.visit_f64((*v).into()),
-      MemberPrimitiveUnTyped::Char(v) => visitor.visit_char((*v).into()),
+      MemberPrimitiveUnTyped::Boolean(v) => visitor.visit_bool((v).into()),
+      MemberPrimitiveUnTyped::SByte(v) => visitor.visit_i8((v).into()),
+      MemberPrimitiveUnTyped::Int16(v) => visitor.visit_i16((v).into()),
+      MemberPrimitiveUnTyped::Int32(v) => visitor.visit_i32((v).into()),
+      MemberPrimitiveUnTyped::Int64(v) => visitor.visit_i64((v).into()),
+      MemberPrimitiveUnTyped::Byte(v) => visitor.visit_u8((v).into()),
+      MemberPrimitiveUnTyped::UInt16(v) => visitor.visit_u16((v).into()),
+      MemberPrimitiveUnTyped::UInt32(v) => visitor.visit_u32((v).into()),
+      MemberPrimitiveUnTyped::UInt64(v) => visitor.visit_u64((v).into()),
+      MemberPrimitiveUnTyped::Single(v) => visitor.visit_f32((v).into()),
+      MemberPrimitiveUnTyped::Double(v) => visitor.visit_f64((v).into()),
+      MemberPrimitiveUnTyped::Char(v) => visitor.visit_char((v).into()),
       MemberPrimitiveUnTyped::Decimal(v) => visitor.visit_string(v.0.to_string()),
-      MemberPrimitiveUnTyped::TimeSpan(v) => visitor.visit_i64((*v).into()),
-      MemberPrimitiveUnTyped::DateTime(v) => visitor.visit_i64((*v).into()),
+      MemberPrimitiveUnTyped::TimeSpan(v) => visitor.visit_i64((v).into()),
+      MemberPrimitiveUnTyped::DateTime(v) => visitor.visit_i64((v).into()),
     }
   }
 
