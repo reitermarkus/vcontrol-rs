@@ -39,13 +39,13 @@ pub use length_prefixed_string::LengthPrefixedString;
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassTypeInfo<'i> {
   pub type_name: LengthPrefixedString<'i>,
-  pub library_id: i32,
+  pub library_id: Int32,
 }
 
 impl<'i> ClassTypeInfo<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, type_name) = LengthPrefixedString::parse(input)?;
-    let (input, library_id) = le_i32(input)?;
+    let (input, library_id) = Int32::parse_positive(input)?;
 
     Ok((input, Self { type_name, library_id }))
   }
