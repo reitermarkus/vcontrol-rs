@@ -7,26 +7,26 @@ use nrbf::{
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader, SystemClassWithMembersAndTypes},
 };
 
+#[rustfmt::skip]
+const INPUT: &[u8] = concat_bytes!(
+  0,
+    b"\x01\x00\x00\x00",
+    b"\xFF\xFF\xFF\xFF",
+    b"\x01\x00\x00\x00",
+    b"\x00\x00\x00\x00",
+  4,
+    b"\x01\x00\x00\x00",
+    12, "System.Int32",
+    b"\x01\x00\x00\x00",
+    7, "m_value",
+    0,
+    8,
+    b"\xFF\xFF\xFF\xFF",
+  11
+);
+
 #[test]
 fn int32() {
-  #[rustfmt::skip]
-  let input = concat_bytes!(
-    0,
-      b"\x01\x00\x00\x00",
-      b"\xFF\xFF\xFF\xFF",
-      b"\x01\x00\x00\x00",
-      b"\x00\x00\x00\x00",
-    4,
-      b"\x01\x00\x00\x00",
-      12, "System.Int32",
-      b"\x01\x00\x00\x00",
-      7, "m_value",
-      0,
-      8,
-      b"\xFF\xFF\xFF\xFF",
-    11
-  );
-
   let output = RemotingMessage {
     header: SerializationHeader {
       root_id: Int32(1),
@@ -57,5 +57,11 @@ fn int32() {
     end: MessageEnd,
   };
 
-  assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn int32_deserialize() {
+  assert_eq!(nrbf::from_stream(INPUT), Ok(-1));
 }

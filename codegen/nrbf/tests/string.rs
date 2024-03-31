@@ -40,22 +40,22 @@ fn string_empty() {
   assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
 }
 
+#[rustfmt::skip]
+const INPUT: &[u8] = concat_bytes!(
+  0,
+    b"\x01\x00\x00\x00",
+    b"\xFF\xFF\xFF\xFF",
+    b"\x01\x00\x00\x00",
+    b"\x00\x00\x00\x00",
+  6,
+    b"\x01\x00\x00\x00",
+    17,
+      "This is a string.",
+  11,
+);
+
 #[test]
 fn string() {
-  #[rustfmt::skip]
-  let input = concat_bytes!(
-    0,
-      b"\x01\x00\x00\x00",
-      b"\xFF\xFF\xFF\xFF",
-      b"\x01\x00\x00\x00",
-      b"\x00\x00\x00\x00",
-    6,
-      b"\x01\x00\x00\x00",
-      17,
-        "This is a string.",
-    11,
-  );
-
   let output = RemotingMessage {
     header: SerializationHeader {
       root_id: Int32(1),
@@ -72,5 +72,12 @@ fn string() {
     end: MessageEnd,
   };
 
-  assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn string_deserialize() {
+  assert_eq!(nrbf::from_stream(INPUT), Ok("This is a string."));
+  assert_eq!(nrbf::from_stream(INPUT), Ok(String::from("This is a string.")));
 }
