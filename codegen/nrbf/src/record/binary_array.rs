@@ -10,6 +10,7 @@ use crate::{
   enumeration::{BinaryArrayType, BinaryType},
   grammar::{MemberReference2, MemberReferenceInner},
   record::{BinaryObjectString, MemberPrimitiveUnTyped, RecordType},
+  BinaryParser,
 };
 
 /// 2.4.3.1 `BinaryArray`
@@ -30,30 +31,27 @@ impl<'i> BinaryArray<'i> {
     input: &'i [u8],
     type_enum: BinaryType,
     additional_type_info: Option<&AdditionalTypeInfo<'i>>,
+    parser: &mut BinaryParser<'i>,
   ) -> IResult<&'i [u8], MemberReference2<'i>> {
     match (type_enum, additional_type_info) {
       (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
         |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
-        |value| MemberReference2 {
-          binary_library: None,
-          member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(value),
-        },
+        |value| MemberReference2 { member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(value) },
       )(input),
       (BinaryType::String, None) => map(BinaryObjectString::parse, |value| MemberReference2 {
-        binary_library: None,
         member_reference: MemberReferenceInner::BinaryObjectString(value),
       })(input),
-      (BinaryType::Object, None) => MemberReference2::parse(input),
-      (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input),
-      (BinaryType::Class, Some(_class_type_info)) => MemberReference2::parse(input),
-      (BinaryType::ObjectArray, None) => MemberReference2::parse(input),
-      (BinaryType::StringArray, None) => MemberReference2::parse(input),
-      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReference2::parse(input),
+      (BinaryType::Object, None) => MemberReference2::parse(input, parser),
+      (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input, parser),
+      (BinaryType::Class, Some(_class_type_info)) => MemberReference2::parse(input, parser),
+      (BinaryType::ObjectArray, None) => MemberReference2::parse(input, parser),
+      (BinaryType::StringArray, None) => MemberReference2::parse(input, parser),
+      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReference2::parse(input, parser),
       _ => unreachable!(),
     }
   }
 
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::BinaryArray.parse(input)?;
 
     let (input, object_id) = Int32::parse_positive(input)?;
@@ -85,7 +83,7 @@ impl<'i> BinaryArray<'i> {
       None => return fail(input),
     };
     let (input, members) = many_m_n(member_count, member_count, |input| {
-      Self::parse_member(input, type_enum, additional_type_info.as_ref())
+      Self::parse_member(input, type_enum, additional_type_info.as_ref(), parser)
     })(input)?;
 
     Ok((

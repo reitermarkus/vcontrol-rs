@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use nrbf::{
   common::AdditionalTypeInfo,
   data_type::Int32,
@@ -43,8 +45,8 @@ fn binary_array_single_offset() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::Arrays(Arrays {
-      binary_library: None,
       array: Array::BinaryArray(BinaryArray {
         object_id: Int32(1),
         binary_array_type_enum: BinaryArrayType::SingleOffset,
@@ -55,43 +57,33 @@ fn binary_array_single_offset() {
         additional_type_info: Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
         members: vec![
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
           MemberReference2 {
-            binary_library: None,
             member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
           },
         ],

@@ -7,6 +7,7 @@ use nom::{
 use crate::{
   data_type::Int32,
   record::{ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary},
+  BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -18,12 +19,15 @@ pub enum Array<'i> {
 }
 
 impl<'i> Array<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    if let Ok(s) = map(|input| ArraySingleObject::parse(input, parser), Self::ArraySingleObject)(input) {
+      return Ok(s)
+    }
+
     alt((
-      map(ArraySingleObject::parse, Self::ArraySingleObject),
       map(ArraySinglePrimitive::parse, Self::ArraySinglePrimitive),
       map(ArraySingleString::parse, Self::ArraySingleString),
-      map(BinaryArray::parse, Self::BinaryArray),
+      map(|input| BinaryArray::parse(input, parser), Self::BinaryArray),
     ))(input)
   }
 
@@ -41,16 +45,16 @@ impl<'i> Array<'i> {
 /// 2.7 Binary Record Grammar - `Arrays`
 #[derive(Debug, Clone, PartialEq)]
 pub struct Arrays<'i> {
-  pub binary_library: Option<BinaryLibrary<'i>>,
   pub array: Array<'i>,
 }
 
 impl<'i> Arrays<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-    let (input, array) = Array::parse(input)?;
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    let (input, ()) = parser.parse_binary_library(input)?;
 
-    Ok((input, Self { binary_library, array }))
+    let (input, array) = Array::parse(input, parser)?;
+
+    Ok((input, Self { array }))
   }
 
   #[inline]

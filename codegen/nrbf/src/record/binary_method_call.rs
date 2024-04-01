@@ -7,6 +7,7 @@ use crate::{
   data_type::Int32,
   method_invocation::{ArrayOfValueWithCode, MessageFlags, StringValueWithCode},
   record::{ArraySingleObject, RecordType},
+  BinaryParser,
 };
 
 /// 2.2.3.1 `BinaryMethodCall`
@@ -20,7 +21,7 @@ pub struct BinaryMethodCall<'i> {
 }
 
 impl<'i> BinaryMethodCall<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::MethodCall.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;
@@ -39,8 +40,8 @@ impl<'i> BinaryMethodCall<'i> {
 pub struct MethodCallArray<'i>(pub ArraySingleObject<'i>);
 
 impl<'i> MethodCallArray<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(ArraySingleObject::parse, Self)(input)
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    map(|input| ArraySingleObject::parse(input, parser), Self)(input)
   }
 
   #[inline]

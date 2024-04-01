@@ -8,6 +8,7 @@ use crate::{
   data_type::Int32,
   method_invocation::{AnyValueWithCode, ArrayOfValueWithCode, MessageFlags, StringValueWithCode, ValueWithCode},
   record::{ArraySingleObject, RecordType},
+  BinaryParser,
 };
 
 /// 2.2.3.3 `BinaryMethodReturn`
@@ -44,8 +45,8 @@ impl<'i> BinaryMethodReturn<'i> {
 pub struct MethodReturnCallArray<'i>(pub ArraySingleObject<'i>);
 
 impl<'i> MethodReturnCallArray<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(ArraySingleObject::parse, Self)(input)
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    map(|input| ArraySingleObject::parse(input, parser), Self)(input)
   }
 
   #[inline]

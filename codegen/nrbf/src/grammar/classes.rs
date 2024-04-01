@@ -13,6 +13,7 @@ use crate::{
     BinaryArray, BinaryLibrary, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers,
     SystemClassWithMembersAndTypes,
   },
+  BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -50,7 +51,6 @@ impl<'i> Class<'i> {
 /// 2.7 Binary Record Grammar - `Classes`
 #[derive(Debug, Clone, PartialEq)]
 pub struct Classes<'i> {
-  pub binary_library: Option<BinaryLibrary<'i>>,
   pub class: Class<'i>,
   pub member_references: Vec<MemberReference2<'i>>,
 }
@@ -59,6 +59,7 @@ impl<'i> Classes<'i> {
   fn parse_member_references(
     mut input: &'i [u8],
     member_type_info: &MemberTypeInfo<'i>,
+    parser: &mut BinaryParser<'i>,
   ) -> IResult<&'i [u8], Vec<MemberReference2<'i>>> {
     let mut member_references = vec![];
 
@@ -66,29 +67,31 @@ impl<'i> Classes<'i> {
       member_type_info.binary_type_enums.iter().zip(member_type_info.additional_infos.iter())
     {
       let member;
-      (input, member) = BinaryArray::parse_member(input, *binary_type_enum, additional_info.as_ref())?;
+      (input, member) = BinaryArray::parse_member(input, *binary_type_enum, additional_info.as_ref(), parser)?;
       member_references.push(member);
     }
 
     Ok((input, member_references))
   }
 
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    let (input, ()) = parser.parse_binary_library(input)?;
 
     let (input, class) = Class::parse(input)?;
 
     let (input, member_references) = match class {
-      Class::ClassWithId(ref _class) => many0(MemberReference2::parse)(input)?,
-      Class::ClassWithMembers(ref _class) => many0(MemberReference2::parse)(input)?,
-      Class::ClassWithMembersAndTypes(ref class) => Self::parse_member_references(input, &class.member_type_info)?,
-      Class::SystemClassWithMembers(ref _class) => many0(MemberReference2::parse)(input)?,
+      Class::ClassWithId(ref _class) => many0(|input| MemberReference2::parse(input, parser))(input)?,
+      Class::ClassWithMembers(ref _class) => many0(|input| MemberReference2::parse(input, parser))(input)?,
+      Class::ClassWithMembersAndTypes(ref class) => {
+        Self::parse_member_references(input, &class.member_type_info, parser)?
+      },
+      Class::SystemClassWithMembers(ref _class) => many0(|input| MemberReference2::parse(input, parser))(input)?,
       Class::SystemClassWithMembersAndTypes(ref class) => {
-        Self::parse_member_references(input, &class.member_type_info)?
+        Self::parse_member_references(input, &class.member_type_info, parser)?
       },
     };
 
-    Ok((input, Self { binary_library, class, member_references }))
+    Ok((input, Self { class, member_references }))
   }
 
   #[inline]
