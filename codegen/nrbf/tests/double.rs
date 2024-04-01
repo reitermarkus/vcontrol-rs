@@ -37,6 +37,20 @@ fn double() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::from_iter([(
+      Int32(1),
+      Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
+        class_info: ClassInfo {
+          object_id: Int32(1),
+          name: LengthPrefixedString::from("System.Double"),
+          member_names: vec![LengthPrefixedString::from("m_value")],
+        },
+        member_type_info: MemberTypeInfo {
+          binary_type_enums: vec![BinaryType::Primitive],
+          additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Double))],
+        },
+      }),
+    )]),
     pre_method_referenceables: vec![Referenceable::Classes(Classes {
       class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
         class_info: ClassInfo {

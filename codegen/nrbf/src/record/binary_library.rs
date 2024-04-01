@@ -20,4 +20,9 @@ impl<'i> BinaryLibrary<'i> {
 
     Ok((input, Self { library_id, library_name }))
   }
+
+  #[inline]
+  pub(crate) fn library_id(&self) -> Int32 {
+    self.library_id
+  }
 }

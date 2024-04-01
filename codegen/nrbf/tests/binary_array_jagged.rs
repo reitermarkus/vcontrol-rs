@@ -64,6 +64,7 @@ fn binary_array_jagged() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::new(),
     pre_method_referenceables: vec![
       Referenceable::Arrays(Arrays {
         array: Array::BinaryArray(BinaryArray {

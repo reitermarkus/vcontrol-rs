@@ -77,6 +77,7 @@ impl<'i> Classes<'i> {
   pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, ()) = parser.parse_binary_library(input)?;
 
+    parser.parse_class(input)?;
     let (input, class) = Class::parse(input)?;
 
     let (input, member_references) = match class {

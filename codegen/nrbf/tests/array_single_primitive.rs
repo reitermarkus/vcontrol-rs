@@ -34,6 +34,7 @@ fn array_single_primitive() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::Arrays(Arrays {
       array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
         array_info: ArrayInfo { object_id: Int32(1), length: Int32(2) },
