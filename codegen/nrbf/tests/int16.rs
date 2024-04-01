@@ -51,17 +51,7 @@ fn int16() {
       }),
     )]),
     pre_method_referenceables: vec![Referenceable::Classes(Classes {
-      class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-        class_info: ClassInfo {
-          object_id: Int32(1),
-          name: LengthPrefixedString::from("System.Int16"),
-          member_names: vec![LengthPrefixedString::from("m_value")],
-        },
-        member_type_info: MemberTypeInfo {
-          binary_type_enums: vec![BinaryType::Primitive],
-          additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int16))],
-        },
-      }),
+      class_id: Int32(1),
       member_references: vec![MemberReference2 {
         member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(Int16(-144))),
       }],

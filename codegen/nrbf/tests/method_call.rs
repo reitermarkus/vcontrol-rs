@@ -132,35 +132,7 @@ fn method_call() {
     post_method_referenceables: vec![
       Referenceable::Classes(
         Classes {
-          class: Class::ClassWithMembersAndTypes(
-            ClassWithMembersAndTypes {
-              class_info: ClassInfo {
-                object_id: Int32(2),
-                name: LengthPrefixedString::from("DOJRemotingMetadata.Address"),
-                member_names: vec![
-                  LengthPrefixedString::from("Street"),
-                  LengthPrefixedString::from("City"),
-                  LengthPrefixedString::from("State"),
-                  LengthPrefixedString::from("Zip"),
-                ],
-              },
-              member_type_info: MemberTypeInfo {
-                binary_type_enums: vec![
-                  BinaryType::String,
-                  BinaryType::String,
-                  BinaryType::String,
-                  BinaryType::String,
-                ],
-                additional_infos: vec![
-                  None,
-                  None,
-                  None,
-                  None,
-                ],
-              },
-              library_id: Int32(3),
-            },
-          ),
+          class_id: Int32(2),
           member_references: vec![
             MemberReference2 {
               member_reference: MemberReferenceInner::BinaryObjectString(

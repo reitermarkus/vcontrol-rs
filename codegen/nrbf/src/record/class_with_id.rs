@@ -1,4 +1,4 @@
-use nom::{IResult, Parser};
+use nom::{combinator::verify, IResult, Parser};
 
 use crate::{data_type::Int32, record::RecordType};
 
@@ -14,7 +14,7 @@ impl ClassWithId {
     let (input, _) = RecordType::ClassWithId.parse(input)?;
 
     let (input, object_id) = Int32::parse_positive(input)?;
-    let (input, metadata_id) = Int32::parse(input)?;
+    let (input, metadata_id) = verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input)?;
 
     Ok((input, Self { object_id, metadata_id }))
   }
@@ -22,5 +22,10 @@ impl ClassWithId {
   #[inline]
   pub(crate) fn object_id(&self) -> Int32 {
     self.object_id
+  }
+
+  #[inline]
+  pub(crate) fn metadata_id(&self) -> Int32 {
+    self.metadata_id
   }
 }
