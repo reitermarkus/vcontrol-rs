@@ -24,6 +24,7 @@ fn method_return() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::new(),
     pre_method_referenceables: vec![],
     method_call_or_return: Some(MethodCallOrReturn::MethodReturn(MethodReturn {
       binary_method_return: BinaryMethodReturn {

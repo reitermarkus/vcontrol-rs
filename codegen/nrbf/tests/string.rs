@@ -31,6 +31,7 @@ fn string_empty() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::BinaryObjectString(BinaryObjectString {
       object_id: Int32(1),
       value: LengthPrefixedString::from(""),
@@ -67,6 +68,7 @@ fn string() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::BinaryObjectString(BinaryObjectString {
       object_id: Int32(1),
       value: LengthPrefixedString::from("This is a string."),
