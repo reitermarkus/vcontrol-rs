@@ -7,6 +7,7 @@ use nom::{
 use crate::{
   grammar::{Classes, NullObject},
   record::{BinaryLibrary, BinaryObjectString, MemberPrimitiveTyped, MemberPrimitiveUnTyped, MemberReference},
+  BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -20,13 +21,13 @@ pub enum MemberReferenceInner<'i> {
 }
 
 impl<'i> MemberReferenceInner<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     alt((
       map(MemberPrimitiveTyped::parse, Self::MemberPrimitiveTyped),
       map(MemberReference::parse, Self::MemberReference),
       map(BinaryObjectString::parse, Self::BinaryObjectString),
       map(NullObject::parse, Self::NullObject),
-      map(Classes::parse, Self::Classes),
+      map(|input| Classes::parse(input, parser), Self::Classes),
     ))(input)
   }
 }
@@ -34,15 +35,15 @@ impl<'i> MemberReferenceInner<'i> {
 /// 2.7 Binary Record Grammar - `memberReference`
 #[derive(Debug, Clone, PartialEq)]
 pub struct MemberReference2<'i> {
-  pub binary_library: Option<BinaryLibrary<'i>>,
   pub member_reference: MemberReferenceInner<'i>,
 }
 
 impl<'i> MemberReference2<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-    let (input, member_reference) = MemberReferenceInner::parse(input)?;
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    let (input, ()) = parser.parse_binary_library(input)?;
 
-    Ok((input, Self { binary_library, member_reference }))
+    let (input, member_reference) = MemberReferenceInner::parse(input, parser)?;
+
+    Ok((input, Self { member_reference }))
   }
 }

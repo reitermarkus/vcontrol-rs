@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
   grammar::{MethodCallOrReturn, MethodReturn, RemotingMessage},
@@ -21,9 +23,9 @@ fn method_return() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::new(),
     pre_method_referenceables: vec![],
     method_call_or_return: Some(MethodCallOrReturn::MethodReturn(MethodReturn {
-      binary_library: None,
       binary_method_return: BinaryMethodReturn {
         message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
         return_value: Some(AnyValueWithCode::String(StringValueWithCode::from(LengthPrefixedString::from(

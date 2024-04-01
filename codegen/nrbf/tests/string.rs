@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use const_str::concat_bytes;
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
@@ -28,6 +30,7 @@ fn string_empty() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::BinaryObjectString(BinaryObjectString {
       object_id: Int32(1),
       value: LengthPrefixedString::from(""),
@@ -63,6 +66,7 @@ fn string() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::BinaryObjectString(BinaryObjectString {
       object_id: Int32(1),
       value: LengthPrefixedString::from("This is a string."),

@@ -13,8 +13,10 @@ use serde::{
 };
 
 use crate::{
+  data_type::{Int32, LengthPrefixedString},
   grammar::{MemberReferenceInner, MethodCall, MethodReturn, Referenceable},
-  record::{MessageEnd, SerializationHeader},
+  record::{BinaryLibrary, MessageEnd, SerializationHeader},
+  BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -24,8 +26,16 @@ pub enum MethodCallOrReturn<'i> {
 }
 
 impl<'i> MethodCallOrReturn<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    alt((map(MethodCall::parse, Self::MethodCall), map(MethodReturn::parse, Self::MethodReturn)))(input)
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    if let Ok(s) = map(|input| MethodCall::parse(input, parser), Self::MethodCall)(input) {
+      return Ok(s)
+    }
+
+    if let Ok(s) = map(|input| MethodReturn::parse(input, parser), |mr| Self::MethodReturn(mr))(input) {
+      return Ok(s)
+    }
+
+    Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Alt)))
   }
 }
 
@@ -33,6 +43,7 @@ impl<'i> MethodCallOrReturn<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct RemotingMessage<'i> {
   pub header: SerializationHeader,
+  pub binary_libraries: BTreeMap<Int32, LengthPrefixedString<'i>>,
   pub pre_method_referenceables: Vec<Referenceable<'i>>,
   pub method_call_or_return: Option<MethodCallOrReturn<'i>>,
   pub post_method_referenceables: Vec<Referenceable<'i>>,
@@ -41,13 +52,25 @@ pub struct RemotingMessage<'i> {
 
 impl<'i> RemotingMessage<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+    let mut parser = BinaryParser::default();
+
     let (input, header) = SerializationHeader::parse(input)?;
-    let (input, pre_method_referenceables) = many0(Referenceable::parse)(input)?;
-    let (input, method_call_or_return) = opt(MethodCallOrReturn::parse)(input)?;
-    let (input, post_method_referenceables) = many0(Referenceable::parse)(input)?;
+    let (input, pre_method_referenceables) = many0(|input| Referenceable::parse(input, &mut parser))(input)?;
+    let (input, method_call_or_return) = opt(|input| MethodCallOrReturn::parse(input, &mut parser))(input)?;
+    let (input, post_method_referenceables) = many0(|input| Referenceable::parse(input, &mut parser))(input)?;
     let (input, end) = MessageEnd::parse(input)?;
 
-    Ok((input, Self { header, pre_method_referenceables, method_call_or_return, post_method_referenceables, end }))
+    Ok((
+      input,
+      Self {
+        header,
+        binary_libraries: parser.binary_libraries,
+        pre_method_referenceables,
+        method_call_or_return,
+        post_method_referenceables,
+        end,
+      },
+    ))
   }
 }
 
@@ -62,7 +85,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
     use serde::de::{value::SeqDeserializer, Error, Unexpected};
 
     use crate::{
-      data_type::LengthPrefixedString,
       grammar::{Array, Arrays, Class, Classes, MemberReference2, MemberReferenceInner},
       record::{ArraySinglePrimitive, ArraySingleString, MemberPrimitiveUnTyped},
     };
@@ -82,7 +104,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
 
     let root_object = referenceables.remove(&(self.header.root_id.into()));
     match root_object {
-      Some(Referenceable::Classes(Classes { binary_library: None, class, member_references })) => match class {
+      Some(Referenceable::Classes(Classes { class, member_references })) => match class {
         Class::ClassWithId(class) => unimplemented!(),
         Class::ClassWithMembers(class) => unimplemented!(),
         Class::ClassWithMembersAndTypes(class) => unimplemented!(),
@@ -94,7 +116,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Boolean",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(n)),
               }],
             ) => visitor.visit_bool((*n).into()),
@@ -102,7 +123,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Byte",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Byte(n)),
               }],
             ) => visitor.visit_u8((*n).into()),
@@ -110,7 +130,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.SByte",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::SByte(n)),
               }],
             ) => visitor.visit_i8((*n).into()),
@@ -118,7 +137,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Char",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Char(c)),
               }],
             ) => visitor.visit_char((*c).into()),
@@ -126,7 +144,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Decimal",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Decimal(c)),
               }],
             ) => unimplemented!(),
@@ -134,7 +151,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Double",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(n)),
               }],
             ) => visitor.visit_f64((*n).into()),
@@ -142,7 +158,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Single",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(n)),
               }],
             ) => visitor.visit_f32((*n).into()),
@@ -150,7 +165,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Int32",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(n)),
               }],
             ) => visitor.visit_i32((*n).into()),
@@ -158,7 +172,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.UInt32",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt32(n)),
               }],
             ) => visitor.visit_u32((*n).into()),
@@ -166,7 +179,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Int64",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(n)),
               }],
             ) => visitor.visit_i64((*n).into()),
@@ -174,7 +186,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.UInt64",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt64(n)),
               }],
             ) => visitor.visit_u64((*n).into()),
@@ -182,7 +193,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.Int16",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(n)),
               }],
             ) => visitor.visit_i16((*n).into()),
@@ -190,7 +200,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               "System.UInt16",
               [LengthPrefixedString("m_value")],
               [MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt16(n)),
               }],
             ) => visitor.visit_u16((*n).into()),
@@ -198,7 +207,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
           }
         },
       },
-      Some(Referenceable::Arrays(Arrays { binary_library: None, array })) => match array {
+      Some(Referenceable::Arrays(Arrays { array })) => match array {
         Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info: _, members }) => {
           let it = members.into_iter();
           SeqDeserializer::new(it).deserialize_any(visitor)
@@ -218,10 +227,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
         _ => unimplemented!(),
       },
       Some(Referenceable::BinaryObjectString(s)) => s.deserialize_any(visitor),
-      Some(Referenceable::Classes(Classes { binary_library: Some(_), .. }))
-      | Some(Referenceable::Arrays(Arrays { binary_library: Some(_), .. })) => {
-        Err(Error::custom("deserializing a binary library is not supported"))
-      },
       None => Err(Error::custom("root object not found")),
     }
   }

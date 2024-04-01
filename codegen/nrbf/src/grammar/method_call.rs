@@ -3,20 +3,21 @@ use nom::{combinator::opt, IResult};
 use crate::{
   data_type::Int32,
   record::{BinaryLibrary, BinaryMethodCall, MethodCallArray},
+  BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CallArray<'i> {
-  pub binary_library: Option<BinaryLibrary<'i>>,
   pub call_array: MethodCallArray<'i>,
 }
 
 impl<'i> CallArray<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-    let (input, call_array) = MethodCallArray::parse(input)?;
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    let (input, ()) = parser.parse_binary_library(input)?;
 
-    Ok((input, Self { binary_library, call_array }))
+    let (input, call_array) = MethodCallArray::parse(input, parser)?;
+
+    Ok((input, Self { call_array }))
   }
 
   #[inline]
@@ -28,17 +29,17 @@ impl<'i> CallArray<'i> {
 /// 2.7 Binary Record Grammar - `methodCall`
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodCall<'i> {
-  pub binary_library: Option<BinaryLibrary<'i>>,
   pub binary_method_call: BinaryMethodCall<'i>,
   pub call_array: Option<CallArray<'i>>,
 }
 
 impl<'i> MethodCall<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
-    let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
-    let (input, call_array) = opt(CallArray::parse)(input)?;
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    let (input, ()) = parser.parse_binary_library(input)?;
 
-    Ok((input, Self { binary_library, binary_method_call, call_array }))
+    let (input, binary_method_call) = BinaryMethodCall::parse(input, parser)?;
+    let (input, call_array) = opt(|input| CallArray::parse(input, parser))(input)?;
+
+    Ok((input, Self { binary_method_call, call_array }))
   }
 }
