@@ -60,6 +60,40 @@ fn method_call() {
         )
       )
     ]),
+    classes: BTreeMap::from_iter([
+      (
+        Int32(2),
+        Class::ClassWithMembersAndTypes(
+          ClassWithMembersAndTypes {
+            class_info: ClassInfo {
+              object_id: Int32(2),
+              name: LengthPrefixedString::from("DOJRemotingMetadata.Address"),
+              member_names: vec![
+                LengthPrefixedString::from("Street"),
+                LengthPrefixedString::from("City"),
+                LengthPrefixedString::from("State"),
+                LengthPrefixedString::from("Zip"),
+              ],
+            },
+            member_type_info: MemberTypeInfo {
+              binary_type_enums: vec![
+                BinaryType::String,
+                BinaryType::String,
+                BinaryType::String,
+                BinaryType::String,
+              ],
+              additional_infos: vec![
+                None,
+                None,
+                None,
+                None,
+              ],
+            },
+            library_id: Int32(3),
+          },
+        )
+      )
+    ]),
     pre_method_referenceables: vec![],
     method_call_or_return: Some(MethodCallOrReturn::MethodCall(
       MethodCall {

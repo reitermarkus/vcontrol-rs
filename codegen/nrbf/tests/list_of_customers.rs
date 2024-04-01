@@ -58,6 +58,34 @@ fn list_of_customers() {
       minor_version: Int32(0),
     },
     binary_libraries: BTreeMap::new(),
+    classes: BTreeMap::from_iter([(
+      Int32(1),
+      Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
+        class_info: ClassInfo {
+          object_id: Int32(1),
+          name: LengthPrefixedString::from(
+            "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+          ),
+          member_names: vec![
+            LengthPrefixedString::from("_items"),
+            LengthPrefixedString::from("_size"),
+            LengthPrefixedString::from("_version"),
+          ],
+        },
+        member_type_info: MemberTypeInfo {
+          binary_type_enums: vec![
+            BinaryType::StringArray,
+            BinaryType::Primitive,
+            BinaryType::Primitive,
+          ],
+          additional_infos: vec![
+            None,
+            Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
+            Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
+          ],
+        },
+      }),
+    )]),
     pre_method_referenceables: vec![
       Referenceable::Classes(Classes {
         class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {

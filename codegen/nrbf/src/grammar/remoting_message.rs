@@ -14,7 +14,7 @@ use serde::{
 
 use crate::{
   data_type::{Int32, LengthPrefixedString},
-  grammar::{MemberReferenceInner, MethodCall, MethodReturn, Referenceable},
+  grammar::{Class, MemberReferenceInner, MethodCall, MethodReturn, Referenceable},
   record::{BinaryLibrary, MessageEnd, SerializationHeader},
   BinaryParser,
 };
@@ -44,6 +44,7 @@ impl<'i> MethodCallOrReturn<'i> {
 pub struct RemotingMessage<'i> {
   pub header: SerializationHeader,
   pub binary_libraries: BTreeMap<Int32, LengthPrefixedString<'i>>,
+  pub classes: BTreeMap<Int32, Class<'i>>,
   pub pre_method_referenceables: Vec<Referenceable<'i>>,
   pub method_call_or_return: Option<MethodCallOrReturn<'i>>,
   pub post_method_referenceables: Vec<Referenceable<'i>>,
@@ -65,6 +66,7 @@ impl<'i> RemotingMessage<'i> {
       Self {
         header,
         binary_libraries: parser.binary_libraries,
+        classes: parser.classes,
         pre_method_referenceables,
         method_call_or_return,
         post_method_referenceables,
