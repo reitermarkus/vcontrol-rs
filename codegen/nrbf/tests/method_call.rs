@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use nrbf::{
   common::{ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
@@ -50,10 +52,17 @@ fn method_call() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::from_iter([
+      (
+        Int32(3),
+        LengthPrefixedString::from(
+          "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
+        )
+      )
+    ]),
     pre_method_referenceables: vec![],
     method_call_or_return: Some(MethodCallOrReturn::MethodCall(
       MethodCall {
-        binary_library: None,
         binary_method_call: BinaryMethodCall {
           message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
           method_name: StringValueWithCode::from(
@@ -68,7 +77,6 @@ fn method_call() {
           args: None,
         },
         call_array: Some(CallArray {
-          binary_library: None,
           call_array: MethodCallArray(ArraySingleObject {
             array_info: ArrayInfo {
               object_id: Int32(1),
@@ -76,7 +84,6 @@ fn method_call() {
             },
             member_references: vec![
               MemberReference2 {
-                binary_library: None,
                 member_reference: MemberReferenceInner::MemberReference(
                   MemberReference {
                     id_ref: Int32(2),
@@ -91,12 +98,6 @@ fn method_call() {
     post_method_referenceables: vec![
       Referenceable::Classes(
         Classes {
-          binary_library: Some(BinaryLibrary {
-            library_id: Int32(3),
-            library_name: LengthPrefixedString::from(
-              "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
-            ),
-          }),
           class: Class::ClassWithMembersAndTypes(
             ClassWithMembersAndTypes {
               class_info: ClassInfo {
@@ -128,7 +129,6 @@ fn method_call() {
           ),
           member_references: vec![
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::BinaryObjectString(
                 BinaryObjectString {
                   object_id: Int32(4),
@@ -137,7 +137,6 @@ fn method_call() {
               )
             },
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::BinaryObjectString(
                 BinaryObjectString {
                   object_id: Int32(5),
@@ -146,7 +145,6 @@ fn method_call() {
               )
             },
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::BinaryObjectString(
                 BinaryObjectString {
                   object_id: Int32(6),
@@ -155,7 +153,6 @@ fn method_call() {
               )
             },
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::BinaryObjectString(
                 BinaryObjectString {
                   object_id: Int32(7),

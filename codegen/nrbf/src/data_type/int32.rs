@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize, Serializer};
 
 /// 2.1.1 `INT32`
 #[cfg_attr(feature = "serde", derive(Deserialize))]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Int32(pub i32);
 
 impl Int32 {

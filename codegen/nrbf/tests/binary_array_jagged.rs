@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use nrbf::{
   common::{AdditionalTypeInfo, ArrayInfo},
   data_type::Int32,
@@ -61,9 +63,9 @@ fn binary_array_jagged() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::new(),
     pre_method_referenceables: vec![
       Referenceable::Arrays(Arrays {
-        binary_library: None,
         array: Array::BinaryArray(BinaryArray {
           object_id: Int32(1),
           binary_array_type_enum: BinaryArrayType::Jagged,
@@ -74,29 +76,24 @@ fn binary_array_jagged() {
           additional_type_info: Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
           members: vec![
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
             },
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(3) }),
             },
             MemberReference2 {
-              binary_library: None,
               member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(4) }),
             },
           ],
         }),
       }),
       Referenceable::Arrays(Arrays {
-        binary_library: None,
         array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
           array_info: ArrayInfo { object_id: Int32(2), length: Int32(2) },
           members: vec![MemberPrimitiveUnTyped::Int32(Int32(1)), MemberPrimitiveUnTyped::Int32(Int32(2))],
         }),
       }),
       Referenceable::Arrays(Arrays {
-        binary_library: None,
         array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
           array_info: ArrayInfo { object_id: Int32(3), length: Int32(3) },
           members: vec![
@@ -107,7 +104,6 @@ fn binary_array_jagged() {
         }),
       }),
       Referenceable::Arrays(Arrays {
-        binary_library: None,
         array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
           array_info: ArrayInfo { object_id: Int32(4), length: Int32(4) },
           members: vec![

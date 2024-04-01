@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use const_str::concat_bytes;
 use nrbf::{
   common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
@@ -34,8 +36,8 @@ fn single() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
+    binary_libraries: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::Classes(Classes {
-      binary_library: None,
       class: Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
         class_info: ClassInfo {
           object_id: Int32(1),
@@ -48,7 +50,6 @@ fn single() {
         },
       }),
       member_references: vec![MemberReference2 {
-        binary_library: None,
         member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(Single(3.14))),
       }],
     })],

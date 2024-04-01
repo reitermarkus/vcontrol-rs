@@ -4,6 +4,7 @@ use crate::{
   data_type::Int32,
   grammar::{Arrays, Classes},
   record::BinaryObjectString,
+  BinaryParser,
 };
 
 /// 2.7 Binary Record Grammar - `referenceable`
@@ -15,10 +16,13 @@ pub enum Referenceable<'i> {
 }
 
 impl<'i> Referenceable<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+    if let Ok(s) = map(|input| Classes::parse(input, parser), Self::Classes)(input) {
+      return Ok(s)
+    }
+
     alt((
-      map(Classes::parse, Self::Classes),
-      map(Arrays::parse, Self::Arrays),
+      map(|input| Arrays::parse(input, parser), Self::Arrays),
       map(BinaryObjectString::parse, Self::BinaryObjectString),
     ))(input)
   }
