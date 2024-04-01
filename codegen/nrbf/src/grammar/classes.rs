@@ -6,7 +6,7 @@ use nom::{
 };
 
 use crate::{
-  common::MemberTypeInfo,
+  common::{ClassInfo, MemberTypeInfo},
   data_type::Int32,
   grammar::MemberReference2,
   record::{
@@ -18,7 +18,6 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Class<'i> {
-  ClassWithId(ClassWithId),
   ClassWithMembers(ClassWithMembers<'i>),
   ClassWithMembersAndTypes(ClassWithMembersAndTypes<'i>),
   SystemClassWithMembers(SystemClassWithMembers<'i>),
@@ -26,24 +25,12 @@ pub enum Class<'i> {
 }
 
 impl<'i> Class<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    alt((
-      map(ClassWithId::parse, Self::ClassWithId),
-      map(ClassWithMembers::parse, Self::ClassWithMembers),
-      map(ClassWithMembersAndTypes::parse, Self::ClassWithMembersAndTypes),
-      map(SystemClassWithMembers::parse, Self::SystemClassWithMembers),
-      map(SystemClassWithMembersAndTypes::parse, Self::SystemClassWithMembersAndTypes),
-    ))(input)
-  }
-
-  #[inline]
-  pub(crate) fn object_id(&self) -> Int32 {
+  pub fn class_info(&self) -> &ClassInfo<'i> {
     match self {
-      Self::ClassWithId(class) => class.object_id(),
-      Self::ClassWithMembers(class) => class.object_id(),
-      Self::ClassWithMembersAndTypes(class) => class.object_id(),
-      Self::SystemClassWithMembers(class) => class.object_id(),
-      Self::SystemClassWithMembersAndTypes(class) => class.object_id(),
+      Self::ClassWithMembers(class) => &class.class_info,
+      Self::ClassWithMembersAndTypes(class) => &class.class_info,
+      Self::SystemClassWithMembers(class) => &class.class_info,
+      Self::SystemClassWithMembersAndTypes(class) => &class.class_info,
     }
   }
 }
@@ -51,12 +38,12 @@ impl<'i> Class<'i> {
 /// 2.7 Binary Record Grammar - `Classes`
 #[derive(Debug, Clone, PartialEq)]
 pub struct Classes<'i> {
-  pub class: Class<'i>,
+  pub class_id: Int32,
   pub member_references: Vec<MemberReference2<'i>>,
 }
 
 impl<'i> Classes<'i> {
-  fn parse_member_references(
+  pub fn parse_member_references(
     mut input: &'i [u8],
     member_type_info: &MemberTypeInfo<'i>,
     parser: &mut BinaryParser<'i>,
@@ -77,26 +64,13 @@ impl<'i> Classes<'i> {
   pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, ()) = parser.parse_binary_library(input)?;
 
-    parser.parse_class(input)?;
-    let (input, class) = Class::parse(input)?;
+    let (input, (class_id, member_references)) = parser.parse_class(input)?;
 
-    let (input, member_references) = match class {
-      Class::ClassWithId(ref _class) => many0(|input| MemberReference2::parse(input, parser))(input)?,
-      Class::ClassWithMembers(ref _class) => many0(|input| MemberReference2::parse(input, parser))(input)?,
-      Class::ClassWithMembersAndTypes(ref class) => {
-        Self::parse_member_references(input, &class.member_type_info, parser)?
-      },
-      Class::SystemClassWithMembers(ref _class) => many0(|input| MemberReference2::parse(input, parser))(input)?,
-      Class::SystemClassWithMembersAndTypes(ref class) => {
-        Self::parse_member_references(input, &class.member_type_info, parser)?
-      },
-    };
-
-    Ok((input, Self { class, member_references }))
+    Ok((input, Self { class_id, member_references }))
   }
 
   #[inline]
   pub(crate) fn object_id(&self) -> Int32 {
-    self.class.object_id()
+    self.class_id
   }
 }

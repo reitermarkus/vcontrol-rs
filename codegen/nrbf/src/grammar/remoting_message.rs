@@ -106,108 +106,118 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
 
     let root_object = referenceables.remove(&(self.header.root_id.into()));
     match root_object {
-      Some(Referenceable::Classes(Classes { class, member_references })) => match class {
-        Class::ClassWithId(class) => unimplemented!(),
-        Class::ClassWithMembers(class) => unimplemented!(),
-        Class::ClassWithMembersAndTypes(class) => unimplemented!(),
-        Class::SystemClassWithMembers(class) => unimplemented!(),
-        Class::SystemClassWithMembersAndTypes(class) => {
-          match (class.class_info.name.as_str(), class.class_info.member_names.as_slice(), member_references.as_slice())
-          {
-            (
-              "System.Boolean",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(n)),
-              }],
-            ) => visitor.visit_bool((*n).into()),
-            (
-              "System.Byte",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Byte(n)),
-              }],
-            ) => visitor.visit_u8((*n).into()),
-            (
-              "System.SByte",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::SByte(n)),
-              }],
-            ) => visitor.visit_i8((*n).into()),
-            (
-              "System.Char",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Char(c)),
-              }],
-            ) => visitor.visit_char((*c).into()),
-            (
-              "System.Decimal",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Decimal(c)),
-              }],
-            ) => unimplemented!(),
-            (
-              "System.Double",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(n)),
-              }],
-            ) => visitor.visit_f64((*n).into()),
-            (
-              "System.Single",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(n)),
-              }],
-            ) => visitor.visit_f32((*n).into()),
-            (
-              "System.Int32",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(n)),
-              }],
-            ) => visitor.visit_i32((*n).into()),
-            (
-              "System.UInt32",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt32(n)),
-              }],
-            ) => visitor.visit_u32((*n).into()),
-            (
-              "System.Int64",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(n)),
-              }],
-            ) => visitor.visit_i64((*n).into()),
-            (
-              "System.UInt64",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt64(n)),
-              }],
-            ) => visitor.visit_u64((*n).into()),
-            (
-              "System.Int16",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(n)),
-              }],
-            ) => visitor.visit_i16((*n).into()),
-            (
-              "System.UInt16",
-              [LengthPrefixedString("m_value")],
-              [MemberReference2 {
-                member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt16(n)),
-              }],
-            ) => visitor.visit_u16((*n).into()),
-            (name, _, _) => Err(Error::custom(format!("invalid system type: {}", name))),
-          }
-        },
+      Some(Referenceable::Classes(Classes { class_id, member_references })) => {
+        match self.classes.get(&class_id).unwrap() {
+          Class::ClassWithMembers(class) => {
+            Err(Error::invalid_type(Unexpected::Other(class.class_info.name.as_str()), &visitor))
+          },
+          Class::ClassWithMembersAndTypes(class) => {
+            Err(Error::invalid_type(Unexpected::Other(class.class_info.name.as_str()), &visitor))
+          },
+          Class::SystemClassWithMembers(class) => {
+            Err(Error::invalid_type(Unexpected::Other(class.class_info.name.as_str()), &visitor))
+          },
+          Class::SystemClassWithMembersAndTypes(class) => {
+            match (
+              class.class_info.name.as_str(),
+              class.class_info.member_names.as_slice(),
+              member_references.as_slice(),
+            ) {
+              (
+                "System.Boolean",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(n)),
+                }],
+              ) => visitor.visit_bool((*n).into()),
+              (
+                "System.Byte",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Byte(n)),
+                }],
+              ) => visitor.visit_u8((*n).into()),
+              (
+                "System.SByte",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::SByte(n)),
+                }],
+              ) => visitor.visit_i8((*n).into()),
+              (
+                "System.Char",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Char(c)),
+                }],
+              ) => visitor.visit_char((*c).into()),
+              (
+                "System.Decimal",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Decimal(c)),
+                }],
+              ) => unimplemented!(),
+              (
+                "System.Double",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(n)),
+                }],
+              ) => visitor.visit_f64((*n).into()),
+              (
+                "System.Single",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(n)),
+                }],
+              ) => visitor.visit_f32((*n).into()),
+              (
+                "System.Int32",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(n)),
+                }],
+              ) => visitor.visit_i32((*n).into()),
+              (
+                "System.UInt32",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt32(n)),
+                }],
+              ) => visitor.visit_u32((*n).into()),
+              (
+                "System.Int64",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(n)),
+                }],
+              ) => visitor.visit_i64((*n).into()),
+              (
+                "System.UInt64",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt64(n)),
+                }],
+              ) => visitor.visit_u64((*n).into()),
+              (
+                "System.Int16",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(n)),
+                }],
+              ) => visitor.visit_i16((*n).into()),
+              (
+                "System.UInt16",
+                [LengthPrefixedString("m_value")],
+                [MemberReference2 {
+                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt16(n)),
+                }],
+              ) => visitor.visit_u16((*n).into()),
+              (name, _, _) => Err(Error::custom(format!("invalid system type: {}", name))),
+            }
+          },
+        }
       },
       Some(Referenceable::Arrays(Arrays { array })) => match array {
         Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info: _, members }) => {
