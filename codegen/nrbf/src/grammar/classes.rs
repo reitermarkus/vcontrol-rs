@@ -1,15 +1,10 @@
-use nom::{
-  IResult,
-};
+use nom::IResult;
 
 use crate::{
-  common::{ClassInfo},
+  common::ClassInfo,
   data_type::Int32,
   grammar::MemberReferenceInner,
-  record::{
-    ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers,
-    SystemClassWithMembersAndTypes,
-  },
+  record::{ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers, SystemClassWithMembersAndTypes},
   BinaryParser,
 };
 
