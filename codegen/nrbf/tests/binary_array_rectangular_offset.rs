@@ -1,9 +1,6 @@
 use std::collections::BTreeMap;
 
-use nrbf::{
-  data_type::Int32,
-  RemotingMessage, Value,
-};
+use nrbf::{data_type::Int32, RemotingMessage, Value};
 
 #[test]
 fn binary_array_rectangular_offset() {

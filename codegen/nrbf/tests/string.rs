@@ -1,10 +1,7 @@
 use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
-use nrbf::{
-  data_type::Int32,
-  RemotingMessage, Value,
-};
+use nrbf::{data_type::Int32, RemotingMessage, Value};
 
 #[test]
 fn string_empty() {
