@@ -40,10 +40,9 @@ impl<'i> MethodCallOrReturn<'i> {
 /// 2.7 Binary Record Grammar - `remotingMessage`
 #[derive(Debug, Clone, PartialEq)]
 pub struct RemotingMessage<'i> {
-  pub header: SerializationHeader,
+  pub root_object: Value<'i>,
   pub objects: BTreeMap<Int32, Value<'i>>,
   pub method_call_or_return: Option<MethodCallOrReturn<'i>>,
-  pub end: MessageEnd,
 }
 
 impl<'i> RemotingMessage<'i> {
@@ -51,6 +50,8 @@ impl<'i> RemotingMessage<'i> {
     let mut parser = BinaryParser::default();
 
     let (mut input, header) = SerializationHeader::parse(input)?;
+
+    let root_object = Value::Ref(header.root_id);
 
     while let Ok((input2, _)) = parser.parse_referenceable(input) {
       input = input2;
@@ -62,9 +63,9 @@ impl<'i> RemotingMessage<'i> {
       input = input2;
     }
 
-    let (input, end) = MessageEnd::parse(input)?;
+    let (input, MessageEnd) = MessageEnd::parse(input)?;
 
-    Ok((input, Self { header, objects: parser.objects, method_call_or_return, end }))
+    Ok((input, Self { root_object, objects: parser.objects, method_call_or_return }))
   }
 }
 
@@ -90,11 +91,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
 
     let objects = self.objects;
 
-    let root_object = objects
-      .get(&self.header.root_id)
-      .ok_or_else(|| Error::invalid_type(Unexpected::Other("no root object"), &visitor))?;
-
-    ValueDeserializer::new(&objects, &root_object).deserialize_any(visitor)
+    ValueDeserializer::new(&objects, &self.root_object).deserialize_any(visitor)
   }
 
   forward_to_deserialize_any! {

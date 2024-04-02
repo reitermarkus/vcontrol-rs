@@ -4,12 +4,14 @@ use serde::de::{value::Error, Deserialize};
 pub mod common;
 pub mod data_type;
 pub mod enumeration;
-pub mod grammar;
 pub mod method_invocation;
 pub mod record;
 
 mod binary_parser;
 pub use binary_parser::BinaryParser;
+
+mod remoting_message;
+pub use remoting_message::{MethodCallOrReturn, RemotingMessage};
 
 pub mod value;
 pub use value::Value;
@@ -21,8 +23,6 @@ where
 {
   use nom::combinator::all_consuming;
   use serde::de::{Error, Unexpected};
-
-  use grammar::RemotingMessage;
 
   let (_, remoting_message) = all_consuming(RemotingMessage::parse)(bytes)
     .map_err(|_| Error::invalid_type(Unexpected::Other("parsing error"), &"remoting message"))?;
