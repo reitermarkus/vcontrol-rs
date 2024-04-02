@@ -3,10 +3,8 @@ use std::collections::{BTreeMap, HashMap};
 use const_str::concat_bytes;
 use nrbf::{
   data_type::Int32,
-  grammar::RemotingMessage,
-  record::{MessageEnd, SerializationHeader},
   value::Object,
-  Value,
+  RemotingMessage, Value,
 };
 
 #[rustfmt::skip]
@@ -30,12 +28,7 @@ const INPUT: &[u8] = concat_bytes!(
 #[test]
 fn single() {
   let output = RemotingMessage {
-    header: SerializationHeader {
-      root_id: Int32(1),
-      header_id: Int32(-1),
-      major_version: Int32(1),
-      minor_version: Int32(0),
-    },
+    root_object: Value::Ref(Int32(1)),
     objects: BTreeMap::from_iter([(
       Int32(1),
       Value::Object(Object {
@@ -45,7 +38,6 @@ fn single() {
       }),
     )]),
     method_call_or_return: None,
-    end: MessageEnd,
   };
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
