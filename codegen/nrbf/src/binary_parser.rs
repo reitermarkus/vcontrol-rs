@@ -125,11 +125,11 @@ impl<'i> BinaryParser<'i> {
     let (input, (object_class, member_references)) = match class {
       Class::ClassWithMembers(ref class) => {
         let object_class = ObjectClass {
-          name: class.class_info.name.as_str(),
+          name: class.class_info().name.as_str(),
           library: Some(self.binary_libraries[&class.library_id].as_str()),
         };
 
-        let member_count = class.class_info.member_names.len();
+        let member_count = class.class_info().member_names.len();
         let (input, member_references) =
           many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
 
@@ -137,7 +137,7 @@ impl<'i> BinaryParser<'i> {
       },
       Class::ClassWithMembersAndTypes(ref class) => {
         let object_class = ObjectClass {
-          name: class.class_info.name.as_str(),
+          name: class.class_info().name.as_str(),
           library: Some(self.binary_libraries[&class.library_id].as_str()),
         };
 
@@ -146,16 +146,16 @@ impl<'i> BinaryParser<'i> {
         (input, (object_class, member_references))
       },
       Class::SystemClassWithMembers(ref class) => {
-        let object_class = ObjectClass { name: class.class_info.name.as_str(), library: None };
+        let object_class = ObjectClass { name: class.class_info().name.as_str(), library: None };
 
-        let member_count = class.class_info.member_names.len();
+        let member_count = class.class_info().member_names.len();
         let (input, member_references) =
           many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
 
         (input, (object_class, member_references))
       },
       Class::SystemClassWithMembersAndTypes(ref class) => {
-        let object_class = ObjectClass { name: class.class_info.name.as_str(), library: None };
+        let object_class = ObjectClass { name: class.class_info().name.as_str(), library: None };
 
         let (input, member_references) = self.parse_members_with_type_info(input, &class.member_type_info)?;
 
