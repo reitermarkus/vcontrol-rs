@@ -1,4 +1,8 @@
-use nom::{combinator::map, number::complete::u8, IResult};
+use nom::{
+  combinator::{map, verify},
+  number::complete::u8,
+  IResult,
+};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize, Serializer};
 
@@ -10,6 +14,10 @@ pub struct Byte(pub u8);
 impl Byte {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     map(u8, Self)(input)
+  }
+
+  pub fn parse_positive(input: &[u8]) -> IResult<&[u8], Self> {
+    verify(Self::parse, |n| n.0 > 0)(input)
   }
 }
 

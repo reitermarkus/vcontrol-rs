@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
-  binary_parser::Object,
   data_type::{Int32, LengthPrefixedString},
   grammar::{MethodCallOrReturn, MethodReturn, RemotingMessage},
   method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
@@ -24,9 +23,7 @@ fn method_return() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::new(),
-    pre_method_referenceables: vec![],
+    objects: BTreeMap::new(),
     method_call_or_return: Some(MethodCallOrReturn::MethodReturn(MethodReturn {
       binary_method_return: BinaryMethodReturn {
         message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
@@ -38,7 +35,6 @@ fn method_return() {
       },
       return_call_array: None,
     })),
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 

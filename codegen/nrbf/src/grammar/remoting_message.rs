@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 
 use nom::{
   combinator::{map, opt},
-  multi::many0,
   IResult,
 };
 #[cfg(feature = "serde")]
@@ -14,7 +13,7 @@ use serde::{
 use crate::{
   binary_parser::Object,
   data_type::{Int32, LengthPrefixedString},
-  grammar::{Class, MethodCall, MethodReturn, Referenceable},
+  grammar::{MethodCall, MethodReturn},
   record::{MessageEnd, SerializationHeader},
   BinaryParser,
 };
@@ -43,11 +42,8 @@ impl<'i> MethodCallOrReturn<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct RemotingMessage<'i> {
   pub header: SerializationHeader,
-  pub binary_libraries: BTreeMap<Int32, LengthPrefixedString<'i>>,
-  pub classes: BTreeMap<Int32, Class<'i>>,
-  pub pre_method_referenceables: Vec<Referenceable<'i>>,
+  pub objects: BTreeMap<Int32, Object<'i>>,
   pub method_call_or_return: Option<MethodCallOrReturn<'i>>,
-  pub post_method_referenceables: Vec<Referenceable<'i>>,
   pub end: MessageEnd,
 }
 
@@ -55,24 +51,21 @@ impl<'i> RemotingMessage<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let mut parser = BinaryParser::default();
 
-    let (input, header) = SerializationHeader::parse(input)?;
-    let (input, pre_method_referenceables) = many0(|input| Referenceable::parse(input, &mut parser))(input)?;
-    let (input, method_call_or_return) = opt(|input| MethodCallOrReturn::parse(input, &mut parser))(input)?;
-    let (input, post_method_referenceables) = many0(|input| Referenceable::parse(input, &mut parser))(input)?;
+    let (mut input, header) = SerializationHeader::parse(input)?;
+
+    while let Ok((input2, _)) = parser.parse_referenceable(input) {
+      input = input2;
+    }
+
+    let (mut input, method_call_or_return) = opt(|input| MethodCallOrReturn::parse(input, &mut parser))(input)?;
+
+    while let Ok((input2, _)) = parser.parse_referenceable(input) {
+      input = input2;
+    }
+
     let (input, end) = MessageEnd::parse(input)?;
 
-    Ok((
-      input,
-      Self {
-        header,
-        binary_libraries: parser.binary_libraries,
-        classes: parser.classes,
-        pre_method_referenceables,
-        method_call_or_return,
-        post_method_referenceables,
-        end,
-      },
-    ))
+    Ok((input, Self { header, objects: parser.objects, method_call_or_return, end }))
   }
 }
 
@@ -84,12 +77,9 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   where
     V: Visitor<'de>,
   {
-    use serde::de::{value::SeqDeserializer, Error, Unexpected};
+    use serde::de::{Error, Unexpected};
 
-    use crate::{
-      grammar::{Array, Arrays, Class, Classes, MemberReferenceInner},
-      record::{ArraySinglePrimitive, ArraySingleString, MemberPrimitiveUnTyped},
-    };
+    use crate::record::MemberPrimitiveUnTyped;
 
     match self.method_call_or_return {
       Some(MethodCallOrReturn::MethodCall(_)) => {
@@ -101,118 +91,39 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
       None => (),
     }
 
-    let mut referenceables =
-      BTreeMap::from_iter(self.pre_method_referenceables.into_iter().map(|r| (i32::from(r.object_id()), r)));
+    let objects = self.objects;
 
-    let root_object = referenceables.remove(&(self.header.root_id.into()));
+    let root_object = objects.get(&self.header.root_id).cloned();
     match root_object {
-      Some(Referenceable::Classes(Classes { class_id, member_references })) => {
-        match self.classes.get(&class_id).unwrap() {
-          Class::ClassWithMembers(class) => {
-            Err(Error::invalid_type(Unexpected::Other(class.class_info.name.as_str()), &visitor))
-          },
-          Class::ClassWithMembersAndTypes(class) => {
-            Err(Error::invalid_type(Unexpected::Other(class.class_info.name.as_str()), &visitor))
-          },
-          Class::SystemClassWithMembers(class) => {
-            Err(Error::invalid_type(Unexpected::Other(class.class_info.name.as_str()), &visitor))
-          },
-          Class::SystemClassWithMembersAndTypes(class) => {
-            match (
-              class.class_info.name.as_str(),
-              class.class_info.member_names.as_slice(),
-              member_references.as_slice(),
-            ) {
-              (
-                "System.Boolean",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Boolean(n))],
-              ) => visitor.visit_bool((*n).into()),
-              (
-                "System.Byte",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Byte(n))],
-              ) => visitor.visit_u8((*n).into()),
-              (
-                "System.SByte",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::SByte(n))],
-              ) => visitor.visit_i8((*n).into()),
-              (
-                "System.Char",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Char(c))],
-              ) => visitor.visit_char((*c).into()),
-              (
-                "System.Decimal",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Decimal(_c))],
-              ) => unimplemented!(),
-              (
-                "System.Double",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Double(n))],
-              ) => visitor.visit_f64((*n).into()),
-              (
-                "System.Single",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Single(n))],
-              ) => visitor.visit_f32((*n).into()),
-              (
-                "System.Int32",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Int32(n))],
-              ) => visitor.visit_i32((*n).into()),
-              (
-                "System.UInt32",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::UInt32(n))],
-              ) => visitor.visit_u32((*n).into()),
-              (
-                "System.Int64",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Int64(n))],
-              ) => visitor.visit_i64((*n).into()),
-              (
-                "System.UInt64",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::UInt64(n))],
-              ) => visitor.visit_u64((*n).into()),
-              (
-                "System.Int16",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::Int16(n))],
-              ) => visitor.visit_i16((*n).into()),
-              (
-                "System.UInt16",
-                [LengthPrefixedString("m_value")],
-                [Object::Primitive(MemberPrimitiveUnTyped::UInt16(n))],
-              ) => visitor.visit_u16((*n).into()),
-              (name, _, _) => Err(Error::custom(format!("invalid system type: {}", name))),
-            }
-          },
+      Some(Object::Object { class, members }) => {
+        if class.library.is_some() {
+          return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
+        }
+
+        let value = if let Some(value) = members.get("m_value") {
+          value
+        } else {
+          return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
+        };
+
+        match (class.name, value) {
+          ("System.Boolean", Object::Primitive(MemberPrimitiveUnTyped::Boolean(n))) => visitor.visit_bool((*n).into()),
+          ("System.Byte", Object::Primitive(MemberPrimitiveUnTyped::Byte(n))) => visitor.visit_u8((*n).into()),
+          ("System.SByte", Object::Primitive(MemberPrimitiveUnTyped::SByte(n))) => visitor.visit_i8((*n).into()),
+          ("System.Char", Object::Primitive(MemberPrimitiveUnTyped::Char(c))) => visitor.visit_char((*c).into()),
+          ("System.Decimal", Object::Primitive(MemberPrimitiveUnTyped::Decimal(_c))) => unimplemented!(),
+          ("System.Double", Object::Primitive(MemberPrimitiveUnTyped::Double(n))) => visitor.visit_f64((*n).into()),
+          ("System.Single", Object::Primitive(MemberPrimitiveUnTyped::Single(n))) => visitor.visit_f32((*n).into()),
+          ("System.Int32", Object::Primitive(MemberPrimitiveUnTyped::Int32(n))) => visitor.visit_i32((*n).into()),
+          ("System.UInt32", Object::Primitive(MemberPrimitiveUnTyped::UInt32(n))) => visitor.visit_u32((*n).into()),
+          ("System.Int64", Object::Primitive(MemberPrimitiveUnTyped::Int64(n))) => visitor.visit_i64((*n).into()),
+          ("System.UInt64", Object::Primitive(MemberPrimitiveUnTyped::UInt64(n))) => visitor.visit_u64((*n).into()),
+          ("System.Int16", Object::Primitive(MemberPrimitiveUnTyped::Int16(n))) => visitor.visit_i16((*n).into()),
+          ("System.UInt16", Object::Primitive(MemberPrimitiveUnTyped::UInt16(n))) => visitor.visit_u16((*n).into()),
+          (name, _) => Err(Error::custom(format!("invalid system type: {}", name))),
         }
       },
-      Some(Referenceable::Arrays(Arrays { array })) => match array {
-        Array::ArraySinglePrimitive(_, members) => {
-          let it = members.into_iter();
-          SeqDeserializer::new(it).deserialize_any(visitor)
-        },
-        Array::ArraySingleString(_, members) => {
-          let it = members.into_iter().map(|member| match member {
-            Object::String(s) => s,
-            Object::Ref(id) => match referenceables.remove(&(id.into())) {
-              Some(Referenceable::BinaryObjectString(s)) => s.as_str(),
-              _ => unimplemented!(),
-            },
-            Object::Null(_) => unimplemented!(),
-            _ => unreachable!(),
-          });
-          SeqDeserializer::new(it).deserialize_any(visitor)
-        },
-        _ => unimplemented!(),
-      },
-      Some(Referenceable::BinaryObjectString(s)) => s.deserialize_any(visitor),
+      Some(object) => object.deserialize_any(visitor),
       None => Err(Error::custom("root object not found")),
     }
   }
