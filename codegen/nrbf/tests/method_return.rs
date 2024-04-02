@@ -2,9 +2,9 @@ use std::collections::BTreeMap;
 
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
-  grammar::{MethodCallOrReturn, RemotingMessage},
   method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
-  record::{BinaryMethodReturn, MessageEnd, SerializationHeader},
+  record::{BinaryMethodReturn},
+  MethodCallOrReturn, RemotingMessage, Value,
 };
 
 #[test]
@@ -17,12 +17,7 @@ fn method_return() {
   ];
 
   let output = RemotingMessage {
-    header: SerializationHeader {
-      root_id: Int32(0),
-      header_id: Int32(0),
-      major_version: Int32(1),
-      minor_version: Int32(0),
-    },
+    root_object: Value::Ref(Int32(0)),
     objects: BTreeMap::new(),
     method_call_or_return: Some(MethodCallOrReturn::MethodReturn(BinaryMethodReturn {
       message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
@@ -32,7 +27,6 @@ fn method_return() {
       call_context: None,
       args: None,
     })),
-    end: MessageEnd,
   };
 
   assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)))
