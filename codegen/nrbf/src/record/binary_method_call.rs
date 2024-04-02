@@ -21,7 +21,7 @@ pub struct BinaryMethodCall<'i> {
 }
 
 impl<'i> BinaryMethodCall<'i> {
-  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8], _parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::MethodCall.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;

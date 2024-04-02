@@ -6,7 +6,7 @@ use nrbf::{
   data_type::{Byte, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
   grammar::{
-    Array, Arrays, Class, Classes, MemberReference2, MemberReferenceInner, NullObject, Referenceable, RemotingMessage,
+    Array, Arrays, Class, Classes, MemberReferenceInner, NullObject, Referenceable, RemotingMessage,
   },
   record::{
     ArraySingleString, BinaryObjectString, MemberPrimitiveUnTyped, MemberReference, MessageEnd, ObjectNullMultiple256,
@@ -90,15 +90,9 @@ fn list_of_customers() {
       Referenceable::Classes(Classes {
         class_id: Int32(1),
         member_references: vec![
-          MemberReference2 {
-            member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) })
-          },
-          MemberReference2 {
-            member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
-          },
-          MemberReference2 {
-            member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
-          },
+          MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
+          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
+          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
         ],
       }),
       Referenceable::Arrays(Arrays {

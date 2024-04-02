@@ -13,6 +13,6 @@ pub use method_call::{CallArray, MethodCall};
 mod method_return;
 pub use method_return::{MethodReturn, ReturnCallArray};
 mod member_reference;
-pub use member_reference::{MemberReference2, MemberReferenceInner};
+pub use member_reference::{MemberReferenceInner};
 mod remoting_message;
 pub use remoting_message::{MethodCallOrReturn, RemotingMessage};

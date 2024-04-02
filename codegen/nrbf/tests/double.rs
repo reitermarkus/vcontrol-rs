@@ -5,7 +5,7 @@ use nrbf::{
   common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
   data_type::{Double, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  grammar::{Class, Classes, MemberReference2, MemberReferenceInner, Referenceable, RemotingMessage},
+  grammar::{Class, Classes, MemberReferenceInner, Referenceable, RemotingMessage},
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader, SystemClassWithMembersAndTypes},
 };
 
@@ -53,9 +53,9 @@ fn double() {
     )]),
     pre_method_referenceables: vec![Referenceable::Classes(Classes {
       class_id: Int32(1),
-      member_references: vec![MemberReference2 {
-        member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(Double(-0.1067))),
-      }],
+      member_references: vec![MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(Double(
+        -0.1067,
+      )))],
     })],
     method_call_or_return: None,
     post_method_referenceables: vec![],

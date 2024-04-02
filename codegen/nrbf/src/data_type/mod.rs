@@ -1,6 +1,6 @@
 //! 2.1.1 Common Data Types
 
-use nom::{number::complete::le_i32, IResult};
+use nom::{IResult};
 
 mod boolean;
 pub use boolean::Boolean;

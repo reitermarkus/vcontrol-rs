@@ -1,16 +1,13 @@
 use nom::{
-  branch::alt,
-  combinator::{map, opt},
-  multi::many0,
   IResult,
 };
 
 use crate::{
-  common::{ClassInfo, MemberTypeInfo},
+  common::{ClassInfo},
   data_type::Int32,
-  grammar::MemberReference2,
+  grammar::MemberReferenceInner,
   record::{
-    BinaryArray, BinaryLibrary, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers,
+    ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers,
     SystemClassWithMembersAndTypes,
   },
   BinaryParser,
@@ -39,28 +36,10 @@ impl<'i> Class<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Classes<'i> {
   pub class_id: Int32,
-  pub member_references: Vec<MemberReference2<'i>>,
+  pub member_references: Vec<MemberReferenceInner<'i>>,
 }
 
 impl<'i> Classes<'i> {
-  pub fn parse_member_references(
-    mut input: &'i [u8],
-    member_type_info: &MemberTypeInfo<'i>,
-    parser: &mut BinaryParser<'i>,
-  ) -> IResult<&'i [u8], Vec<MemberReference2<'i>>> {
-    let mut member_references = vec![];
-
-    for (binary_type_enum, additional_info) in
-      member_type_info.binary_type_enums.iter().zip(member_type_info.additional_infos.iter())
-    {
-      let member;
-      (input, member) = BinaryArray::parse_member(input, *binary_type_enum, additional_info.as_ref(), parser)?;
-      member_references.push(member);
-    }
-
-    Ok((input, member_references))
-  }
-
   pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, ()) = parser.parse_binary_library(input)?;
 
