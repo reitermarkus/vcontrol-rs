@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
+  binary_parser::Object,
   common::{ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
@@ -115,14 +116,8 @@ fn method_call() {
               object_id: Int32(1),
               length: Int32(1),
             },
-            member_references: vec![
-              MemberReferenceInner::MemberReference(
-                MemberReference {
-                  id_ref: Int32(2),
-                },
-              ),
-            ],
           }),
+          member_references: vec![Object::Ref(Int32(2))],
         }),
       },
     )),
@@ -131,30 +126,10 @@ fn method_call() {
         Classes {
           class_id: Int32(2),
           member_references: vec![
-            MemberReferenceInner::BinaryObjectString(
-              BinaryObjectString {
-                object_id: Int32(4),
-                value: LengthPrefixedString::from("One Microsoft Way"),
-              },
-            ),
-            MemberReferenceInner::BinaryObjectString(
-              BinaryObjectString {
-                object_id: Int32(5),
-                value: LengthPrefixedString::from("Redmond"),
-              },
-            ),
-            MemberReferenceInner::BinaryObjectString(
-              BinaryObjectString {
-                object_id: Int32(6),
-                value: LengthPrefixedString::from("WA"),
-              },
-            ),
-            MemberReferenceInner::BinaryObjectString(
-              BinaryObjectString {
-                object_id: Int32(7),
-                value: LengthPrefixedString::from("98054"),
-              },
-            )
+            Object::String("One Microsoft Way"),
+            Object::String("Redmond"),
+            Object::String("WA"),
+            Object::String("98054")
           ],
         },
       ),

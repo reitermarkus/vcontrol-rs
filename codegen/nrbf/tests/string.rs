@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
+  binary_parser::Object,
   data_type::{Int32, LengthPrefixedString},
   grammar::{Referenceable, RemotingMessage},
   record::{BinaryObjectString, MessageEnd, SerializationHeader},

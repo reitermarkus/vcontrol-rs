@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
+  binary_parser::Object,
   common::{AdditionalTypeInfo, ArrayInfo},
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
@@ -65,42 +66,29 @@ fn binary_array_jagged_offset() {
     classes: BTreeMap::new(),
     pre_method_referenceables: vec![
       Referenceable::Arrays(Arrays {
-        array: Array::BinaryArray(BinaryArray {
-          object_id: Int32(1),
-          binary_array_type_enum: BinaryArrayType::JaggedOffset,
-          rank: Int32(1),
-          lengths: vec![Int32(3)],
-          lower_bounds: Some(vec![Int32(2000)]),
-          type_enum: BinaryType::PrimitiveArray,
-          additional_type_info: Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
-          members: vec![
-            MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
-            MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(3) }),
-            MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(4) }),
+        array: Array::BinaryArray(Int32(1), vec![Object::Ref(Int32(2)), Object::Ref(Int32(3)), Object::Ref(Int32(4))]),
+      }),
+      Referenceable::Arrays(Arrays {
+        array: Array::ArraySinglePrimitive(Int32(2), vec![Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(1)))]),
+      }),
+      Referenceable::Arrays(Arrays {
+        array: Array::ArraySinglePrimitive(
+          Int32(3),
+          vec![
+            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
+            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(3))),
           ],
-        }),
+        ),
       }),
       Referenceable::Arrays(Arrays {
-        array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
-          array_info: ArrayInfo { object_id: Int32(2), length: Int32(1) },
-          members: vec![MemberPrimitiveUnTyped::Int32(Int32(1))],
-        }),
-      }),
-      Referenceable::Arrays(Arrays {
-        array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
-          array_info: ArrayInfo { object_id: Int32(3), length: Int32(2) },
-          members: vec![MemberPrimitiveUnTyped::Int32(Int32(2)), MemberPrimitiveUnTyped::Int32(Int32(3))],
-        }),
-      }),
-      Referenceable::Arrays(Arrays {
-        array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
-          array_info: ArrayInfo { object_id: Int32(4), length: Int32(3) },
-          members: vec![
-            MemberPrimitiveUnTyped::Int32(Int32(4)),
-            MemberPrimitiveUnTyped::Int32(Int32(5)),
-            MemberPrimitiveUnTyped::Int32(Int32(6)),
+        array: Array::ArraySinglePrimitive(
+          Int32(4),
+          vec![
+            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(4))),
+            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(5))),
+            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(6))),
           ],
-        }),
+        ),
       }),
     ],
     method_call_or_return: None,
