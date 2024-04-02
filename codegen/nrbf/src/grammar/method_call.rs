@@ -2,7 +2,7 @@ use nom::{combinator::opt, IResult};
 
 use crate::{
   data_type::Int32,
-  record::{BinaryLibrary, BinaryMethodCall, MethodCallArray},
+  record::{BinaryMethodCall, MethodCallArray},
   BinaryParser,
 };
 

@@ -4,7 +4,7 @@ use nrbf::{
   common::AdditionalTypeInfo,
   data_type::{Int32, Int64},
   enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
-  grammar::{Array, Arrays, MemberReference2, MemberReferenceInner, Referenceable, RemotingMessage},
+  grammar::{Array, Arrays, MemberReferenceInner, Referenceable, RemotingMessage},
   record::{BinaryArray, MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
 };
 
@@ -49,12 +49,8 @@ fn binary_array_rectangular() {
         type_enum: BinaryType::Primitive,
         additional_type_info: Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int64)),
         members: vec![
-          MemberReference2 {
-            member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(67))),
-          },
-          MemberReference2 {
-            member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(42))),
-          },
+          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(67))),
+          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(Int64(42))),
         ],
       }),
     })],

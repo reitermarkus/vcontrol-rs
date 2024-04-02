@@ -2,15 +2,15 @@ use nom::{combinator::opt, multi::many_m_n, IResult};
 
 use crate::{
   data_type::Int32,
-  grammar::MemberReference2,
-  record::{BinaryLibrary, BinaryMethodReturn, MethodReturnCallArray},
+  grammar::MemberReferenceInner,
+  record::{BinaryMethodReturn, MethodReturnCallArray},
   BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ReturnCallArray<'i> {
   pub return_call_array: MethodReturnCallArray<'i>,
-  pub member_references: Vec<MemberReference2<'i>>,
+  pub member_references: Vec<MemberReferenceInner<'i>>,
 }
 
 impl<'i> ReturnCallArray<'i> {
@@ -19,7 +19,8 @@ impl<'i> ReturnCallArray<'i> {
 
     let (input, return_call_array) = MethodReturnCallArray::parse(input, parser)?;
     let length = return_call_array.0.array_info.len();
-    let (input, member_references) = many_m_n(length, length, |input| MemberReference2::parse(input, parser))(input)?;
+    let (input, member_references) =
+      many_m_n(length, length, |input| MemberReferenceInner::parse(input, parser))(input)?;
 
     Ok((input, Self { return_call_array, member_references }))
   }

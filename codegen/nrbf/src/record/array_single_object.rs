@@ -1,12 +1,12 @@
 use nom::{multi::many_m_n, IResult, Parser};
 
-use crate::{common::ArrayInfo, data_type::Int32, grammar::MemberReference2, record::RecordType, BinaryParser};
+use crate::{common::ArrayInfo, data_type::Int32, grammar::MemberReferenceInner, record::RecordType, BinaryParser};
 
 /// 2.4.3.2 `ArraySingleObject`
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArraySingleObject<'i> {
   pub array_info: ArrayInfo,
-  pub member_references: Vec<MemberReference2<'i>>,
+  pub member_references: Vec<MemberReferenceInner<'i>>,
 }
 
 impl<'i> ArraySingleObject<'i> {
@@ -15,7 +15,8 @@ impl<'i> ArraySingleObject<'i> {
 
     let (input, array_info) = ArrayInfo::parse(input)?;
     let length = array_info.len();
-    let (input, member_references) = many_m_n(length, length, |input| MemberReference2::parse(input, parser))(input)?;
+    let (input, member_references) =
+      many_m_n(length, length, |input| MemberReferenceInner::parse(input, parser))(input)?;
 
     Ok((input, Self { array_info, member_references }))
   }

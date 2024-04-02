@@ -1,12 +1,12 @@
 use nom::{
   branch::alt,
-  combinator::{map, opt},
+  combinator::{map},
   IResult,
 };
 
 use crate::{
   data_type::Int32,
-  record::{ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary},
+  record::{ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray},
   BinaryParser,
 };
 

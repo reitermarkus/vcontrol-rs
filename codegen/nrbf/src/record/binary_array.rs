@@ -8,7 +8,7 @@ use crate::{
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
-  grammar::{MemberReference2, MemberReferenceInner},
+  grammar::{MemberReferenceInner},
   record::{BinaryObjectString, MemberPrimitiveUnTyped, RecordType},
   BinaryParser,
 };
@@ -23,7 +23,7 @@ pub struct BinaryArray<'i> {
   pub lower_bounds: Option<Vec<Int32>>,
   pub type_enum: BinaryType,
   pub additional_type_info: Option<AdditionalTypeInfo<'i>>,
-  pub members: Vec<MemberReference2<'i>>,
+  pub members: Vec<MemberReferenceInner<'i>>,
 }
 
 impl<'i> BinaryArray<'i> {
@@ -32,21 +32,21 @@ impl<'i> BinaryArray<'i> {
     type_enum: BinaryType,
     additional_type_info: Option<&AdditionalTypeInfo<'i>>,
     parser: &mut BinaryParser<'i>,
-  ) -> IResult<&'i [u8], MemberReference2<'i>> {
+  ) -> IResult<&'i [u8], MemberReferenceInner<'i>> {
     match (type_enum, additional_type_info) {
       (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
         |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
-        |value| MemberReference2 { member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(value) },
+        |value| MemberReferenceInner::MemberPrimitiveUnTyped(value),
       )(input),
-      (BinaryType::String, None) => map(BinaryObjectString::parse, |value| MemberReference2 {
-        member_reference: MemberReferenceInner::BinaryObjectString(value),
-      })(input),
-      (BinaryType::Object, None) => MemberReference2::parse(input, parser),
-      (BinaryType::SystemClass, Some(_class_name)) => MemberReference2::parse(input, parser),
-      (BinaryType::Class, Some(_class_type_info)) => MemberReference2::parse(input, parser),
-      (BinaryType::ObjectArray, None) => MemberReference2::parse(input, parser),
-      (BinaryType::StringArray, None) => MemberReference2::parse(input, parser),
-      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReference2::parse(input, parser),
+      (BinaryType::String, None) => {
+        map(BinaryObjectString::parse, |value| MemberReferenceInner::BinaryObjectString(value))(input)
+      },
+      (BinaryType::Object, None) => MemberReferenceInner::parse(input, parser),
+      (BinaryType::SystemClass, Some(_class_name)) => MemberReferenceInner::parse(input, parser),
+      (BinaryType::Class, Some(_class_type_info)) => MemberReferenceInner::parse(input, parser),
+      (BinaryType::ObjectArray, None) => MemberReferenceInner::parse(input, parser),
+      (BinaryType::StringArray, None) => MemberReferenceInner::parse(input, parser),
+      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReferenceInner::parse(input, parser),
       _ => unreachable!(),
     }
   }
