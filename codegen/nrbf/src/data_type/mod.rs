@@ -1,6 +1,6 @@
 //! 2.1.1 Common Data Types
 
-use nom::{IResult};
+use nom::IResult;
 
 mod boolean;
 pub use boolean::Boolean;

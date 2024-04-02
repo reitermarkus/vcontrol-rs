@@ -1,8 +1,4 @@
-use nom::{
-  branch::alt,
-  combinator::{map},
-  IResult,
-};
+use nom::{branch::alt, combinator::map, IResult};
 
 use crate::{
   grammar::{Classes, NullObject},

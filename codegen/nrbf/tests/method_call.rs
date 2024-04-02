@@ -5,13 +5,12 @@ use nrbf::{
   data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
   grammar::{
-    CallArray, Class, Classes, MemberReferenceInner, MethodCall, MethodCallOrReturn, Referenceable,
-    RemotingMessage,
+    CallArray, Class, Classes, MemberReferenceInner, MethodCall, MethodCallOrReturn, Referenceable, RemotingMessage,
   },
   method_invocation::{MessageFlags, StringValueWithCode},
   record::{
-    ArraySingleObject, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference,
-    MessageEnd, MethodCallArray, SerializationHeader,
+    ArraySingleObject, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference, MessageEnd,
+    MethodCallArray, SerializationHeader,
   },
 };
 
