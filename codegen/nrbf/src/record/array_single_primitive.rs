@@ -1,13 +1,6 @@
-use nom::{multi::many_m_n, IResult, Parser};
-#[cfg(feature = "serde")]
-use serde::ser::{Serialize, SerializeSeq, Serializer};
+use nom::{IResult, Parser};
 
-use crate::{
-  common::ArrayInfo,
-  data_type::Int32,
-  enumeration::PrimitiveType,
-  record::{MemberPrimitiveUnTyped, RecordType},
-};
+use crate::{common::ArrayInfo, data_type::Int32, enumeration::PrimitiveType, record::RecordType};
 
 /// 2.4.3.3 `ArraySinglePrimitive`
 #[derive(Debug, Clone, PartialEq)]

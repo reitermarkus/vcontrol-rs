@@ -1,9 +1,6 @@
-use nom::{multi::many_m_n, IResult, Parser};
+use nom::{IResult, Parser};
 
-use crate::{
-  binary_parser::Object, common::ArrayInfo, data_type::Int32, grammar::MemberReferenceInner, record::RecordType,
-  BinaryParser,
-};
+use crate::{common::ArrayInfo, data_type::Int32, record::RecordType};
 
 /// 2.4.3.2 `ArraySingleObject`
 #[derive(Debug, Clone, PartialEq)]

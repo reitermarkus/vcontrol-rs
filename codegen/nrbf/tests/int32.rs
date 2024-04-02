@@ -2,12 +2,10 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::Object,
-  common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
-  data_type::{Int32, LengthPrefixedString},
-  enumeration::{BinaryType, PrimitiveType},
-  grammar::{Class, Classes, MemberReferenceInner, Referenceable, RemotingMessage},
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader, SystemClassWithMembersAndTypes},
+  binary_parser::{Object, ObjectClass},
+  data_type::Int32,
+  grammar::RemotingMessage,
+  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
 };
 
 #[rustfmt::skip]
@@ -37,27 +35,14 @@ fn int32() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::from_iter([(
+    objects: BTreeMap::from_iter([(
       Int32(1),
-      Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-        class_info: ClassInfo {
-          object_id: Int32(1),
-          name: LengthPrefixedString::from("System.Int32"),
-          member_names: vec![LengthPrefixedString::from("m_value")],
-        },
-        member_type_info: MemberTypeInfo {
-          binary_type_enums: vec![BinaryType::Primitive],
-          additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32))],
-        },
-      }),
+      Object::Object {
+        class: ObjectClass { name: "System.Int32", library: None },
+        members: BTreeMap::from_iter([("m_value", Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(-1))))]),
+      },
     )]),
-    pre_method_referenceables: vec![Referenceable::Classes(Classes {
-      class_id: Int32(1),
-      member_references: vec![Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(-1)))],
-    })],
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 

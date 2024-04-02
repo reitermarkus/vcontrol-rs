@@ -1,18 +1,12 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
-  binary_parser::Object,
-  common::{ArrayInfo, ClassInfo, MemberTypeInfo},
+  binary_parser::{Object, ObjectClass},
+  common::ArrayInfo,
   data_type::{Int32, LengthPrefixedString},
-  enumeration::BinaryType,
-  grammar::{
-    CallArray, Class, Classes, MemberReferenceInner, MethodCall, MethodCallOrReturn, Referenceable, RemotingMessage,
-  },
+  grammar::{CallArray, MethodCall, MethodCallOrReturn, RemotingMessage},
   method_invocation::{MessageFlags, StringValueWithCode},
-  record::{
-    ArraySingleObject, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference, MessageEnd,
-    MethodCallArray, SerializationHeader,
-  },
+  record::{ArraySingleObject, BinaryMethodCall, MessageEnd, MethodCallArray, SerializationHeader},
 };
 
 #[test]
@@ -52,49 +46,24 @@ fn method_call() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::from_iter([
-      (
-        Int32(3),
-        LengthPrefixedString::from(
-          "DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
-        )
-      )
-    ]),
-    classes: BTreeMap::from_iter([
+    objects: BTreeMap::from_iter([
       (
         Int32(2),
-        Class::ClassWithMembersAndTypes(
-          ClassWithMembersAndTypes {
-            class_info: ClassInfo {
-              object_id: Int32(2),
-              name: LengthPrefixedString::from("DOJRemotingMetadata.Address"),
-              member_names: vec![
-                LengthPrefixedString::from("Street"),
-                LengthPrefixedString::from("City"),
-                LengthPrefixedString::from("State"),
-                LengthPrefixedString::from("Zip"),
-              ],
-            },
-            member_type_info: MemberTypeInfo {
-              binary_type_enums: vec![
-                BinaryType::String,
-                BinaryType::String,
-                BinaryType::String,
-                BinaryType::String,
-              ],
-              additional_infos: vec![
-                None,
-                None,
-                None,
-                None,
-              ],
-            },
-            library_id: Int32(3),
-          },
-        )
-      )
+        Object::Object {
+          class: ObjectClass { name: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null") },
+          members: BTreeMap::from_iter([
+            ("Street", Object::String("One Microsoft Way")),
+            ("City", Object::String("Redmond")),
+            ("State", Object::String("WA")),
+            ("Zip", Object::String("98054")),
+          ]),
+        },
+      ),
+      (Int32(4), Object::String("One Microsoft Way")),
+      (Int32(5), Object::String("Redmond")),
+      (Int32(6), Object::String("WA")),
+      (Int32(7), Object::String("98054")),
     ]),
-    pre_method_referenceables: vec![],
     method_call_or_return: Some(MethodCallOrReturn::MethodCall(
       MethodCall {
         binary_method_call: BinaryMethodCall {
@@ -121,19 +90,6 @@ fn method_call() {
         }),
       },
     )),
-    post_method_referenceables: vec![
-      Referenceable::Classes(
-        Classes {
-          class_id: Int32(2),
-          member_references: vec![
-            Object::String("One Microsoft Way"),
-            Object::String("Redmond"),
-            Object::String("WA"),
-            Object::String("98054")
-          ],
-        },
-      ),
-    ],
     end: MessageEnd,
   };
 

@@ -3,9 +3,9 @@ use std::collections::BTreeMap;
 use const_str::concat_bytes;
 use nrbf::{
   binary_parser::Object,
-  data_type::{Int32, LengthPrefixedString},
-  grammar::{Referenceable, RemotingMessage},
-  record::{BinaryObjectString, MessageEnd, SerializationHeader},
+  data_type::Int32,
+  grammar::RemotingMessage,
+  record::{MessageEnd, SerializationHeader},
 };
 
 #[test]
@@ -31,14 +31,8 @@ fn string_empty() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::new(),
-    pre_method_referenceables: vec![Referenceable::BinaryObjectString(BinaryObjectString {
-      object_id: Int32(1),
-      value: LengthPrefixedString::from(""),
-    })],
+    objects: BTreeMap::from_iter([(Int32(1), Object::String(""))]),
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 
@@ -68,14 +62,8 @@ fn string() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::new(),
-    pre_method_referenceables: vec![Referenceable::BinaryObjectString(BinaryObjectString {
-      object_id: Int32(1),
-      value: LengthPrefixedString::from("This is a string."),
-    })],
+    objects: BTreeMap::from_iter([(Int32(1), Object::String("This is a string."))]),
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 

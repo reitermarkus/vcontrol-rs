@@ -3,7 +3,6 @@ use nom::{combinator::opt, multi::many_m_n, IResult};
 use crate::{
   binary_parser::Object,
   data_type::Int32,
-  grammar::MemberReferenceInner,
   record::{BinaryMethodReturn, MethodReturnCallArray},
   BinaryParser,
 };

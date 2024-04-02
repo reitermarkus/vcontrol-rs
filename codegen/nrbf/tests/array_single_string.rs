@@ -3,10 +3,9 @@ use std::collections::BTreeMap;
 use const_str::concat_bytes;
 use nrbf::{
   binary_parser::Object,
-  common::ArrayInfo,
-  data_type::{Int32, LengthPrefixedString},
-  grammar::{Array, Arrays, MemberReferenceInner, Referenceable, RemotingMessage},
-  record::{ArraySingleString, BinaryObjectString, MessageEnd, SerializationHeader},
+  data_type::Int32,
+  grammar::RemotingMessage,
+  record::{MessageEnd, SerializationHeader},
 };
 
 #[rustfmt::skip]
@@ -37,13 +36,12 @@ fn array_single_string() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::new(),
-    pre_method_referenceables: vec![Referenceable::Arrays(Arrays {
-      array: Array::ArraySingleString(Int32(1), vec![Object::String("Bob"), Object::String("Rob")]),
-    })],
+    objects: BTreeMap::from_iter([
+      (Int32(1), Object::Array(vec![Object::String("Bob"), Object::String("Rob")])),
+      (Int32(2), Object::String("Bob")),
+      (Int32(3), Object::String("Rob")),
+    ]),
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 
