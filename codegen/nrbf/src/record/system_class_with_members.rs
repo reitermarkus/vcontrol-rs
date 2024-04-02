@@ -18,6 +18,11 @@ impl<'i> SystemClassWithMembers<'i> {
   }
 
   #[inline]
+  pub fn class_info(&self) -> &ClassInfo<'i> {
+    &self.class_info
+  }
+
+  #[inline]
   pub(crate) fn object_id(&self) -> Int32 {
     self.class_info.object_id()
   }
