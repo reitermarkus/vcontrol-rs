@@ -11,7 +11,7 @@ use serde::{
 };
 
 use crate::{
-  binary_parser::Object,
+  binary_parser::{Object, ObjectDeserializer},
   data_type::{Int32, LengthPrefixedString},
   grammar::{MethodCall, MethodReturn},
   record::{MessageEnd, SerializationHeader},
@@ -93,39 +93,11 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
 
     let objects = self.objects;
 
-    let root_object = objects.get(&self.header.root_id).cloned();
-    match root_object {
-      Some(Object::Object { class, members }) => {
-        if class.library.is_some() {
-          return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
-        }
+    let root_object = objects
+      .get(&self.header.root_id)
+      .ok_or_else(|| Error::invalid_type(Unexpected::Other("no root object"), &visitor))?;
 
-        let value = if let Some(value) = members.get("m_value") {
-          value
-        } else {
-          return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
-        };
-
-        match (class.name, value) {
-          ("System.Boolean", Object::Primitive(MemberPrimitiveUnTyped::Boolean(n))) => visitor.visit_bool((*n).into()),
-          ("System.Byte", Object::Primitive(MemberPrimitiveUnTyped::Byte(n))) => visitor.visit_u8((*n).into()),
-          ("System.SByte", Object::Primitive(MemberPrimitiveUnTyped::SByte(n))) => visitor.visit_i8((*n).into()),
-          ("System.Char", Object::Primitive(MemberPrimitiveUnTyped::Char(c))) => visitor.visit_char((*c).into()),
-          ("System.Decimal", Object::Primitive(MemberPrimitiveUnTyped::Decimal(_c))) => unimplemented!(),
-          ("System.Double", Object::Primitive(MemberPrimitiveUnTyped::Double(n))) => visitor.visit_f64((*n).into()),
-          ("System.Single", Object::Primitive(MemberPrimitiveUnTyped::Single(n))) => visitor.visit_f32((*n).into()),
-          ("System.Int32", Object::Primitive(MemberPrimitiveUnTyped::Int32(n))) => visitor.visit_i32((*n).into()),
-          ("System.UInt32", Object::Primitive(MemberPrimitiveUnTyped::UInt32(n))) => visitor.visit_u32((*n).into()),
-          ("System.Int64", Object::Primitive(MemberPrimitiveUnTyped::Int64(n))) => visitor.visit_i64((*n).into()),
-          ("System.UInt64", Object::Primitive(MemberPrimitiveUnTyped::UInt64(n))) => visitor.visit_u64((*n).into()),
-          ("System.Int16", Object::Primitive(MemberPrimitiveUnTyped::Int16(n))) => visitor.visit_i16((*n).into()),
-          ("System.UInt16", Object::Primitive(MemberPrimitiveUnTyped::UInt16(n))) => visitor.visit_u16((*n).into()),
-          (name, _) => Err(Error::custom(format!("invalid system type: {}", name))),
-        }
-      },
-      Some(object) => object.deserialize_any(visitor),
-      None => Err(Error::custom("root object not found")),
-    }
+    ObjectDeserializer::new(&objects, &root_object).deserialize_any(visitor)
   }
 
   forward_to_deserialize_any! {

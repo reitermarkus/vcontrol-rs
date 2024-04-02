@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, fmt, iter, marker::PhantomData};
 
 use nom::{
   branch::alt,
@@ -8,8 +8,11 @@ use nom::{
 };
 #[cfg(feature = "serde")]
 use serde::{
-  de::value::{Error, SeqDeserializer},
-  de::{IntoDeserializer, Visitor},
+  de::{
+    self,
+    value::{Error, SeqDeserializer},
+    Expected, IntoDeserializer, SeqAccess, Visitor,
+  },
   forward_to_deserialize_any, Deserializer,
 };
 
@@ -41,6 +44,157 @@ pub enum Object<'i> {
   Ref(Int32),
 }
 
+struct ExpectedInArray(usize);
+
+impl Expected for ExpectedInArray {
+  fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+    if self.0 == 1 {
+      formatter.write_str("1 element in array")
+    } else {
+      write!(formatter, "{} elements in array", self.0)
+    }
+  }
+}
+
+pub(crate) struct ObjectArrayDeserializer<'de, 'o, I> {
+  objects: &'o BTreeMap<Int32, Object<'de>>,
+  iter: iter::Fuse<I>,
+  null_count: usize,
+  count: usize,
+}
+
+impl<'de, 'o, I> ObjectArrayDeserializer<'de, 'o, I>
+where
+  I: Iterator,
+{
+  pub fn new(objects: &'o BTreeMap<Int32, Object<'de>>, iter: I) -> Self {
+    Self { objects, iter: iter.fuse(), null_count: 0, count: 0 }
+  }
+}
+
+impl<'de, I> ObjectArrayDeserializer<'de, '_, I>
+where
+  I: Iterator,
+{
+  /// Check for remaining elements after passing a `SeqDeserializer` to
+  /// `Visitor::visit_seq`.
+  pub fn end<E: de::Error>(self) -> Result<(), E> {
+    let remaining = self.iter.count() + self.null_count;
+    if remaining == 0 {
+      Ok(())
+    } else {
+      // First argument is the number of elements in the data, second
+      // argument is the number of elements expected by the Deserialize.
+      Err(de::Error::invalid_length(self.count + remaining, &ExpectedInArray(self.count)))
+    }
+  }
+}
+
+impl<'de, I> de::Deserializer<'de> for ObjectArrayDeserializer<'de, '_, I>
+where
+  I: Iterator<Item = Object<'de>>,
+{
+  type Error = Error;
+
+  fn deserialize_any<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+  where
+    V: de::Visitor<'de>,
+  {
+    let v = visitor.visit_seq(&mut self)?;
+    self.end()?;
+    Ok(v)
+  }
+
+  forward_to_deserialize_any! {
+      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+      bytes byte_buf option unit unit_struct newtype_struct seq tuple
+      tuple_struct map struct enum identifier ignored_any
+  }
+}
+
+impl<'de, I> de::SeqAccess<'de> for ObjectArrayDeserializer<'de, '_, I>
+where
+  I: Iterator<Item = Object<'de>>,
+{
+  type Error = Error;
+
+  fn next_element_seed<V>(&mut self, seed: V) -> Result<Option<V::Value>, Self::Error>
+  where
+    V: de::DeserializeSeed<'de>,
+  {
+    if self.null_count > 0 {
+      self.count += 1;
+      self.null_count -= 1;
+      return seed.deserialize(Object::Null(1)).map(Some)
+    }
+
+    match self.iter.next() {
+      Some(Object::Null(null_count)) if null_count > 1 => {
+        self.count += 1;
+        self.null_count = null_count - 1;
+        seed.deserialize(Object::Null(1)).map(Some)
+      },
+      Some(object) => {
+        self.count += 1;
+        seed.deserialize(ObjectDeserializer::new(self.objects, &object)).map(Some)
+      },
+      None => Ok(None),
+    }
+  }
+}
+
+pub(crate) struct ObjectDeserializer<'de, 'o> {
+  objects: &'o BTreeMap<Int32, Object<'de>>,
+  object: &'o Object<'de>,
+}
+
+impl<'de, 'o> ObjectDeserializer<'de, 'o> {
+  pub fn new(objects: &'o BTreeMap<Int32, Object<'de>>, object: &'o Object<'de>) -> Self {
+    Self { objects, object }
+  }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> IntoDeserializer<'de, Error> for ObjectDeserializer<'de, '_> {
+  type Deserializer = Self;
+
+  fn into_deserializer(self) -> Self::Deserializer {
+    self
+  }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserializer<'de> for ObjectDeserializer<'de, '_> {
+  type Error = Error;
+
+  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+  where
+    V: Visitor<'de>,
+  {
+    use serde::de::{Error, Unexpected};
+
+    match self.object {
+      Object::Array(members) => {
+        ObjectArrayDeserializer::new(self.objects, members.clone().into_iter()).deserialize_any(visitor)
+      },
+      Object::Ref(id) => {
+        if let Some(object) = self.objects.get(&id) {
+          Self::new(self.objects, object).deserialize_any(visitor)
+        } else {
+          self.object.clone().deserialize_any(visitor)
+        }
+      },
+      object => object.clone().deserialize_any(visitor),
+    }
+  }
+
+  forward_to_deserialize_any! {
+      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+      bytes byte_buf option unit unit_struct newtype_struct seq tuple
+      tuple_struct map struct enum identifier ignored_any
+  }
+}
+
 #[cfg(feature = "serde")]
 impl<'de> IntoDeserializer<'de, Error> for Object<'de> {
   type Deserializer = Self;
@@ -58,20 +212,43 @@ impl<'de> Deserializer<'de> for Object<'de> {
   where
     V: Visitor<'de>,
   {
+    use serde::de::{Error, Unexpected};
+
     match self {
-      Self::Object { class: _, members: _ } => {
-        unimplemented!()
+      Self::Object { class, members } => {
+        if class.library.is_some() {
+          return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
+        }
+
+        let value = if let Some(value) = members.get("m_value") {
+          value
+        } else {
+          return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
+        };
+
+        match (class.name, value) {
+          ("System.Boolean", Object::Primitive(MemberPrimitiveUnTyped::Boolean(n))) => visitor.visit_bool((*n).into()),
+          ("System.Byte", Object::Primitive(MemberPrimitiveUnTyped::Byte(n))) => visitor.visit_u8((*n).into()),
+          ("System.SByte", Object::Primitive(MemberPrimitiveUnTyped::SByte(n))) => visitor.visit_i8((*n).into()),
+          ("System.Char", Object::Primitive(MemberPrimitiveUnTyped::Char(c))) => visitor.visit_char((*c).into()),
+          ("System.Decimal", Object::Primitive(MemberPrimitiveUnTyped::Decimal(_c))) => unimplemented!(),
+          ("System.Double", Object::Primitive(MemberPrimitiveUnTyped::Double(n))) => visitor.visit_f64((*n).into()),
+          ("System.Single", Object::Primitive(MemberPrimitiveUnTyped::Single(n))) => visitor.visit_f32((*n).into()),
+          ("System.Int32", Object::Primitive(MemberPrimitiveUnTyped::Int32(n))) => visitor.visit_i32((*n).into()),
+          ("System.UInt32", Object::Primitive(MemberPrimitiveUnTyped::UInt32(n))) => visitor.visit_u32((*n).into()),
+          ("System.Int64", Object::Primitive(MemberPrimitiveUnTyped::Int64(n))) => visitor.visit_i64((*n).into()),
+          ("System.UInt64", Object::Primitive(MemberPrimitiveUnTyped::UInt64(n))) => visitor.visit_u64((*n).into()),
+          ("System.Int16", Object::Primitive(MemberPrimitiveUnTyped::Int16(n))) => visitor.visit_i16((*n).into()),
+          ("System.UInt16", Object::Primitive(MemberPrimitiveUnTyped::UInt16(n))) => visitor.visit_u16((*n).into()),
+          (name, _) => Err(Error::custom(format!("invalid system type: {}", name))),
+        }
       },
       Self::Array(members) => SeqDeserializer::new(members.into_iter()).deserialize_any(visitor),
       Self::Primitive(primitive) => primitive.deserialize_any(visitor),
       Self::String(s) => visitor.visit_borrowed_str(s),
       Self::Null(1) => visitor.visit_none(),
-      Self::Null(_) => {
-        unimplemented!()
-      },
-      Self::Ref(_) => {
-        unimplemented!()
-      },
+      Self::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),
+      Self::Ref(_) => Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), &visitor)),
     }
   }
 
@@ -102,15 +279,12 @@ impl<'i> BinaryParser<'i> {
     Ok((input, ()))
   }
 
-  fn parse_binary_object_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+  fn parse_binary_object_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (input, s) = BinaryObjectString::parse(input)?;
 
-    let object = Object::String(s.as_str());
+    self.objects.insert(s.object_id(), Object::String(s.as_str()));
 
-    let object_id = s.object_id();
-    self.objects.insert(object_id, object.clone());
-
-    Ok((input, object))
+    Ok((input, ()))
   }
 
   /// 2.7 Binary Record Grammar - `memberReference`
@@ -156,9 +330,12 @@ impl<'i> BinaryParser<'i> {
         ))(input)?
       };
 
-    if let Some(object_id) = object_id {
-      self.objects.insert(object_id, object.clone());
-    }
+    let object = if let Some(object_id) = object_id {
+      self.objects.insert(object_id, object);
+      Object::Ref(object_id)
+    } else {
+      object
+    };
 
     Ok((input, object))
   }
@@ -181,7 +358,9 @@ impl<'i> BinaryParser<'i> {
     Ok((input, member_references))
   }
 
-  pub fn parse_class(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (Int32, Vec<Object<'i>>)> {
+  pub fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    let (input, ()) = self.parse_binary_library(input)?;
+
     let (input, (object_id, class)) = verify(
       alt((
         map_opt(ClassWithId::parse, |class| {
@@ -257,20 +436,12 @@ impl<'i> BinaryParser<'i> {
     };
 
     self.classes.insert(object_id, class);
-    self.objects.insert(object_id, object);
+    self.objects.insert(object_id, object.clone());
 
-    Ok((input, (object_id, member_references)))
+    Ok((input, object))
   }
 
-  pub fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
-    let (input, ()) = self.parse_binary_library(input)?;
-
-    let (input, (object_id, _)) = self.parse_class(input)?;
-
-    Ok((input, self.objects[&object_id].clone()))
-  }
-
-  fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+  fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (mut input, array) = ArraySingleObject::parse(input)?;
 
     let mut members = vec![];
@@ -289,15 +460,12 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    let object = Object::Array(members);
+    self.objects.insert(array.object_id(), Object::Array(members));
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, object.clone());
-
-    Ok((input, object))
+    Ok((input, ()))
   }
 
-  fn parse_array_single_primitive(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+  fn parse_array_single_primitive(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (input, array) = ArraySinglePrimitive::parse(input)?;
 
     let length = array.array_info.len();
@@ -307,15 +475,12 @@ impl<'i> BinaryParser<'i> {
       map(|input| MemberPrimitiveUnTyped::parse(input, array.primitive_type), |primitive| Object::Primitive(primitive)),
     )(input)?;
 
-    let object = Object::Array(members);
+    self.objects.insert(array.object_id(), Object::Array(members));
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, object.clone());
-
-    Ok((input, object))
+    Ok((input, ()))
   }
 
-  fn parse_array_single_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+  fn parse_array_single_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (mut input, array) = ArraySingleString::parse(input)?;
 
     let mut members = vec![];
@@ -334,15 +499,12 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    let object = Object::Array(members);
+    self.objects.insert(array.object_id(), Object::Array(members));
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, object.clone());
-
-    Ok((input, object))
+    Ok((input, ()))
   }
 
-  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (input, array) = BinaryArray::parse(input)?;
 
     let member_count = match array.binary_array_type_enum {
@@ -360,47 +522,38 @@ impl<'i> BinaryParser<'i> {
       self.parse_member_reference(input, Some((array.type_enum, array.additional_type_info.as_ref())))
     })(input)?;
 
-    let object = Object::Array(members);
+    self.objects.insert(array.object_id(), Object::Array(members));
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, object.clone());
-
-    Ok((input, object))
+    Ok((input, ()))
   }
 
-  fn parse_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
-    if let Ok((input, array)) = self.parse_array_single_object(input) {
-      return Ok((input, array))
+  /// 2.7 Binary Record Grammar - `Arrays`
+  pub fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
+    let (input, ()) = self.parse_binary_library(input)?;
+
+    if let Ok((input, ())) = self.parse_array_single_object(input) {
+      return Ok((input, ()))
     }
 
-    if let Ok((input, array)) = self.parse_array_single_primitive(input) {
-      return Ok((input, array))
+    if let Ok((input, ())) = self.parse_array_single_primitive(input) {
+      return Ok((input, ()))
     }
 
-    if let Ok((input, array)) = self.parse_array_single_string(input) {
-      return Ok((input, array))
+    if let Ok((input, ())) = self.parse_array_single_string(input) {
+      return Ok((input, ()))
     }
 
     self.parse_binary_array(input)
   }
 
-  /// 2.7 Binary Record Grammar - `Arrays`
-  pub fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
-    let (input, ()) = self.parse_binary_library(input)?;
-
-    let (input, array) = self.parse_array(input)?;
-
-    Ok((input, array))
-  }
-
   /// 2.7 Binary Record Grammar - `referenceable`
-  pub fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
-    if let Ok((input, class)) = self.parse_classes(input) {
-      return Ok((input, class))
+  pub fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
+    if let Ok((input, _)) = self.parse_classes(input) {
+      return Ok((input, ()))
     }
 
-    if let Ok((input, array)) = self.parse_arrays(input) {
-      return Ok((input, array))
+    if let Ok((input, ())) = self.parse_arrays(input) {
+      return Ok((input, ()))
     }
 
     self.parse_binary_object_string(input)
