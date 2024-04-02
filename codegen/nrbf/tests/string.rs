@@ -1,11 +1,11 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::Object,
   data_type::Int32,
   grammar::RemotingMessage,
   record::{MessageEnd, SerializationHeader},
+  Value,
 };
 
 #[test]
@@ -31,7 +31,7 @@ fn string_empty() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    objects: BTreeMap::from_iter([(Int32(1), Object::String(""))]),
+    objects: BTreeMap::from_iter([(Int32(1), Value::String(""))]),
     method_call_or_return: None,
     end: MessageEnd,
   };
@@ -62,7 +62,7 @@ fn string() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    objects: BTreeMap::from_iter([(Int32(1), Object::String("This is a string."))]),
+    objects: BTreeMap::from_iter([(Int32(1), Value::String("This is a string."))]),
     method_call_or_return: None,
     end: MessageEnd,
   };

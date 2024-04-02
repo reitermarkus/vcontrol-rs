@@ -1,11 +1,12 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::{Object, ObjectClass},
   data_type::{Boolean, Int32},
   grammar::RemotingMessage,
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  value::Object,
+  Value,
 };
 
 #[rustfmt::skip]
@@ -37,10 +38,11 @@ fn boolean() {
     },
     objects: BTreeMap::from_iter([(
       Int32(1),
-      Object::Object {
-        class: ObjectClass { name: "System.Boolean", library: None },
-        members: BTreeMap::from_iter([("m_value", Object::Primitive(MemberPrimitiveUnTyped::Boolean(Boolean(true))))]),
-      },
+      Value::Object(Object {
+        class: "System.Boolean",
+        library: None,
+        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Boolean(Boolean(true))))]),
+      }),
     )]),
     method_call_or_return: None,
     end: MessageEnd,

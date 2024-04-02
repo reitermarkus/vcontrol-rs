@@ -1,11 +1,11 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::Object,
   data_type::{Int32, Int64},
   grammar::RemotingMessage,
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  Value,
 };
 
 #[rustfmt::skip]
@@ -35,9 +35,9 @@ fn array_single_primitive() {
     },
     objects: BTreeMap::from_iter([(
       Int32(1),
-      Object::Array(vec![
-        Object::Primitive(MemberPrimitiveUnTyped::Int64(Int64(67))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int64(Int64(42))),
+      Value::Array(vec![
+        Value::Primitive(MemberPrimitiveUnTyped::Int64(Int64(67))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int64(Int64(42))),
       ]),
     )]),
     method_call_or_return: None,

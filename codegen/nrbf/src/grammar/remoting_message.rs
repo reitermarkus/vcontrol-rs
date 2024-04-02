@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap};
 
 use nom::{
   combinator::{map, opt},
@@ -11,10 +11,10 @@ use serde::{
 };
 
 use crate::{
-  binary_parser::{Object, ObjectDeserializer},
   data_type::Int32,
   record::{BinaryMethodCall, BinaryMethodReturn, MessageEnd, SerializationHeader},
-  BinaryParser,
+  value::ValueDeserializer,
+  BinaryParser, Value,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -41,7 +41,7 @@ impl<'i> MethodCallOrReturn<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct RemotingMessage<'i> {
   pub header: SerializationHeader,
-  pub objects: BTreeMap<Int32, Object<'i>>,
+  pub objects: BTreeMap<Int32, Value<'i>>,
   pub method_call_or_return: Option<MethodCallOrReturn<'i>>,
   pub end: MessageEnd,
 }
@@ -94,7 +94,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
       .get(&self.header.root_id)
       .ok_or_else(|| Error::invalid_type(Unexpected::Other("no root object"), &visitor))?;
 
-    ObjectDeserializer::new(&objects, &root_object).deserialize_any(visitor)
+    ValueDeserializer::new(&objects, &root_object).deserialize_any(visitor)
   }
 
   forward_to_deserialize_any! {
