@@ -5,12 +5,12 @@ use nrbf::{
   data_type::{Int32, LengthPrefixedString},
   enumeration::BinaryType,
   grammar::{
-    CallArray, Class, Classes, MemberReference2, MemberReferenceInner, MethodCall, MethodCallOrReturn, Referenceable,
+    CallArray, Class, Classes, MemberReferenceInner, MethodCall, MethodCallOrReturn, Referenceable,
     RemotingMessage,
   },
   method_invocation::{MessageFlags, StringValueWithCode},
   record::{
-    ArraySingleObject, BinaryLibrary, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference,
+    ArraySingleObject, BinaryMethodCall, BinaryObjectString, ClassWithMembersAndTypes, MemberReference,
     MessageEnd, MethodCallArray, SerializationHeader,
   },
 };
@@ -117,13 +117,11 @@ fn method_call() {
               length: Int32(1),
             },
             member_references: vec![
-              MemberReference2 {
-                member_reference: MemberReferenceInner::MemberReference(
-                  MemberReference {
-                    id_ref: Int32(2),
-                  },
-                ),
-              },
+              MemberReferenceInner::MemberReference(
+                MemberReference {
+                  id_ref: Int32(2),
+                },
+              ),
             ],
           }),
         }),
@@ -134,38 +132,30 @@ fn method_call() {
         Classes {
           class_id: Int32(2),
           member_references: vec![
-            MemberReference2 {
-              member_reference: MemberReferenceInner::BinaryObjectString(
-                BinaryObjectString {
-                  object_id: Int32(4),
-                  value: LengthPrefixedString::from("One Microsoft Way"),
-                },
-              )
-            },
-            MemberReference2 {
-              member_reference: MemberReferenceInner::BinaryObjectString(
-                BinaryObjectString {
-                  object_id: Int32(5),
-                  value: LengthPrefixedString::from("Redmond"),
-                },
-              )
-            },
-            MemberReference2 {
-              member_reference: MemberReferenceInner::BinaryObjectString(
-                BinaryObjectString {
-                  object_id: Int32(6),
-                  value: LengthPrefixedString::from("WA"),
-                },
-              )
-            },
-            MemberReference2 {
-              member_reference: MemberReferenceInner::BinaryObjectString(
-                BinaryObjectString {
-                  object_id: Int32(7),
-                  value: LengthPrefixedString::from("98054"),
-                },
-              )
-            },
+            MemberReferenceInner::BinaryObjectString(
+              BinaryObjectString {
+                object_id: Int32(4),
+                value: LengthPrefixedString::from("One Microsoft Way"),
+              },
+            ),
+            MemberReferenceInner::BinaryObjectString(
+              BinaryObjectString {
+                object_id: Int32(5),
+                value: LengthPrefixedString::from("Redmond"),
+              },
+            ),
+            MemberReferenceInner::BinaryObjectString(
+              BinaryObjectString {
+                object_id: Int32(6),
+                value: LengthPrefixedString::from("WA"),
+              },
+            ),
+            MemberReferenceInner::BinaryObjectString(
+              BinaryObjectString {
+                object_id: Int32(7),
+                value: LengthPrefixedString::from("98054"),
+              },
+            )
           ],
         },
       ),

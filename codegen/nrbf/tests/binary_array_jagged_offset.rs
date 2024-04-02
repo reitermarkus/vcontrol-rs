@@ -4,7 +4,7 @@ use nrbf::{
   common::{AdditionalTypeInfo, ArrayInfo},
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
-  grammar::{Array, Arrays, MemberReference2, MemberReferenceInner, Referenceable, RemotingMessage},
+  grammar::{Array, Arrays, MemberReferenceInner, Referenceable, RemotingMessage},
   record::{
     ArraySinglePrimitive, BinaryArray, MemberPrimitiveUnTyped, MemberReference, MessageEnd, SerializationHeader,
   },
@@ -74,15 +74,9 @@ fn binary_array_jagged_offset() {
           type_enum: BinaryType::PrimitiveArray,
           additional_type_info: Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
           members: vec![
-            MemberReference2 {
-              member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
-            },
-            MemberReference2 {
-              member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(3) }),
-            },
-            MemberReference2 {
-              member_reference: MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(4) }),
-            },
+            MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
+            MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(3) }),
+            MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(4) }),
           ],
         }),
       }),

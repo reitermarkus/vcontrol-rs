@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 
 use nom::{
-  branch::alt,
   combinator::{map, opt},
   multi::many0,
   IResult,
@@ -14,8 +13,8 @@ use serde::{
 
 use crate::{
   data_type::{Int32, LengthPrefixedString},
-  grammar::{Class, MemberReferenceInner, MethodCall, MethodReturn, Referenceable},
-  record::{BinaryLibrary, MessageEnd, SerializationHeader},
+  grammar::{Class, MethodCall, MethodReturn, Referenceable},
+  record::{MessageEnd, SerializationHeader},
   BinaryParser,
 };
 
@@ -87,7 +86,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
     use serde::de::{value::SeqDeserializer, Error, Unexpected};
 
     use crate::{
-      grammar::{Array, Arrays, Class, Classes, MemberReference2, MemberReferenceInner},
+      grammar::{Array, Arrays, Class, Classes, MemberReferenceInner},
       record::{ArraySinglePrimitive, ArraySingleString, MemberPrimitiveUnTyped},
     };
 
@@ -126,93 +125,67 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               (
                 "System.Boolean",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(n))],
               ) => visitor.visit_bool((*n).into()),
               (
                 "System.Byte",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Byte(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Byte(n))],
               ) => visitor.visit_u8((*n).into()),
               (
                 "System.SByte",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::SByte(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::SByte(n))],
               ) => visitor.visit_i8((*n).into()),
               (
                 "System.Char",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Char(c)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Char(c))],
               ) => visitor.visit_char((*c).into()),
               (
                 "System.Decimal",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Decimal(c)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Decimal(_c))],
               ) => unimplemented!(),
               (
                 "System.Double",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(n))],
               ) => visitor.visit_f64((*n).into()),
               (
                 "System.Single",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(n))],
               ) => visitor.visit_f32((*n).into()),
               (
                 "System.Int32",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(n))],
               ) => visitor.visit_i32((*n).into()),
               (
                 "System.UInt32",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt32(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt32(n))],
               ) => visitor.visit_u32((*n).into()),
               (
                 "System.Int64",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(n))],
               ) => visitor.visit_i64((*n).into()),
               (
                 "System.UInt64",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt64(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt64(n))],
               ) => visitor.visit_u64((*n).into()),
               (
                 "System.Int16",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(n))],
               ) => visitor.visit_i16((*n).into()),
               (
                 "System.UInt16",
                 [LengthPrefixedString("m_value")],
-                [MemberReference2 {
-                  member_reference: MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt16(n)),
-                }],
+                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt16(n))],
               ) => visitor.visit_u16((*n).into()),
               (name, _, _) => Err(Error::custom(format!("invalid system type: {}", name))),
             }
