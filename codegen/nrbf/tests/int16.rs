@@ -52,5 +52,5 @@ fn int16() {
 #[cfg(feature = "serde")]
 #[test]
 fn int16_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(-144));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(-144));
 }

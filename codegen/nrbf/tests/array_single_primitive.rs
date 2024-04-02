@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap};
+use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
@@ -50,16 +50,16 @@ fn array_single_primitive() {
 #[cfg(feature = "serde")]
 #[test]
 fn array_single_primitive_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(vec![67i64, 42i64]));
-  assert_eq!(nrbf::from_stream(INPUT), Ok(vec![67i32, 42i32]));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(vec![67i64, 42i64]));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(vec![67i32, 42i32]));
 
   assert_eq!(
-    nrbf::from_stream::<[i64; 1]>(INPUT).unwrap_err().to_string(),
+    nrbf::from_slice::<[i64; 1]>(INPUT).unwrap_err().to_string(),
     "invalid length 2, expected 1 element in array"
   );
-  assert_eq!(nrbf::from_stream::<[i64; 2]>(INPUT), Ok([67, 42]));
+  assert_eq!(nrbf::from_slice::<[i64; 2]>(INPUT), Ok([67, 42]));
   assert_eq!(
-    nrbf::from_stream::<[i64; 3]>(INPUT).unwrap_err().to_string(),
+    nrbf::from_slice::<[i64; 3]>(INPUT).unwrap_err().to_string(),
     "invalid length 2, expected an array of length 3"
   );
 }

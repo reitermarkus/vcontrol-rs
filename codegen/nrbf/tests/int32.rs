@@ -54,5 +54,5 @@ fn int32() {
 #[cfg(feature = "serde")]
 #[test]
 fn int32_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(-1));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(-1));
 }
