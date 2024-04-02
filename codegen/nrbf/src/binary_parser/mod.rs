@@ -16,14 +16,16 @@ use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryArrayType, BinaryType},
-  grammar::Class,
   record::{
-    ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryObjectString,
-    ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, MemberPrimitiveTyped, MemberPrimitiveUnTyped,
-    MemberReference, ObjectNull, ObjectNullMultiple, ObjectNullMultiple256, SystemClassWithMembers,
-    SystemClassWithMembersAndTypes,
+    ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
+    BinaryMethodReturn, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes,
+    MemberPrimitiveTyped, MemberPrimitiveUnTyped, MemberReference, ObjectNull, ObjectNullMultiple,
+    ObjectNullMultiple256, SystemClassWithMembers, SystemClassWithMembersAndTypes,
   },
 };
+
+mod class;
+use class::Class;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ObjectClass<'i> {
@@ -558,5 +560,33 @@ impl<'i> BinaryParser<'i> {
       map(ObjectNullMultiple::parse, |n| Object::Null(n.null_count())),
       map(ObjectNullMultiple256::parse, |n| Object::Null(n.null_count())),
     ))(input)
+  }
+
+  pub fn parse_call_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
+    let (input, ()) = self.parse_binary_library(input)?;
+
+    self.parse_array_single_object(input)
+  }
+
+  /// 2.7 Binary Record Grammar - `methodCall`
+  pub fn parse_method_call(&mut self, input: &'i [u8]) -> IResult<&'i [u8], BinaryMethodCall<'i>> {
+    let (input, ()) = self.parse_binary_library(input)?;
+
+    let (input, binary_method_return) = BinaryMethodCall::parse(input)?;
+
+    let (input, _) = opt(|input| self.parse_call_array(input))(input)?;
+
+    Ok((input, binary_method_return))
+  }
+
+  /// 2.7 Binary Record Grammar - `methodReturn`
+  pub fn parse_method_return(&mut self, input: &'i [u8]) -> IResult<&'i [u8], BinaryMethodReturn<'i>> {
+    let (input, ()) = self.parse_binary_library(input)?;
+
+    let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
+
+    let (input, _) = opt(|input| self.parse_call_array(input))(input)?;
+
+    Ok((input, binary_method_return))
   }
 }

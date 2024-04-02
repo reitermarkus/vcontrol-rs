@@ -41,9 +41,9 @@ pub use array_single_object::ArraySingleObject;
 mod array_single_string;
 pub use array_single_string::ArraySingleString;
 mod binary_method_call;
-pub use binary_method_call::{BinaryMethodCall, MethodCallArray};
+pub use binary_method_call::BinaryMethodCall;
 mod binary_method_return;
-pub use binary_method_return::{BinaryMethodReturn, MethodReturnCallArray};
+pub use binary_method_return::BinaryMethodReturn;
 
 /// 2.1.2.1 `RecordTypeEnumeration`
 #[derive(Debug, Clone, Copy, PartialEq)]

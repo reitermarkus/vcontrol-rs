@@ -13,24 +13,23 @@ use serde::{
 use crate::{
   binary_parser::{Object, ObjectDeserializer},
   data_type::Int32,
-  grammar::{MethodCall, MethodReturn},
-  record::{MessageEnd, SerializationHeader},
+  record::{BinaryMethodCall, BinaryMethodReturn, MessageEnd, SerializationHeader},
   BinaryParser,
 };
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum MethodCallOrReturn<'i> {
-  MethodCall(MethodCall<'i>),
-  MethodReturn(MethodReturn<'i>),
+  MethodCall(BinaryMethodCall<'i>),
+  MethodReturn(BinaryMethodReturn<'i>),
 }
 
 impl<'i> MethodCallOrReturn<'i> {
   pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
-    if let Ok(s) = map(|input| MethodCall::parse(input, parser), Self::MethodCall)(input) {
+    if let Ok(s) = map(|input| parser.parse_method_call(input), Self::MethodCall)(input) {
       return Ok(s)
     }
 
-    if let Ok(s) = map(|input| MethodReturn::parse(input, parser), |mr| Self::MethodReturn(mr))(input) {
+    if let Ok(s) = map(|input| parser.parse_method_return(input), |mr| Self::MethodReturn(mr))(input) {
       return Ok(s)
     }
 

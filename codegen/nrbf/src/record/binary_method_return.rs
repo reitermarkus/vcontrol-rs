@@ -5,9 +5,8 @@ use nom::{
 };
 
 use crate::{
-  data_type::Int32,
   method_invocation::{AnyValueWithCode, ArrayOfValueWithCode, MessageFlags, StringValueWithCode, ValueWithCode},
-  record::{ArraySingleObject, RecordType},
+  record::RecordType,
 };
 
 /// 2.2.3.3 `BinaryMethodReturn`
@@ -36,20 +35,5 @@ impl<'i> BinaryMethodReturn<'i> {
     let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)?;
 
     Ok((input, Self { message_enum, return_value, call_context, args }))
-  }
-}
-
-/// 2.2.3.4 `MethodReturnCallArray`
-#[derive(Debug, Clone, PartialEq)]
-pub struct MethodReturnCallArray(pub ArraySingleObject);
-
-impl MethodReturnCallArray {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    map(|input| ArraySingleObject::parse(input), Self)(input)
-  }
-
-  #[inline]
-  pub(crate) fn object_id(&self) -> Int32 {
-    self.0.object_id()
   }
 }
