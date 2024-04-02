@@ -66,8 +66,8 @@ fn list_of_customers() {
       (
         Int32(2),
         Object::Array(vec![
-          Object::String("Bob"),
-          Object::String("Rob"),
+          Object::Ref(Int32(3)),
+          Object::Ref(Int32(4)),
           Object::Null(2),
         ]),
       ),

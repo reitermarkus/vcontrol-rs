@@ -37,7 +37,7 @@ fn array_single_string() {
       minor_version: Int32(0),
     },
     objects: BTreeMap::from_iter([
-      (Int32(1), Object::Array(vec![Object::String("Bob"), Object::String("Rob")])),
+      (Int32(1), Object::Array(vec![Object::Ref(Int32(2)), Object::Ref(Int32(3))])),
       (Int32(2), Object::String("Bob")),
       (Int32(3), Object::String("Rob")),
     ]),

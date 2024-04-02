@@ -52,10 +52,10 @@ fn method_call() {
         Object::Object {
           class: ObjectClass { name: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null") },
           members: BTreeMap::from_iter([
-            ("Street", Object::String("One Microsoft Way")),
-            ("City", Object::String("Redmond")),
-            ("State", Object::String("WA")),
-            ("Zip", Object::String("98054")),
+            ("Street", Object::Ref(Int32(4))),
+            ("City", Object::Ref(Int32(5))),
+            ("State", Object::Ref(Int32(6))),
+            ("Zip", Object::Ref(Int32(7))),
           ]),
         },
       ),
