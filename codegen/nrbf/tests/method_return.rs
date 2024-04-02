@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
   method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
-  record::{BinaryMethodReturn},
+  record::BinaryMethodReturn,
   MethodCallOrReturn, RemotingMessage, Value,
 };
 
