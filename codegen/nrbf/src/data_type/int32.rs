@@ -5,11 +5,8 @@ use nom::{
   number::complete::le_i32,
   IResult,
 };
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize, Serializer};
 
 /// 2.1.1 `INT32`
-#[cfg_attr(feature = "serde", derive(Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Int32(pub i32);
 
@@ -47,15 +44,5 @@ impl TryFrom<Int32> for usize {
   #[inline]
   fn try_from(val: Int32) -> Result<Self, Self::Error> {
     Self::try_from(val.0)
-  }
-}
-
-#[cfg(feature = "serde")]
-impl Serialize for Int32 {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    serializer.serialize_i32(self.0)
   }
 }

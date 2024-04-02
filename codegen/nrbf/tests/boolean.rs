@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  data_type::{Boolean, Int32},
+  data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::Object,
   Value,
 };
@@ -41,7 +41,7 @@ fn boolean() {
       Value::Object(Object {
         class: "System.Boolean",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Boolean(Boolean(true))))]),
+        members: HashMap::from_iter([("m_value", Value::Boolean(true))]),
       }),
     )]),
     method_call_or_return: None,

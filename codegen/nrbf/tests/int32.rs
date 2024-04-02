@@ -4,7 +4,7 @@ use const_str::concat_bytes;
 use nrbf::{
   data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::Object,
   Value,
 };
@@ -41,7 +41,7 @@ fn int32() {
       Value::Object(Object {
         class: "System.Int32",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(-1))))]),
+        members: HashMap::from_iter([("m_value", Value::Int32(-1))]),
       }),
     )]),
     method_call_or_return: None,

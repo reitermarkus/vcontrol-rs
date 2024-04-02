@@ -63,9 +63,10 @@ impl<'i> BinaryParser<'i> {
     let (input, (object_id, object)) =
       if let Some((type_enum, additional_type_info)) = type_enum_and_additional_type_info {
         match (type_enum, additional_type_info) {
-          (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => {
-            map(|input| MemberPrimitiveUnTyped::parse(input, *primitive_type), |p| (None, Value::Primitive(p)))(input)?
-          },
+          (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
+            |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
+            |primitive| (None, primitive.into_value()),
+          )(input)?,
           (BinaryType::String, None) => {
             map(BinaryObjectString::parse, |s| (Some(s.object_id()), Value::String(s.as_str())))(input)?
           },
@@ -87,7 +88,7 @@ impl<'i> BinaryParser<'i> {
         }
       } else {
         alt((
-          map(MemberPrimitiveTyped::parse, |p| (None, Value::Primitive(p.into_untyped()))),
+          map(MemberPrimitiveTyped::parse, |primitive| (None, primitive.into_value())),
           map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref))),
           map(BinaryObjectString::parse, |s| (Some(s.object_id()), Value::String(s.as_str()))),
           map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
@@ -235,7 +236,7 @@ impl<'i> BinaryParser<'i> {
     let (input, members) = many_m_n(
       length,
       length,
-      map(|input| MemberPrimitiveUnTyped::parse(input, array.primitive_type), |primitive| Value::Primitive(primitive)),
+      map(|input| MemberPrimitiveUnTyped::parse(input, array.primitive_type), |primitive| primitive.into_value()),
     )(input)?;
 
     self.objects.insert(array.object_id(), Value::Array(members));

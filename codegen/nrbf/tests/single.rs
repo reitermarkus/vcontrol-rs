@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  data_type::{Int32, Single},
+  data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::Object,
   Value,
 };
@@ -41,7 +41,7 @@ fn single() {
       Value::Object(Object {
         class: "System.Single",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Single(Single(3.14))))]),
+        members: HashMap::from_iter([("m_value", Value::Single(3.14))]),
       }),
     )]),
     method_call_or_return: None,

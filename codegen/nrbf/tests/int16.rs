@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  data_type::{Int16, Int32},
+  data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::{Object, Value},
 };
 
@@ -39,7 +39,7 @@ fn int16() {
       Value::Object(Object {
         class: "System.Int16",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Int16(Int16(-144))))]),
+        members: HashMap::from_iter([("m_value", Value::Int16(-144))]),
       }),
     )]),
     method_call_or_return: None,

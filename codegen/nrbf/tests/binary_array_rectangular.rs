@@ -1,9 +1,9 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
-  data_type::{Int32, Int64},
+  data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   Value,
 };
 
@@ -36,13 +36,7 @@ fn binary_array_rectangular() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    objects: BTreeMap::from_iter([(
-      Int32(1),
-      Value::Array(vec![
-        Value::Primitive(MemberPrimitiveUnTyped::Int64(Int64(67))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int64(Int64(42))),
-      ]),
-    )]),
+    objects: BTreeMap::from_iter([(Int32(1), Value::Array(vec![Value::Int64(67), Value::Int64(42)]))]),
     method_call_or_return: None,
     end: MessageEnd,
   };
