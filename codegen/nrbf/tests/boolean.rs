@@ -54,5 +54,5 @@ fn boolean() {
 #[cfg(feature = "serde")]
 #[test]
 fn int32_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(true));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(true));
 }

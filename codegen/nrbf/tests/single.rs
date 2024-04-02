@@ -54,5 +54,5 @@ fn single() {
 #[cfg(feature = "serde")]
 #[test]
 fn single_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(3.14f32));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(3.14f32));
 }

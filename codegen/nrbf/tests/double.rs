@@ -54,5 +54,5 @@ fn double() {
 #[cfg(feature = "serde")]
 #[test]
 fn double_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok(-0.1067));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(-0.1067));
 }
