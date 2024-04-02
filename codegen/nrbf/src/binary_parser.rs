@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, ops::Index};
+use std::collections::BTreeMap;
 
 use nom::{
   branch::alt,
@@ -17,9 +17,9 @@ use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryArrayType, BinaryType},
-  grammar::{self, Class, MemberReferenceInner, NullObject},
+  grammar::{Class, NullObject},
   record::{
-    self, ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryObjectString,
+    ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryObjectString,
     ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, MemberPrimitiveTyped, MemberPrimitiveUnTyped,
     MemberReference, SystemClassWithMembers, SystemClassWithMembersAndTypes,
   },
@@ -27,14 +27,14 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ObjectClass<'i> {
-  name: &'i str,
-  library: Option<&'i str>,
+  pub name: &'i str,
+  pub library: Option<&'i str>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Object<'i> {
   Object { class: ObjectClass<'i>, members: BTreeMap<&'i str, Object<'i>> },
-  Array(Array<'i>),
+  Array(Vec<Object<'i>>),
   Primitive(MemberPrimitiveUnTyped),
   String(&'i str),
   Null(usize),
@@ -59,13 +59,10 @@ impl<'de> Deserializer<'de> for Object<'de> {
     V: Visitor<'de>,
   {
     match self {
-      Self::Object { .. } => {
+      Self::Object { class: _, members: _ } => {
         unimplemented!()
       },
-      Self::Array(array) => match array {
-        Array::Object(objects) => SeqDeserializer::new(objects.into_iter()).deserialize_any(visitor),
-        Array::Binary(_) => unimplemented!(),
-      },
+      Self::Array(members) => SeqDeserializer::new(members.into_iter()).deserialize_any(visitor),
       Self::Primitive(primitive) => primitive.deserialize_any(visitor),
       Self::String(s) => visitor.visit_borrowed_str(s),
       Self::Null(1) => visitor.visit_none(),
@@ -83,12 +80,6 @@ impl<'de> Deserializer<'de> for Object<'de> {
       bytes byte_buf option unit unit_struct newtype_struct seq tuple
       tuple_struct map struct enum identifier ignored_any
   }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum Array<'i> {
-  Object(Vec<Object<'i>>),
-  Binary(BTreeMap<Int32, Object<'i>>),
 }
 
 #[derive(Debug, Default)]
@@ -109,6 +100,17 @@ impl<'i> BinaryParser<'i> {
     }
 
     Ok((input, ()))
+  }
+
+  fn parse_binary_object_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    let (input, s) = BinaryObjectString::parse(input)?;
+
+    let object = Object::String(s.as_str());
+
+    let object_id = s.object_id();
+    self.objects.insert(object_id, object.clone());
+
+    Ok((input, object))
   }
 
   /// 2.7 Binary Record Grammar - `memberReference`
@@ -139,7 +141,9 @@ impl<'i> BinaryParser<'i> {
             map(MemberReference::parse, |member_reference| (None, Object::Ref(member_reference.id_ref))),
             map(NullObject::parse, |n| (None, Object::Null(n.null_count()))),
           ))(input)?,
-          (BinaryType::PrimitiveArray, Some(additional_type_info)) => unimplemented!("{additional_type_info:?}"),
+          (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => {
+            map(MemberReference::parse, |member_reference| (None, Object::Ref(member_reference.id_ref)))(input)?
+          },
           _ => unreachable!(),
         }
       } else {
@@ -266,7 +270,7 @@ impl<'i> BinaryParser<'i> {
     Ok((input, self.objects[&object_id].clone()))
   }
 
-  fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], grammar::Array<'i>> {
+  fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
     let (mut input, array) = ArraySingleObject::parse(input)?;
 
     let mut members = vec![];
@@ -285,14 +289,16 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, Object::Array(Array::Object(members.clone())));
+    let object = Object::Array(members);
 
-    Ok((input, grammar::Array::ArraySingleObject(object_id, members)))
+    let object_id = array.object_id();
+    self.objects.insert(object_id, object.clone());
+
+    Ok((input, object))
   }
 
-  fn parse_array_single_primitive(&mut self, input: &'i [u8]) -> IResult<&'i [u8], grammar::Array<'i>> {
-    let (mut input, array) = ArraySinglePrimitive::parse(input)?;
+  fn parse_array_single_primitive(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    let (input, array) = ArraySinglePrimitive::parse(input)?;
 
     let length = array.array_info.len();
     let (input, members) = many_m_n(
@@ -301,13 +307,15 @@ impl<'i> BinaryParser<'i> {
       map(|input| MemberPrimitiveUnTyped::parse(input, array.primitive_type), |primitive| Object::Primitive(primitive)),
     )(input)?;
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, Object::Array(Array::Object(members.clone())));
+    let object = Object::Array(members);
 
-    Ok((input, grammar::Array::ArraySinglePrimitive(object_id, members)))
+    let object_id = array.object_id();
+    self.objects.insert(object_id, object.clone());
+
+    Ok((input, object))
   }
 
-  fn parse_array_single_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], grammar::Array<'i>> {
+  fn parse_array_single_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
     let (mut input, array) = ArraySingleString::parse(input)?;
 
     let mut members = vec![];
@@ -326,14 +334,16 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, Object::Array(Array::Object(members.clone())));
+    let object = Object::Array(members);
 
-    Ok((input, grammar::Array::ArraySingleString(object_id, members)))
+    let object_id = array.object_id();
+    self.objects.insert(object_id, object.clone());
+
+    Ok((input, object))
   }
 
-  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], grammar::Array<'i>> {
-    let (mut input, array) = BinaryArray::parse(input)?;
+  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    let (input, array) = BinaryArray::parse(input)?;
 
     let member_count = match array.binary_array_type_enum {
       BinaryArrayType::Single | BinaryArrayType::SingleOffset => array.lengths.first().map(|n| i32::from(*n) as u32),
@@ -350,13 +360,15 @@ impl<'i> BinaryParser<'i> {
       self.parse_member_reference(input, Some((array.type_enum, array.additional_type_info.as_ref())))
     })(input)?;
 
-    let object_id = array.object_id();
-    self.objects.insert(object_id, Object::Array(Array::Object(members.clone())));
+    let object = Object::Array(members);
 
-    Ok((input, grammar::Array::BinaryArray(object_id, members)))
+    let object_id = array.object_id();
+    self.objects.insert(object_id, object.clone());
+
+    Ok((input, object))
   }
 
-  pub fn parse_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], grammar::Array<'i>> {
+  fn parse_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
     if let Ok((input, array)) = self.parse_array_single_object(input) {
       return Ok((input, array))
     }
@@ -370,5 +382,27 @@ impl<'i> BinaryParser<'i> {
     }
 
     self.parse_binary_array(input)
+  }
+
+  /// 2.7 Binary Record Grammar - `Arrays`
+  pub fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    let (input, ()) = self.parse_binary_library(input)?;
+
+    let (input, array) = self.parse_array(input)?;
+
+    Ok((input, array))
+  }
+
+  /// 2.7 Binary Record Grammar - `referenceable`
+  pub fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    if let Ok((input, class)) = self.parse_classes(input) {
+      return Ok((input, class))
+    }
+
+    if let Ok((input, array)) = self.parse_arrays(input) {
+      return Ok((input, array))
+    }
+
+    self.parse_binary_object_string(input)
   }
 }

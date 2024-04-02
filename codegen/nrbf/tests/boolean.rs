@@ -2,12 +2,10 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::Object,
-  common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
-  data_type::{Boolean, Int32, LengthPrefixedString},
-  enumeration::{BinaryType, PrimitiveType},
-  grammar::{Class, Classes, MemberReferenceInner, Referenceable, RemotingMessage},
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader, SystemClassWithMembersAndTypes},
+  binary_parser::{Object, ObjectClass},
+  data_type::{Boolean, Int32},
+  grammar::RemotingMessage,
+  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
 };
 
 #[rustfmt::skip]
@@ -37,27 +35,14 @@ fn boolean() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::from_iter([(
+    objects: BTreeMap::from_iter([(
       Int32(1),
-      Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-        class_info: ClassInfo {
-          object_id: Int32(1),
-          name: LengthPrefixedString::from("System.Boolean"),
-          member_names: vec![LengthPrefixedString::from("m_value")],
-        },
-        member_type_info: MemberTypeInfo {
-          binary_type_enums: vec![BinaryType::Primitive],
-          additional_infos: vec![Some(AdditionalTypeInfo::Primitive(PrimitiveType::Boolean))],
-        },
-      }),
+      Object::Object {
+        class: ObjectClass { name: "System.Boolean", library: None },
+        members: BTreeMap::from_iter([("m_value", Object::Primitive(MemberPrimitiveUnTyped::Boolean(Boolean(true))))]),
+      },
     )]),
-    pre_method_referenceables: vec![Referenceable::Classes(Classes {
-      class_id: Int32(1),
-      member_references: vec![Object::Primitive(MemberPrimitiveUnTyped::Boolean(Boolean(true)))],
-    })],
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 

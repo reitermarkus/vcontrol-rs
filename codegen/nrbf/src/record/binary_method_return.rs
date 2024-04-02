@@ -8,7 +8,6 @@ use crate::{
   data_type::Int32,
   method_invocation::{AnyValueWithCode, ArrayOfValueWithCode, MessageFlags, StringValueWithCode, ValueWithCode},
   record::{ArraySingleObject, RecordType},
-  BinaryParser,
 };
 
 /// 2.2.3.3 `BinaryMethodReturn`

@@ -1,16 +1,11 @@
-use nom::{
-  combinator::{cond, fail, map},
-  multi::many_m_n,
-  IResult, Parser, ToUsize,
-};
+use nom::{combinator::cond, multi::many_m_n, IResult, Parser, ToUsize};
 
 use crate::{
   binary_parser::Object,
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
-  grammar::MemberReferenceInner,
-  record::{BinaryObjectString, MemberPrimitiveUnTyped, RecordType},
+  record::RecordType,
   BinaryParser,
 };
 

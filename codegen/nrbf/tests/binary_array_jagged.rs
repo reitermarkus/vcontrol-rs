@@ -2,13 +2,9 @@ use std::collections::BTreeMap;
 
 use nrbf::{
   binary_parser::Object,
-  common::{AdditionalTypeInfo, ArrayInfo},
   data_type::Int32,
-  enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
-  grammar::{Array, Arrays, MemberReferenceInner, Referenceable, RemotingMessage},
-  record::{
-    ArraySinglePrimitive, BinaryArray, MemberPrimitiveUnTyped, MemberReference, MessageEnd, SerializationHeader,
-  },
+  grammar::RemotingMessage,
+  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
 };
 
 #[test]
@@ -64,45 +60,34 @@ fn binary_array_jagged() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::new(),
-    pre_method_referenceables: vec![
-      Referenceable::Arrays(Arrays {
-        array: Array::BinaryArray(Int32(1), vec![Object::Ref(Int32(2)), Object::Ref(Int32(3)), Object::Ref(Int32(4))]),
-      }),
-      Referenceable::Arrays(Arrays {
-        array: Array::ArraySinglePrimitive(
-          Int32(2),
-          vec![
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(1))),
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
-          ],
-        ),
-      }),
-      Referenceable::Arrays(Arrays {
-        array: Array::ArraySinglePrimitive(
-          Int32(3),
-          vec![
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(3))),
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(4))),
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(5))),
-          ],
-        ),
-      }),
-      Referenceable::Arrays(Arrays {
-        array: Array::ArraySinglePrimitive(
-          Int32(4),
-          vec![
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(6))),
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(7))),
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(8))),
-            Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(9))),
-          ],
-        ),
-      }),
-    ],
+    objects: BTreeMap::from_iter([
+      (Int32(1), Object::Array(vec![Object::Ref(Int32(2)), Object::Ref(Int32(3)), Object::Ref(Int32(4))])),
+      (
+        Int32(2),
+        Object::Array(vec![
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(1))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
+        ]),
+      ),
+      (
+        Int32(3),
+        Object::Array(vec![
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(3))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(4))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(5))),
+        ]),
+      ),
+      (
+        Int32(4),
+        Object::Array(vec![
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(6))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(7))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(8))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(9))),
+        ]),
+      ),
+    ]),
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 

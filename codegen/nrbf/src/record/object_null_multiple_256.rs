@@ -12,7 +12,7 @@ impl ObjectNullMultiple256 {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     let (input, _) = RecordType::ObjectNullMultiple256.parse(input)?;
 
-    let (input, null_count) = Byte::parse(input)?;
+    let (input, null_count) = Byte::parse_positive(input)?;
 
     Ok((input, Self { null_count }))
   }

@@ -2,15 +2,10 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::Object,
-  common::{AdditionalTypeInfo, ArrayInfo, ClassInfo, MemberTypeInfo},
-  data_type::{Byte, Int32, LengthPrefixedString},
-  enumeration::{BinaryType, PrimitiveType},
-  grammar::{Array, Arrays, Class, Classes, MemberReferenceInner, NullObject, Referenceable, RemotingMessage},
-  record::{
-    ArraySingleString, BinaryObjectString, MemberPrimitiveUnTyped, MemberReference, MessageEnd, ObjectNullMultiple256,
-    SerializationHeader, SystemClassWithMembersAndTypes,
-  },
+  binary_parser::{Object, ObjectClass},
+  data_type::Int32,
+  grammar::RemotingMessage,
+  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
 };
 
 #[test]
@@ -56,54 +51,30 @@ fn list_of_customers() {
       major_version: Int32(1),
       minor_version: Int32(0),
     },
-    binary_libraries: BTreeMap::new(),
-    classes: BTreeMap::from_iter([(
-      Int32(1),
-      Class::SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes {
-        class_info: ClassInfo {
-          object_id: Int32(1),
-          name: LengthPrefixedString::from(
-            "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
-          ),
-          member_names: vec![
-            LengthPrefixedString::from("_items"),
-            LengthPrefixedString::from("_size"),
-            LengthPrefixedString::from("_version"),
-          ],
-        },
-        member_type_info: MemberTypeInfo {
-          binary_type_enums: vec![
-            BinaryType::StringArray,
-            BinaryType::Primitive,
-            BinaryType::Primitive,
-          ],
-          additional_infos: vec![
-            None,
-            Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
-            Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
-          ],
-        },
-      }),
-    )]),
-    pre_method_referenceables: vec![
-      Referenceable::Classes(Classes {
-        class_id: Int32(1),
-        member_references: vec![
-          Object::Ref(Int32(2)),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
-        ],
-      }),
-      Referenceable::Arrays(Arrays {
-        array: Array::ArraySingleString(Int32(2), vec![
-            Object::String("Bob"),
-            Object::String("Rob"),
-            Object::Null(2),
+    objects: BTreeMap::from_iter([
+      (
+        Int32(1),
+        Object::Object {
+          class: ObjectClass { name: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None },
+          members: BTreeMap::from_iter([
+            ("_items", Object::Ref(Int32(2))),
+            ("_size", Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
+            ("_version", Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
           ]),
-      }),
-    ],
+        },
+      ),
+      (
+        Int32(2),
+        Object::Array(vec![
+          Object::String("Bob"),
+          Object::String("Rob"),
+          Object::Null(2),
+        ]),
+      ),
+      (Int32(3), Object::String("Bob")),
+      (Int32(4), Object::String("Rob")),
+    ]),
     method_call_or_return: None,
-    post_method_referenceables: vec![],
     end: MessageEnd,
   };
 
