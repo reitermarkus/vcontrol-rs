@@ -1,10 +1,10 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap};
 
 use nrbf::{
-  binary_parser::Object,
   data_type::Int32,
   grammar::RemotingMessage,
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  Value,
 };
 
 #[test]
@@ -46,17 +46,17 @@ fn binary_array_single_offset() {
     },
     objects: BTreeMap::from_iter([(
       Int32(1),
-      Object::Array(vec![
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+      Value::Array(vec![
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
       ]),
     )]),
     method_call_or_return: None,

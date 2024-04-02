@@ -1,11 +1,12 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::{Object, ObjectClass},
   data_type::Int32,
   grammar::RemotingMessage,
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  value::Object,
+  Value,
 };
 
 #[test]
@@ -54,25 +55,25 @@ fn list_of_customers() {
     objects: BTreeMap::from_iter([
       (
         Int32(1),
-        Object::Object {
-          class: ObjectClass { name: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None },
-          members: BTreeMap::from_iter([
-            ("_items", Object::Ref(Int32(2))),
-            ("_size", Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
-            ("_version", Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
+        Value::Object(Object {
+          class: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None,
+          members: HashMap::from_iter([
+            ("_items", Value::Ref(Int32(2))),
+            ("_size", Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
+            ("_version", Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
           ]),
-        },
+        }),
       ),
       (
         Int32(2),
-        Object::Array(vec![
-          Object::Ref(Int32(3)),
-          Object::Ref(Int32(4)),
-          Object::Null(2),
+        Value::Array(vec![
+          Value::Ref(Int32(3)),
+          Value::Ref(Int32(4)),
+          Value::Null(2),
         ]),
       ),
-      (Int32(3), Object::String("Bob")),
-      (Int32(4), Object::String("Rob")),
+      (Int32(3), Value::String("Bob")),
+      (Int32(4), Value::String("Rob")),
     ]),
     method_call_or_return: None,
     end: MessageEnd,

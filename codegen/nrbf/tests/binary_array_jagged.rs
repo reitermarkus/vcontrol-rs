@@ -1,10 +1,10 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap};
 
 use nrbf::{
-  binary_parser::Object,
   data_type::Int32,
   grammar::RemotingMessage,
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  Value,
 };
 
 #[test]
@@ -61,29 +61,29 @@ fn binary_array_jagged() {
       minor_version: Int32(0),
     },
     objects: BTreeMap::from_iter([
-      (Int32(1), Object::Array(vec![Object::Ref(Int32(2)), Object::Ref(Int32(3)), Object::Ref(Int32(4))])),
+      (Int32(1), Value::Array(vec![Value::Ref(Int32(2)), Value::Ref(Int32(3)), Value::Ref(Int32(4))])),
       (
         Int32(2),
-        Object::Array(vec![
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(1))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
+        Value::Array(vec![
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(1))),
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
         ]),
       ),
       (
         Int32(3),
-        Object::Array(vec![
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(3))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(4))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(5))),
+        Value::Array(vec![
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(3))),
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(4))),
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(5))),
         ]),
       ),
       (
         Int32(4),
-        Object::Array(vec![
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(6))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(7))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(8))),
-          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(9))),
+        Value::Array(vec![
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(6))),
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(7))),
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(8))),
+          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(9))),
         ]),
       ),
     ]),
