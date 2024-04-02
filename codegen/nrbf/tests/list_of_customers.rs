@@ -1,11 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
-use nrbf::{
-  data_type::Int32,
-  value::Object,
-  RemotingMessage, Value,
-};
+use nrbf::{data_type::Int32, value::Object, RemotingMessage, Value};
 
 #[test]
 fn list_of_customers() {
