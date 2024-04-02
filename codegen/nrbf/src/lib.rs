@@ -15,7 +15,7 @@ pub mod value;
 pub use value::Value;
 
 #[cfg(feature = "serde")]
-pub fn from_stream<'i, T>(bytes: &'i [u8]) -> Result<T, Error>
+pub fn from_slice<'i, T>(bytes: &'i [u8]) -> Result<T, Error>
 where
   T: Deserialize<'i>,
 {

@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap};
+use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
@@ -73,6 +73,6 @@ fn string() {
 #[cfg(feature = "serde")]
 #[test]
 fn string_deserialize() {
-  assert_eq!(nrbf::from_stream(INPUT), Ok("This is a string."));
-  assert_eq!(nrbf::from_stream(INPUT), Ok(String::from("This is a string.")));
+  assert_eq!(nrbf::from_slice(INPUT), Ok("This is a string."));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(String::from("This is a string.")));
 }

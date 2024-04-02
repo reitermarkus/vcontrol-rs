@@ -63,7 +63,8 @@ where
   /// Check for remaining elements after passing an `ArrayDeserializer` to
   /// `Visitor::visit_seq`.
   pub fn end<E: de::Error>(self) -> Result<(), E> {
-    let remaining = self.iter.map(|value| if let Value::Null(n) = value { *n } else { 1 }).sum::<usize>() + self.null_count;
+    let remaining =
+      self.iter.map(|value| if let Value::Null(n) = value { *n } else { 1 }).sum::<usize>() + self.null_count;
     if remaining == 0 {
       Ok(())
     } else {
@@ -109,14 +110,14 @@ where
     if self.null_count > 0 {
       self.count += 1;
       self.null_count -= 1;
-      return seed.deserialize(Value::Null(1)).map(Some)
+      return seed.deserialize(ValueDeserializer::new(self.objects, &Value::Null(1))).map(Some)
     }
 
     match self.iter.next() {
       Some(Value::Null(null_count @ 2..)) => {
         self.count += 1;
         self.null_count = null_count - 1;
-        seed.deserialize(Value::Null(1)).map(Some)
+        seed.deserialize(ValueDeserializer::new(self.objects, &Value::Null(1))).map(Some)
       },
       Some(object) => {
         self.count += 1;
@@ -199,33 +200,6 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
       Value::Null(1) => visitor.visit_none(),
       Value::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),
     }
-  }
-
-  forward_to_deserialize_any! {
-      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
-      bytes byte_buf option unit unit_struct newtype_struct seq tuple
-      tuple_struct map struct enum identifier ignored_any
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> IntoDeserializer<'de, Error> for Value<'de> {
-  type Deserializer = Self;
-
-  fn into_deserializer(self) -> Self::Deserializer {
-    self
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> Deserializer<'de> for Value<'de> {
-  type Error = Error;
-
-  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
-  where
-    V: Visitor<'de>,
-  {
-    ValueDeserializer::new(&Default::default(), &self).deserialize_any(visitor)
   }
 
   forward_to_deserialize_any! {

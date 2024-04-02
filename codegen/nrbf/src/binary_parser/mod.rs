@@ -17,7 +17,7 @@ use crate::{
     MemberPrimitiveTyped, MemberPrimitiveUnTyped, MemberReference, ObjectNull, ObjectNullMultiple,
     ObjectNullMultiple256, SystemClassWithMembers, SystemClassWithMembersAndTypes,
   },
-  value::{Object},
+  value::Object,
   Value,
 };
 
@@ -199,9 +199,9 @@ impl<'i> BinaryParser<'i> {
     });
 
     self.classes.insert(object_id, class);
-    self.objects.insert(object_id, object.clone());
+    self.objects.insert(object_id, object);
 
-    Ok((input, object.clone()))
+    Ok((input, Value::Ref(object_id)))
   }
 
   fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
