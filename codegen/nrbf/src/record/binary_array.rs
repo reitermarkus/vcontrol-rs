@@ -1,12 +1,10 @@
 use nom::{combinator::cond, multi::many_m_n, IResult, Parser, ToUsize};
 
 use crate::{
-  binary_parser::Object,
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
   record::RecordType,
-  BinaryParser,
 };
 
 /// 2.4.3.1 `BinaryArray`
@@ -22,15 +20,6 @@ pub struct BinaryArray<'i> {
 }
 
 impl<'i> BinaryArray<'i> {
-  pub(crate) fn parse_member(
-    input: &'i [u8],
-    type_enum: BinaryType,
-    additional_type_info: Option<&AdditionalTypeInfo<'i>>,
-    parser: &mut BinaryParser<'i>,
-  ) -> IResult<&'i [u8], Object<'i>> {
-    parser.parse_member_reference(input, Some((type_enum, additional_type_info)))
-  }
-
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::BinaryArray.parse(input)?;
 

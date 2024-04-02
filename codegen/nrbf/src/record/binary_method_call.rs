@@ -1,13 +1,8 @@
-use nom::{
-  combinator::{cond, map},
-  IResult, Parser,
-};
+use nom::{combinator::cond, IResult, Parser};
 
 use crate::{
-  data_type::Int32,
   method_invocation::{ArrayOfValueWithCode, MessageFlags, StringValueWithCode},
-  record::{ArraySingleObject, RecordType},
-  BinaryParser,
+  record::RecordType,
 };
 
 /// 2.2.3.1 `BinaryMethodCall`
@@ -21,7 +16,7 @@ pub struct BinaryMethodCall<'i> {
 }
 
 impl<'i> BinaryMethodCall<'i> {
-  pub fn parse(input: &'i [u8], _parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::MethodCall.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;
@@ -32,20 +27,5 @@ impl<'i> BinaryMethodCall<'i> {
     let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)?;
 
     Ok((input, Self { message_enum, method_name, type_name, call_context, args }))
-  }
-}
-
-/// 2.2.3.2 `MethodCallArray`
-#[derive(Debug, Clone, PartialEq)]
-pub struct MethodCallArray(pub ArraySingleObject);
-
-impl MethodCallArray {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    map(|input| ArraySingleObject::parse(input), Self)(input)
-  }
-
-  #[inline]
-  pub(crate) fn object_id(&self) -> Int32 {
-    self.0.object_id()
   }
 }

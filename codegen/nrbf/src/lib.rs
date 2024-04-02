@@ -17,9 +17,11 @@ where
   T: Deserialize<'i>,
 {
   use nom::combinator::all_consuming;
+  use serde::de::{Error, Unexpected};
 
   use grammar::RemotingMessage;
 
-  let (_, remoting_message) = all_consuming(RemotingMessage::parse)(bytes).unwrap();
+  let (_, remoting_message) = all_consuming(RemotingMessage::parse)(bytes)
+    .map_err(|_| Error::invalid_type(Unexpected::Other("parsing error"), &"remoting message"))?;
   T::deserialize(remoting_message)
 }

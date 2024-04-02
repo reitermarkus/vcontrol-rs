@@ -2,11 +2,10 @@ use std::collections::BTreeMap;
 
 use nrbf::{
   binary_parser::{Object, ObjectClass},
-  common::ArrayInfo,
   data_type::{Int32, LengthPrefixedString},
-  grammar::{CallArray, MethodCall, MethodCallOrReturn, RemotingMessage},
+  grammar::{MethodCallOrReturn, RemotingMessage},
   method_invocation::{MessageFlags, StringValueWithCode},
-  record::{ArraySingleObject, BinaryMethodCall, MessageEnd, MethodCallArray, SerializationHeader},
+  record::{BinaryMethodCall, MessageEnd, SerializationHeader},
 };
 
 #[test]
@@ -48,6 +47,10 @@ fn method_call() {
     },
     objects: BTreeMap::from_iter([
       (
+        Int32(1),
+        Object::Array(vec![Object::Ref(Int32(2))]),
+      ),
+      (
         Int32(2),
         Object::Object {
           class: ObjectClass { name: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null") },
@@ -65,30 +68,19 @@ fn method_call() {
       (Int32(7), Object::String("98054")),
     ]),
     method_call_or_return: Some(MethodCallOrReturn::MethodCall(
-      MethodCall {
-        binary_method_call: BinaryMethodCall {
-          message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
-          method_name: StringValueWithCode::from(
-            LengthPrefixedString::from("SendAddress")
-          ),
-          type_name: StringValueWithCode::from(
-            LengthPrefixedString::from(
-              "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
-            )
-          ),
-          call_context: None,
-          args: None,
-        },
-        call_array: Some(CallArray {
-          call_array: MethodCallArray(ArraySingleObject {
-            array_info: ArrayInfo {
-              object_id: Int32(1),
-              length: Int32(1),
-            },
-          }),
-          member_references: vec![Object::Ref(Int32(2))],
-        }),
-      },
+      BinaryMethodCall {
+        message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
+        method_name: StringValueWithCode::from(
+          LengthPrefixedString::from("SendAddress")
+        ),
+        type_name: StringValueWithCode::from(
+          LengthPrefixedString::from(
+            "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
+          )
+        ),
+        call_context: None,
+        args: None,
+      }
     )),
     end: MessageEnd,
   };
