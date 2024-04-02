@@ -1,11 +1,12 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  binary_parser::{Object, ObjectClass},
   data_type::{Double, Int32},
   grammar::RemotingMessage,
   record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  value::Object,
+  Value,
 };
 
 #[rustfmt::skip]
@@ -37,10 +38,11 @@ fn double() {
     },
     objects: BTreeMap::from_iter([(
       Int32(1),
-      Object::Object {
-        class: ObjectClass { name: "System.Double", library: None },
-        members: BTreeMap::from_iter([("m_value", Object::Primitive(MemberPrimitiveUnTyped::Double(Double(-0.1067))))]),
-      },
+      Value::Object(Object {
+        class: "System.Double",
+        library: None,
+        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Double(Double(-0.1067))))]),
+      }),
     )]),
     method_call_or_return: None,
     end: MessageEnd,

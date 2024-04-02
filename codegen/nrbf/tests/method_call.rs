@@ -1,11 +1,12 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use nrbf::{
-  binary_parser::{Object, ObjectClass},
   data_type::{Int32, LengthPrefixedString},
   grammar::{MethodCallOrReturn, RemotingMessage},
   method_invocation::{MessageFlags, StringValueWithCode},
   record::{BinaryMethodCall, MessageEnd, SerializationHeader},
+  value::Object,
+  Value,
 };
 
 #[test]
@@ -48,24 +49,24 @@ fn method_call() {
     objects: BTreeMap::from_iter([
       (
         Int32(1),
-        Object::Array(vec![Object::Ref(Int32(2))]),
+        Value::Array(vec![Value::Ref(Int32(2))]),
       ),
       (
         Int32(2),
-        Object::Object {
-          class: ObjectClass { name: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null") },
-          members: BTreeMap::from_iter([
-            ("Street", Object::Ref(Int32(4))),
-            ("City", Object::Ref(Int32(5))),
-            ("State", Object::Ref(Int32(6))),
-            ("Zip", Object::Ref(Int32(7))),
+        Value::Object(Object {
+          class: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"),
+          members: HashMap::from_iter([
+            ("Street", Value::Ref(Int32(4))),
+            ("City", Value::Ref(Int32(5))),
+            ("State", Value::Ref(Int32(6))),
+            ("Zip", Value::Ref(Int32(7))),
           ]),
-        },
+        }),
       ),
-      (Int32(4), Object::String("One Microsoft Way")),
-      (Int32(5), Object::String("Redmond")),
-      (Int32(6), Object::String("WA")),
-      (Int32(7), Object::String("98054")),
+      (Int32(4), Value::String("One Microsoft Way")),
+      (Int32(5), Value::String("Redmond")),
+      (Int32(6), Value::String("WA")),
+      (Int32(7), Value::String("98054")),
     ]),
     method_call_or_return: Some(MethodCallOrReturn::MethodCall(
       BinaryMethodCall {
