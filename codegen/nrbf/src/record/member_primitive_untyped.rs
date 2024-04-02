@@ -2,24 +2,16 @@ use nom::{
   combinator::{fail, map},
   IResult,
 };
-#[cfg(feature = "serde")]
-use serde::{
-  de::value::Error,
-  de::{IntoDeserializer, Visitor},
-  forward_to_deserialize_any,
-  ser::{Serialize, Serializer},
-  Deserialize, Deserializer,
-};
 
 use crate::{
   data_type::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, Single, TimeSpan, UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
+  Value,
 };
 
 /// 2.5.2 `MemberPrimitiveUnTyped`
-#[cfg_attr(feature = "serde", derive(Deserialize), serde(untagged))]
 #[derive(Debug, Clone, PartialEq)]
 pub enum MemberPrimitiveUnTyped {
   Boolean(Boolean),
@@ -61,73 +53,25 @@ impl MemberPrimitiveUnTyped {
       PrimitiveType::String => fail(input),
     }
   }
-}
 
-#[cfg(feature = "serde")]
-impl Serialize for MemberPrimitiveUnTyped {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
+  #[inline]
+  pub(crate) fn into_value(self) -> Value<'static> {
     match self {
-      Self::Boolean(v) => v.serialize(serializer),
-      Self::Byte(v) => v.serialize(serializer),
-      Self::Char(v) => v.serialize(serializer),
-      Self::Decimal(v) => v.serialize(serializer),
-      Self::Double(v) => v.serialize(serializer),
-      Self::Int16(v) => v.serialize(serializer),
-      Self::Int32(v) => v.serialize(serializer),
-      Self::Int64(v) => v.serialize(serializer),
-      Self::SByte(v) => v.serialize(serializer),
-      Self::Single(v) => v.serialize(serializer),
-      Self::TimeSpan(v) => v.serialize(serializer),
-      Self::DateTime(v) => v.serialize(serializer),
-      Self::UInt16(v) => v.serialize(serializer),
-      Self::UInt32(v) => v.serialize(serializer),
-      Self::UInt64(v) => v.serialize(serializer),
+      Self::Boolean(v) => Value::Boolean(v.into()),
+      Self::Byte(v) => Value::Byte(v.into()),
+      Self::Char(v) => Value::Char(v.into()),
+      Self::Decimal(v) => Value::Decimal(v.into()),
+      Self::Double(v) => Value::Double(v.into()),
+      Self::Int16(v) => Value::Int16(v.into()),
+      Self::Int32(v) => Value::Int32(v.into()),
+      Self::Int64(v) => Value::Int64(v.into()),
+      Self::SByte(v) => Value::SByte(v.into()),
+      Self::Single(v) => Value::Single(v.into()),
+      Self::TimeSpan(v) => Value::TimeSpan(v.into()),
+      Self::DateTime(v) => Value::DateTime(v.into()),
+      Self::UInt16(v) => Value::UInt16(v.into()),
+      Self::UInt32(v) => Value::UInt32(v.into()),
+      Self::UInt64(v) => Value::UInt64(v.into()),
     }
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> IntoDeserializer<'de, Error> for MemberPrimitiveUnTyped {
-  type Deserializer = Self;
-
-  fn into_deserializer(self) -> Self::Deserializer {
-    self
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> Deserializer<'de> for MemberPrimitiveUnTyped {
-  type Error = Error;
-
-  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
-  where
-    V: Visitor<'de>,
-  {
-    match self {
-      MemberPrimitiveUnTyped::Boolean(v) => visitor.visit_bool((v).into()),
-      MemberPrimitiveUnTyped::SByte(v) => visitor.visit_i8((v).into()),
-      MemberPrimitiveUnTyped::Int16(v) => visitor.visit_i16((v).into()),
-      MemberPrimitiveUnTyped::Int32(v) => visitor.visit_i32((v).into()),
-      MemberPrimitiveUnTyped::Int64(v) => visitor.visit_i64((v).into()),
-      MemberPrimitiveUnTyped::Byte(v) => visitor.visit_u8((v).into()),
-      MemberPrimitiveUnTyped::UInt16(v) => visitor.visit_u16((v).into()),
-      MemberPrimitiveUnTyped::UInt32(v) => visitor.visit_u32((v).into()),
-      MemberPrimitiveUnTyped::UInt64(v) => visitor.visit_u64((v).into()),
-      MemberPrimitiveUnTyped::Single(v) => visitor.visit_f32((v).into()),
-      MemberPrimitiveUnTyped::Double(v) => visitor.visit_f64((v).into()),
-      MemberPrimitiveUnTyped::Char(v) => visitor.visit_char((v).into()),
-      MemberPrimitiveUnTyped::Decimal(v) => visitor.visit_string(v.0.to_string()),
-      MemberPrimitiveUnTyped::TimeSpan(v) => visitor.visit_i64((v).into()),
-      MemberPrimitiveUnTyped::DateTime(v) => visitor.visit_i64((v).into()),
-    }
-  }
-
-  forward_to_deserialize_any! {
-      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
-      bytes byte_buf option unit unit_struct newtype_struct seq tuple
-      tuple_struct map struct enum identifier ignored_any
   }
 }

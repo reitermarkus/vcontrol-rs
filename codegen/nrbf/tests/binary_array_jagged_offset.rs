@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use nrbf::{
   data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   Value,
 };
 
@@ -60,22 +60,9 @@ fn binary_array_jagged_offset() {
     },
     objects: BTreeMap::from_iter([
       (Int32(1), Value::Array(vec![Value::Ref(Int32(2)), Value::Ref(Int32(3)), Value::Ref(Int32(4))])),
-      (Int32(2), Value::Array(vec![Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(1)))])),
-      (
-        Int32(3),
-        Value::Array(vec![
-          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
-          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(3))),
-        ]),
-      ),
-      (
-        Int32(4),
-        Value::Array(vec![
-          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(4))),
-          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(5))),
-          Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(6))),
-        ]),
-      ),
+      (Int32(2), Value::Array(vec![Value::Int32(1)])),
+      (Int32(3), Value::Array(vec![Value::Int32(2), Value::Int32(3)])),
+      (Int32(4), Value::Array(vec![Value::Int32(4), Value::Int32(5), Value::Int32(6)])),
     ]),
     method_call_or_return: None,
     end: MessageEnd,

@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use nrbf::{
   data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   Value,
 };
 
@@ -47,16 +47,16 @@ fn binary_array_single_offset() {
     objects: BTreeMap::from_iter([(
       Int32(1),
       Value::Array(vec![
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
-        Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
+        Value::Int32(0),
       ]),
     )]),
     method_call_or_return: None,

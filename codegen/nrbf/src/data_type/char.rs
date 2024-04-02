@@ -4,11 +4,8 @@ use nom::{
   number::complete::{le_u16, le_u24, le_u32, u8},
   IResult,
 };
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize, Serializer};
 
 /// 2.1.1.1 `Char`
-#[cfg_attr(feature = "serde", derive(Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Char(pub char);
 
@@ -37,15 +34,5 @@ impl From<Char> for char {
   #[inline]
   fn from(val: Char) -> Self {
     val.0
-  }
-}
-
-#[cfg(feature = "serde")]
-impl Serialize for Char {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    serializer.serialize_char(self.0)
   }
 }
