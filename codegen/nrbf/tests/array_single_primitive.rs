@@ -55,7 +55,7 @@ fn array_single_primitive_deserialize() {
 
   assert_eq!(
     nrbf::from_stream::<[i64; 1]>(INPUT).unwrap_err().to_string(),
-    "invalid length 2, expected 1 element in sequence"
+    "invalid length 2, expected 1 element in array"
   );
   assert_eq!(nrbf::from_stream::<[i64; 2]>(INPUT), Ok([67, 42]));
   assert_eq!(
