@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap};
+use std::{collections::BTreeMap, ops::Index};
 
 use nom::{
   branch::alt,
@@ -13,14 +13,20 @@ use crate::{
   enumeration::BinaryType,
   grammar::{Class, MemberReferenceInner},
   record::{
-    BinaryLibrary, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes,
-    MemberPrimitiveUnTyped, SystemClassWithMembers, SystemClassWithMembersAndTypes,
+    BinaryLibrary, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, MemberPrimitiveUnTyped,
+    SystemClassWithMembers, SystemClassWithMembersAndTypes,
   },
 };
 
 #[derive(Debug)]
+struct ObjectClass<'i> {
+  name: &'i str,
+  library: Option<&'i str>,
+}
+
+#[derive(Debug)]
 struct Object<'i> {
-  class: &'i str,
+  class: ObjectClass<'i>,
   members: BTreeMap<&'i str, MemberReferenceInner<'i>>,
 }
 
@@ -28,6 +34,7 @@ struct Object<'i> {
 pub struct BinaryParser<'i> {
   pub binary_libraries: BTreeMap<Int32, LengthPrefixedString<'i>>,
   pub classes: BTreeMap<Int32, Class<'i>>,
+  pub objects: BTreeMap<Int32, Object<'i>>,
 }
 
 impl<'i> BinaryParser<'i> {
@@ -44,37 +51,38 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `memberReference`
-  pub fn parse_member_reference(&mut self, input: &'i [u8]) -> IResult<&'i [u8], MemberReferenceInner<'i>> {
-    let (input, ()) = self.parse_binary_library(input)?;
-
-    MemberReferenceInner::parse(input, self)
-  }
-
-  pub(crate) fn parse_member(
+  pub fn parse_member_reference(
     &mut self,
     input: &'i [u8],
-    type_enum: BinaryType,
-    additional_type_info: Option<&AdditionalTypeInfo<'i>>,
+    type_enum_and_additional_type_info: Option<(BinaryType, Option<&AdditionalTypeInfo<'i>>)>,
   ) -> IResult<&'i [u8], MemberReferenceInner<'i>> {
-    match (type_enum, additional_type_info) {
-      (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
-        |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
-        |value| MemberReferenceInner::MemberPrimitiveUnTyped(value),
-      )(input),
-      (BinaryType::String, None) => {
-        map(BinaryObjectString::parse, |value| MemberReferenceInner::BinaryObjectString(value))(input)
-      },
-      (BinaryType::Object, None) => self.parse_member_reference(input),
-      (BinaryType::SystemClass, Some(_class_name)) => self.parse_member_reference(input),
-      (BinaryType::Class, Some(_class_type_info)) => self.parse_member_reference(input),
-      (BinaryType::ObjectArray, None) => self.parse_member_reference(input),
-      (BinaryType::StringArray, None) => self.parse_member_reference(input),
-      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => self.parse_member_reference(input),
-      _ => unreachable!(),
+    let (input, ()) = self.parse_binary_library(input)?;
+
+    if let Some((type_enum, additional_type_info)) = type_enum_and_additional_type_info {
+      match (type_enum, additional_type_info) {
+        (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
+          |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
+          |value| MemberReferenceInner::MemberPrimitiveUnTyped(value),
+        )(input),
+        (BinaryType::String, None) => {
+          map(BinaryObjectString::parse, |value| MemberReferenceInner::BinaryObjectString(value))(input)
+        },
+        (BinaryType::Object, None) => MemberReferenceInner::parse(input, self),
+        (BinaryType::SystemClass, Some(class_name)) => unimplemented!("{class_name:?}"),
+        (BinaryType::Class, Some(class_type_info)) => {
+          unimplemented!("{class_type_info:?}")
+        },
+        (BinaryType::ObjectArray, None) => MemberReferenceInner::parse(input, self),
+        (BinaryType::StringArray, None) => MemberReferenceInner::parse(input, self),
+        (BinaryType::PrimitiveArray, Some(additional_type_info)) => unimplemented!("{additional_type_info:?}"),
+        _ => unreachable!(),
+      }
+    } else {
+      MemberReferenceInner::parse(input, self)
     }
   }
 
-  pub fn parse_member_references(
+  fn parse_members_with_type_info(
     &mut self,
     mut input: &'i [u8],
     member_type_info: &MemberTypeInfo<'i>,
@@ -85,7 +93,7 @@ impl<'i> BinaryParser<'i> {
       member_type_info.binary_type_enums.iter().zip(member_type_info.additional_infos.iter())
     {
       let member;
-      (input, member) = self.parse_member(input, *binary_type_enum, additional_info.as_ref())?;
+      (input, member) = self.parse_member_reference(input, Some((*binary_type_enum, additional_info.as_ref())))?;
       member_references.push(member);
     }
 
@@ -99,8 +107,13 @@ impl<'i> BinaryParser<'i> {
           let object_id = class.object_id();
           self.classes.get(&class.metadata_id()).map(|class| (object_id, class.clone()))
         }),
-        map(ClassWithMembers::parse, |class| (class.object_id(), Class::ClassWithMembers(class))),
-        map(ClassWithMembersAndTypes::parse, |class| (class.object_id(), Class::ClassWithMembersAndTypes(class))),
+        map(verify(ClassWithMembers::parse, |class| self.binary_libraries.contains_key(&class.library_id)), |class| {
+          (class.object_id(), Class::ClassWithMembers(class))
+        }),
+        map(
+          verify(ClassWithMembersAndTypes::parse, |class| self.binary_libraries.contains_key(&class.library_id)),
+          |class| (class.object_id(), Class::ClassWithMembersAndTypes(class)),
+        ),
         map(SystemClassWithMembers::parse, |class| (class.object_id(), Class::SystemClassWithMembers(class))),
         map(SystemClassWithMembersAndTypes::parse, |class| {
           (class.object_id(), Class::SystemClassWithMembersAndTypes(class))
@@ -109,24 +122,50 @@ impl<'i> BinaryParser<'i> {
       |(object_id, _)| !self.classes.contains_key(&object_id),
     )(input)?;
 
-    let (input, member_references) = match class {
+    let (input, (object_class, member_references)) = match class {
       Class::ClassWithMembers(ref class) => {
+        let object_class = ObjectClass {
+          name: class.class_info.name.as_str(),
+          library: Some(self.binary_libraries[&class.library_id].as_str()),
+        };
+
         let member_count = class.class_info.member_names.len();
-        many_m_n(member_count, member_count, |input| self.parse_member_reference(input))(input)?
+        let (input, member_references) =
+          many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
+
+        (input, (object_class, member_references))
       },
-      Class::ClassWithMembersAndTypes(ref class) => self.parse_member_references(input, &class.member_type_info)?,
+      Class::ClassWithMembersAndTypes(ref class) => {
+        let object_class = ObjectClass {
+          name: class.class_info.name.as_str(),
+          library: Some(self.binary_libraries[&class.library_id].as_str()),
+        };
+
+        let (input, member_references) = self.parse_members_with_type_info(input, &class.member_type_info)?;
+
+        (input, (object_class, member_references))
+      },
       Class::SystemClassWithMembers(ref class) => {
+        let object_class = ObjectClass { name: class.class_info.name.as_str(), library: None };
+
         let member_count = class.class_info.member_names.len();
-        many_m_n(member_count, member_count, |input| self.parse_member_reference(input))(input)?
+        let (input, member_references) =
+          many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
+
+        (input, (object_class, member_references))
       },
       Class::SystemClassWithMembersAndTypes(ref class) => {
-        self.parse_member_references(input, &class.member_type_info)?
+        let object_class = ObjectClass { name: class.class_info.name.as_str(), library: None };
+
+        let (input, member_references) = self.parse_members_with_type_info(input, &class.member_type_info)?;
+
+        (input, (object_class, member_references))
       },
     };
 
     let class_info = class.class_info();
-    let _object = Object {
-      class: class_info.name.as_str(),
+    let object = Object {
+      class: object_class,
       members: BTreeMap::from_iter(
         class_info
           .member_names
@@ -137,6 +176,7 @@ impl<'i> BinaryParser<'i> {
     };
 
     self.classes.insert(object_id, class);
+    self.objects.insert(object_id, object);
 
     Ok((input, (object_id, member_references)))
   }

@@ -5,9 +5,7 @@ use nrbf::{
   common::{AdditionalTypeInfo, ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Byte, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  grammar::{
-    Array, Arrays, Class, Classes, MemberReferenceInner, NullObject, Referenceable, RemotingMessage,
-  },
+  grammar::{Array, Arrays, Class, Classes, MemberReferenceInner, NullObject, Referenceable, RemotingMessage},
   record::{
     ArraySingleString, BinaryObjectString, MemberPrimitiveUnTyped, MemberReference, MessageEnd, ObjectNullMultiple256,
     SerializationHeader, SystemClassWithMembersAndTypes,

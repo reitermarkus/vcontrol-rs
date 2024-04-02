@@ -8,7 +8,7 @@ use crate::{
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
-  grammar::{MemberReferenceInner},
+  grammar::MemberReferenceInner,
   record::{BinaryObjectString, MemberPrimitiveUnTyped, RecordType},
   BinaryParser,
 };
