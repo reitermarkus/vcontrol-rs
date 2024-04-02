@@ -12,7 +12,7 @@ use serde::{
 
 use crate::{
   binary_parser::{Object, ObjectDeserializer},
-  data_type::{Int32, LengthPrefixedString},
+  data_type::Int32,
   grammar::{MethodCall, MethodReturn},
   record::{MessageEnd, SerializationHeader},
   BinaryParser,
@@ -78,8 +78,6 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
     V: Visitor<'de>,
   {
     use serde::de::{Error, Unexpected};
-
-    use crate::record::MemberPrimitiveUnTyped;
 
     match self.method_call_or_return {
       Some(MethodCallOrReturn::MethodCall(_)) => {
