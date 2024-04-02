@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
+  binary_parser::Object,
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType, PrimitiveType},
@@ -48,27 +49,21 @@ fn binary_array_single_offset() {
     binary_libraries: BTreeMap::new(),
     classes: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::Arrays(Arrays {
-      array: Array::BinaryArray(BinaryArray {
-        object_id: Int32(1),
-        binary_array_type_enum: BinaryArrayType::SingleOffset,
-        rank: Int32(1),
-        lengths: vec![Int32(10)],
-        lower_bounds: Some(vec![Int32(2000)]),
-        type_enum: BinaryType::Primitive,
-        additional_type_info: Some(AdditionalTypeInfo::Primitive(PrimitiveType::Int32)),
-        members: vec![
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(0))),
+      array: Array::BinaryArray(
+        Int32(1),
+        vec![
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(0))),
         ],
-      }),
+      ),
     })],
     method_call_or_return: None,
     post_method_referenceables: vec![],

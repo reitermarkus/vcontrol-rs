@@ -12,4 +12,9 @@ impl ObjectNull {
 
     Ok((input, Self))
   }
+
+  #[inline]
+  pub(crate) fn null_count(&self) -> usize {
+    1
+  }
 }

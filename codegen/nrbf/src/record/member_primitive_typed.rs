@@ -55,4 +55,24 @@ impl MemberPrimitiveTyped {
 
     Ok((input, primitive_typed))
   }
+
+  pub(crate) fn into_untyped(self) -> MemberPrimitiveUnTyped {
+    match self {
+      Self::Boolean(v) => MemberPrimitiveUnTyped::Boolean(v),
+      Self::Byte(v) => MemberPrimitiveUnTyped::Byte(v),
+      Self::Char(v) => MemberPrimitiveUnTyped::Char(v),
+      Self::Decimal(v) => MemberPrimitiveUnTyped::Decimal(v),
+      Self::Double(v) => MemberPrimitiveUnTyped::Double(v),
+      Self::Int16(v) => MemberPrimitiveUnTyped::Int16(v),
+      Self::Int32(v) => MemberPrimitiveUnTyped::Int32(v),
+      Self::Int64(v) => MemberPrimitiveUnTyped::Int64(v),
+      Self::SByte(v) => MemberPrimitiveUnTyped::SByte(v),
+      Self::Single(v) => MemberPrimitiveUnTyped::Single(v),
+      Self::TimeSpan(v) => MemberPrimitiveUnTyped::TimeSpan(v),
+      Self::DateTime(v) => MemberPrimitiveUnTyped::DateTime(v),
+      Self::UInt16(v) => MemberPrimitiveUnTyped::UInt16(v),
+      Self::UInt32(v) => MemberPrimitiveUnTyped::UInt32(v),
+      Self::UInt64(v) => MemberPrimitiveUnTyped::UInt64(v),
+    }
+  }
 }

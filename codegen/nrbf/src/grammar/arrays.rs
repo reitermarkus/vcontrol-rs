@@ -1,6 +1,7 @@
 use nom::{branch::alt, combinator::map, IResult};
 
 use crate::{
+  binary_parser::Object,
   data_type::Int32,
   record::{ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray},
   BinaryParser,
@@ -8,32 +9,20 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Array<'i> {
-  ArraySingleObject(ArraySingleObject<'i>),
-  ArraySinglePrimitive(ArraySinglePrimitive),
-  ArraySingleString(ArraySingleString<'i>),
-  BinaryArray(BinaryArray<'i>),
+  ArraySingleObject(Int32, Vec<Object<'i>>),
+  ArraySinglePrimitive(Int32, Vec<Object<'i>>),
+  ArraySingleString(Int32, Vec<Object<'i>>),
+  BinaryArray(Int32, Vec<Object<'i>>),
 }
 
 impl<'i> Array<'i> {
-  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
-    if let Ok(s) = map(|input| ArraySingleObject::parse(input, parser), Self::ArraySingleObject)(input) {
-      return Ok(s)
-    }
-
-    alt((
-      map(ArraySinglePrimitive::parse, Self::ArraySinglePrimitive),
-      map(ArraySingleString::parse, Self::ArraySingleString),
-      map(|input| BinaryArray::parse(input, parser), Self::BinaryArray),
-    ))(input)
-  }
-
   #[inline]
   pub(crate) fn object_id(&self) -> Int32 {
     match self {
-      Self::ArraySingleObject(array) => array.object_id(),
-      Self::ArraySinglePrimitive(array) => array.object_id(),
-      Self::ArraySingleString(array) => array.object_id(),
-      Self::BinaryArray(array) => array.object_id(),
+      Self::ArraySingleObject(id, _) => *id,
+      Self::ArraySinglePrimitive(id, _) => *id,
+      Self::ArraySingleString(id, _) => *id,
+      Self::BinaryArray(id, _) => *id,
     }
   }
 }
@@ -48,7 +37,7 @@ impl<'i> Arrays<'i> {
   pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, ()) = parser.parse_binary_library(input)?;
 
-    let (input, array) = Array::parse(input, parser)?;
+    let (input, array) = parser.parse_array(input)?;
 
     Ok((input, Self { array }))
   }

@@ -17,6 +17,7 @@ impl ObjectNullMultiple256 {
     Ok((input, Self { null_count }))
   }
 
+  #[inline]
   pub(crate) fn null_count(&self) -> usize {
     u8::from(self.null_count).to_usize()
   }

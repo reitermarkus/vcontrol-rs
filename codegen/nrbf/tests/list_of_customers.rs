@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
+  binary_parser::Object,
   common::{AdditionalTypeInfo, ArrayInfo, ClassInfo, MemberTypeInfo},
   data_type::{Byte, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
@@ -88,33 +89,17 @@ fn list_of_customers() {
       Referenceable::Classes(Classes {
         class_id: Int32(1),
         member_references: vec![
-          MemberReferenceInner::MemberReference(MemberReference { id_ref: Int32(2) }),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
-          MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(2))),
+          Object::Ref(Int32(2)),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2))),
         ],
       }),
       Referenceable::Arrays(Arrays {
-        array: Array::ArraySingleString(ArraySingleString {
-          array_info: ArrayInfo {
-            object_id: Int32(2),
-            length: Int32(4),
-          },
-          members: vec![
-            MemberReferenceInner::BinaryObjectString(BinaryObjectString {
-              object_id: Int32(3),
-              value: LengthPrefixedString::from("Bob"),
-            }),
-            MemberReferenceInner::BinaryObjectString(BinaryObjectString {
-              object_id: Int32(4),
-              value: LengthPrefixedString::from("Rob"),
-            }),
-            MemberReferenceInner::NullObject(NullObject::ObjectNullMultiple256(
-              ObjectNullMultiple256 {
-                null_count: Byte(2),
-              },
-            )),
-          ],
-        }),
+        array: Array::ArraySingleString(Int32(2), vec![
+            Object::String("Bob"),
+            Object::String("Rob"),
+            Object::Null(2),
+          ]),
       }),
     ],
     method_call_or_return: None,

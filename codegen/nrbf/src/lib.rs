@@ -8,7 +8,7 @@ pub mod grammar;
 pub mod method_invocation;
 pub mod record;
 
-mod binary_parser;
+pub mod binary_parser;
 pub use binary_parser::BinaryParser;
 
 #[cfg(feature = "serde")]

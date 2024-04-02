@@ -18,4 +18,13 @@ impl NullObject {
       map(ObjectNullMultiple256::parse, Self::ObjectNullMultiple256),
     ))(input)
   }
+
+  #[inline]
+  pub(crate) fn null_count(&self) -> usize {
+    match self {
+      Self::ObjectNull(object_null) => object_null.null_count(),
+      Self::ObjectNullMultiple(object_null) => object_null.null_count(),
+      Self::ObjectNullMultiple256(object_null) => object_null.null_count(),
+    }
+  }
 }
