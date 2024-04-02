@@ -4,7 +4,7 @@ use const_str::concat_bytes;
 use nrbf::{
   data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::Object,
   Value,
 };
@@ -59,8 +59,8 @@ fn list_of_customers() {
           class: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None,
           members: HashMap::from_iter([
             ("_items", Value::Ref(Int32(2))),
-            ("_size", Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
-            ("_version", Value::Primitive(MemberPrimitiveUnTyped::Int32(Int32(2)))),
+            ("_size", Value::Int32(2)),
+            ("_version", Value::Int32(2)),
           ]),
         }),
       ),

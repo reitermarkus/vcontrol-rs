@@ -8,7 +8,7 @@ pub mod grammar;
 pub mod method_invocation;
 pub mod record;
 
-pub mod binary_parser;
+mod binary_parser;
 pub use binary_parser::BinaryParser;
 
 pub mod value;

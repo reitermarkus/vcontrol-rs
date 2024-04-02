@@ -6,6 +6,7 @@ use crate::{
   },
   enumeration::PrimitiveType,
   record::{MemberPrimitiveUnTyped, RecordType},
+  Value,
 };
 
 /// 2.5.1 `MemberPrimitiveTyped`
@@ -56,23 +57,24 @@ impl MemberPrimitiveTyped {
     Ok((input, primitive_typed))
   }
 
-  pub(crate) fn into_untyped(self) -> MemberPrimitiveUnTyped {
+  #[inline]
+  pub(crate) fn into_value(self) -> Value<'static> {
     match self {
-      Self::Boolean(v) => MemberPrimitiveUnTyped::Boolean(v),
-      Self::Byte(v) => MemberPrimitiveUnTyped::Byte(v),
-      Self::Char(v) => MemberPrimitiveUnTyped::Char(v),
-      Self::Decimal(v) => MemberPrimitiveUnTyped::Decimal(v),
-      Self::Double(v) => MemberPrimitiveUnTyped::Double(v),
-      Self::Int16(v) => MemberPrimitiveUnTyped::Int16(v),
-      Self::Int32(v) => MemberPrimitiveUnTyped::Int32(v),
-      Self::Int64(v) => MemberPrimitiveUnTyped::Int64(v),
-      Self::SByte(v) => MemberPrimitiveUnTyped::SByte(v),
-      Self::Single(v) => MemberPrimitiveUnTyped::Single(v),
-      Self::TimeSpan(v) => MemberPrimitiveUnTyped::TimeSpan(v),
-      Self::DateTime(v) => MemberPrimitiveUnTyped::DateTime(v),
-      Self::UInt16(v) => MemberPrimitiveUnTyped::UInt16(v),
-      Self::UInt32(v) => MemberPrimitiveUnTyped::UInt32(v),
-      Self::UInt64(v) => MemberPrimitiveUnTyped::UInt64(v),
+      Self::Boolean(v) => Value::Boolean(v.into()),
+      Self::Byte(v) => Value::Byte(v.into()),
+      Self::Char(v) => Value::Char(v.into()),
+      Self::Decimal(v) => Value::Decimal(v.into()),
+      Self::Double(v) => Value::Double(v.into()),
+      Self::Int16(v) => Value::Int16(v.into()),
+      Self::Int32(v) => Value::Int32(v.into()),
+      Self::Int64(v) => Value::Int64(v.into()),
+      Self::SByte(v) => Value::SByte(v.into()),
+      Self::Single(v) => Value::Single(v.into()),
+      Self::TimeSpan(v) => Value::TimeSpan(v.into()),
+      Self::DateTime(v) => Value::DateTime(v.into()),
+      Self::UInt16(v) => Value::UInt16(v.into()),
+      Self::UInt32(v) => Value::UInt32(v.into()),
+      Self::UInt64(v) => Value::UInt64(v.into()),
     }
   }
 }

@@ -1,9 +1,6 @@
 use nom::{combinator::map_res, number::complete::u8, IResult};
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize, Serializer};
 
 /// 2.1.1 `BOOLEAN`
-#[cfg_attr(feature = "serde", derive(Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Boolean(pub bool);
 
@@ -30,15 +27,5 @@ impl From<Boolean> for bool {
   #[inline]
   fn from(val: Boolean) -> Self {
     val.0
-  }
-}
-
-#[cfg(feature = "serde")]
-impl Serialize for Boolean {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    serializer.serialize_bool(self.0)
   }
 }

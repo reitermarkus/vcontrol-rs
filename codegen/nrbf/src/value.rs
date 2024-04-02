@@ -9,7 +9,7 @@ use serde::{
   forward_to_deserialize_any, Deserializer,
 };
 
-use crate::{data_type::Int32, record::MemberPrimitiveUnTyped};
+use crate::data_type::{DateTime, Decimal, Int32, TimeSpan};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Object<'i> {
@@ -22,7 +22,21 @@ pub struct Object<'i> {
 pub enum Value<'i> {
   Object(Object<'i>),
   Array(Vec<Value<'i>>),
-  Primitive(MemberPrimitiveUnTyped),
+  Boolean(bool),
+  Byte(u8),
+  Char(char),
+  Decimal(Decimal),
+  Double(f64),
+  Int16(i16),
+  Int32(i32),
+  Int64(i64),
+  SByte(i8),
+  Single(f32),
+  TimeSpan(TimeSpan),
+  DateTime(DateTime),
+  UInt16(u16),
+  UInt32(u32),
+  UInt64(u64),
   String(&'i str),
   Null(usize),
   Ref(Int32),
@@ -171,19 +185,19 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
         };
 
         match (*class, value) {
-          ("System.Boolean", Value::Primitive(MemberPrimitiveUnTyped::Boolean(n))) => visitor.visit_bool((*n).into()),
-          ("System.Byte", Value::Primitive(MemberPrimitiveUnTyped::Byte(n))) => visitor.visit_u8((*n).into()),
-          ("System.SByte", Value::Primitive(MemberPrimitiveUnTyped::SByte(n))) => visitor.visit_i8((*n).into()),
-          ("System.Char", Value::Primitive(MemberPrimitiveUnTyped::Char(c))) => visitor.visit_char((*c).into()),
-          ("System.Decimal", Value::Primitive(MemberPrimitiveUnTyped::Decimal(_c))) => unimplemented!(),
-          ("System.Double", Value::Primitive(MemberPrimitiveUnTyped::Double(n))) => visitor.visit_f64((*n).into()),
-          ("System.Single", Value::Primitive(MemberPrimitiveUnTyped::Single(n))) => visitor.visit_f32((*n).into()),
-          ("System.Int32", Value::Primitive(MemberPrimitiveUnTyped::Int32(n))) => visitor.visit_i32((*n).into()),
-          ("System.UInt32", Value::Primitive(MemberPrimitiveUnTyped::UInt32(n))) => visitor.visit_u32((*n).into()),
-          ("System.Int64", Value::Primitive(MemberPrimitiveUnTyped::Int64(n))) => visitor.visit_i64((*n).into()),
-          ("System.UInt64", Value::Primitive(MemberPrimitiveUnTyped::UInt64(n))) => visitor.visit_u64((*n).into()),
-          ("System.Int16", Value::Primitive(MemberPrimitiveUnTyped::Int16(n))) => visitor.visit_i16((*n).into()),
-          ("System.UInt16", Value::Primitive(MemberPrimitiveUnTyped::UInt16(n))) => visitor.visit_u16((*n).into()),
+          ("System.Boolean", Value::Boolean(n)) => visitor.visit_bool((*n).into()),
+          ("System.Byte", Value::Byte(n)) => visitor.visit_u8((*n).into()),
+          ("System.SByte", Value::SByte(n)) => visitor.visit_i8((*n).into()),
+          ("System.Char", Value::Char(c)) => visitor.visit_char((*c).into()),
+          ("System.Decimal", Value::Decimal(_c)) => unimplemented!(),
+          ("System.Double", Value::Double(n)) => visitor.visit_f64((*n).into()),
+          ("System.Single", Value::Single(n)) => visitor.visit_f32((*n).into()),
+          ("System.Int32", Value::Int32(n)) => visitor.visit_i32((*n).into()),
+          ("System.UInt32", Value::UInt32(n)) => visitor.visit_u32((*n).into()),
+          ("System.Int64", Value::Int64(n)) => visitor.visit_i64((*n).into()),
+          ("System.UInt64", Value::UInt64(n)) => visitor.visit_u64((*n).into()),
+          ("System.Int16", Value::Int16(n)) => visitor.visit_i16((*n).into()),
+          ("System.UInt16", Value::UInt16(n)) => visitor.visit_u16((*n).into()),
           (name, _) => Err(Error::custom(format!("invalid system type: {}", name))),
         }
       },
@@ -195,7 +209,21 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
           Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), &visitor))
         }
       },
-      Value::Primitive(primitive) => primitive.clone().deserialize_any(visitor),
+      Value::Boolean(v) => visitor.visit_bool(*v),
+      Value::SByte(v) => visitor.visit_i8(*v),
+      Value::Int16(v) => visitor.visit_i16(*v),
+      Value::Int32(v) => visitor.visit_i32(*v),
+      Value::Int64(v) => visitor.visit_i64(*v),
+      Value::Byte(v) => visitor.visit_u8(*v),
+      Value::UInt16(v) => visitor.visit_u16(*v),
+      Value::UInt32(v) => visitor.visit_u32(*v),
+      Value::UInt64(v) => visitor.visit_u64(*v),
+      Value::Single(v) => visitor.visit_f32(*v),
+      Value::Double(v) => visitor.visit_f64(*v),
+      Value::Char(v) => visitor.visit_char(*v),
+      Value::Decimal(v) => visitor.visit_string(v.0.to_string()),
+      Value::TimeSpan(v) => visitor.visit_i64((*v).into()),
+      Value::DateTime(v) => visitor.visit_i64((*v).into()),
       Value::String(s) => visitor.visit_borrowed_str(s),
       Value::Null(1) => visitor.visit_none(),
       Value::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),

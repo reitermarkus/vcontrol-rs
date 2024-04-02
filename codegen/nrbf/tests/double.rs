@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
 use nrbf::{
-  data_type::{Double, Int32},
+  data_type::Int32,
   grammar::RemotingMessage,
-  record::{MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::Object,
   Value,
 };
@@ -41,7 +41,7 @@ fn double() {
       Value::Object(Object {
         class: "System.Double",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Primitive(MemberPrimitiveUnTyped::Double(Double(-0.1067))))]),
+        members: HashMap::from_iter([("m_value", Value::Double(-0.1067))]),
       }),
     )]),
     method_call_or_return: None,
