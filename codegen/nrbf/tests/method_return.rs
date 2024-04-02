@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use nrbf::{
+  binary_parser::Object,
   data_type::{Int32, LengthPrefixedString},
   grammar::{MethodCallOrReturn, MethodReturn, RemotingMessage},
   method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},

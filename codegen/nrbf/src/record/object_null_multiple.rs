@@ -17,6 +17,7 @@ impl ObjectNullMultiple {
     Ok((input, Self { null_count }))
   }
 
+  #[inline]
   pub(crate) fn null_count(&self) -> usize {
     (i32::from(self.null_count) as u32).to_usize()
   }

@@ -5,6 +5,7 @@ use nom::{
 };
 
 use crate::{
+  binary_parser::Object,
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
@@ -23,7 +24,6 @@ pub struct BinaryArray<'i> {
   pub lower_bounds: Option<Vec<Int32>>,
   pub type_enum: BinaryType,
   pub additional_type_info: Option<AdditionalTypeInfo<'i>>,
-  pub members: Vec<MemberReferenceInner<'i>>,
 }
 
 impl<'i> BinaryArray<'i> {
@@ -32,26 +32,11 @@ impl<'i> BinaryArray<'i> {
     type_enum: BinaryType,
     additional_type_info: Option<&AdditionalTypeInfo<'i>>,
     parser: &mut BinaryParser<'i>,
-  ) -> IResult<&'i [u8], MemberReferenceInner<'i>> {
-    match (type_enum, additional_type_info) {
-      (BinaryType::Primitive, Some(AdditionalTypeInfo::Primitive(primitive_type))) => map(
-        |input| MemberPrimitiveUnTyped::parse(input, *primitive_type),
-        |value| MemberReferenceInner::MemberPrimitiveUnTyped(value),
-      )(input),
-      (BinaryType::String, None) => {
-        map(BinaryObjectString::parse, |value| MemberReferenceInner::BinaryObjectString(value))(input)
-      },
-      (BinaryType::Object, None) => MemberReferenceInner::parse(input, parser),
-      (BinaryType::SystemClass, Some(_class_name)) => MemberReferenceInner::parse(input, parser),
-      (BinaryType::Class, Some(_class_type_info)) => MemberReferenceInner::parse(input, parser),
-      (BinaryType::ObjectArray, None) => MemberReferenceInner::parse(input, parser),
-      (BinaryType::StringArray, None) => MemberReferenceInner::parse(input, parser),
-      (BinaryType::PrimitiveArray, Some(_additional_type_info)) => MemberReferenceInner::parse(input, parser),
-      _ => unreachable!(),
-    }
+  ) -> IResult<&'i [u8], Object<'i>> {
+    parser.parse_member_reference(input, Some((type_enum, additional_type_info)))
   }
 
-  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let (input, _) = RecordType::BinaryArray.parse(input)?;
 
     let (input, object_id) = Int32::parse_positive(input)?;
@@ -71,24 +56,9 @@ impl<'i> BinaryArray<'i> {
     let (input, type_enum) = BinaryType::parse(input)?;
     let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
 
-    let member_count = match binary_array_type_enum {
-      BinaryArrayType::Single | BinaryArrayType::SingleOffset => lengths.first().map(|n| i32::from(*n) as u32),
-      BinaryArrayType::Rectangular | BinaryArrayType::RectangularOffset => {
-        lengths.iter().try_fold(1u32, |acc, n| acc.checked_mul(i32::from(*n) as u32))
-      },
-      BinaryArrayType::Jagged | BinaryArrayType::JaggedOffset => lengths.first().map(|n| i32::from(*n) as u32),
-    };
-    let member_count = match member_count {
-      Some(member_count) => member_count.to_usize(),
-      None => return fail(input),
-    };
-    let (input, members) = many_m_n(member_count, member_count, |input| {
-      Self::parse_member(input, type_enum, additional_type_info.as_ref(), parser)
-    })(input)?;
-
     Ok((
       input,
-      Self { object_id, binary_array_type_enum, rank, lengths, lower_bounds, type_enum, additional_type_info, members },
+      Self { object_id, binary_array_type_enum, rank, lengths, lower_bounds, type_enum, additional_type_info },
     ))
   }
 

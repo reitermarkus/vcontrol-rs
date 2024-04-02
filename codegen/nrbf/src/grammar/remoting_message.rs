@@ -12,6 +12,7 @@ use serde::{
 };
 
 use crate::{
+  binary_parser::Object,
   data_type::{Int32, LengthPrefixedString},
   grammar::{Class, MethodCall, MethodReturn, Referenceable},
   record::{MessageEnd, SerializationHeader},
@@ -125,67 +126,67 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
               (
                 "System.Boolean",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Boolean(n))],
               ) => visitor.visit_bool((*n).into()),
               (
                 "System.Byte",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Byte(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Byte(n))],
               ) => visitor.visit_u8((*n).into()),
               (
                 "System.SByte",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::SByte(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::SByte(n))],
               ) => visitor.visit_i8((*n).into()),
               (
                 "System.Char",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Char(c))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Char(c))],
               ) => visitor.visit_char((*c).into()),
               (
                 "System.Decimal",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Decimal(_c))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Decimal(_c))],
               ) => unimplemented!(),
               (
                 "System.Double",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Double(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Double(n))],
               ) => visitor.visit_f64((*n).into()),
               (
                 "System.Single",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Single(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Single(n))],
               ) => visitor.visit_f32((*n).into()),
               (
                 "System.Int32",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Int32(n))],
               ) => visitor.visit_i32((*n).into()),
               (
                 "System.UInt32",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt32(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::UInt32(n))],
               ) => visitor.visit_u32((*n).into()),
               (
                 "System.Int64",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int64(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Int64(n))],
               ) => visitor.visit_i64((*n).into()),
               (
                 "System.UInt64",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt64(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::UInt64(n))],
               ) => visitor.visit_u64((*n).into()),
               (
                 "System.Int16",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int16(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::Int16(n))],
               ) => visitor.visit_i16((*n).into()),
               (
                 "System.UInt16",
                 [LengthPrefixedString("m_value")],
-                [MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::UInt16(n))],
+                [Object::Primitive(MemberPrimitiveUnTyped::UInt16(n))],
               ) => visitor.visit_u16((*n).into()),
               (name, _, _) => Err(Error::custom(format!("invalid system type: {}", name))),
             }
@@ -193,18 +194,18 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
         }
       },
       Some(Referenceable::Arrays(Arrays { array })) => match array {
-        Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info: _, members }) => {
+        Array::ArraySinglePrimitive(_, members) => {
           let it = members.into_iter();
           SeqDeserializer::new(it).deserialize_any(visitor)
         },
-        Array::ArraySingleString(ArraySingleString { array_info: _, members }) => {
+        Array::ArraySingleString(_, members) => {
           let it = members.into_iter().map(|member| match member {
-            MemberReferenceInner::BinaryObjectString(s) => s,
-            MemberReferenceInner::MemberReference(member) => match referenceables.remove(&(member.id_ref.into())) {
-              Some(Referenceable::BinaryObjectString(s)) => s,
+            Object::String(s) => s,
+            Object::Ref(id) => match referenceables.remove(&(id.into())) {
+              Some(Referenceable::BinaryObjectString(s)) => s.as_str(),
               _ => unimplemented!(),
             },
-            MemberReferenceInner::NullObject(_) => unimplemented!(),
+            Object::Null(_) => unimplemented!(),
             _ => unreachable!(),
           });
           SeqDeserializer::new(it).deserialize_any(visitor)

@@ -37,11 +37,11 @@ impl<'i> BinaryMethodCall<'i> {
 
 /// 2.2.3.2 `MethodCallArray`
 #[derive(Debug, Clone, PartialEq)]
-pub struct MethodCallArray<'i>(pub ArraySingleObject<'i>);
+pub struct MethodCallArray(pub ArraySingleObject);
 
-impl<'i> MethodCallArray<'i> {
-  pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
-    map(|input| ArraySingleObject::parse(input, parser), Self)(input)
+impl MethodCallArray {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+    map(|input| ArraySingleObject::parse(input), Self)(input)
   }
 
   #[inline]

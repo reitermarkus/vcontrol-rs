@@ -1,6 +1,7 @@
 use nom::{combinator::opt, multi::many_m_n, IResult};
 
 use crate::{
+  binary_parser::Object,
   data_type::Int32,
   grammar::MemberReferenceInner,
   record::{BinaryMethodReturn, MethodReturnCallArray},
@@ -9,18 +10,18 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ReturnCallArray<'i> {
-  pub return_call_array: MethodReturnCallArray<'i>,
-  pub member_references: Vec<MemberReferenceInner<'i>>,
+  pub return_call_array: MethodReturnCallArray,
+  pub member_references: Vec<Object<'i>>,
 }
 
 impl<'i> ReturnCallArray<'i> {
   pub fn parse(input: &'i [u8], parser: &mut BinaryParser<'i>) -> IResult<&'i [u8], Self> {
     let (input, ()) = parser.parse_binary_library(input)?;
 
-    let (input, return_call_array) = MethodReturnCallArray::parse(input, parser)?;
+    let (input, return_call_array) = MethodReturnCallArray::parse(input)?;
     let length = return_call_array.0.array_info.len();
     let (input, member_references) =
-      many_m_n(length, length, |input| MemberReferenceInner::parse(input, parser))(input)?;
+      many_m_n(length, length, |input| parser.parse_member_reference(input, None))(input)?;
 
     Ok((input, Self { return_call_array, member_references }))
   }

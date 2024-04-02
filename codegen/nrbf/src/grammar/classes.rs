@@ -1,6 +1,7 @@
 use nom::IResult;
 
 use crate::{
+  binary_parser::Object,
   common::ClassInfo,
   data_type::Int32,
   grammar::MemberReferenceInner,
@@ -31,7 +32,7 @@ impl<'i> Class<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Classes<'i> {
   pub class_id: Int32,
-  pub member_references: Vec<MemberReferenceInner<'i>>,
+  pub member_references: Vec<Object<'i>>,
 }
 
 impl<'i> Classes<'i> {

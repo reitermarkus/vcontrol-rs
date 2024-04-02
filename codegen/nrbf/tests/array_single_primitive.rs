@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
+  binary_parser::Object,
   common::ArrayInfo,
   data_type::{Int32, Int64},
   grammar::{Array, Arrays, Referenceable, RemotingMessage},
@@ -36,10 +37,13 @@ fn array_single_primitive() {
     binary_libraries: BTreeMap::new(),
     classes: BTreeMap::new(),
     pre_method_referenceables: vec![Referenceable::Arrays(Arrays {
-      array: Array::ArraySinglePrimitive(ArraySinglePrimitive {
-        array_info: ArrayInfo { object_id: Int32(1), length: Int32(2) },
-        members: vec![MemberPrimitiveUnTyped::Int64(Int64(67)), MemberPrimitiveUnTyped::Int64(Int64(42))],
-      }),
+      array: Array::ArraySinglePrimitive(
+        Int32(1),
+        vec![
+          Object::Primitive(MemberPrimitiveUnTyped::Int64(Int64(67))),
+          Object::Primitive(MemberPrimitiveUnTyped::Int64(Int64(42))),
+        ],
+      ),
     })],
     method_call_or_return: None,
     post_method_referenceables: vec![],

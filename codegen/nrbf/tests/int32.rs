@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
+  binary_parser::Object,
   common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
@@ -53,7 +54,7 @@ fn int32() {
     )]),
     pre_method_referenceables: vec![Referenceable::Classes(Classes {
       class_id: Int32(1),
-      member_references: vec![MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Int32(Int32(-1)))],
+      member_references: vec![Object::Primitive(MemberPrimitiveUnTyped::Int32(Int32(-1)))],
     })],
     method_call_or_return: None,
     post_method_referenceables: vec![],

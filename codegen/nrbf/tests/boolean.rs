@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
 use nrbf::{
+  binary_parser::Object,
   common::{AdditionalTypeInfo, ClassInfo, MemberTypeInfo},
   data_type::{Boolean, Int32, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
@@ -53,9 +54,7 @@ fn boolean() {
     )]),
     pre_method_referenceables: vec![Referenceable::Classes(Classes {
       class_id: Int32(1),
-      member_references: vec![MemberReferenceInner::MemberPrimitiveUnTyped(MemberPrimitiveUnTyped::Boolean(Boolean(
-        true,
-      )))],
+      member_references: vec![Object::Primitive(MemberPrimitiveUnTyped::Boolean(Boolean(true)))],
     })],
     method_call_or_return: None,
     post_method_referenceables: vec![],
