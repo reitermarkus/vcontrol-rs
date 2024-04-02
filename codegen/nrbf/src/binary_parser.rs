@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, fmt, iter, marker::PhantomData};
+use std::{collections::BTreeMap, fmt, iter};
 
 use nom::{
   branch::alt,
@@ -8,11 +8,7 @@ use nom::{
 };
 #[cfg(feature = "serde")]
 use serde::{
-  de::{
-    self,
-    value::{Error, SeqDeserializer},
-    Expected, IntoDeserializer, SeqAccess, Visitor,
-  },
+  de::{self, value::Error, Expected, IntoDeserializer, Visitor},
   forward_to_deserialize_any, Deserializer,
 };
 
@@ -20,11 +16,12 @@ use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::{Int32, LengthPrefixedString},
   enumeration::{BinaryArrayType, BinaryType},
-  grammar::{Class, NullObject},
+  grammar::Class,
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryObjectString,
     ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, MemberPrimitiveTyped, MemberPrimitiveUnTyped,
-    MemberReference, SystemClassWithMembers, SystemClassWithMembersAndTypes,
+    MemberReference, ObjectNull, ObjectNullMultiple, ObjectNullMultiple256, SystemClassWithMembers,
+    SystemClassWithMembersAndTypes,
   },
 };
 
@@ -90,9 +87,9 @@ where
   }
 }
 
-impl<'de, I> de::Deserializer<'de> for ObjectArrayDeserializer<'de, '_, I>
+impl<'de, 'o, I> de::Deserializer<'de> for ObjectArrayDeserializer<'de, 'o, I>
 where
-  I: Iterator<Item = Object<'de>>,
+  I: Iterator<Item = &'o Object<'de>>,
 {
   type Error = Error;
 
@@ -112,9 +109,9 @@ where
   }
 }
 
-impl<'de, I> de::SeqAccess<'de> for ObjectArrayDeserializer<'de, '_, I>
+impl<'de, 'o, I> de::SeqAccess<'de> for ObjectArrayDeserializer<'de, 'o, I>
 where
-  I: Iterator<Item = Object<'de>>,
+  I: Iterator<Item = &'o Object<'de>>,
 {
   type Error = Error;
 
@@ -129,14 +126,14 @@ where
     }
 
     match self.iter.next() {
-      Some(Object::Null(null_count)) if null_count > 1 => {
+      Some(Object::Null(null_count @ 2..)) => {
         self.count += 1;
         self.null_count = null_count - 1;
         seed.deserialize(Object::Null(1)).map(Some)
       },
       Some(object) => {
         self.count += 1;
-        seed.deserialize(ObjectDeserializer::new(self.objects, &object)).map(Some)
+        seed.deserialize(ObjectDeserializer::new(self.objects, object)).map(Some)
       },
       None => Ok(None),
     }
@@ -174,48 +171,7 @@ impl<'de> Deserializer<'de> for ObjectDeserializer<'de, '_> {
     use serde::de::{Error, Unexpected};
 
     match self.object {
-      Object::Array(members) => {
-        ObjectArrayDeserializer::new(self.objects, members.clone().into_iter()).deserialize_any(visitor)
-      },
-      Object::Ref(id) => {
-        if let Some(object) = self.objects.get(&id) {
-          Self::new(self.objects, object).deserialize_any(visitor)
-        } else {
-          self.object.clone().deserialize_any(visitor)
-        }
-      },
-      object => object.clone().deserialize_any(visitor),
-    }
-  }
-
-  forward_to_deserialize_any! {
-      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
-      bytes byte_buf option unit unit_struct newtype_struct seq tuple
-      tuple_struct map struct enum identifier ignored_any
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> IntoDeserializer<'de, Error> for Object<'de> {
-  type Deserializer = Self;
-
-  fn into_deserializer(self) -> Self::Deserializer {
-    self
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> Deserializer<'de> for Object<'de> {
-  type Error = Error;
-
-  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
-  where
-    V: Visitor<'de>,
-  {
-    use serde::de::{Error, Unexpected};
-
-    match self {
-      Self::Object { class, members } => {
+      Object::Object { class, members } => {
         if class.library.is_some() {
           return Err(Error::invalid_type(Unexpected::Other(class.name), &visitor))
         }
@@ -243,13 +199,48 @@ impl<'de> Deserializer<'de> for Object<'de> {
           (name, _) => Err(Error::custom(format!("invalid system type: {}", name))),
         }
       },
-      Self::Array(members) => SeqDeserializer::new(members.into_iter()).deserialize_any(visitor),
-      Self::Primitive(primitive) => primitive.deserialize_any(visitor),
-      Self::String(s) => visitor.visit_borrowed_str(s),
-      Self::Null(1) => visitor.visit_none(),
-      Self::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),
-      Self::Ref(_) => Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), &visitor)),
+      Object::Array(members) => {
+        ObjectArrayDeserializer::new(self.objects, members.into_iter()).deserialize_any(visitor)
+      },
+      Object::Ref(id) => {
+        if let Some(object) = self.objects.get(&id) {
+          Self::new(self.objects, object).deserialize_any(visitor)
+        } else {
+          Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), &visitor))
+        }
+      },
+      Object::Primitive(primitive) => primitive.clone().deserialize_any(visitor),
+      Object::String(s) => visitor.visit_borrowed_str(s),
+      Object::Null(1) => visitor.visit_none(),
+      Object::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),
     }
+  }
+
+  forward_to_deserialize_any! {
+      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+      bytes byte_buf option unit unit_struct newtype_struct seq tuple
+      tuple_struct map struct enum identifier ignored_any
+  }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> IntoDeserializer<'de, Error> for Object<'de> {
+  type Deserializer = Self;
+
+  fn into_deserializer(self) -> Self::Deserializer {
+    self
+  }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserializer<'de> for Object<'de> {
+  type Error = Error;
+
+  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+  where
+    V: Visitor<'de>,
+  {
+    ObjectDeserializer::new(&Default::default(), &self).deserialize_any(visitor)
   }
 
   forward_to_deserialize_any! {
@@ -313,7 +304,7 @@ impl<'i> BinaryParser<'i> {
           (BinaryType::StringArray, None) => alt((
             map(BinaryObjectString::parse, |s| (Some(s.object_id()), Object::String(s.as_str()))),
             map(MemberReference::parse, |member_reference| (None, Object::Ref(member_reference.id_ref))),
-            map(NullObject::parse, |n| (None, Object::Null(n.null_count()))),
+            map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
           ))(input)?,
           (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => {
             map(MemberReference::parse, |member_reference| (None, Object::Ref(member_reference.id_ref)))(input)?
@@ -325,7 +316,7 @@ impl<'i> BinaryParser<'i> {
           map(MemberPrimitiveTyped::parse, |p| (None, Object::Primitive(p.into_untyped()))),
           map(MemberReference::parse, |member_reference| (None, Object::Ref(member_reference.id_ref))),
           map(BinaryObjectString::parse, |s| (Some(s.object_id()), Object::String(s.as_str()))),
-          map(NullObject::parse, |n| (None, Object::Null(n.null_count()))),
+          map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
           map(|input| self.parse_classes(input), |o| (None, o)),
         ))(input)?
       };
@@ -358,6 +349,7 @@ impl<'i> BinaryParser<'i> {
     Ok((input, member_references))
   }
 
+  /// 2.7 Binary Record Grammar - `Classes`
   pub fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
@@ -557,5 +549,14 @@ impl<'i> BinaryParser<'i> {
     }
 
     self.parse_binary_object_string(input)
+  }
+
+  /// 2.7 Binary Record Grammar - `nullObject`
+  pub fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], Object<'i>> {
+    alt((
+      map(ObjectNull::parse, |n| Object::Null(n.null_count())),
+      map(ObjectNullMultiple::parse, |n| Object::Null(n.null_count())),
+      map(ObjectNullMultiple256::parse, |n| Object::Null(n.null_count())),
+    ))(input)
   }
 }

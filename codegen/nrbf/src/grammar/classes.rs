@@ -1,5 +1,4 @@
 use crate::{
-  binary_parser::Object,
   common::ClassInfo,
   record::{ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers, SystemClassWithMembersAndTypes},
 };
@@ -21,10 +20,4 @@ impl<'i> Class<'i> {
       Self::SystemClassWithMembersAndTypes(class) => &class.class_info,
     }
   }
-}
-
-/// 2.7 Binary Record Grammar - `Classes`
-#[derive(Debug, Clone, PartialEq)]
-pub struct Classes<'i> {
-  pub class: Object<'i>,
 }
