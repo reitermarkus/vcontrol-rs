@@ -18,7 +18,7 @@ use crate::{
     ObjectNullMultiple256, SystemClassWithMembers, SystemClassWithMembersAndTypes,
   },
   value::Object,
-  Value,
+  MethodCall, MethodReturn, Value,
 };
 
 mod class;
@@ -339,24 +339,37 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `methodCall`
-  pub fn parse_method_call(&mut self, input: &'i [u8]) -> IResult<&'i [u8], BinaryMethodCall<'i>> {
+  pub fn parse_method_call(&mut self, input: &'i [u8]) -> IResult<&'i [u8], MethodCall<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
-    let (input, binary_method_return) = BinaryMethodCall::parse(input)?;
+    let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
 
     let (input, _) = opt(|input| self.parse_call_array(input))(input)?;
 
-    Ok((input, binary_method_return))
+    let method_call = MethodCall {
+      method_name: binary_method_call.method_name.as_str(),
+      type_name: binary_method_call.type_name.as_str(),
+      call_context: binary_method_call.call_context.map(|c| c.as_str()),
+      args: binary_method_call.args.map(|v| v.into_values()),
+    };
+
+    Ok((input, method_call))
   }
 
   /// 2.7 Binary Record Grammar - `methodReturn`
-  pub fn parse_method_return(&mut self, input: &'i [u8]) -> IResult<&'i [u8], BinaryMethodReturn<'i>> {
+  pub fn parse_method_return(&mut self, input: &'i [u8]) -> IResult<&'i [u8], MethodReturn<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
 
     let (input, _) = opt(|input| self.parse_call_array(input))(input)?;
 
-    Ok((input, binary_method_return))
+    let method_return = MethodReturn {
+      return_value: binary_method_return.return_value.map(|v| v.into_value()),
+      call_context: binary_method_return.call_context.map(|c| c.as_str()),
+      args: binary_method_return.args.map(|v| v.into_values()),
+    };
+
+    Ok((input, method_return))
   }
 }

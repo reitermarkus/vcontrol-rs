@@ -1,11 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 
-use nrbf::{
-  data_type::{Int32, LengthPrefixedString},
-  record::{BinaryMethodCall, MessageFlags, StringValueWithCode},
-  value::Object,
-  MethodCallOrReturn, RemotingMessage, Value,
-};
+use nrbf::{data_type::Int32, value::Object, MethodCall, MethodCallOrReturn, RemotingMessage, Value};
 
 #[test]
 fn method_call() {
@@ -62,16 +57,9 @@ fn method_call() {
       (Int32(7), Value::String("98054")),
     ]),
     method_call_or_return: Some(MethodCallOrReturn::MethodCall(
-      BinaryMethodCall {
-        message_enum: MessageFlags::ARGS_IS_ARRAY | MessageFlags::NO_CONTEXT,
-        method_name: StringValueWithCode::from(
-          LengthPrefixedString::from("SendAddress")
-        ),
-        type_name: StringValueWithCode::from(
-          LengthPrefixedString::from(
-            "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"
-          )
-        ),
+      MethodCall {
+        method_name: "SendAddress",
+        type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
         call_context: None,
         args: None,
       }
