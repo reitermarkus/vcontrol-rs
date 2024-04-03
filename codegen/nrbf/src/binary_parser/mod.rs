@@ -94,7 +94,7 @@ impl<'i> BinaryParser<'i> {
           (BinaryType::StringArray, None) => alt((
             map(BinaryObjectString::parse, |s| (Some(s.object_id().into()), Value::String(s.as_str()))),
             map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref.into()))),
-            map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
+            map(Self::parse_null_object, |null_object| (None, null_object)),
           ))(input)?,
           (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => {
             map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref.into())))(input)?
@@ -106,7 +106,7 @@ impl<'i> BinaryParser<'i> {
           map(MemberPrimitiveTyped::parse, |primitive| (None, primitive.into_value())),
           map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref.into()))),
           map(BinaryObjectString::parse, |s| (Some(s.object_id().into()), Value::String(s.as_str()))),
-          map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
+          map(Self::parse_null_object, |null_object| (None, null_object)),
           map(|input| self.parse_classes(input), |o| (None, o)),
         ))(input)?
       };
@@ -162,7 +162,7 @@ impl<'i> BinaryParser<'i> {
           (class.object_id().into(), Class::SystemClassWithMembersAndTypes(class))
         }),
       )),
-      |(object_id, _)| !self.classes.contains_key(&object_id),
+      |(object_id, _)| !self.classes.contains_key(object_id),
     )(input)?;
 
     let (input, (class_info, library, member_references)) = match class {
@@ -368,7 +368,7 @@ impl<'i> BinaryParser<'i> {
       }
     } else if binary_method_call.message_enum.intersects(MessageFlags::ARGS_IN_ARRAY) {
       if let Some(Value::Array(args)) =
-        self.objects.get(&root_id).and_then(|v| if let Value::Array(args) = v { args.get(0) } else { None })
+        self.objects.get(&root_id).and_then(|v| if let Value::Array(args) = v { args.first() } else { None })
       {
         Some(args.clone())
       } else {
@@ -404,7 +404,7 @@ impl<'i> BinaryParser<'i> {
       }
     } else if binary_method_return.message_enum.intersects(MessageFlags::ARGS_IN_ARRAY) {
       if let Some(Value::Array(args)) =
-        self.objects.get(&root_id).and_then(|v| if let Value::Array(args) = v { args.get(0) } else { None })
+        self.objects.get(&root_id).and_then(|v| if let Value::Array(args) = v { args.first() } else { None })
       {
         Some(args.clone())
       } else {

@@ -1,9 +1,8 @@
 //! Representation of an NRBF value.
 
-use std::{
-  collections::{BTreeMap, HashMap},
-  fmt, iter,
-};
+use std::collections::HashMap;
+#[cfg(feature = "serde")]
+use std::{collections::BTreeMap, fmt, iter};
 
 #[cfg(feature = "serde")]
 use serde::{
