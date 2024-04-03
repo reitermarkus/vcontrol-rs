@@ -2,8 +2,7 @@ use std::collections::BTreeMap;
 
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
-  method_invocation::{AnyValueWithCode, MessageFlags, StringValueWithCode},
-  record::BinaryMethodReturn,
+  record::{BinaryMethodReturn, MessageFlags, ValueWithCode},
   MethodCallOrReturn, RemotingMessage, Value,
 };
 
@@ -21,9 +20,7 @@ fn method_return() {
     objects: BTreeMap::new(),
     method_call_or_return: Some(MethodCallOrReturn::MethodReturn(BinaryMethodReturn {
       message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
-      return_value: Some(AnyValueWithCode::String(StringValueWithCode::from(LengthPrefixedString::from(
-        "Address received",
-      )))),
+      return_value: Some(ValueWithCode::String(LengthPrefixedString::from("Address received"))),
       call_context: None,
       args: None,
     })),

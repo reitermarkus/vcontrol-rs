@@ -1,21 +1,14 @@
-use nom::{
-  branch::alt,
-  combinator::{cond, map},
-  IResult, Parser,
-};
+use nom::{combinator::cond, IResult, Parser};
 
-use crate::{
-  method_invocation::{AnyValueWithCode, ArrayOfValueWithCode, MessageFlags, StringValueWithCode, ValueWithCode},
-  record::RecordType,
-};
+use crate::record::{ArrayOfValueWithCode, MessageFlags, RecordType, StringValueWithCode, ValueWithCode};
 
 /// 2.2.3.3 `BinaryMethodReturn`
 #[derive(Debug, Clone, PartialEq)]
 pub struct BinaryMethodReturn<'i> {
   pub message_enum: MessageFlags,
-  pub return_value: Option<AnyValueWithCode<'i>>,
+  pub return_value: Option<ValueWithCode<'i>>,
   pub call_context: Option<StringValueWithCode<'i>>,
-  pub args: Option<ArrayOfValueWithCode>,
+  pub args: Option<ArrayOfValueWithCode<'i>>,
 }
 
 impl<'i> BinaryMethodReturn<'i> {
@@ -23,13 +16,8 @@ impl<'i> BinaryMethodReturn<'i> {
     let (input, _) = RecordType::MethodReturn.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;
-    let (input, return_value) = cond(
-      message_enum.intersects(MessageFlags::RETURN_VALUE_INLINE),
-      alt((
-        map(ValueWithCode::parse, AnyValueWithCode::Primitive),
-        map(StringValueWithCode::parse, AnyValueWithCode::String),
-      )),
-    )(input)?;
+    let (input, return_value) =
+      cond(message_enum.intersects(MessageFlags::RETURN_VALUE_INLINE), ValueWithCode::parse)(input)?;
     let (input, call_context) =
       cond(message_enum.intersects(MessageFlags::CONTEXT_INLINE), StringValueWithCode::parse)(input)?;
     let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)?;

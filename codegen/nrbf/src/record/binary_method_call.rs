@@ -1,9 +1,6 @@
 use nom::{combinator::cond, IResult, Parser};
 
-use crate::{
-  method_invocation::{ArrayOfValueWithCode, MessageFlags, StringValueWithCode},
-  record::RecordType,
-};
+use crate::record::{ArrayOfValueWithCode, MessageFlags, RecordType, StringValueWithCode};
 
 /// 2.2.3.1 `BinaryMethodCall`
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +9,7 @@ pub struct BinaryMethodCall<'i> {
   pub method_name: StringValueWithCode<'i>,
   pub type_name: StringValueWithCode<'i>,
   pub call_context: Option<StringValueWithCode<'i>>,
-  pub args: Option<ArrayOfValueWithCode>,
+  pub args: Option<ArrayOfValueWithCode<'i>>,
 }
 
 impl<'i> BinaryMethodCall<'i> {
