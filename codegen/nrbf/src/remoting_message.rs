@@ -11,6 +11,7 @@ use serde::{
 use crate::value::ValueDeserializer;
 use crate::{data_type::Int32, BinaryParser, Value};
 
+/// A remote method call.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodCall<'i> {
   pub method_name: &'i str,
@@ -19,6 +20,7 @@ pub struct MethodCall<'i> {
   pub args: Option<Vec<Value<'i>>>,
 }
 
+/// Information returned by a remote method.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodReturn<'i> {
   pub return_value: Option<Value<'i>>,
@@ -26,12 +28,7 @@ pub struct MethodReturn<'i> {
   pub args: Option<Vec<Value<'i>>>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum MethodCallOrReturn<'i> {
-  MethodCall(MethodCall<'i>),
-  MethodReturn(MethodReturn<'i>),
-}
-
+/// A .NET Remoting message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum RemotingMessage<'i> {
   MethodCall(BTreeMap<Int32, Value<'i>>, MethodCall<'i>),

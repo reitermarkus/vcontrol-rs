@@ -8,7 +8,7 @@ use crate::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, Single, TimeSpan, UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
-  Value,
+  value, Value,
 };
 
 /// 2.5.2 `MemberPrimitiveUnTyped`
@@ -60,15 +60,15 @@ impl MemberPrimitiveUnTyped {
       Self::Boolean(v) => Value::Boolean(v.into()),
       Self::Byte(v) => Value::Byte(v.into()),
       Self::Char(v) => Value::Char(v.into()),
-      Self::Decimal(v) => Value::Decimal(v.into()),
+      Self::Decimal(v) => Value::Decimal(value::Decimal(v)),
       Self::Double(v) => Value::Double(v.into()),
       Self::Int16(v) => Value::Int16(v.into()),
       Self::Int32(v) => Value::Int32(v.into()),
       Self::Int64(v) => Value::Int64(v.into()),
       Self::SByte(v) => Value::SByte(v.into()),
       Self::Single(v) => Value::Single(v.into()),
-      Self::TimeSpan(v) => Value::TimeSpan(v.into()),
-      Self::DateTime(v) => Value::DateTime(v.into()),
+      Self::TimeSpan(v) => Value::TimeSpan(value::TimeSpan(v)),
+      Self::DateTime(v) => Value::DateTime(value::DateTime(v)),
       Self::UInt16(v) => Value::UInt16(v.into()),
       Self::UInt32(v) => Value::UInt32(v.into()),
       Self::UInt64(v) => Value::UInt64(v.into()),
