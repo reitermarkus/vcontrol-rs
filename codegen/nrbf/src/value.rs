@@ -28,11 +28,11 @@ fn resolve_object<'de, 'o, V: Visitor<'de>>(
   }
 }
 
-/// A `Decimal` number.
+/// A decimal number.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Decimal(pub(crate) data_type::Decimal);
 
-/// A `TimeSpan`.
+/// A time span.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct TimeSpan(pub(crate) data_type::TimeSpan);
 
@@ -52,7 +52,7 @@ pub enum DateTimeKind {
   Local,
 }
 
-/// An `DateTime` value.
+/// An date-time value.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct DateTime(pub(crate) data_type::DateTime);
 
