@@ -1,4 +1,6 @@
 use nom::{multi::many_m_n, IResult, Parser};
+#[cfg(feature = "serde")]
+use serde::ser::{Serialize, SerializeSeq, Serializer};
 
 use crate::{
   common::ArrayInfo,
@@ -24,5 +26,19 @@ impl ArraySinglePrimitive {
       many_m_n(length, length, |input| MemberPrimitiveUnTyped::parse(input, primitive_type))(input)?;
 
     Ok((input, Self { array_info, members }))
+  }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for ArraySinglePrimitive {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    let mut array = serializer.serialize_seq(Some(self.array_info.len()))?;
+    for member in &self.members {
+      array.serialize_element(member)?;
+    }
+    array.end()
   }
 }
