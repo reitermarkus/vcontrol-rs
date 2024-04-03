@@ -204,8 +204,8 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
 
   fn deserialize_struct<V>(
     self,
-    name: &'static str,
-    fields: &'static [&'static str],
+    _name: &'static str,
+    _fields: &'static [&'static str],
     visitor: V,
   ) -> Result<V::Value, Self::Error>
   where
@@ -213,7 +213,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
   {
     use serde::de::value::MapDeserializer;
 
-    let Object { class, library, members } = self.object;
+    let Object { class: _, library: _, members } = self.object;
 
     MapDeserializer::new(members.into_iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))))
       .deserialize_map(visitor)
@@ -413,7 +413,7 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
   where
     V: Visitor<'de>,
   {
-    use serde::de::value::MapDeserializer;
+    
 
     match self.object {
       Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_struct(name, fields, visitor),

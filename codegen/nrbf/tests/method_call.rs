@@ -61,7 +61,7 @@ fn method_call() {
         method_name: "SendAddress",
         type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
         call_context: None,
-        args: None,
+        args: Some(vec![Value::Ref(Int32(2))]),
       }
     )),
   };
