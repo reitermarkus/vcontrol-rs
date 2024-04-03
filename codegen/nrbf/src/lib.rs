@@ -15,6 +15,7 @@ pub use remoting_message::{MethodCall, MethodCallOrReturn, MethodReturn, Remotin
 pub mod value;
 pub use value::Value;
 
+/// Deserialize an instance of type `T` from bytes of a .NET Remoting message.
 #[cfg(feature = "serde")]
 pub fn from_slice<'i, T>(bytes: &'i [u8]) -> Result<T, Error>
 where
