@@ -76,6 +76,7 @@ fn list_of_customers_deserialize() {
   use serde::Deserialize;
 
   assert_eq!(nrbf::from_slice(INPUT), Ok(["Bob", "Rob"]));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(vec!["Bob", "Rob"]));
 
   #[derive(Debug, Deserialize, PartialEq)]
   struct List {
