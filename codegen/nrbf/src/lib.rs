@@ -21,6 +21,26 @@ pub mod value;
 pub use value::Value;
 
 /// Deserialize an instance of type `T` from bytes of a .NET Remoting message.
+///
+/// # Example
+///
+/// ```
+/// # use const_str::concat_bytes;
+/// # #[rustfmt::skip]
+/// let message = concat_bytes!(
+///   0,
+///     b"\x01\x00\x00\x00",
+///     b"\xFF\xFF\xFF\xFF",
+///     b"\x01\x00\x00\x00",
+///     b"\x00\x00\x00\x00",
+///   6,
+///     b"\x01\x00\x00\x00",
+///     17, "This is a string.",
+///   11,
+/// );
+///
+/// assert_eq!(nrbf::from_slice(message), Ok("This is a string."));
+/// ```
 #[cfg(feature = "serde")]
 pub fn from_slice<'i, T>(bytes: &'i [u8]) -> Result<T, Error>
 where
