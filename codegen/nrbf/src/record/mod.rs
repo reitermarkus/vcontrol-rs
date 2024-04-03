@@ -44,6 +44,14 @@ mod binary_method_call;
 pub use binary_method_call::BinaryMethodCall;
 mod binary_method_return;
 pub use binary_method_return::BinaryMethodReturn;
+mod value_with_code;
+pub use value_with_code::ValueWithCode;
+mod string_value_with_code;
+pub use string_value_with_code::StringValueWithCode;
+mod message_flags;
+pub use message_flags::MessageFlags;
+mod array_of_value_with_code;
+pub use array_of_value_with_code::ArrayOfValueWithCode;
 
 /// 2.1.2.1 `RecordTypeEnumeration`
 #[derive(Debug, Clone, Copy, PartialEq)]
