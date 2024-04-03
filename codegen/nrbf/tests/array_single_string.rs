@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use const_str::concat_bytes;
-use nrbf::{data_type::Int32, RemotingMessage, Value};
+use nrbf::{RemotingMessage, Value};
 
 #[rustfmt::skip]
 const INPUT: &[u8] = concat_bytes!(
@@ -26,11 +26,11 @@ const INPUT: &[u8] = concat_bytes!(
 fn array_single_string() {
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([
-      (Int32(1), Value::Array(vec![Value::Ref(Int32(2)), Value::Ref(Int32(3))])),
-      (Int32(2), Value::String("Bob")),
-      (Int32(3), Value::String("Rob")),
+      (1, Value::Array(vec![Value::Ref(2), Value::Ref(3)])),
+      (2, Value::String("Bob")),
+      (3, Value::String("Rob")),
     ]),
-    Value::Ref(Int32(1)),
+    Value::Ref(1),
   );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));

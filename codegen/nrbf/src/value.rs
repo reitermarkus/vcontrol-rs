@@ -11,12 +11,12 @@ use serde::{
   forward_to_deserialize_any, Deserializer,
 };
 
-use crate::data_type::{self, Int32};
+use crate::data_type::{self};
 
 #[cfg(feature = "serde")]
 fn resolve_object<'de, 'o, V: Visitor<'de>>(
-  objects: &'o BTreeMap<Int32, Value<'de>>,
-  id: &Int32,
+  objects: &'o BTreeMap<i32, Value<'de>>,
+  id: &i32,
   visitor: &V,
 ) -> Result<&'o Value<'de>, Error> {
   use serde::de::{Error, Unexpected};
@@ -52,7 +52,7 @@ pub enum DateTimeKind {
   Local,
 }
 
-/// A `DateTime` value.
+/// An `DateTime` value.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct DateTime(pub(crate) data_type::DateTime);
 
@@ -74,47 +74,72 @@ impl DateTime {
   }
 }
 
+/// An NRBF object.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Object<'i> {
+  /// The class name.
   pub class: &'i str,
+  /// The library name, if present.
   pub library: Option<&'i str>,
+  /// The member fields.
   pub members: HashMap<&'i str, Value<'i>>,
 }
 
+/// An NRBF value.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value<'i> {
+  /// An object.
   Object(Object<'i>),
+  /// An array.
   Array(Vec<Value<'i>>),
+  /// An boolean value.
   Boolean(bool),
+  /// A byte.
   Byte(u8),
+  /// A character.
   Char(char),
+  /// A decimal number.
   Decimal(Decimal),
+  /// A double precision floating point number.
   Double(f64),
+  /// A 16-bit signed integer.
   Int16(i16),
+  /// A 64-bit signed integer.
   Int32(i32),
+  /// A 64-bit signed integer.
   Int64(i64),
+  /// A signed byte.
   SByte(i8),
+  /// A single precision floating point number.
   Single(f32),
+  /// A time span.
   TimeSpan(TimeSpan),
+  /// A date-time.
   DateTime(DateTime),
+  /// A 16-bit unsigned integer.
   UInt16(u16),
+  /// A 32-bit unsigned integer.
   UInt32(u32),
+  /// A 64-bit unsigned integer.
   UInt64(u64),
+  /// A string.
   String(&'i str),
+  /// A null value.
   Null(usize),
-  Ref(Int32),
+  /// A value reference.
+  Ref(i32),
 }
 
 #[cfg(feature = "serde")]
 #[derive(Debug)]
 pub(crate) struct ObjectDeserializer<'de, 'o> {
-  objects: &'o BTreeMap<Int32, Value<'de>>,
+  objects: &'o BTreeMap<i32, Value<'de>>,
   object: &'o Object<'de>,
 }
 
 #[cfg(feature = "serde")]
 impl<'de, 'o> ObjectDeserializer<'de, 'o> {
-  pub fn new(objects: &'o BTreeMap<Int32, Value<'de>>, object: &'o Object<'de>) -> Self {
+  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, object: &'o Object<'de>) -> Self {
     Self { objects, object }
   }
 }
@@ -293,7 +318,7 @@ impl Expected for ExpectedInArray {
 #[cfg(feature = "serde")]
 #[derive(Debug)]
 pub(crate) struct ArrayDeserializer<'de, 'o, I> {
-  objects: &'o BTreeMap<Int32, Value<'de>>,
+  objects: &'o BTreeMap<i32, Value<'de>>,
   iter: iter::Fuse<I>,
   null_count: usize,
   count: usize,
@@ -304,7 +329,7 @@ impl<'de, 'o, I> ArrayDeserializer<'de, 'o, I>
 where
   I: Iterator,
 {
-  pub fn new(objects: &'o BTreeMap<Int32, Value<'de>>, iter: I) -> Self {
+  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, iter: I) -> Self {
     Self { objects, iter: iter.fuse(), null_count: 0, count: 0 }
   }
 }
@@ -387,13 +412,13 @@ where
 #[cfg(feature = "serde")]
 #[derive(Debug)]
 pub(crate) struct ValueDeserializer<'de, 'o> {
-  objects: &'o BTreeMap<Int32, Value<'de>>,
+  objects: &'o BTreeMap<i32, Value<'de>>,
   object: &'o Value<'de>,
 }
 
 #[cfg(feature = "serde")]
 impl<'de, 'o> ValueDeserializer<'de, 'o> {
-  pub fn new(objects: &'o BTreeMap<Int32, Value<'de>>, object: &'o Value<'de>) -> Self {
+  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, object: &'o Value<'de>) -> Self {
     Self { objects, object }
   }
 }
