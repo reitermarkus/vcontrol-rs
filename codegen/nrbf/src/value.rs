@@ -1,3 +1,5 @@
+//! Representation of an NRBF value.
+
 use std::{
   collections::{BTreeMap, HashMap},
   fmt, iter,
@@ -9,7 +11,7 @@ use serde::{
   forward_to_deserialize_any, Deserializer,
 };
 
-use crate::data_type::{DateTime, Decimal, Int32, TimeSpan};
+use crate::data_type::{self, Int32};
 
 #[cfg(feature = "serde")]
 fn resolve_object<'de, 'o, V: Visitor<'de>>(
@@ -23,6 +25,52 @@ fn resolve_object<'de, 'o, V: Visitor<'de>>(
     Ok(object)
   } else {
     Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), visitor))
+  }
+}
+
+/// A `Decimal` number.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Decimal(pub(crate) data_type::Decimal);
+
+/// A `TimeSpan`.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct TimeSpan(pub(crate) data_type::TimeSpan);
+
+impl TimeSpan {
+  /// Duration as the number of 100 nanoseconds. The values range from -10675199 days, 2 hours, 48 minutes, and 05.4775808
+  /// seconds to 10675199 days, 2 hours, 48 minutes, and 05.4775807 seconds inclusive.
+  pub fn value(&self) -> i64 {
+    self.0.into()
+  }
+}
+
+/// Time-zone information for [`DateTime`].
+pub enum DateTimeKind {
+  /// The time specified is in the Coordinated Universal Time (UTC) time zone.
+  Utc,
+  /// The time specified is in the local time zone.
+  Local,
+}
+
+/// A `DateTime` value.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct DateTime(pub(crate) data_type::DateTime);
+
+impl DateTime {
+  /// Number of 100 nanoseconds that have elapsed since 12:00:00, January 1, 0001.
+  /// The value can represent time instants in a granularity of 100 nanoseconds
+  /// until 23:59:59.9999999, December 31, 9999.
+  pub fn ticks(&self) -> i64 {
+    i64::from(self.0) >> 2
+  }
+
+  /// Provides the time-zone information.
+  pub fn kind(&self) -> Option<DateTimeKind> {
+    match i64::from(self.0) & 0b11 {
+      1 => Some(DateTimeKind::Utc),
+      2 => Some(DateTimeKind::Utc),
+      _ => None,
+    }
   }
 }
 
@@ -385,9 +433,9 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
       Value::Single(v) => visitor.visit_f32(*v),
       Value::Double(v) => visitor.visit_f64(*v),
       Value::Char(v) => visitor.visit_char(*v),
-      Value::Decimal(v) => visitor.visit_string(v.0.to_string()),
-      Value::TimeSpan(v) => visitor.visit_i64((*v).into()),
-      Value::DateTime(v) => visitor.visit_i64((*v).into()),
+      Value::Decimal(v) => visitor.visit_string((v.0).0.to_string()),
+      Value::TimeSpan(v) => visitor.visit_i64((*v).0.into()),
+      Value::DateTime(v) => visitor.visit_i64((*v).0.into()),
       Value::String(s) => visitor.visit_borrowed_str(s),
       Value::Null(1) => visitor.visit_none(),
       Value::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),
