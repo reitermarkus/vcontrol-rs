@@ -23,9 +23,8 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn single() {
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([(
+  let output = RemotingMessage::Value(
+    BTreeMap::from_iter([(
       Int32(1),
       Value::Object(Object {
         class: "System.Single",
@@ -33,8 +32,8 @@ fn single() {
         members: HashMap::from_iter([("m_value", Value::Single(3.14))]),
       }),
     )]),
-    method_call_or_return: None,
-  };
+    Value::Ref(Int32(1)),
+  );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
 }

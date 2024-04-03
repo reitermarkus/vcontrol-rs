@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 
-use nrbf::{data_type::Int32, value::Object, MethodCall, MethodCallOrReturn, RemotingMessage, Value};
+use nrbf::{data_type::Int32, value::Object, MethodCall, RemotingMessage, Value};
 
 #[test]
 fn method_call() {
@@ -32,9 +32,8 @@ fn method_call() {
     0x30, 0x35, 0x34, 0x0B                                                                          // 054.
   ];
 
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([
+  let output = RemotingMessage::MethodCall(
+    BTreeMap::from_iter([
       (
         Int32(1),
         Value::Array(vec![Value::Ref(Int32(2))]),
@@ -56,15 +55,13 @@ fn method_call() {
       (Int32(6), Value::String("WA")),
       (Int32(7), Value::String("98054")),
     ]),
-    method_call_or_return: Some(MethodCallOrReturn::MethodCall(
       MethodCall {
         method_name: "SendAddress",
         type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
         call_context: None,
         args: Some(vec![Value::Ref(Int32(2))]),
       }
-    )),
-  };
+  );
 
   assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)))
 }

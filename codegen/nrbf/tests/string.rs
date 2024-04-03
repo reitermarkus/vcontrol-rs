@@ -19,11 +19,7 @@ fn string_empty() {
     11,
   );
 
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([(Int32(1), Value::String(""))]),
-    method_call_or_return: None,
-  };
+  let output = RemotingMessage::Value(BTreeMap::from_iter([(Int32(1), Value::String(""))]), Value::Ref(Int32(1)));
 
   assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
 }
@@ -44,11 +40,8 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn string() {
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([(Int32(1), Value::String("This is a string."))]),
-    method_call_or_return: None,
-  };
+  let output =
+    RemotingMessage::Value(BTreeMap::from_iter([(Int32(1), Value::String("This is a string."))]), Value::Ref(Int32(1)));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
 }

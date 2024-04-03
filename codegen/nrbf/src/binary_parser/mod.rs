@@ -453,7 +453,17 @@ impl<'i> BinaryParser<'i> {
 
     let (input, MessageEnd) = MessageEnd::parse(input)?;
 
-    Ok((input, RemotingMessage { root_object, objects: mem::take(&mut self.objects), method_call_or_return }))
+    let remoting_message = match method_call_or_return {
+      Some(MethodCallOrReturn::MethodCall(method_call)) => {
+        RemotingMessage::MethodCall(mem::take(&mut self.objects), method_call)
+      },
+      Some(MethodCallOrReturn::MethodReturn(method_return)) => {
+        RemotingMessage::MethodReturn(mem::take(&mut self.objects), method_return)
+      },
+      None => RemotingMessage::Value(mem::take(&mut self.objects), root_object),
+    };
+
+    Ok((input, remoting_message))
   }
 
   /// Deserializes a [`RemotingMessage`] from bytes.

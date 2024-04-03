@@ -46,16 +46,15 @@ fn binary_array_jagged_offset() {
     11,
   ];
 
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([
+  let output = RemotingMessage::Value(
+    BTreeMap::from_iter([
       (Int32(1), Value::Array(vec![Value::Ref(Int32(2)), Value::Ref(Int32(3)), Value::Ref(Int32(4))])),
       (Int32(2), Value::Array(vec![Value::Int32(1)])),
       (Int32(3), Value::Array(vec![Value::Int32(2), Value::Int32(3)])),
       (Int32(4), Value::Array(vec![Value::Int32(4), Value::Int32(5), Value::Int32(6)])),
     ]),
-    method_call_or_return: None,
-  };
+    Value::Ref(Int32(1)),
+  );
 
   assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
 }
