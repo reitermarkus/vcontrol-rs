@@ -1,6 +1,7 @@
 use nom::{combinator::opt, multi::many_m_n, IResult};
 
 use crate::{
+  data_type::Int32,
   grammar::MemberReference2,
   record::{BinaryLibrary, BinaryMethodReturn, MethodReturnCallArray},
 };
@@ -20,6 +21,11 @@ impl<'i> ReturnCallArray<'i> {
     let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
 
     Ok((input, Self { binary_library, return_call_array, member_references }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.return_call_array.object_id()
   }
 }
 

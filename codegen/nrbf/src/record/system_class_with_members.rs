@@ -1,6 +1,6 @@
 use nom::{IResult, Parser};
 
-use crate::{common::ClassInfo, record::RecordType};
+use crate::{common::ClassInfo, data_type::Int32, record::RecordType};
 
 /// 2.3.2.4 `SystemClassWithMembers`
 #[derive(Debug, Clone, PartialEq)]
@@ -15,5 +15,10 @@ impl<'i> SystemClassWithMembers<'i> {
     let (input, class_info) = ClassInfo::parse(input)?;
 
     Ok((input, Self { class_info }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.class_info.object_id()
   }
 }

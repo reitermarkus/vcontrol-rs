@@ -89,6 +89,7 @@ impl Serialize for MemberPrimitiveUnTyped {
   }
 }
 
+#[cfg(feature = "serde")]
 impl<'de> IntoDeserializer<'de, Error> for &'de MemberPrimitiveUnTyped {
   type Deserializer = Self;
 
