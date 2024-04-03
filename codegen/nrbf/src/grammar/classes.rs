@@ -7,6 +7,7 @@ use nom::{
 
 use crate::{
   common::MemberTypeInfo,
+  data_type::Int32,
   grammar::MemberReference2,
   record::{
     BinaryArray, BinaryLibrary, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes, SystemClassWithMembers,
@@ -32,6 +33,17 @@ impl<'i> Class<'i> {
       map(SystemClassWithMembers::parse, Self::SystemClassWithMembers),
       map(SystemClassWithMembersAndTypes::parse, Self::SystemClassWithMembersAndTypes),
     ))(input)
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    match self {
+      Self::ClassWithId(class) => class.object_id(),
+      Self::ClassWithMembers(class) => class.object_id(),
+      Self::ClassWithMembersAndTypes(class) => class.object_id(),
+      Self::SystemClassWithMembers(class) => class.object_id(),
+      Self::SystemClassWithMembersAndTypes(class) => class.object_id(),
+    }
   }
 }
 
@@ -77,5 +89,10 @@ impl<'i> Classes<'i> {
     };
 
     Ok((input, Self { binary_library, class, member_references }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.class.object_id()
   }
 }

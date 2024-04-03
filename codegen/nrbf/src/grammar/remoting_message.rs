@@ -64,20 +64,20 @@ impl<'de, 'i> Deserializer<'de> for &'de RemotingMessage<'i> {
       record::{ArraySinglePrimitive, ArraySingleString},
     };
 
-    match self.pre_method_referenceables.get(0) {
+    let root_item = self.pre_method_referenceables.iter().find(|r| r.object_id() == self.header.root_id);
+
+    match root_item {
       Some(Referenceable::Arrays(Arrays { binary_library: None, array })) => match array {
-        Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info, members })
-          if array_info.object_id == self.header.root_id =>
-        {
+        Array::ArraySinglePrimitive(ArraySinglePrimitive { array_info, members }) => {
           let mut it = members.iter();
           let mut deserializer = SeqDeserializer::new(&mut it);
           let seq = visitor.visit_seq(&mut deserializer)?;
           deserializer.end()?;
           Ok(seq)
         },
-        Array::ArraySingleString(ArraySingleString { array_info, members: _ })
-          if array_info.object_id == self.header.root_id =>
-        {
+        Array::ArraySingleString(ArraySingleString { array_info, members: _ }) => {
+          let mut it = members.iter().filter_map(|member| match member {});
+
           unimplemented!()
         },
         _ => unimplemented!(),

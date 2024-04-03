@@ -1,6 +1,9 @@
 use nom::{combinator::opt, IResult};
 
-use crate::record::{BinaryLibrary, BinaryMethodCall, MethodCallArray};
+use crate::{
+  data_type::Int32,
+  record::{BinaryLibrary, BinaryMethodCall, MethodCallArray},
+};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CallArray<'i> {
@@ -14,6 +17,11 @@ impl<'i> CallArray<'i> {
     let (input, call_array) = MethodCallArray::parse(input)?;
 
     Ok((input, Self { binary_library, call_array }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.call_array.object_id()
   }
 }
 

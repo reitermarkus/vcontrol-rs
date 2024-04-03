@@ -46,6 +46,7 @@ fn array_single_primitive() {
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
 }
 
+#[cfg(feature = "serde")]
 #[test]
 fn array_single_primitive_deserialize() {
   assert_eq!(nrbf::from_stream(INPUT), Ok(vec![67i64, 42i64]));

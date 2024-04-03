@@ -22,4 +22,9 @@ impl<'i> ClassInfo<'i> {
 
     Ok((input, Self { object_id, name, member_names }))
   }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.object_id
+  }
 }
