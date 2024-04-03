@@ -11,6 +11,7 @@ use serde::{
 
 use crate::data_type::{DateTime, Decimal, Int32, TimeSpan};
 
+#[cfg(feature = "serde")]
 fn resolve_object<'de, 'o, V: Visitor<'de>>(
   objects: &'o BTreeMap<Int32, Value<'de>>,
   id: &Int32,
@@ -413,8 +414,6 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
   where
     V: Visitor<'de>,
   {
-    
-
     match self.object {
       Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_struct(name, fields, visitor),
       Value::Ref(id) => {
