@@ -7,6 +7,8 @@ use serde::{
   forward_to_deserialize_any,
 };
 
+#[cfg(feature = "serde")]
+use crate::value::ValueDeserializer;
 use crate::{data_type::Int32, BinaryParser, Value};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -30,12 +32,11 @@ pub enum MethodCallOrReturn<'i> {
   MethodReturn(MethodReturn<'i>),
 }
 
-/// 2.7 Binary Record Grammar - `remotingMessage`
 #[derive(Debug, Clone, PartialEq)]
-pub struct RemotingMessage<'i> {
-  pub root_object: Value<'i>,
-  pub objects: BTreeMap<Int32, Value<'i>>,
-  pub method_call_or_return: Option<MethodCallOrReturn<'i>>,
+pub enum RemotingMessage<'i> {
+  MethodCall(BTreeMap<Int32, Value<'i>>, MethodCall<'i>),
+  MethodReturn(BTreeMap<Int32, Value<'i>>, MethodReturn<'i>),
+  Value(BTreeMap<Int32, Value<'i>>, Value<'i>),
 }
 
 impl<'i> RemotingMessage<'i> {
@@ -44,15 +45,14 @@ impl<'i> RemotingMessage<'i> {
     parser.deserialize(input)
   }
 
-  fn check_deserializable<V: Visitor<'i>>(&self, visitor: &V) -> Result<(), Error> {
+  #[cfg(feature = "serde")]
+  fn into_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, Error> {
     use serde::de::{Error, Unexpected};
 
-    match self.method_call_or_return {
-      Some(MethodCallOrReturn::MethodCall(_)) => Err(Error::invalid_type(Unexpected::Other("method call"), visitor)),
-      Some(MethodCallOrReturn::MethodReturn(_)) => {
-        Err(Error::invalid_type(Unexpected::Other("method return"), visitor))
-      },
-      None => Ok(()),
+    match self {
+      Self::MethodCall(..) => Err(Error::invalid_type(Unexpected::Other("method call"), visitor)),
+      Self::MethodReturn(..) => Err(Error::invalid_type(Unexpected::Other("method return"), visitor)),
+      Self::Value(objects, root_object) => Ok(ValueDeserializer::new(objects, root_object)),
     }
   }
 }
@@ -65,11 +65,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   where
     V: Visitor<'de>,
   {
-    use crate::value::ValueDeserializer;
-
-    self.check_deserializable(&visitor)?;
-
-    ValueDeserializer::new(&self.objects, &self.root_object).deserialize_any(visitor)
+    self.into_deserializer(&visitor)?.deserialize_any(visitor)
   }
 
   fn deserialize_struct<V>(
@@ -81,11 +77,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   where
     V: Visitor<'de>,
   {
-    use crate::value::ValueDeserializer;
-
-    self.check_deserializable(&visitor)?;
-
-    ValueDeserializer::new(&self.objects, &self.root_object).deserialize_struct(name, fields, visitor)
+    self.into_deserializer(&visitor)?.deserialize_struct(name, fields, visitor)
   }
 
   forward_to_deserialize_any! {

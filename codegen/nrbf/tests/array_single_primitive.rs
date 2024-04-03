@@ -21,11 +21,10 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn array_single_primitive() {
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([(Int32(1), Value::Array(vec![Value::Int64(67), Value::Int64(42)]))]),
-    method_call_or_return: None,
-  };
+  let output = RemotingMessage::Value(
+    BTreeMap::from_iter([(Int32(1), Value::Array(vec![Value::Int64(67), Value::Int64(42)]))]),
+    Value::Ref(Int32(1)),
+  );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
 }

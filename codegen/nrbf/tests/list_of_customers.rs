@@ -39,9 +39,8 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn list_of_customers() {
-  let output = RemotingMessage {
-    root_object: Value::Ref(Int32(1)),
-    objects: BTreeMap::from_iter([
+  let output = RemotingMessage::Value(
+    BTreeMap::from_iter([
       (
         Int32(1),
         Value::Object(Object {
@@ -64,8 +63,8 @@ fn list_of_customers() {
       (Int32(3), Value::String("Bob")),
       (Int32(4), Value::String("Rob")),
     ]),
-    method_call_or_return: None,
-  };
+    Value::Ref(Int32(1)),
+  );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
 }
