@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use nrbf::{data_type::Int32, RemotingMessage, Value};
+use nrbf::{RemotingMessage, Value};
 
 #[test]
 fn binary_array_rectangular_offset() {
@@ -66,7 +66,7 @@ fn binary_array_rectangular_offset() {
 
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([(
-      Int32(1),
+      1,
       Value::Array(vec![
         Value::Int32(0),
         Value::Int32(0),
@@ -110,7 +110,7 @@ fn binary_array_rectangular_offset() {
         Value::Int32(0),
       ]),
     )]),
-    Value::Ref(Int32(1)),
+    Value::Ref(1),
   );
 
   assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
