@@ -18,6 +18,11 @@ impl ArrayInfo {
   }
 
   #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.object_id
+  }
+
+  #[inline]
   pub(crate) fn len(&self) -> usize {
     (i32::from(self.length) as u32).to_usize()
   }

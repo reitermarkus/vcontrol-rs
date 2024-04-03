@@ -18,4 +18,9 @@ impl<'i> ClassWithMembers<'i> {
 
     Ok((input, Self { class_info, library_id }))
   }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.class_info.object_id()
+  }
 }

@@ -18,4 +18,9 @@ impl ClassWithId {
 
     Ok((input, Self { object_id, metadata_id }))
   }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.object_id
+  }
 }

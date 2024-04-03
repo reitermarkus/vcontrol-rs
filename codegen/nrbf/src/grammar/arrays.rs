@@ -4,7 +4,10 @@ use nom::{
   IResult,
 };
 
-use crate::record::{ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary};
+use crate::{
+  data_type::Int32,
+  record::{ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary},
+};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Array<'i> {
@@ -23,6 +26,16 @@ impl<'i> Array<'i> {
       map(BinaryArray::parse, Self::BinaryArray),
     ))(input)
   }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    match self {
+      Self::ArraySingleObject(array) => array.object_id(),
+      Self::ArraySinglePrimitive(array) => array.object_id(),
+      Self::ArraySingleString(array) => array.object_id(),
+      Self::BinaryArray(array) => array.object_id(),
+    }
+  }
 }
 
 /// 2.7 Binary Record Grammar - `Arrays`
@@ -38,5 +51,10 @@ impl<'i> Arrays<'i> {
     let (input, array) = Array::parse(input)?;
 
     Ok((input, Self { binary_library, array }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.array.object_id()
   }
 }

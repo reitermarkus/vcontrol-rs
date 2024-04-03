@@ -4,6 +4,7 @@ use nom::{
 };
 
 use crate::{
+  data_type::Int32,
   method_invocation::{ArrayOfValueWithCode, MessageFlags, StringValueWithCode},
   record::{ArraySingleObject, RecordType},
 };
@@ -40,5 +41,10 @@ pub struct MethodCallArray<'i>(pub ArraySingleObject<'i>);
 impl<'i> MethodCallArray<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     map(ArraySingleObject::parse, Self)(input)
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.0.object_id()
   }
 }

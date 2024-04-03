@@ -93,4 +93,9 @@ impl<'i> BinaryArray<'i> {
       Self { object_id, binary_array_type_enum, rank, lengths, lower_bounds, type_enum, additional_type_info, members },
     ))
   }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.object_id
+  }
 }

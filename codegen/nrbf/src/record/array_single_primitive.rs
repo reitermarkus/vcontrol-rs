@@ -4,6 +4,7 @@ use serde::ser::{Serialize, SerializeSeq, Serializer};
 
 use crate::{
   common::ArrayInfo,
+  data_type::Int32,
   enumeration::PrimitiveType,
   record::{MemberPrimitiveUnTyped, RecordType},
 };
@@ -26,6 +27,11 @@ impl ArraySinglePrimitive {
       many_m_n(length, length, |input| MemberPrimitiveUnTyped::parse(input, primitive_type))(input)?;
 
     Ok((input, Self { array_info, members }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.array_info.object_id()
   }
 }
 

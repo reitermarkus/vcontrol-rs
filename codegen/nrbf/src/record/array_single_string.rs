@@ -2,6 +2,7 @@ use nom::{branch::alt, combinator::map, IResult, Parser};
 
 use crate::{
   common::ArrayInfo,
+  data_type::Int32,
   grammar::{MemberReferenceInner, NullObject},
   record::{BinaryObjectString, MemberReference, RecordType},
 };
@@ -42,5 +43,10 @@ impl<'i> ArraySingleString<'i> {
     }
 
     Ok((input, Self { array_info, members }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.array_info.object_id()
   }
 }

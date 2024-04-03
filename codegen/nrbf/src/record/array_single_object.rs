@@ -1,6 +1,6 @@
 use nom::{multi::many_m_n, IResult, Parser};
 
-use crate::{common::ArrayInfo, grammar::MemberReference2, record::RecordType};
+use crate::{common::ArrayInfo, data_type::Int32, grammar::MemberReference2, record::RecordType};
 
 /// 2.4.3.2 `ArraySingleObject`
 #[derive(Debug, Clone, PartialEq)]
@@ -18,5 +18,10 @@ impl<'i> ArraySingleObject<'i> {
     let (input, member_references) = many_m_n(length, length, MemberReference2::parse)(input)?;
 
     Ok((input, Self { array_info, member_references }))
+  }
+
+  #[inline]
+  pub(crate) fn object_id(&self) -> Int32 {
+    self.array_info.object_id()
   }
 }
