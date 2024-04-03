@@ -1,10 +1,6 @@
 use std::collections::BTreeMap;
 
-use nrbf::{
-  data_type::{Int32, LengthPrefixedString},
-  record::{BinaryMethodReturn, MessageFlags, ValueWithCode},
-  MethodCallOrReturn, RemotingMessage, Value,
-};
+use nrbf::{data_type::Int32, MethodCallOrReturn, MethodReturn, RemotingMessage, Value};
 
 #[test]
 fn method_return() {
@@ -18,9 +14,8 @@ fn method_return() {
   let output = RemotingMessage {
     root_object: Value::Ref(Int32(0)),
     objects: BTreeMap::new(),
-    method_call_or_return: Some(MethodCallOrReturn::MethodReturn(BinaryMethodReturn {
-      message_enum: MessageFlags::NO_ARGS | MessageFlags::NO_CONTEXT | MessageFlags::RETURN_VALUE_INLINE,
-      return_value: Some(ValueWithCode::String(LengthPrefixedString::from("Address received"))),
+    method_call_or_return: Some(MethodCallOrReturn::MethodReturn(MethodReturn {
+      return_value: Some(Value::String("Address received")),
       call_context: None,
       args: None,
     })),

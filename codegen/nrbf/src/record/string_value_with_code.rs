@@ -1,6 +1,6 @@
 use nom::{combinator::map, sequence::preceded, IResult};
 
-use crate::{data_type::LengthPrefixedString, enumeration::PrimitiveType, Value};
+use crate::{data_type::LengthPrefixedString, enumeration::PrimitiveType};
 
 /// 2.2.2.2 `StringValueWithCode`
 #[derive(Debug, Clone, PartialEq)]
@@ -12,8 +12,8 @@ impl<'i> StringValueWithCode<'i> {
   }
 
   #[inline]
-  pub(crate) fn into_value(self) -> Value<'i> {
-    Value::String(self.0.as_str())
+  pub fn as_str(self) -> &'i str {
+    self.0.as_str()
   }
 }
 

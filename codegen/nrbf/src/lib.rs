@@ -10,7 +10,7 @@ mod binary_parser;
 pub use binary_parser::BinaryParser;
 
 mod remoting_message;
-pub use remoting_message::{MethodCallOrReturn, RemotingMessage};
+pub use remoting_message::{MethodCall, MethodCallOrReturn, MethodReturn, RemotingMessage};
 
 pub mod value;
 pub use value::Value;

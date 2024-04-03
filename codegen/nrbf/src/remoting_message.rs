@@ -12,15 +12,30 @@ use serde::{
 
 use crate::{
   data_type::Int32,
-  record::{BinaryMethodCall, BinaryMethodReturn, MessageEnd, SerializationHeader},
+  record::{MessageEnd, SerializationHeader},
   value::ValueDeserializer,
   BinaryParser, Value,
 };
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct MethodCall<'i> {
+  pub method_name: &'i str,
+  pub type_name: &'i str,
+  pub call_context: Option<&'i str>,
+  pub args: Option<Vec<Value<'i>>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MethodReturn<'i> {
+  pub return_value: Option<Value<'i>>,
+  pub call_context: Option<&'i str>,
+  pub args: Option<Vec<Value<'i>>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum MethodCallOrReturn<'i> {
-  MethodCall(BinaryMethodCall<'i>),
-  MethodReturn(BinaryMethodReturn<'i>),
+  MethodCall(MethodCall<'i>),
+  MethodReturn(MethodReturn<'i>),
 }
 
 impl<'i> MethodCallOrReturn<'i> {
@@ -29,7 +44,7 @@ impl<'i> MethodCallOrReturn<'i> {
       return Ok(s)
     }
 
-    if let Ok(s) = map(|input| parser.parse_method_return(input), |mr| Self::MethodReturn(mr))(input) {
+    if let Ok(s) = map(|input| parser.parse_method_return(input), Self::MethodReturn)(input) {
       return Ok(s)
     }
 
