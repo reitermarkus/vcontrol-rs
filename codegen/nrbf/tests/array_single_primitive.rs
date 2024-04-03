@@ -1,3 +1,4 @@
+use const_str::concat_bytes;
 use nrbf::{
   common::ArrayInfo,
   data_type::{Int32, Int64},
@@ -5,24 +6,24 @@ use nrbf::{
   record::{ArraySinglePrimitive, MemberPrimitiveUnTyped, MessageEnd, SerializationHeader},
 };
 
+#[rustfmt::skip]
+const INPUT: &[u8] = concat_bytes!(
+  0,
+    b"\x01\x00\x00\x00",
+    b"\xFF\xFF\xFF\xFF",
+    b"\x01\x00\x00\x00",
+    b"\x00\x00\x00\x00",
+  15,
+    b"\x01\x00\x00\x00",
+    b"\x02\x00\x00\x00",
+    9,
+    b"\x43\x00\x00\x00\x00\x00\x00\x00",
+    b"\x2a\x00\x00\x00\x00\x00\x00\x00",
+  11,
+);
+
 #[test]
 fn array_single_primitive() {
-  #[rustfmt::skip]
-  let input = [
-    0,
-      0x01, 0x00, 0x00, 0x00,
-      0xFF, 0xFF, 0xFF, 0xFF,
-      0x01, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00,
-    15,
-      0x01, 0x00, 0x00, 0x00,
-      0x02, 0x00, 0x00, 0x00,
-      9,
-      67, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    11,
-  ];
-
   let output = RemotingMessage {
     header: SerializationHeader {
       root_id: Int32(1),
@@ -42,5 +43,21 @@ fn array_single_primitive() {
     end: MessageEnd,
   };
 
-  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
+}
+
+#[test]
+fn array_single_primitive_deserialize() {
+  assert_eq!(nrbf::from_stream(INPUT), Ok(vec![67i64, 42i64]));
+  assert_eq!(nrbf::from_stream(INPUT), Ok(vec![67i32, 42i32]));
+
+  assert_eq!(
+    nrbf::from_stream::<[i64; 1]>(INPUT).unwrap_err().to_string(),
+    "invalid length 2, expected 1 element in sequence"
+  );
+  assert_eq!(nrbf::from_stream::<[i64; 2]>(INPUT), Ok([67, 42]));
+  assert_eq!(
+    nrbf::from_stream::<[i64; 3]>(INPUT).unwrap_err().to_string(),
+    "invalid length 2, expected an array of length 3"
+  );
 }
