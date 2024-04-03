@@ -14,8 +14,7 @@ fn string_empty() {
       b"\x00\x00\x00\x00",
     6,
       b"\x01\x00\x00\x00",
-      0,
-        "",
+      0, "",
     11,
   );
 
@@ -33,8 +32,7 @@ const INPUT: &[u8] = concat_bytes!(
     b"\x00\x00\x00\x00",
   6,
     b"\x01\x00\x00\x00",
-    17,
-      "This is a string.",
+    17, "This is a string.",
   11,
 );
 
