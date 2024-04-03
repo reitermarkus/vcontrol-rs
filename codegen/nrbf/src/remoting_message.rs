@@ -9,34 +9,45 @@ use serde::{
 
 #[cfg(feature = "serde")]
 use crate::value::ValueDeserializer;
-use crate::{data_type::Int32, BinaryParser, Value};
+use crate::{BinaryParser, Value};
 
 /// A remote method call.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodCall<'i> {
+  /// The method name.
   pub method_name: &'i str,
+  /// The server type name.
   pub type_name: &'i str,
+  /// The logical call ID, if present.
   pub call_context: Option<&'i str>,
+  /// The arguments, if present.
   pub args: Option<Vec<Value<'i>>>,
 }
 
 /// Information returned by a remote method.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MethodReturn<'i> {
+  /// The return value.
   pub return_value: Option<Value<'i>>,
+  /// The logical call ID, if present.
   pub call_context: Option<&'i str>,
+  /// The arguments, if present.
   pub args: Option<Vec<Value<'i>>>,
 }
 
 /// A .NET Remoting message.
 #[derive(Debug, Clone, PartialEq)]
 pub enum RemotingMessage<'i> {
-  MethodCall(BTreeMap<Int32, Value<'i>>, MethodCall<'i>),
-  MethodReturn(BTreeMap<Int32, Value<'i>>, MethodReturn<'i>),
-  Value(BTreeMap<Int32, Value<'i>>, Value<'i>),
+  /// A method call.
+  MethodCall(BTreeMap<i32, Value<'i>>, MethodCall<'i>),
+  /// A method return.
+  MethodReturn(BTreeMap<i32, Value<'i>>, MethodReturn<'i>),
+  /// A value.
+  Value(BTreeMap<i32, Value<'i>>, Value<'i>),
 }
 
 impl<'i> RemotingMessage<'i> {
+  /// Parse a [`RemotingMessage`] from bytes.
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
     let parser = BinaryParser::default();
     parser.deserialize(input)

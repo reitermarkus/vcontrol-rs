@@ -1,18 +1,23 @@
+//! A parser for the .NET Remoting Binary Format (NRBF).
+
+#![warn(missing_docs)]
+
 #[cfg(feature = "serde")]
 use serde::de::{value::Error, Deserialize};
 
 pub(crate) mod common;
-pub mod data_type;
+pub(crate) mod data_type;
 pub(crate) mod enumeration;
 pub(crate) mod record;
 
 mod binary_parser;
-pub use binary_parser::BinaryParser;
+pub(crate) use binary_parser::BinaryParser;
 
 mod remoting_message;
 pub use remoting_message::{MethodCall, MethodReturn, RemotingMessage};
 
 pub mod value;
+#[doc(inline)]
 pub use value::Value;
 
 /// Deserialize an instance of type `T` from bytes of a .NET Remoting message.

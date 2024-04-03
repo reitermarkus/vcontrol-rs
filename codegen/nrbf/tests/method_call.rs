@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 
-use nrbf::{data_type::Int32, value::Object, MethodCall, RemotingMessage, Value};
+use nrbf::{value::Object, MethodCall, RemotingMessage, Value};
 
 #[test]
 fn method_call() {
@@ -35,31 +35,31 @@ fn method_call() {
   let output = RemotingMessage::MethodCall(
     BTreeMap::from_iter([
       (
-        Int32(1),
-        Value::Array(vec![Value::Ref(Int32(2))]),
+        1,
+        Value::Array(vec![Value::Ref(2)]),
       ),
       (
-        Int32(2),
+        2,
         Value::Object(Object {
           class: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"),
           members: HashMap::from_iter([
-            ("Street", Value::Ref(Int32(4))),
-            ("City", Value::Ref(Int32(5))),
-            ("State", Value::Ref(Int32(6))),
-            ("Zip", Value::Ref(Int32(7))),
+            ("Street", Value::Ref(4)),
+            ("City", Value::Ref(5)),
+            ("State", Value::Ref(6)),
+            ("Zip", Value::Ref(7)),
           ]),
         }),
       ),
-      (Int32(4), Value::String("One Microsoft Way")),
-      (Int32(5), Value::String("Redmond")),
-      (Int32(6), Value::String("WA")),
-      (Int32(7), Value::String("98054")),
+      (4, Value::String("One Microsoft Way")),
+      (5, Value::String("Redmond")),
+      (6, Value::String("WA")),
+      (7, Value::String("98054")),
     ]),
       MethodCall {
         method_name: "SendAddress",
         type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
         call_context: None,
-        args: Some(vec![Value::Ref(Int32(2))]),
+        args: Some(vec![Value::Ref(2)]),
       }
   );
 

@@ -12,7 +12,7 @@ use nom::{
 
 use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
-  data_type::{Int32, LengthPrefixedString},
+  data_type::LengthPrefixedString,
   enumeration::{BinaryArrayType, BinaryType},
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
@@ -25,8 +25,13 @@ use crate::{
   MethodCall, MethodReturn, RemotingMessage, Value,
 };
 
-mod class;
-use class::Class;
+#[derive(Debug, Clone, PartialEq)]
+pub enum Class<'i> {
+  ClassWithMembers(ClassWithMembers<'i>),
+  ClassWithMembersAndTypes(ClassWithMembersAndTypes<'i>),
+  SystemClassWithMembers(SystemClassWithMembers<'i>),
+  SystemClassWithMembersAndTypes(SystemClassWithMembersAndTypes<'i>),
+}
 
 #[derive(Debug, Clone, PartialEq)]
 enum MethodCallOrReturn<'i> {
@@ -36,19 +41,19 @@ enum MethodCallOrReturn<'i> {
 
 #[derive(Debug, Default)]
 pub struct BinaryParser<'i> {
-  pub binary_libraries: BTreeMap<Int32, LengthPrefixedString<'i>>,
-  pub classes: BTreeMap<Int32, Class<'i>>,
-  pub objects: BTreeMap<Int32, Value<'i>>,
+  binary_libraries: BTreeMap<i32, LengthPrefixedString<'i>>,
+  classes: BTreeMap<i32, Class<'i>>,
+  objects: BTreeMap<i32, Value<'i>>,
 }
 
 impl<'i> BinaryParser<'i> {
   fn parse_binary_library(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (input, binary_library) = opt(verify(BinaryLibrary::parse, |binary_library| {
-      !self.binary_libraries.contains_key(&binary_library.library_id())
+      !self.binary_libraries.contains_key(&binary_library.library_id().into())
     }))(input)?;
 
     if let Some(binary_library) = binary_library {
-      self.binary_libraries.insert(binary_library.library_id(), binary_library.library_name);
+      self.binary_libraries.insert(binary_library.library_id().into(), binary_library.library_name);
     }
 
     Ok((input, ()))
@@ -57,7 +62,7 @@ impl<'i> BinaryParser<'i> {
   fn parse_binary_object_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (input, s) = BinaryObjectString::parse(input)?;
 
-    self.objects.insert(s.object_id(), Value::String(s.as_str()));
+    self.objects.insert(s.object_id().into(), Value::String(s.as_str()));
 
     Ok((input, ()))
   }
@@ -78,7 +83,7 @@ impl<'i> BinaryParser<'i> {
             |primitive| (None, primitive.into_value()),
           )(input)?,
           (BinaryType::String, None) => {
-            map(BinaryObjectString::parse, |s| (Some(s.object_id()), Value::String(s.as_str())))(input)?
+            map(BinaryObjectString::parse, |s| (Some(s.object_id().into()), Value::String(s.as_str())))(input)?
           },
           (BinaryType::Object, None) => return self.parse_member_reference(input, None),
           (BinaryType::SystemClass, Some(class_name)) => unimplemented!("{class_name:?}"),
@@ -87,20 +92,20 @@ impl<'i> BinaryParser<'i> {
           },
           (BinaryType::ObjectArray, None) => return self.parse_member_reference(input, None),
           (BinaryType::StringArray, None) => alt((
-            map(BinaryObjectString::parse, |s| (Some(s.object_id()), Value::String(s.as_str()))),
-            map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref))),
+            map(BinaryObjectString::parse, |s| (Some(s.object_id().into()), Value::String(s.as_str()))),
+            map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref.into()))),
             map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
           ))(input)?,
           (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => {
-            map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref)))(input)?
+            map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref.into())))(input)?
           },
           _ => unreachable!(),
         }
       } else {
         alt((
           map(MemberPrimitiveTyped::parse, |primitive| (None, primitive.into_value())),
-          map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref))),
-          map(BinaryObjectString::parse, |s| (Some(s.object_id()), Value::String(s.as_str()))),
+          map(MemberReference::parse, |member_reference| (None, Value::Ref(member_reference.id_ref.into()))),
+          map(BinaryObjectString::parse, |s| (Some(s.object_id().into()), Value::String(s.as_str()))),
           map(|input| Self::parse_null_object(input), |null_object| (None, null_object)),
           map(|input| self.parse_classes(input), |o| (None, o)),
         ))(input)?
@@ -141,62 +146,57 @@ impl<'i> BinaryParser<'i> {
     let (input, (object_id, class)) = verify(
       alt((
         map_opt(ClassWithId::parse, |class| {
-          let object_id = class.object_id();
-          self.classes.get(&class.metadata_id()).map(|class| (object_id, class.clone()))
-        }),
-        map(verify(ClassWithMembers::parse, |class| self.binary_libraries.contains_key(&class.library_id)), |class| {
-          (class.object_id(), Class::ClassWithMembers(class))
+          let object_id = class.object_id().into();
+          self.classes.get(&class.metadata_id().into()).map(|class| (object_id, class.clone()))
         }),
         map(
-          verify(ClassWithMembersAndTypes::parse, |class| self.binary_libraries.contains_key(&class.library_id)),
-          |class| (class.object_id(), Class::ClassWithMembersAndTypes(class)),
+          verify(ClassWithMembers::parse, |class| self.binary_libraries.contains_key(&class.library_id.into())),
+          |class| (class.object_id().into(), Class::ClassWithMembers(class)),
         ),
-        map(SystemClassWithMembers::parse, |class| (class.object_id(), Class::SystemClassWithMembers(class))),
+        map(
+          verify(ClassWithMembersAndTypes::parse, |class| self.binary_libraries.contains_key(&class.library_id.into())),
+          |class| (class.object_id().into(), Class::ClassWithMembersAndTypes(class)),
+        ),
+        map(SystemClassWithMembers::parse, |class| (class.object_id().into(), Class::SystemClassWithMembers(class))),
         map(SystemClassWithMembersAndTypes::parse, |class| {
-          (class.object_id(), Class::SystemClassWithMembersAndTypes(class))
+          (class.object_id().into(), Class::SystemClassWithMembersAndTypes(class))
         }),
       )),
       |(object_id, _)| !self.classes.contains_key(&object_id),
     )(input)?;
 
-    let (input, (class_name, library, member_references)) = match class {
+    let (input, (class_info, library, member_references)) = match class {
       Class::ClassWithMembers(ref class) => {
-        let class_name = class.class_info().name.as_str();
-        let library = self.binary_libraries[&class.library_id].as_str();
+        let library = self.binary_libraries[&class.library_id.into()].as_str();
 
         let member_count = class.class_info().member_names.len();
         let (input, member_references) =
           many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
 
-        (input, (class_name, Some(library), member_references))
+        (input, (class.class_info(), Some(library), member_references))
       },
       Class::ClassWithMembersAndTypes(ref class) => {
-        let class_name = class.class_info().name.as_str();
-        let library = self.binary_libraries[&class.library_id].as_str();
+        let library = self.binary_libraries[&class.library_id.into()].as_str();
 
         let (input, member_references) = self.parse_members_with_type_info(input, &class.member_type_info)?;
 
-        (input, (class_name, Some(library), member_references))
+        (input, (class.class_info(), Some(library), member_references))
       },
       Class::SystemClassWithMembers(ref class) => {
-        let class_name = class.class_info().name.as_str();
-
         let member_count = class.class_info().member_names.len();
         let (input, member_references) =
           many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
 
-        (input, (class_name, None, member_references))
+        (input, (class.class_info(), None, member_references))
       },
       Class::SystemClassWithMembersAndTypes(ref class) => {
-        let class_name = class.class_info().name.as_str();
-
         let (input, member_references) = self.parse_members_with_type_info(input, &class.member_type_info)?;
 
-        (input, (class_name, None, member_references))
+        (input, (class.class_info(), None, member_references))
       },
     };
 
-    let class_info = class.class_info();
+    let class_name = class_info.name.as_str();
     let object = Value::Object(Object {
       class: class_name,
       library,
@@ -235,7 +235,7 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    self.objects.insert(array.object_id(), Value::Array(members.clone()));
+    self.objects.insert(array.object_id().into(), Value::Array(members.clone()));
 
     Ok((input, ()))
   }
@@ -251,7 +251,7 @@ impl<'i> BinaryParser<'i> {
       map(|input| MemberPrimitiveUnTyped::parse(input, array.primitive_type), |primitive| primitive.into_value()),
     )(input)?;
 
-    self.objects.insert(array.object_id(), Value::Array(members));
+    self.objects.insert(array.object_id().into(), Value::Array(members));
 
     Ok((input, ()))
   }
@@ -276,7 +276,7 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    self.objects.insert(array.object_id(), Value::Array(members));
+    self.objects.insert(array.object_id().into(), Value::Array(members));
 
     Ok((input, ()))
   }
@@ -300,7 +300,7 @@ impl<'i> BinaryParser<'i> {
       self.parse_member_reference(input, Some((array.type_enum, array.additional_type_info.as_ref())))
     })(input)?;
 
-    self.objects.insert(array.object_id(), Value::Array(members));
+    self.objects.insert(array.object_id().into(), Value::Array(members));
 
     Ok((input, ()))
   }
@@ -353,7 +353,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `methodCall`
-  fn parse_method_call(&mut self, input: &'i [u8], root_id: Int32) -> IResult<&'i [u8], MethodCall<'i>> {
+  fn parse_method_call(&mut self, input: &'i [u8], root_id: i32) -> IResult<&'i [u8], MethodCall<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
@@ -389,7 +389,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `methodReturn`
-  fn parse_method_return(&mut self, input: &'i [u8], root_id: Int32) -> IResult<&'i [u8], MethodReturn<'i>> {
+  fn parse_method_return(&mut self, input: &'i [u8], root_id: i32) -> IResult<&'i [u8], MethodReturn<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
@@ -427,7 +427,7 @@ impl<'i> BinaryParser<'i> {
   fn parse_method_call_or_return(
     &mut self,
     input: &'i [u8],
-    root_id: Int32,
+    root_id: i32,
   ) -> IResult<&'i [u8], MethodCallOrReturn<'i>> {
     if let Ok(s) = map(|input| self.parse_method_call(input, root_id), MethodCallOrReturn::MethodCall)(input) {
       return Ok(s)
@@ -444,14 +444,14 @@ impl<'i> BinaryParser<'i> {
   fn parse_remoting_message(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>> {
     let (mut input, header) = SerializationHeader::parse(input)?;
 
-    let root_object = Value::Ref(header.root_id);
+    let root_object = Value::Ref(header.root_id.into());
 
     while let Ok((input2, _)) = self.parse_referenceable(input) {
       input = input2;
     }
 
     let (mut input, method_call_or_return) =
-      opt(|input| self.parse_method_call_or_return(input, header.root_id))(input)?;
+      opt(|input| self.parse_method_call_or_return(input, header.root_id.into()))(input)?;
 
     while let Ok((input2, _)) = self.parse_referenceable(input) {
       input = input2;

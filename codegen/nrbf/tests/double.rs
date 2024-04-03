@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
-use nrbf::{data_type::Int32, value::Object, RemotingMessage, Value};
+use nrbf::{value::Object, RemotingMessage, Value};
 
 #[rustfmt::skip]
 const INPUT: &[u8] = concat_bytes!(
@@ -25,14 +25,14 @@ const INPUT: &[u8] = concat_bytes!(
 fn double() {
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([(
-      Int32(1),
+      1,
       Value::Object(Object {
         class: "System.Double",
         library: None,
         members: HashMap::from_iter([("m_value", Value::Double(-0.1067))]),
       }),
     )]),
-    Value::Ref(Int32(1)),
+    Value::Ref(1),
   );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));

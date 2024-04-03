@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
-use nrbf::{data_type::Int32, value::Object, RemotingMessage, Value};
+use nrbf::{value::Object, RemotingMessage, Value};
 
 #[rustfmt::skip]
 const INPUT: &[u8] = concat_bytes!(
@@ -42,28 +42,28 @@ fn list_of_customers() {
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([
       (
-        Int32(1),
+        1,
         Value::Object(Object {
           class: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None,
           members: HashMap::from_iter([
-            ("_items", Value::Ref(Int32(2))),
+            ("_items", Value::Ref(2)),
             ("_size", Value::Int32(2)),
             ("_version", Value::Int32(2)),
           ]),
         }),
       ),
       (
-        Int32(2),
+        2,
         Value::Array(vec![
-          Value::Ref(Int32(3)),
-          Value::Ref(Int32(4)),
+          Value::Ref(3),
+          Value::Ref(4),
           Value::Null(2),
         ]),
       ),
-      (Int32(3), Value::String("Bob")),
-      (Int32(4), Value::String("Rob")),
+      (3, Value::String("Bob")),
+      (4, Value::String("Rob")),
     ]),
-    Value::Ref(Int32(1)),
+    Value::Ref(1),
   );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
