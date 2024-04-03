@@ -2,8 +2,7 @@ use std::collections::{BTreeMap, HashMap};
 
 use nrbf::{
   data_type::{Int32, LengthPrefixedString},
-  method_invocation::{MessageFlags, StringValueWithCode},
-  record::BinaryMethodCall,
+  record::{BinaryMethodCall, MessageFlags, StringValueWithCode},
   value::Object,
   MethodCallOrReturn, RemotingMessage, Value,
 };

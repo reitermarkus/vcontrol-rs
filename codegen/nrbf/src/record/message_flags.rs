@@ -1,21 +1,10 @@
-//! 2.2 Method Invocation Records
-
 use bitflags::bitflags;
 use nom::{
-  branch::alt,
-  combinator::{map, map_res, value},
-  multi::many_m_n,
-  sequence::preceded,
+  combinator::{map, map_res},
   IResult,
 };
 
-use super::{
-  data_type::{
-    Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, LengthPrefixedString, Single, TimeSpan,
-    UInt16, UInt32, UInt64,
-  },
-  enumeration::PrimitiveType,
-};
+use crate::data_type::Int32;
 
 bitflags! {
   /// 2.2.1.1 `MessageFlags`
@@ -127,83 +116,5 @@ impl MessageFlags {
 
       Ok(flags)
     })(input)
-  }
-}
-
-/// 2.2.2.1 `ValueWithCode`
-#[derive(Debug, Clone, PartialEq)]
-pub enum ValueWithCode {
-  Boolean(Boolean),
-  Byte(Byte),
-  Char(Char),
-  Decimal(Decimal),
-  Double(Double),
-  Int16(Int16),
-  Int32(Int32),
-  Int64(Int64),
-  SByte(Int8),
-  Single(Single),
-  TimeSpan(TimeSpan),
-  DateTime(DateTime),
-  UInt16(UInt16),
-  UInt32(UInt32),
-  UInt64(UInt64),
-  Null,
-}
-
-impl ValueWithCode {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    alt((
-      map(preceded(PrimitiveType::Boolean, Boolean::parse), Self::Boolean),
-      map(preceded(PrimitiveType::Byte, Byte::parse), Self::Byte),
-      map(preceded(PrimitiveType::Char, Char::parse), Self::Char),
-      map(preceded(PrimitiveType::Decimal, Decimal::parse), Self::Decimal),
-      map(preceded(PrimitiveType::Double, Double::parse), Self::Double),
-      map(preceded(PrimitiveType::Int16, Int16::parse), Self::Int16),
-      map(preceded(PrimitiveType::Int32, Int32::parse), Self::Int32),
-      map(preceded(PrimitiveType::Int64, Int64::parse), Self::Int64),
-      map(preceded(PrimitiveType::SByte, Int8::parse), Self::SByte),
-      map(preceded(PrimitiveType::Single, Single::parse), Self::Single),
-      map(preceded(PrimitiveType::TimeSpan, TimeSpan::parse), Self::TimeSpan),
-      map(preceded(PrimitiveType::DateTime, DateTime::parse), Self::DateTime),
-      map(preceded(PrimitiveType::UInt16, UInt16::parse), Self::UInt16),
-      map(preceded(PrimitiveType::UInt32, UInt32::parse), Self::UInt32),
-      map(preceded(PrimitiveType::UInt64, UInt64::parse), Self::UInt64),
-      value(Self::Null, PrimitiveType::Null),
-    ))(input)
-  }
-}
-
-/// 2.2.2.2 `StringValueWithCode`
-#[derive(Debug, Clone, PartialEq)]
-pub enum AnyValueWithCode<'i> {
-  Primitive(ValueWithCode),
-  String(StringValueWithCode<'i>),
-}
-
-/// 2.2.2.2 `StringValueWithCode`
-#[derive(Debug, Clone, PartialEq)]
-pub struct StringValueWithCode<'i>(LengthPrefixedString<'i>);
-
-impl<'i> StringValueWithCode<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(preceded(PrimitiveType::String, LengthPrefixedString::parse), Self)(input)
-  }
-}
-
-impl<'s> From<LengthPrefixedString<'s>> for StringValueWithCode<'s> {
-  fn from(s: LengthPrefixedString<'s>) -> Self {
-    Self(s)
-  }
-}
-
-/// 2.2.2.3 `ArrayOfValueWithCode`
-#[derive(Debug, Clone, PartialEq)]
-pub struct ArrayOfValueWithCode(Vec<ValueWithCode>);
-
-impl ArrayOfValueWithCode {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, length) = map_res(Int32::parse, usize::try_from)(input)?;
-    map(many_m_n(length, length, ValueWithCode::parse), Self)(input)
   }
 }

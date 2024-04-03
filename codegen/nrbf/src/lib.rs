@@ -4,7 +4,6 @@ use serde::de::{value::Error, Deserialize};
 pub mod common;
 pub mod data_type;
 pub mod enumeration;
-pub mod method_invocation;
 pub mod record;
 
 mod binary_parser;
