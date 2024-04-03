@@ -22,11 +22,17 @@ use crate::{
     SystemClassWithMembersAndTypes,
   },
   value::Object,
-  MethodCall, MethodCallOrReturn, MethodReturn, RemotingMessage, Value,
+  MethodCall, MethodReturn, RemotingMessage, Value,
 };
 
 mod class;
 use class::Class;
+
+#[derive(Debug, Clone, PartialEq)]
+enum MethodCallOrReturn<'i> {
+  MethodCall(MethodCall<'i>),
+  MethodReturn(MethodReturn<'i>),
+}
 
 #[derive(Debug, Default)]
 pub struct BinaryParser<'i> {

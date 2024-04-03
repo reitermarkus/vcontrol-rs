@@ -1,16 +1,16 @@
 #[cfg(feature = "serde")]
 use serde::de::{value::Error, Deserialize};
 
-pub mod common;
+pub(crate) mod common;
 pub mod data_type;
-pub mod enumeration;
-pub mod record;
+pub(crate) mod enumeration;
+pub(crate) mod record;
 
 mod binary_parser;
 pub use binary_parser::BinaryParser;
 
 mod remoting_message;
-pub use remoting_message::{MethodCall, MethodCallOrReturn, MethodReturn, RemotingMessage};
+pub use remoting_message::{MethodCall, MethodReturn, RemotingMessage};
 
 pub mod value;
 pub use value::Value;
@@ -22,9 +22,9 @@ where
   T: Deserialize<'i>,
 {
   use nom::combinator::all_consuming;
-  use serde::de::{Error, Unexpected};
+  use serde::de::Error;
 
-  let (_, remoting_message) = all_consuming(RemotingMessage::parse)(bytes)
-    .map_err(|_| Error::invalid_type(Unexpected::Other("parsing error"), &"remoting message"))?;
+  let (_, remoting_message) =
+    all_consuming(RemotingMessage::parse)(bytes).map_err(|err| Error::custom(format!("parsing error: {}", err)))?;
   T::deserialize(remoting_message)
 }
