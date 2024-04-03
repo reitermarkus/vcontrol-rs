@@ -69,9 +69,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
 
     self.check_deserializable(&visitor)?;
 
-    let objects = self.objects;
-
-    ValueDeserializer::new(&objects, &self.root_object).deserialize_any(visitor)
+    ValueDeserializer::new(&self.objects, &self.root_object).deserialize_any(visitor)
   }
 
   fn deserialize_struct<V>(
@@ -85,9 +83,9 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   {
     use crate::value::ValueDeserializer;
 
-    let objects = self.objects;
+    self.check_deserializable(&visitor)?;
 
-    ValueDeserializer::new(&objects, &self.root_object).deserialize_struct(name, fields, visitor)
+    ValueDeserializer::new(&self.objects, &self.root_object).deserialize_struct(name, fields, visitor)
   }
 
   forward_to_deserialize_any! {

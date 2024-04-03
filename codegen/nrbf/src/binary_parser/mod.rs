@@ -17,8 +17,9 @@ use crate::{
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
     BinaryMethodReturn, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes,
-    MemberPrimitiveTyped, MemberPrimitiveUnTyped, MemberReference, MessageEnd, ObjectNull, ObjectNullMultiple,
-    ObjectNullMultiple256, SerializationHeader, SystemClassWithMembers, SystemClassWithMembersAndTypes,
+    MemberPrimitiveTyped, MemberPrimitiveUnTyped, MemberReference, MessageEnd, MessageFlags, ObjectNull,
+    ObjectNullMultiple, ObjectNullMultiple256, SerializationHeader, SystemClassWithMembers,
+    SystemClassWithMembersAndTypes,
   },
   value::Object,
   MethodCall, MethodCallOrReturn, MethodReturn, RemotingMessage, Value,
@@ -228,7 +229,7 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    self.objects.insert(array.object_id(), Value::Array(members));
+    self.objects.insert(array.object_id(), Value::Array(members.clone()));
 
     Ok((input, ()))
   }
@@ -302,7 +303,7 @@ impl<'i> BinaryParser<'i> {
   fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
     let (input, ()) = self.parse_binary_library(input)?;
 
-    if let Ok((input, ())) = self.parse_array_single_object(input) {
+    if let Ok((input, _)) = self.parse_array_single_object(input) {
       return Ok((input, ()))
     }
 
@@ -346,47 +347,87 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `methodCall`
-  fn parse_method_call(&mut self, input: &'i [u8]) -> IResult<&'i [u8], MethodCall<'i>> {
+  fn parse_method_call(&mut self, input: &'i [u8], root_id: Int32) -> IResult<&'i [u8], MethodCall<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
 
     let (input, _) = opt(|input| self.parse_call_array(input))(input)?;
 
+    let args = if binary_method_call.message_enum.intersects(MessageFlags::ARGS_IS_ARRAY) {
+      if let Some(Value::Array(args)) = self.objects.get(&root_id) {
+        Some(args.clone())
+      } else {
+        return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+      }
+    } else if binary_method_call.message_enum.intersects(MessageFlags::ARGS_IN_ARRAY) {
+      if let Some(Value::Array(args)) =
+        self.objects.get(&root_id).and_then(|v| if let Value::Array(args) = v { args.get(0) } else { None })
+      {
+        Some(args.clone())
+      } else {
+        return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+      }
+    } else {
+      binary_method_call.args.map(|v| v.into_values())
+    };
+
     let method_call = MethodCall {
       method_name: binary_method_call.method_name.as_str(),
       type_name: binary_method_call.type_name.as_str(),
       call_context: binary_method_call.call_context.map(|c| c.as_str()),
-      args: binary_method_call.args.map(|v| v.into_values()),
+      args,
     };
 
     Ok((input, method_call))
   }
 
   /// 2.7 Binary Record Grammar - `methodReturn`
-  fn parse_method_return(&mut self, input: &'i [u8]) -> IResult<&'i [u8], MethodReturn<'i>> {
+  fn parse_method_return(&mut self, input: &'i [u8], root_id: Int32) -> IResult<&'i [u8], MethodReturn<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
 
     let (input, _) = opt(|input| self.parse_call_array(input))(input)?;
 
+    let args = if binary_method_return.message_enum.intersects(MessageFlags::ARGS_IS_ARRAY) {
+      if let Some(Value::Array(args)) = self.objects.get(&root_id) {
+        Some(args.clone())
+      } else {
+        return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+      }
+    } else if binary_method_return.message_enum.intersects(MessageFlags::ARGS_IN_ARRAY) {
+      if let Some(Value::Array(args)) =
+        self.objects.get(&root_id).and_then(|v| if let Value::Array(args) = v { args.get(0) } else { None })
+      {
+        Some(args.clone())
+      } else {
+        return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+      }
+    } else {
+      binary_method_return.args.map(|v| v.into_values())
+    };
+
     let method_return = MethodReturn {
       return_value: binary_method_return.return_value.map(|v| v.into_value()),
       call_context: binary_method_return.call_context.map(|c| c.as_str()),
-      args: binary_method_return.args.map(|v| v.into_values()),
+      args,
     };
 
     Ok((input, method_return))
   }
 
   /// 2.7 Binary Record Grammar - `(methodCall/methodReturn)`
-  fn parse_method_call_or_return(&mut self, input: &'i [u8]) -> IResult<&'i [u8], MethodCallOrReturn<'i>> {
-    if let Ok(s) = map(|input| self.parse_method_call(input), MethodCallOrReturn::MethodCall)(input) {
+  fn parse_method_call_or_return(
+    &mut self,
+    input: &'i [u8],
+    root_id: Int32,
+  ) -> IResult<&'i [u8], MethodCallOrReturn<'i>> {
+    if let Ok(s) = map(|input| self.parse_method_call(input, root_id), MethodCallOrReturn::MethodCall)(input) {
       return Ok(s)
     }
 
-    if let Ok(s) = map(|input| self.parse_method_return(input), MethodCallOrReturn::MethodReturn)(input) {
+    if let Ok(s) = map(|input| self.parse_method_return(input, root_id), MethodCallOrReturn::MethodReturn)(input) {
       return Ok(s)
     }
 
@@ -403,7 +444,8 @@ impl<'i> BinaryParser<'i> {
       input = input2;
     }
 
-    let (mut input, method_call_or_return) = opt(|input| self.parse_method_call_or_return(input))(input)?;
+    let (mut input, method_call_or_return) =
+      opt(|input| self.parse_method_call_or_return(input, header.root_id))(input)?;
 
     while let Ok((input2, _)) = self.parse_referenceable(input) {
       input = input2;
