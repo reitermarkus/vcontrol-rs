@@ -12,7 +12,7 @@ impl<'i> StringValueWithCode<'i> {
   }
 
   #[inline]
-  pub fn as_str(self) -> &'i str {
+  pub fn as_str(&self) -> &'i str {
     self.0.as_str()
   }
 }
