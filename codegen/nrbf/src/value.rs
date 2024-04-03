@@ -11,6 +11,20 @@ use serde::{
 
 use crate::data_type::{DateTime, Decimal, Int32, TimeSpan};
 
+fn resolve_object<'de, 'o, V: Visitor<'de>>(
+  objects: &'o BTreeMap<Int32, Value<'de>>,
+  id: &Int32,
+  visitor: &V,
+) -> Result<&'o Value<'de>, Error> {
+  use serde::de::{Error, Unexpected};
+
+  if let Some(object) = objects.get(id) {
+    Ok(object)
+  } else {
+    Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), visitor))
+  }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Object<'i> {
   pub class: &'i str,
@@ -40,6 +54,176 @@ pub enum Value<'i> {
   String(&'i str),
   Null(usize),
   Ref(Int32),
+}
+
+#[cfg(feature = "serde")]
+#[derive(Debug)]
+pub(crate) struct ObjectDeserializer<'de, 'o> {
+  objects: &'o BTreeMap<Int32, Value<'de>>,
+  object: &'o Object<'de>,
+}
+
+#[cfg(feature = "serde")]
+impl<'de, 'o> ObjectDeserializer<'de, 'o> {
+  pub fn new(objects: &'o BTreeMap<Int32, Value<'de>>, object: &'o Object<'de>) -> Self {
+    Self { objects, object }
+  }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
+  type Error = Error;
+
+  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+  where
+    V: de::Visitor<'de>,
+  {
+    use serde::de::{Error, Unexpected};
+
+    let Object { class, library, members } = self.object;
+
+    if library.is_some() {
+      return Err(Error::invalid_type(Unexpected::Other(class), &visitor))
+    }
+
+    let class_name = class.split_once('`').map(|(s, _)| s).unwrap_or(*class);
+
+    match class_name {
+      "System.Boolean" => {
+        if members.len() == 1 {
+          if let Some(Value::Boolean(n)) = members.get("m_value") {
+            return visitor.visit_bool((*n).into())
+          }
+        }
+      },
+      "System.Byte" => {
+        if members.len() == 1 {
+          if let Some(Value::Byte(n)) = members.get("m_value") {
+            return visitor.visit_u8((*n).into())
+          }
+        }
+      },
+      "System.SByte" => {
+        if members.len() == 1 {
+          if let Some(Value::SByte(n)) = members.get("m_value") {
+            return visitor.visit_i8((*n).into())
+          }
+        }
+      },
+      "System.Char" => {
+        if members.len() == 1 {
+          if let Some(Value::Char(c)) = members.get("m_value") {
+            return visitor.visit_char((*c).into())
+          }
+        }
+      },
+      "System.Decimal" => {
+        if members.len() == 1 {
+          if let Some(Value::Decimal(_c)) = members.get("m_value") {
+            unimplemented!()
+          }
+        }
+      },
+      "System.Double" => {
+        if members.len() == 1 {
+          if let Some(Value::Double(n)) = members.get("m_value") {
+            return visitor.visit_f64((*n).into())
+          }
+        }
+      },
+      "System.Single" => {
+        if members.len() == 1 {
+          if let Some(Value::Single(n)) = members.get("m_value") {
+            return visitor.visit_f32((*n).into())
+          }
+        }
+      },
+      "System.Int32" => {
+        if members.len() == 1 {
+          if let Some(Value::Int32(n)) = members.get("m_value") {
+            return visitor.visit_i32((*n).into())
+          }
+        }
+      },
+      "System.UInt32" => {
+        if members.len() == 1 {
+          if let Some(Value::UInt32(n)) = members.get("m_value") {
+            return visitor.visit_u32((*n).into())
+          }
+        }
+      },
+      "System.Int64" => {
+        if members.len() == 1 {
+          if let Some(Value::Int64(n)) = members.get("m_value") {
+            return visitor.visit_i64((*n).into())
+          }
+        }
+      },
+      "System.UInt64" => {
+        if members.len() == 1 {
+          if let Some(Value::UInt64(n)) = members.get("m_value") {
+            return visitor.visit_u64((*n).into())
+          }
+        }
+      },
+      "System.Int16" => {
+        if members.len() == 1 {
+          if let Some(Value::Int16(n)) = members.get("m_value") {
+            return visitor.visit_i16((*n).into())
+          }
+        }
+      },
+      "System.UInt16" => {
+        if members.len() == 1 {
+          if let Some(Value::UInt16(n)) = members.get("m_value") {
+            return visitor.visit_u16((*n).into())
+          }
+        }
+      },
+      "System.Collections.Generic.List" => {
+        if members.len() == 3 {
+          if let (Some(mut items), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
+            (members.get("_items"), members.get("_size"), members.get("_version"))
+          {
+            if let Value::Ref(id) = items {
+              items = resolve_object(self.objects, id, &visitor)?;
+            }
+
+            if let Value::Array(items) = items {
+              return ArrayDeserializer::new(self.objects, items.into_iter().take(i32::from(*size) as usize))
+                .deserialize_any(visitor)
+            }
+          }
+        }
+      },
+      _ => return Err(Error::invalid_type(Unexpected::Other(class_name), &visitor)),
+    }
+
+    Err(Error::custom(format!("invalid system type: {}", class_name)))
+  }
+
+  fn deserialize_struct<V>(
+    self,
+    name: &'static str,
+    fields: &'static [&'static str],
+    visitor: V,
+  ) -> Result<V::Value, Self::Error>
+  where
+    V: Visitor<'de>,
+  {
+    use serde::de::value::MapDeserializer;
+
+    let Object { class, library, members } = self.object;
+
+    MapDeserializer::new(members.into_iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))))
+      .deserialize_map(visitor)
+  }
+
+  forward_to_deserialize_any! {
+      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+      bytes byte_buf option unit unit_struct newtype_struct seq tuple
+      tuple_struct map enum identifier ignored_any
+  }
 }
 
 #[cfg(feature = "serde")]
@@ -163,16 +347,6 @@ impl<'de, 'o> ValueDeserializer<'de, 'o> {
   pub fn new(objects: &'o BTreeMap<Int32, Value<'de>>, object: &'o Value<'de>) -> Self {
     Self { objects, object }
   }
-
-  fn resolve<V: Visitor<'de>>(&self, id: &Int32, visitor: &V) -> Result<&'o Value<'de>, Error> {
-    use serde::de::{Error, Unexpected};
-
-    if let Some(object) = self.objects.get(id) {
-      Ok(object)
-    } else {
-      Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), visitor))
-    }
-  }
 }
 
 #[cfg(feature = "serde")]
@@ -195,128 +369,9 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
     use serde::de::{Error, Unexpected};
 
     match self.object {
-      Value::Object(Object { class, library, members }) => {
-        if library.is_some() {
-          return Err(Error::invalid_type(Unexpected::Other(class), &visitor))
-        }
-
-        let class_name = class.split_once('`').map(|(s, _)| s).unwrap_or(*class);
-
-        match class_name {
-          "System.Boolean" => {
-            if members.len() == 1 {
-              if let Some(Value::Boolean(n)) = members.get("m_value") {
-                return visitor.visit_bool((*n).into())
-              }
-            }
-          },
-          "System.Byte" => {
-            if members.len() == 1 {
-              if let Some(Value::Byte(n)) = members.get("m_value") {
-                return visitor.visit_u8((*n).into())
-              }
-            }
-          },
-          "System.SByte" => {
-            if members.len() == 1 {
-              if let Some(Value::SByte(n)) = members.get("m_value") {
-                return visitor.visit_i8((*n).into())
-              }
-            }
-          },
-          "System.Char" => {
-            if members.len() == 1 {
-              if let Some(Value::Char(c)) = members.get("m_value") {
-                return visitor.visit_char((*c).into())
-              }
-            }
-          },
-          "System.Decimal" => {
-            if members.len() == 1 {
-              if let Some(Value::Decimal(_c)) = members.get("m_value") {
-                unimplemented!()
-              }
-            }
-          },
-          "System.Double" => {
-            if members.len() == 1 {
-              if let Some(Value::Double(n)) = members.get("m_value") {
-                return visitor.visit_f64((*n).into())
-              }
-            }
-          },
-          "System.Single" => {
-            if members.len() == 1 {
-              if let Some(Value::Single(n)) = members.get("m_value") {
-                return visitor.visit_f32((*n).into())
-              }
-            }
-          },
-          "System.Int32" => {
-            if members.len() == 1 {
-              if let Some(Value::Int32(n)) = members.get("m_value") {
-                return visitor.visit_i32((*n).into())
-              }
-            }
-          },
-          "System.UInt32" => {
-            if members.len() == 1 {
-              if let Some(Value::UInt32(n)) = members.get("m_value") {
-                return visitor.visit_u32((*n).into())
-              }
-            }
-          },
-          "System.Int64" => {
-            if members.len() == 1 {
-              if let Some(Value::Int64(n)) = members.get("m_value") {
-                return visitor.visit_i64((*n).into())
-              }
-            }
-          },
-          "System.UInt64" => {
-            if members.len() == 1 {
-              if let Some(Value::UInt64(n)) = members.get("m_value") {
-                return visitor.visit_u64((*n).into())
-              }
-            }
-          },
-          "System.Int16" => {
-            if members.len() == 1 {
-              if let Some(Value::Int16(n)) = members.get("m_value") {
-                return visitor.visit_i16((*n).into())
-              }
-            }
-          },
-          "System.UInt16" => {
-            if members.len() == 1 {
-              if let Some(Value::UInt16(n)) = members.get("m_value") {
-                return visitor.visit_u16((*n).into())
-              }
-            }
-          },
-          "System.Collections.Generic.List" => {
-            if members.len() == 3 {
-              if let (Some(mut items), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
-                (members.get("_items"), members.get("_size"), members.get("_version"))
-              {
-                if let Value::Ref(id) = items {
-                  items = self.resolve(id, &visitor)?;
-                }
-
-                if let Value::Array(items) = items {
-                  return ArrayDeserializer::new(self.objects, items.into_iter().take(i32::from(*size) as usize))
-                    .deserialize_any(visitor)
-                }
-              }
-            }
-          },
-          _ => return Err(Error::invalid_type(Unexpected::Other(class_name), &visitor)),
-        }
-
-        Err(Error::custom(format!("invalid system type: {}", class_name)))
-      },
+      Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_any(visitor),
       Value::Array(members) => ArrayDeserializer::new(self.objects, members.into_iter()).deserialize_any(visitor),
-      Value::Ref(id) => Self::new(self.objects, self.resolve(id, &visitor)?).deserialize_any(visitor),
+      Value::Ref(id) => Self::new(self.objects, resolve_object(self.objects, id, &visitor)?).deserialize_any(visitor),
       Value::Boolean(v) => visitor.visit_bool(*v),
       Value::SByte(v) => visitor.visit_i8(*v),
       Value::Int16(v) => visitor.visit_i16(*v),
@@ -361,11 +416,10 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
     use serde::de::value::MapDeserializer;
 
     match self.object {
-      Value::Object(Object { class: _, library: _, members }) => {
-        MapDeserializer::new(members.into_iter().map(|(key, value)| (*key, Self::new(self.objects, value))))
-          .deserialize_map(visitor)
+      Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_struct(name, fields, visitor),
+      Value::Ref(id) => {
+        Self::new(self.objects, resolve_object(self.objects, id, &visitor)?).deserialize_struct(name, fields, visitor)
       },
-      Value::Ref(id) => Self::new(self.objects, self.resolve(id, &visitor)?).deserialize_struct(name, fields, visitor),
       _ => self.deserialize_any(visitor),
     }
   }
