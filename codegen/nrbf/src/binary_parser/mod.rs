@@ -25,6 +25,7 @@ use crate::{
   MethodCall, MethodReturn, RemotingMessage, Value,
 };
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum Class<'i> {
   ClassWithMembers(ClassWithMembers<'i>),

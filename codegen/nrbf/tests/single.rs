@@ -29,6 +29,7 @@ fn single() {
       Value::Object(Object {
         class: "System.Single",
         library: None,
+        #[allow(clippy::approx_constant)]
         members: HashMap::from_iter([("m_value", Value::Single(3.14))]),
       }),
     )]),
