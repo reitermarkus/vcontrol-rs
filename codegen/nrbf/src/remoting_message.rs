@@ -54,7 +54,7 @@ impl<'i> RemotingMessage<'i> {
   }
 
   #[cfg(feature = "serde")]
-  fn into_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, Error> {
+  fn to_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, Error> {
     use serde::de::{Error, Unexpected};
 
     match self {
@@ -73,7 +73,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   where
     V: Visitor<'de>,
   {
-    self.into_deserializer(&visitor)?.deserialize_any(visitor)
+    self.to_deserializer(&visitor)?.deserialize_any(visitor)
   }
 
   fn deserialize_struct<V>(
@@ -85,7 +85,7 @@ impl<'de> Deserializer<'de> for RemotingMessage<'de> {
   where
     V: Visitor<'de>,
   {
-    self.into_deserializer(&visitor)?.deserialize_struct(name, fields, visitor)
+    self.to_deserializer(&visitor)?.deserialize_struct(name, fields, visitor)
   }
 
   forward_to_deserialize_any! {

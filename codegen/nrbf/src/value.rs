@@ -165,28 +165,28 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
       "System.Boolean" => {
         if members.len() == 1 {
           if let Some(Value::Boolean(n)) = members.get("m_value") {
-            return visitor.visit_bool((*n).into())
+            return visitor.visit_bool(*n)
           }
         }
       },
       "System.Byte" => {
         if members.len() == 1 {
           if let Some(Value::Byte(n)) = members.get("m_value") {
-            return visitor.visit_u8((*n).into())
+            return visitor.visit_u8(*n)
           }
         }
       },
       "System.SByte" => {
         if members.len() == 1 {
           if let Some(Value::SByte(n)) = members.get("m_value") {
-            return visitor.visit_i8((*n).into())
+            return visitor.visit_i8(*n)
           }
         }
       },
       "System.Char" => {
         if members.len() == 1 {
           if let Some(Value::Char(c)) = members.get("m_value") {
-            return visitor.visit_char((*c).into())
+            return visitor.visit_char(*c)
           }
         }
       },
@@ -200,56 +200,56 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
       "System.Double" => {
         if members.len() == 1 {
           if let Some(Value::Double(n)) = members.get("m_value") {
-            return visitor.visit_f64((*n).into())
+            return visitor.visit_f64(*n)
           }
         }
       },
       "System.Single" => {
         if members.len() == 1 {
           if let Some(Value::Single(n)) = members.get("m_value") {
-            return visitor.visit_f32((*n).into())
+            return visitor.visit_f32(*n)
           }
         }
       },
       "System.Int32" => {
         if members.len() == 1 {
           if let Some(Value::Int32(n)) = members.get("m_value") {
-            return visitor.visit_i32((*n).into())
+            return visitor.visit_i32(*n)
           }
         }
       },
       "System.UInt32" => {
         if members.len() == 1 {
           if let Some(Value::UInt32(n)) = members.get("m_value") {
-            return visitor.visit_u32((*n).into())
+            return visitor.visit_u32(*n)
           }
         }
       },
       "System.Int64" => {
         if members.len() == 1 {
           if let Some(Value::Int64(n)) = members.get("m_value") {
-            return visitor.visit_i64((*n).into())
+            return visitor.visit_i64(*n)
           }
         }
       },
       "System.UInt64" => {
         if members.len() == 1 {
           if let Some(Value::UInt64(n)) = members.get("m_value") {
-            return visitor.visit_u64((*n).into())
+            return visitor.visit_u64(*n)
           }
         }
       },
       "System.Int16" => {
         if members.len() == 1 {
           if let Some(Value::Int16(n)) = members.get("m_value") {
-            return visitor.visit_i16((*n).into())
+            return visitor.visit_i16(*n)
           }
         }
       },
       "System.UInt16" => {
         if members.len() == 1 {
           if let Some(Value::UInt16(n)) = members.get("m_value") {
-            return visitor.visit_u16((*n).into())
+            return visitor.visit_u16(*n)
           }
         }
       },
@@ -263,7 +263,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
             }
 
             if let Value::Array(items) = items {
-              return ArrayDeserializer::new(self.objects, items.into_iter().take(i32::from(*size) as usize))
+              return ArrayDeserializer::new(self.objects, items.iter().take((*size) as usize))
                 .deserialize_any(visitor)
             }
           }
@@ -288,7 +288,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
 
     let Object { class: _, library: _, members } = self.object;
 
-    MapDeserializer::new(members.into_iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))))
+    MapDeserializer::new(members.iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))))
       .deserialize_map(visitor)
   }
 
@@ -443,7 +443,7 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
 
     match self.object {
       Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_any(visitor),
-      Value::Array(members) => ArrayDeserializer::new(self.objects, members.into_iter()).deserialize_any(visitor),
+      Value::Array(members) => ArrayDeserializer::new(self.objects, members.iter()).deserialize_any(visitor),
       Value::Ref(id) => Self::new(self.objects, resolve_object(self.objects, id, &visitor)?).deserialize_any(visitor),
       Value::Boolean(v) => visitor.visit_bool(*v),
       Value::SByte(v) => visitor.visit_i8(*v),
@@ -458,8 +458,8 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
       Value::Double(v) => visitor.visit_f64(*v),
       Value::Char(v) => visitor.visit_char(*v),
       Value::Decimal(v) => visitor.visit_string((v.0).0.to_string()),
-      Value::TimeSpan(v) => visitor.visit_i64((*v).0.into()),
-      Value::DateTime(v) => visitor.visit_i64((*v).0.into()),
+      Value::TimeSpan(v) => visitor.visit_i64(v.0.into()),
+      Value::DateTime(v) => visitor.visit_i64(v.0.into()),
       Value::String(s) => visitor.visit_borrowed_str(s),
       Value::Null(1) => visitor.visit_none(),
       Value::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),

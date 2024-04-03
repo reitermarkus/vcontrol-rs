@@ -1,3 +1,5 @@
+#![allow(clippy::approx_constant)]
+
 use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
@@ -29,7 +31,6 @@ fn single() {
       Value::Object(Object {
         class: "System.Single",
         library: None,
-        #[allow(clippy::approx_constant)]
         members: HashMap::from_iter([("m_value", Value::Single(3.14))]),
       }),
     )]),
