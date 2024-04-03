@@ -42,5 +42,14 @@ fn int32() {
 #[cfg(feature = "serde")]
 #[test]
 fn int32_deserialize() {
+  use serde::Deserialize;
+
   assert_eq!(nrbf::from_slice(INPUT), Ok(-1));
+
+  #[derive(Deserialize)]
+  struct SystemInt32 {
+    pub m_value: i32,
+  }
+
+  assert_eq!(nrbf::from_slice::<SystemInt32>(INPUT).map(|v| v.m_value), Ok(-1));
 }
