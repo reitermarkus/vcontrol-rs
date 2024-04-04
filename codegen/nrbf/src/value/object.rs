@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 #[cfg(feature = "serde")]
-use std::{collections::BTreeMap, fmt, iter};
+use std::{collections::BTreeMap, fmt};
 
 #[cfg(feature = "serde")]
 use serde::{
@@ -163,10 +163,10 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
           }
         }
       },
-      _ => return Err(Error::invalid_type(Unexpected::Other(class_name), &visitor)),
+      class_name => return Err(Error::invalid_type(Unexpected::Other(class_name), &visitor)),
     }
 
-    Err(Error::custom(format!("invalid system type: {}", class_name)))
+    Err(Error::custom(format!("invalid system class: {}", class_name)))
   }
 
   fn deserialize_struct<V>(
