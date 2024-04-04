@@ -33,34 +33,23 @@ fn method_call() {
   ];
 
   let output = RemotingMessage::MethodCall(
-    BTreeMap::from_iter([
-      (
-        1,
-        Value::Array(vec![Value::Ref(2)]),
-      ),
-      (
-        2,
+    BTreeMap::new(),
+    MethodCall {
+      method_name: "SendAddress",
+      type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
+      call_context: None,
+      args: Some(vec![
         Value::Object(Object {
           class: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"),
           members: HashMap::from_iter([
-            ("Street", Value::Ref(4)),
-            ("City", Value::Ref(5)),
-            ("State", Value::Ref(6)),
-            ("Zip", Value::Ref(7)),
+            ("Street", Value::String("One Microsoft Way")),
+            ("City", Value::String("Redmond")),
+            ("State", Value::String("WA")),
+            ("Zip", Value::String("98054")),
           ]),
         }),
-      ),
-      (4, Value::String("One Microsoft Way")),
-      (5, Value::String("Redmond")),
-      (6, Value::String("WA")),
-      (7, Value::String("98054")),
-    ]),
-      MethodCall {
-        method_name: "SendAddress",
-        type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
-        call_context: None,
-        args: Some(vec![Value::Ref(2)]),
-      }
+      ]),
+    }
   );
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output))
