@@ -1,5 +1,7 @@
 use nom::{combinator::map_res, number::complete::u8, IResult};
 
+use super::impl_primitive;
+
 /// 2.1.1 `BOOLEAN`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Boolean(pub bool);
@@ -16,16 +18,4 @@ impl Boolean {
   }
 }
 
-impl From<bool> for Boolean {
-  #[inline]
-  fn from(v: bool) -> Self {
-    Self(v)
-  }
-}
-
-impl From<Boolean> for bool {
-  #[inline]
-  fn from(val: Boolean) -> Self {
-    val.0
-  }
-}
+impl_primitive!(Boolean, bool, visit_bool, deserialize_bool);

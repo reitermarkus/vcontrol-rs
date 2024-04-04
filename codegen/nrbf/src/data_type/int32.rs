@@ -6,6 +6,8 @@ use nom::{
   IResult,
 };
 
+use super::impl_primitive;
+
 /// 2.1.1 `INT32`
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Int32(pub i32);
@@ -24,20 +26,6 @@ impl Int32 {
   }
 }
 
-impl From<i32> for Int32 {
-  #[inline]
-  fn from(v: i32) -> Self {
-    Self(v)
-  }
-}
-
-impl From<Int32> for i32 {
-  #[inline]
-  fn from(val: Int32) -> Self {
-    val.0
-  }
-}
-
 impl TryFrom<Int32> for usize {
   type Error = TryFromIntError;
 
@@ -46,3 +34,5 @@ impl TryFrom<Int32> for usize {
     Self::try_from(val.0)
   }
 }
+
+impl_primitive!(Int32, i32, visit_i32, deserialize_i32);

@@ -12,6 +12,7 @@ use serde::{
 use super::Value;
 #[cfg(feature = "serde")]
 use super::{resolve_object, ArrayDeserializer, ValueDeserializer};
+use crate::data_type::{Boolean, Byte, Char, Double, Int16, Int32, Int64, Int8, Single, UInt16, UInt32, UInt64};
 
 /// An NRBF object.
 #[derive(Debug, Clone, PartialEq)]
@@ -39,6 +40,24 @@ impl<'de, 'o> ObjectDeserializer<'de, 'o> {
 }
 
 #[cfg(feature = "serde")]
+use serde::de::{value::BorrowedStrDeserializer, IntoDeserializer};
+
+#[cfg(feature = "serde")]
+struct StrDeserializer<'i>(&'i str);
+
+#[cfg(feature = "serde")]
+impl<'de, E> IntoDeserializer<'de, E> for StrDeserializer<'de>
+where
+  E: de::Error,
+{
+  type Deserializer = BorrowedStrDeserializer<'de, E>;
+
+  fn into_deserializer(self) -> BorrowedStrDeserializer<'de, E> {
+    BorrowedStrDeserializer::new(self.0)
+  }
+}
+
+#[cfg(feature = "serde")]
 impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
   type Error = Error;
 
@@ -47,14 +66,19 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
     V: de::Visitor<'de>,
   {
     use serde::{
-      de::{value::MapDeserializer, Error, Unexpected},
+      de::{value::MapDeserializer, Error},
       Deserialize,
     };
 
     let Object { class, library, members } = self.object;
 
-    let map_deserializer =
-      MapDeserializer::new(members.iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))));
+    let map_deserializer: MapDeserializer<
+      'de,
+      std::iter::Map<std::collections::hash_map::Iter<'_, &'de str, Value<'de>>, _>,
+      _,
+    > = MapDeserializer::new(
+      members.iter().map(|(key, value)| (StrDeserializer(*key), ValueDeserializer::new(self.objects, value))),
+    );
 
     if library.is_some() {
       return map_deserializer.deserialize_map(visitor)
@@ -64,119 +88,52 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
 
     match class_name {
       "System.Boolean" => {
-        #[derive(Deserialize)]
-        struct Boolean {
-          m_value: bool,
-        }
-
-        let v = Boolean::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_bool(v)
+        let v = Boolean::deserialize(map_deserializer)?;
+        return visitor.visit_bool(v.into())
       },
       "System.Byte" => {
-        #[derive(Deserialize)]
-        struct Byte {
-          m_value: u8,
-        }
-
-        let v = Byte::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_u8(v)
+        let v = Byte::deserialize(map_deserializer)?;
+        return visitor.visit_u8(v.into())
       },
       "System.SByte" => {
-        #[derive(Deserialize)]
-        struct SByte {
-          m_value: i8,
-        }
-
-        let v = SByte::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_i8(v)
+        let v = Int8::deserialize(map_deserializer)?;
+        return visitor.visit_i8(v.into())
       },
       "System.Char" => {
-        #[derive(Deserialize)]
-        struct Char {
-          m_value: char,
-        }
-
-        let v = Char::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_char(v)
-      },
-      "System.Decimal" => {
-        if members.len() == 1 {
-          if let Some(Value::Decimal(_c)) = members.get("m_value") {
-            unimplemented!()
-          }
-        }
+        let v = Char::deserialize(map_deserializer)?;
+        return visitor.visit_char(v.into())
       },
       "System.Double" => {
-        #[derive(Deserialize)]
-        struct Double {
-          m_value: f64,
-        }
-
-        let v = Double::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_f64(v)
+        let v = Double::deserialize(map_deserializer)?;
+        return visitor.visit_f64(v.into())
       },
       "System.Single" => {
-        #[derive(Deserialize)]
-        struct Single {
-          m_value: f32,
-        }
-
-        let v = Single::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_f32(v)
+        let v = Single::deserialize(map_deserializer)?;
+        return visitor.visit_f32(v.into())
       },
       "System.Int32" => {
-        #[derive(Deserialize)]
-        struct Int32 {
-          m_value: i32,
-        }
-
-        let v = Int32::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_i32(v)
+        let v = Int32::deserialize(map_deserializer)?;
+        return visitor.visit_i32(v.into())
       },
       "System.UInt32" => {
-        #[derive(Deserialize)]
-        struct UInt32 {
-          m_value: u32,
-        }
-
-        let v = UInt32::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_u32(v)
+        let v = UInt32::deserialize(map_deserializer)?;
+        return visitor.visit_u32(v.into())
       },
       "System.Int64" => {
-        #[derive(Deserialize)]
-        struct Int64 {
-          m_value: i64,
-        }
-
-        let v = Int64::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_i64(v)
+        let v = Int64::deserialize(map_deserializer)?;
+        return visitor.visit_i64(v.into())
       },
       "System.UInt64" => {
-        #[derive(Deserialize)]
-        struct UInt64 {
-          m_value: u64,
-        }
-
-        let v = UInt64::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_u64(v)
+        let v = UInt64::deserialize(map_deserializer)?;
+        return visitor.visit_u64(v.into())
       },
       "System.Int16" => {
-        #[derive(Deserialize)]
-        struct Int16 {
-          m_value: i16,
-        }
-
-        let v = Int16::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_i16(v)
+        let v = Int16::deserialize(map_deserializer)?;
+        return visitor.visit_i16(v.into())
       },
       "System.UInt16" => {
-        #[derive(Deserialize)]
-        struct UInt16 {
-          m_value: u16,
-        }
-
-        let v = UInt16::deserialize(map_deserializer).map(|v| v.m_value)?;
-        return visitor.visit_u16(v)
+        let v = UInt16::deserialize(map_deserializer)?;
+        return visitor.visit_u16(v.into())
       },
       "System.Collections.Generic.List" => {
         if members.len() == 3 {
