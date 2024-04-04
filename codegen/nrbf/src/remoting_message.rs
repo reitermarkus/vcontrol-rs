@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 #[cfg(feature = "serde")]
 use serde::{
   de::{value::Error, Deserializer, Visitor},
@@ -89,12 +87,10 @@ impl<'i> RemotingMessage<'i> {
   fn to_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, Error> {
     use serde::de::{Error, Unexpected};
 
-    static EMPTY_MAP: BTreeMap<i32, Value<'static>> = BTreeMap::new();
-
     match self {
       Self::MethodCall(..) => Err(Error::invalid_type(Unexpected::Other("method call"), visitor)),
       Self::MethodReturn(..) => Err(Error::invalid_type(Unexpected::Other("method return"), visitor)),
-      Self::Value(root_object) => Ok(ValueDeserializer::new(&EMPTY_MAP, root_object)),
+      Self::Value(root_object) => Ok(ValueDeserializer::new(root_object)),
     }
   }
 }
