@@ -1,7 +1,7 @@
 //! Representation of an NRBF value.
 
 #[cfg(feature = "serde")]
-use std::{collections::BTreeMap, fmt, iter};
+use std::{fmt, iter};
 
 #[cfg(feature = "serde")]
 use serde::{
@@ -59,7 +59,7 @@ pub enum Value<'i> {
   /// A string.
   String(&'i str),
   /// A null value.
-  Null(usize),
+  Null,
 }
 
 #[cfg(feature = "serde")]
@@ -79,33 +79,32 @@ impl Expected for ExpectedInArray {
 
 #[cfg(feature = "serde")]
 #[derive(Debug)]
-pub(crate) struct ArrayDeserializer<'de, 'o, I> {
-  objects: &'o BTreeMap<i32, Value<'de>>,
+pub(crate) struct ArrayDeserializer<I> {
   iter: iter::Fuse<I>,
   null_count: usize,
   count: usize,
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> ArrayDeserializer<'de, 'o, I>
+impl<I> ArrayDeserializer<I>
 where
   I: Iterator,
 {
-  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, iter: I) -> Self {
-    Self { objects, iter: iter.fuse(), null_count: 0, count: 0 }
+  pub fn new(iter: I) -> Self {
+    Self { iter: iter.fuse(), null_count: 0, count: 0 }
   }
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> ArrayDeserializer<'de, 'o, I>
+impl<'de, 'o, I> ArrayDeserializer<I>
 where
+  'de: 'o,
   I: Iterator<Item = &'o Value<'de>>,
 {
   /// Check for remaining elements after passing an `ArrayDeserializer` to
   /// `Visitor::visit_seq`.
   pub fn end<E: de::Error>(self) -> Result<(), E> {
-    let remaining =
-      self.iter.map(|value| if let Value::Null(n) = value { *n } else { 1 }).sum::<usize>() + self.null_count;
+    let remaining = self.iter.count() + self.null_count;
     if remaining == 0 {
       Ok(())
     } else {
@@ -117,8 +116,9 @@ where
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> de::Deserializer<'de> for ArrayDeserializer<'de, 'o, I>
+impl<'de, 'o, I> de::Deserializer<'de> for ArrayDeserializer<I>
 where
+  'de: 'o,
   I: Iterator<Item = &'o Value<'de>>,
 {
   type Error = Error;
@@ -140,8 +140,9 @@ where
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> de::SeqAccess<'de> for ArrayDeserializer<'de, 'o, I>
+impl<'de, 'o, I> de::SeqAccess<'de> for ArrayDeserializer<I>
 where
+  'de: 'o,
   I: Iterator<Item = &'o Value<'de>>,
 {
   type Error = Error;
@@ -153,18 +154,18 @@ where
     if self.null_count > 0 {
       self.count += 1;
       self.null_count -= 1;
-      return seed.deserialize(ValueDeserializer::new(self.objects, &Value::Null(1))).map(Some)
+      return seed.deserialize(ValueDeserializer::new(&Value::Null)).map(Some)
     }
 
     match self.iter.next() {
-      Some(Value::Null(null_count @ 2..)) => {
+      Some(Value::Null) => {
         self.count += 1;
-        self.null_count = null_count - 1;
-        seed.deserialize(ValueDeserializer::new(self.objects, &Value::Null(1))).map(Some)
+        self.null_count = 0;
+        seed.deserialize(ValueDeserializer::new(&Value::Null)).map(Some)
       },
       Some(object) => {
         self.count += 1;
-        seed.deserialize(ValueDeserializer::new(self.objects, object)).map(Some)
+        seed.deserialize(ValueDeserializer::new(object)).map(Some)
       },
       None => Ok(None),
     }
@@ -174,14 +175,13 @@ where
 #[cfg(feature = "serde")]
 #[derive(Debug)]
 pub(crate) struct ValueDeserializer<'de, 'o> {
-  objects: &'o BTreeMap<i32, Value<'de>>,
   object: &'o Value<'de>,
 }
 
 #[cfg(feature = "serde")]
 impl<'de, 'o> ValueDeserializer<'de, 'o> {
-  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, object: &'o Value<'de>) -> Self {
-    Self { objects, object }
+  pub fn new(object: &'o Value<'de>) -> Self {
+    Self { object }
   }
 }
 
@@ -202,11 +202,9 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
   where
     V: Visitor<'de>,
   {
-    use serde::de::{Error, Unexpected};
-
     match self.object {
-      Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_any(visitor),
-      Value::Array(members) => ArrayDeserializer::new(self.objects, members.iter()).deserialize_any(visitor),
+      Value::Object(object) => ObjectDeserializer::new(object).deserialize_any(visitor),
+      Value::Array(members) => ArrayDeserializer::new(members.iter()).deserialize_any(visitor),
       Value::Boolean(v) => visitor.visit_bool(*v),
       Value::SByte(v) => visitor.visit_i8(*v),
       Value::Int16(v) => visitor.visit_i16(*v),
@@ -223,13 +221,7 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
       Value::TimeSpan(v) => visitor.visit_i64(v.0.into()),
       Value::DateTime(v) => visitor.visit_i64(v.0.into()),
       Value::String(s) => visitor.visit_borrowed_str(s),
-      Value::Null(n) => {
-        if *n == 1 {
-          visitor.visit_unit()
-        } else {
-          Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor))
-        }
-      },
+      Value::Null => visitor.visit_unit(),
     }
   }
 
@@ -237,7 +229,7 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
   where
     V: Visitor<'de>,
   {
-    if matches!(self.object, Value::Null(1)) {
+    if matches!(self.object, Value::Null) {
       visitor.visit_none()
     } else {
       visitor.visit_some(self)
@@ -254,7 +246,7 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
     V: Visitor<'de>,
   {
     match self.object {
-      Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_struct(name, fields, visitor),
+      Value::Object(object) => ObjectDeserializer::new(object).deserialize_struct(name, fields, visitor),
       _ => self.deserialize_any(visitor),
     }
   }

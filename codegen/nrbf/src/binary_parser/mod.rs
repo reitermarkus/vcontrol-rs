@@ -25,6 +25,7 @@ use crate::{
 #[derive(Debug, Clone)]
 enum ValueOrRef<'i> {
   Value(Value<'i>),
+  Null(usize),
   Ref(RefId),
 }
 
@@ -92,7 +93,7 @@ impl<'i> BinaryParser<'i> {
         (BinaryType::StringArray, None) => alt((
           map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
           map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into()))),
-          map(Self::parse_null_object, |null_object| ValueOrRef::Value(null_object)),
+          map(Self::parse_null_object, |null_object| null_object),
         ))(input)?,
         (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => {
           map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into())))(input)?
@@ -104,7 +105,7 @@ impl<'i> BinaryParser<'i> {
         map(MemberPrimitiveTyped::parse, |primitive| ValueOrRef::Value(primitive.into_value())),
         map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into()))),
         map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
-        map(Self::parse_null_object, |null_object| ValueOrRef::Value(null_object)),
+        map(Self::parse_null_object, |null_object| null_object),
         map(|input| self.parse_classes(input), |(_, object)| ValueOrRef::Value(Value::Object(object))),
       ))(input)?
     };
@@ -139,23 +140,30 @@ impl<'i> BinaryParser<'i> {
     let mut members2 = Vec::with_capacity(members.len());
 
     for member in members.into_iter() {
-      members2.push(match member {
-        ValueOrRef::Value(value) => value,
+      match member {
+        ValueOrRef::Value(value) => {
+          members2.push(value);
+        },
+        ValueOrRef::Null(count) => {
+          for _ in 0..count {
+            members2.push(Value::Null);
+          }
+        },
         ValueOrRef::Ref(id) => {
           if let Some(value) = self.objects.remove(&id.0) {
-            value.clone()
+            members2.push(value);
           } else {
             let member2;
             (input, member2) = verify(|input| self.parse_referenceable(input), |id2| id2.0 == id.0)(input)?;
 
             if let Some(value) = self.objects.remove(&member2.0) {
-              value.clone()
+              members2.push(value);
             } else {
               return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
             }
           }
         },
-      })
+      }
     }
 
     Ok((input, members2))
@@ -239,18 +247,21 @@ impl<'i> BinaryParser<'i> {
 
     let mut members = vec![];
 
-    let mut len_remaining = array.array_info.len();
-    while len_remaining > 0 {
+    let len = array.array_info.len();
+    while members.len() < len {
       let member;
       (input, member) = self.parse_member_reference(input, None)?;
 
-      let count = match member {
-        ValueOrRef::Value(Value::Null(count)) => count,
-        _ => 1,
-      };
-
-      members.push(member);
-      len_remaining -= count;
+      match member {
+        ValueOrRef::Null(count) => {
+          for _ in 0..count {
+            members.push(ValueOrRef::Value(Value::Null));
+          }
+        },
+        _ => {
+          members.push(member);
+        },
+      }
     }
 
     let (input, members) = self.resolve_members(input, members)?;
@@ -280,18 +291,21 @@ impl<'i> BinaryParser<'i> {
 
     let mut members = vec![];
 
-    let mut len_remaining = array.array_info.len();
-    while len_remaining > 0 {
+    let len = array.array_info.len();
+    while members.len() < len {
       let member;
       (input, member) = self.parse_member_reference(input, Some((BinaryType::StringArray, None)))?;
 
-      let count = match member {
-        ValueOrRef::Value(Value::Null(count)) => count,
-        _ => 1,
-      };
-
-      members.push(member);
-      len_remaining -= count;
+      match member {
+        ValueOrRef::Null(count) => {
+          for _ in 0..count {
+            members.push(ValueOrRef::Value(Value::Null));
+          }
+        },
+        _ => {
+          members.push(member);
+        },
+      }
     }
 
     let (input, members) = self.resolve_members(input, members)?;
@@ -365,11 +379,11 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `nullObject`
-  fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], Value<'i>> {
+  fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], ValueOrRef<'i>> {
     alt((
-      map(ObjectNull::parse, |n| Value::Null(n.null_count())),
-      map(ObjectNullMultiple::parse, |n| Value::Null(n.null_count())),
-      map(ObjectNullMultiple256::parse, |n| Value::Null(n.null_count())),
+      map(ObjectNull::parse, |n| ValueOrRef::Null(n.null_count())),
+      map(ObjectNullMultiple::parse, |n| ValueOrRef::Null(n.null_count())),
+      map(ObjectNullMultiple256::parse, |n| ValueOrRef::Null(n.null_count())),
     ))(input)
   }
 
