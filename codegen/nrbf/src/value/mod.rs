@@ -1,6 +1,5 @@
 //! Representation of an NRBF value.
 
-use std::collections::HashMap;
 #[cfg(feature = "serde")]
 use std::{collections::BTreeMap, fmt, iter};
 
@@ -10,7 +9,15 @@ use serde::{
   forward_to_deserialize_any, Deserializer,
 };
 
-use crate::data_type::{self};
+mod date_time;
+pub use date_time::{DateTime, DateTimeKind};
+mod decimal;
+pub use decimal::Decimal;
+mod object;
+pub use object::Object;
+use object::ObjectDeserializer;
+mod time_span;
+pub use time_span::TimeSpan;
 
 #[cfg(feature = "serde")]
 fn resolve_object<'de, 'o, V: Visitor<'de>>(
@@ -25,63 +32,6 @@ fn resolve_object<'de, 'o, V: Visitor<'de>>(
   } else {
     Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), visitor))
   }
-}
-
-/// A decimal number.
-#[derive(Debug, Clone, PartialEq)]
-pub struct Decimal(pub(crate) data_type::Decimal);
-
-/// A time span.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct TimeSpan(pub(crate) data_type::TimeSpan);
-
-impl TimeSpan {
-  /// Duration as the number of 100 nanoseconds. The values range from -10675199 days, 2 hours, 48 minutes, and 05.4775808
-  /// seconds to 10675199 days, 2 hours, 48 minutes, and 05.4775807 seconds inclusive.
-  pub fn value(&self) -> i64 {
-    self.0.into()
-  }
-}
-
-/// Time-zone information for [`DateTime`].
-pub enum DateTimeKind {
-  /// The time specified is in the Coordinated Universal Time (UTC) time zone.
-  Utc,
-  /// The time specified is in the local time zone.
-  Local,
-}
-
-/// An date-time value.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct DateTime(pub(crate) data_type::DateTime);
-
-impl DateTime {
-  /// Number of 100 nanoseconds that have elapsed since 12:00:00, January 1, 0001.
-  /// The value can represent time instants in a granularity of 100 nanoseconds
-  /// until 23:59:59.9999999, December 31, 9999.
-  pub fn ticks(&self) -> i64 {
-    i64::from(self.0) >> 2
-  }
-
-  /// Provides the time-zone information.
-  pub fn kind(&self) -> Option<DateTimeKind> {
-    match i64::from(self.0) & 0b11 {
-      1 => Some(DateTimeKind::Utc),
-      2 => Some(DateTimeKind::Utc),
-      _ => None,
-    }
-  }
-}
-
-/// An NRBF object.
-#[derive(Debug, Clone, PartialEq)]
-pub struct Object<'i> {
-  /// The class name.
-  pub class: &'i str,
-  /// The library name, if present.
-  pub library: Option<&'i str>,
-  /// The member fields.
-  pub members: HashMap<&'i str, Value<'i>>,
 }
 
 /// An NRBF value.
@@ -127,176 +77,6 @@ pub enum Value<'i> {
   Null(usize),
   /// A value reference.
   Ref(i32),
-}
-
-#[cfg(feature = "serde")]
-#[derive(Debug)]
-pub(crate) struct ObjectDeserializer<'de, 'o> {
-  objects: &'o BTreeMap<i32, Value<'de>>,
-  object: &'o Object<'de>,
-}
-
-#[cfg(feature = "serde")]
-impl<'de, 'o> ObjectDeserializer<'de, 'o> {
-  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, object: &'o Object<'de>) -> Self {
-    Self { objects, object }
-  }
-}
-
-#[cfg(feature = "serde")]
-impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
-  type Error = Error;
-
-  fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
-  where
-    V: de::Visitor<'de>,
-  {
-    use serde::de::{Error, Unexpected};
-
-    let Object { class, library, members } = self.object;
-
-    if library.is_some() {
-      return Err(Error::invalid_type(Unexpected::Other(class), &visitor))
-    }
-
-    let class_name = class.split_once('`').map(|(s, _)| s).unwrap_or(*class);
-
-    match class_name {
-      "System.Boolean" => {
-        if members.len() == 1 {
-          if let Some(Value::Boolean(n)) = members.get("m_value") {
-            return visitor.visit_bool(*n)
-          }
-        }
-      },
-      "System.Byte" => {
-        if members.len() == 1 {
-          if let Some(Value::Byte(n)) = members.get("m_value") {
-            return visitor.visit_u8(*n)
-          }
-        }
-      },
-      "System.SByte" => {
-        if members.len() == 1 {
-          if let Some(Value::SByte(n)) = members.get("m_value") {
-            return visitor.visit_i8(*n)
-          }
-        }
-      },
-      "System.Char" => {
-        if members.len() == 1 {
-          if let Some(Value::Char(c)) = members.get("m_value") {
-            return visitor.visit_char(*c)
-          }
-        }
-      },
-      "System.Decimal" => {
-        if members.len() == 1 {
-          if let Some(Value::Decimal(_c)) = members.get("m_value") {
-            unimplemented!()
-          }
-        }
-      },
-      "System.Double" => {
-        if members.len() == 1 {
-          if let Some(Value::Double(n)) = members.get("m_value") {
-            return visitor.visit_f64(*n)
-          }
-        }
-      },
-      "System.Single" => {
-        if members.len() == 1 {
-          if let Some(Value::Single(n)) = members.get("m_value") {
-            return visitor.visit_f32(*n)
-          }
-        }
-      },
-      "System.Int32" => {
-        if members.len() == 1 {
-          if let Some(Value::Int32(n)) = members.get("m_value") {
-            return visitor.visit_i32(*n)
-          }
-        }
-      },
-      "System.UInt32" => {
-        if members.len() == 1 {
-          if let Some(Value::UInt32(n)) = members.get("m_value") {
-            return visitor.visit_u32(*n)
-          }
-        }
-      },
-      "System.Int64" => {
-        if members.len() == 1 {
-          if let Some(Value::Int64(n)) = members.get("m_value") {
-            return visitor.visit_i64(*n)
-          }
-        }
-      },
-      "System.UInt64" => {
-        if members.len() == 1 {
-          if let Some(Value::UInt64(n)) = members.get("m_value") {
-            return visitor.visit_u64(*n)
-          }
-        }
-      },
-      "System.Int16" => {
-        if members.len() == 1 {
-          if let Some(Value::Int16(n)) = members.get("m_value") {
-            return visitor.visit_i16(*n)
-          }
-        }
-      },
-      "System.UInt16" => {
-        if members.len() == 1 {
-          if let Some(Value::UInt16(n)) = members.get("m_value") {
-            return visitor.visit_u16(*n)
-          }
-        }
-      },
-      "System.Collections.Generic.List" => {
-        if members.len() == 3 {
-          if let (Some(mut items), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
-            (members.get("_items"), members.get("_size"), members.get("_version"))
-          {
-            if let Value::Ref(id) = items {
-              items = resolve_object(self.objects, id, &visitor)?;
-            }
-
-            if let Value::Array(items) = items {
-              return ArrayDeserializer::new(self.objects, items.iter().take((*size) as usize))
-                .deserialize_any(visitor)
-            }
-          }
-        }
-      },
-      _ => return Err(Error::invalid_type(Unexpected::Other(class_name), &visitor)),
-    }
-
-    Err(Error::custom(format!("invalid system type: {}", class_name)))
-  }
-
-  fn deserialize_struct<V>(
-    self,
-    _name: &'static str,
-    _fields: &'static [&'static str],
-    visitor: V,
-  ) -> Result<V::Value, Self::Error>
-  where
-    V: Visitor<'de>,
-  {
-    use serde::de::value::MapDeserializer;
-
-    let Object { class: _, library: _, members } = self.object;
-
-    MapDeserializer::new(members.iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))))
-      .deserialize_map(visitor)
-  }
-
-  forward_to_deserialize_any! {
-      bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
-      bytes byte_buf option unit unit_struct newtype_struct seq tuple
-      tuple_struct map enum identifier ignored_any
-  }
 }
 
 #[cfg(feature = "serde")]
@@ -461,8 +241,13 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
       Value::TimeSpan(v) => visitor.visit_i64(v.0.into()),
       Value::DateTime(v) => visitor.visit_i64(v.0.into()),
       Value::String(s) => visitor.visit_borrowed_str(s),
-      Value::Null(1) => visitor.visit_none(),
-      Value::Null(_) => Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor)),
+      Value::Null(n) => {
+        if *n == 1 {
+          visitor.visit_unit()
+        } else {
+          Err(Error::invalid_value(Unexpected::Other("unresolved null object"), &visitor))
+        }
+      },
     }
   }
 
