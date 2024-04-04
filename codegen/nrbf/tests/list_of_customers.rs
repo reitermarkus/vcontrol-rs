@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use const_str::concat_bytes;
 use nrbf::{value::Object, RemotingMessage, Value};
@@ -40,28 +40,21 @@ const INPUT: &[u8] = concat_bytes!(
 #[test]
 fn list_of_customers() {
   let output = RemotingMessage::Value(
-    BTreeMap::from_iter([
-      (
-        1,
-        Value::Object(Object {
-          class: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None,
-          members: HashMap::from_iter([
-            ("_items", Value::Ref(2)),
-            ("_size", Value::Int32(2)),
-            ("_version", Value::Int32(2)),
+    Value::Object(Object {
+      class: "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", library: None,
+      members: HashMap::from_iter([
+        (
+          "_items",
+          Value::Array(vec![
+            Value::String("Bob"),
+            Value::String("Rob"),
+            Value::Null(2),
           ]),
-        }),
-      ),
-      (
-        2,
-        Value::Array(vec![
-          Value::String("Bob"),
-          Value::String("Rob"),
-          Value::Null(2),
-        ]),
-      ),
-    ]),
-    Value::Ref(1),
+        ),
+        ("_size", Value::Int32(2)),
+        ("_version", Value::Int32(2)),
+      ]),
+    }),
   );
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));

@@ -11,7 +11,7 @@ use serde::{
 
 use super::Value;
 #[cfg(feature = "serde")]
-use super::{resolve_object, ArrayDeserializer, ValueDeserializer};
+use super::{ArrayDeserializer, ValueDeserializer};
 use crate::data_type::{Boolean, Byte, Char, Double, Int16, Int32, Int64, Int8, Single, UInt16, UInt32, UInt64};
 
 /// An NRBF object.
@@ -137,13 +137,9 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
       },
       "System.Collections.Generic.List" => {
         if members.len() == 3 {
-          if let (Some(mut items), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
+          if let (Some(items), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
             (members.get("_items"), members.get("_size"), members.get("_version"))
           {
-            if let Value::Ref(id) = items {
-              items = resolve_object(self.objects, id, &visitor)?;
-            }
-
             if let Value::Array(items) = items {
               return ListDeserializer::new(self.objects, items.iter(), (*size) as usize).deserialize_any(visitor)
             }

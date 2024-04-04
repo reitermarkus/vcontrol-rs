@@ -1,6 +1,6 @@
 #![allow(clippy::approx_constant)]
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use const_str::concat_bytes;
 use nrbf::{value::Object, RemotingMessage, Value};
@@ -25,17 +25,11 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn single() {
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(
-      1,
-      Value::Object(Object {
-        class: "System.Single",
-        library: None,
-        members: HashMap::from_iter([("m_value", Value::Single(3.14))]),
-      }),
-    )]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Object(Object {
+    class: "System.Single",
+    library: None,
+    members: HashMap::from_iter([("m_value", Value::Single(3.14))]),
+  }));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }

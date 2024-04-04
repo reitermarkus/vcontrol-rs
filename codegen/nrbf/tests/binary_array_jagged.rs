@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use nrbf::{RemotingMessage, Value};
 
 #[test]
@@ -48,17 +46,11 @@ fn binary_array_jagged() {
     11,
   ];
 
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(
-      1,
-      Value::Array(vec![
-        Value::Array(vec![Value::Int32(1), Value::Int32(2)]),
-        Value::Array(vec![Value::Int32(3), Value::Int32(4), Value::Int32(5)]),
-        Value::Array(vec![Value::Int32(6), Value::Int32(7), Value::Int32(8), Value::Int32(9)]),
-      ]),
-    )]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Array(vec![
+    Value::Array(vec![Value::Int32(1), Value::Int32(2)]),
+    Value::Array(vec![Value::Int32(3), Value::Int32(4), Value::Int32(5)]),
+    Value::Array(vec![Value::Int32(6), Value::Int32(7), Value::Int32(8), Value::Int32(9)]),
+  ]));
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output));
 }

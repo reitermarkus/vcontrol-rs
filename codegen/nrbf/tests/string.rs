@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use const_str::concat_bytes;
 use nrbf::{RemotingMessage, Value};
 
@@ -18,7 +16,7 @@ fn string_empty() {
     11,
   );
 
-  let output = RemotingMessage::Value(BTreeMap::from_iter([(1, Value::String(""))]), Value::Ref(1));
+  let output = RemotingMessage::Value(Value::String(""));
 
   assert_eq!(RemotingMessage::parse(input), Ok(output));
 }
@@ -38,7 +36,7 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn string() {
-  let output = RemotingMessage::Value(BTreeMap::from_iter([(1, Value::String("This is a string."))]), Value::Ref(1));
+  let output = RemotingMessage::Value(Value::String("This is a string."));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }
