@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use const_str::concat_bytes;
 use nrbf::{RemotingMessage, Value};
 
@@ -21,10 +19,7 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn array_single_primitive() {
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(1, Value::Array(vec![Value::Int64(67), Value::Int64(42)]))]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Array(vec![Value::Int64(67), Value::Int64(42)]));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }

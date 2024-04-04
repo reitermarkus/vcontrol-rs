@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use nrbf::{RemotingMessage, Value};
 
 #[test]
@@ -24,10 +22,7 @@ fn binary_array_rectangular() {
     11,
   ];
 
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(1, Value::Array(vec![Value::Int64(67), Value::Int64(42)]))]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Array(vec![Value::Int64(67), Value::Int64(42)]));
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output));
 }

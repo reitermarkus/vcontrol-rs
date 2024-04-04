@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use nrbf::{RemotingMessage, Value};
 
 #[test]
@@ -32,24 +30,18 @@ fn binary_array_single_offset() {
     11
   ];
 
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(
-      1,
-      Value::Array(vec![
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-        Value::Int32(0),
-      ]),
-    )]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Array(vec![
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+    Value::Int32(0),
+  ]));
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output));
 }

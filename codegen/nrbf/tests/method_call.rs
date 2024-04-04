@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use nrbf::{value::Object, MethodCall, RemotingMessage, Value};
 
@@ -32,25 +32,22 @@ fn method_call() {
     0x30, 0x35, 0x34, 0x0B                                                                          // 054.
   ];
 
-  let output = RemotingMessage::MethodCall(
-    BTreeMap::new(),
-    MethodCall {
-      method_name: "SendAddress",
-      type_name: "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
-      call_context: None,
-      args: Some(vec![
-        Value::Object(Object {
-          class: "DOJRemotingMetadata.Address", library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"),
-          members: HashMap::from_iter([
-            ("Street", Value::String("One Microsoft Way")),
-            ("City", Value::String("Redmond")),
-            ("State", Value::String("WA")),
-            ("Zip", Value::String("98054")),
-          ]),
-        }),
+  let output = RemotingMessage::MethodCall(MethodCall {
+    method_name: "SendAddress",
+    type_name:
+      "DOJRemotingMetadata.MyServer, DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null",
+    call_context: None,
+    args: Some(vec![Value::Object(Object {
+      class: "DOJRemotingMetadata.Address",
+      library: Some("DOJRemotingMetadata, Version=1.0.2622.31326, Culture=neutral, PublicKeyToken=null"),
+      members: HashMap::from_iter([
+        ("Street", Value::String("One Microsoft Way")),
+        ("City", Value::String("Redmond")),
+        ("State", Value::String("WA")),
+        ("Zip", Value::String("98054")),
       ]),
-    }
-  );
+    })]),
+  });
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output))
 }

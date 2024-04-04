@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use const_str::concat_bytes;
 use nrbf::{RemotingMessage, Value};
 
@@ -24,10 +22,7 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn array_single_string() {
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(1, Value::Array(vec![Value::String("Bob"), Value::String("Rob")]))]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Array(vec![Value::String("Bob"), Value::String("Rob")]));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }
