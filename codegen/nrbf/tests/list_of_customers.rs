@@ -55,13 +55,11 @@ fn list_of_customers() {
       (
         2,
         Value::Array(vec![
-          Value::Ref(3),
-          Value::Ref(4),
+          Value::String("Bob"),
+          Value::String("Rob"),
           Value::Null(2),
         ]),
       ),
-      (3, Value::String("Bob")),
-      (4, Value::String("Rob")),
     ]),
     Value::Ref(1),
   );

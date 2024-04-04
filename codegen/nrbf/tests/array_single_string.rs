@@ -25,11 +25,7 @@ const INPUT: &[u8] = concat_bytes!(
 #[test]
 fn array_single_string() {
   let output = RemotingMessage::Value(
-    BTreeMap::from_iter([
-      (1, Value::Array(vec![Value::Ref(2), Value::Ref(3)])),
-      (2, Value::String("Bob")),
-      (3, Value::String("Rob")),
-    ]),
+    BTreeMap::from_iter([(1, Value::Array(vec![Value::String("Bob"), Value::String("Rob")]))]),
     Value::Ref(1),
   );
 
