@@ -46,44 +46,58 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
   where
     V: de::Visitor<'de>,
   {
-    use serde::de::{Error, Unexpected};
+    use serde::{
+      de::{value::MapDeserializer, Error, Unexpected},
+      Deserialize,
+    };
 
     let Object { class, library, members } = self.object;
 
+    let map_deserializer =
+      MapDeserializer::new(members.iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))));
+
     if library.is_some() {
-      return Err(Error::invalid_type(Unexpected::Other(class), &visitor))
+      return map_deserializer.deserialize_map(visitor)
     }
 
     let class_name = class.split_once('`').map(|(s, _)| s).unwrap_or(*class);
 
     match class_name {
       "System.Boolean" => {
-        if members.len() == 1 {
-          if let Some(Value::Boolean(n)) = members.get("m_value") {
-            return visitor.visit_bool(*n)
-          }
+        #[derive(Deserialize)]
+        struct Boolean {
+          m_value: bool,
         }
+
+        let v = Boolean::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_bool(v)
       },
       "System.Byte" => {
-        if members.len() == 1 {
-          if let Some(Value::Byte(n)) = members.get("m_value") {
-            return visitor.visit_u8(*n)
-          }
+        #[derive(Deserialize)]
+        struct Byte {
+          m_value: u8,
         }
+
+        let v = Byte::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_u8(v)
       },
       "System.SByte" => {
-        if members.len() == 1 {
-          if let Some(Value::SByte(n)) = members.get("m_value") {
-            return visitor.visit_i8(*n)
-          }
+        #[derive(Deserialize)]
+        struct SByte {
+          m_value: i8,
         }
+
+        let v = SByte::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_i8(v)
       },
       "System.Char" => {
-        if members.len() == 1 {
-          if let Some(Value::Char(c)) = members.get("m_value") {
-            return visitor.visit_char(*c)
-          }
+        #[derive(Deserialize)]
+        struct Char {
+          m_value: char,
         }
+
+        let v = Char::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_char(v)
       },
       "System.Decimal" => {
         if members.len() == 1 {
@@ -93,60 +107,76 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
         }
       },
       "System.Double" => {
-        if members.len() == 1 {
-          if let Some(Value::Double(n)) = members.get("m_value") {
-            return visitor.visit_f64(*n)
-          }
+        #[derive(Deserialize)]
+        struct Double {
+          m_value: f64,
         }
+
+        let v = Double::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_f64(v)
       },
       "System.Single" => {
-        if members.len() == 1 {
-          if let Some(Value::Single(n)) = members.get("m_value") {
-            return visitor.visit_f32(*n)
-          }
+        #[derive(Deserialize)]
+        struct Single {
+          m_value: f32,
         }
+
+        let v = Single::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_f32(v)
       },
       "System.Int32" => {
-        if members.len() == 1 {
-          if let Some(Value::Int32(n)) = members.get("m_value") {
-            return visitor.visit_i32(*n)
-          }
+        #[derive(Deserialize)]
+        struct Int32 {
+          m_value: i32,
         }
+
+        let v = Int32::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_i32(v)
       },
       "System.UInt32" => {
-        if members.len() == 1 {
-          if let Some(Value::UInt32(n)) = members.get("m_value") {
-            return visitor.visit_u32(*n)
-          }
+        #[derive(Deserialize)]
+        struct UInt32 {
+          m_value: u32,
         }
+
+        let v = UInt32::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_u32(v)
       },
       "System.Int64" => {
-        if members.len() == 1 {
-          if let Some(Value::Int64(n)) = members.get("m_value") {
-            return visitor.visit_i64(*n)
-          }
+        #[derive(Deserialize)]
+        struct Int64 {
+          m_value: i64,
         }
+
+        let v = Int64::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_i64(v)
       },
       "System.UInt64" => {
-        if members.len() == 1 {
-          if let Some(Value::UInt64(n)) = members.get("m_value") {
-            return visitor.visit_u64(*n)
-          }
+        #[derive(Deserialize)]
+        struct UInt64 {
+          m_value: u64,
         }
+
+        let v = UInt64::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_u64(v)
       },
       "System.Int16" => {
-        if members.len() == 1 {
-          if let Some(Value::Int16(n)) = members.get("m_value") {
-            return visitor.visit_i16(*n)
-          }
+        #[derive(Deserialize)]
+        struct Int16 {
+          m_value: i16,
         }
+
+        let v = Int16::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_i16(v)
       },
       "System.UInt16" => {
-        if members.len() == 1 {
-          if let Some(Value::UInt16(n)) = members.get("m_value") {
-            return visitor.visit_u16(*n)
-          }
+        #[derive(Deserialize)]
+        struct UInt16 {
+          m_value: u16,
         }
+
+        let v = UInt16::deserialize(map_deserializer).map(|v| v.m_value)?;
+        return visitor.visit_u16(v)
       },
       "System.Collections.Generic.List" => {
         if members.len() == 3 {
@@ -163,7 +193,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
           }
         }
       },
-      class_name => return Err(Error::invalid_type(Unexpected::Other(class_name), &visitor)),
+      _ => return map_deserializer.deserialize_map(visitor),
     }
 
     Err(Error::custom(format!("invalid system class: {}", class_name)))
