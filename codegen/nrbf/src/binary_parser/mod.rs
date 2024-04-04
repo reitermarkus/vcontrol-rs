@@ -1,7 +1,4 @@
-use std::{
-  collections::{BTreeMap, HashMap},
-  mem,
-};
+use std::collections::{BTreeMap, HashMap};
 
 use nom::{
   branch::alt,
@@ -108,7 +105,7 @@ impl<'i> BinaryParser<'i> {
         map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into()))),
         map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
         map(Self::parse_null_object, |null_object| ValueOrRef::Value(null_object)),
-        map(|input| self.parse_classes(input), |id| ValueOrRef::Ref(id)),
+        map(|input| self.parse_classes(input), |(_, object)| ValueOrRef::Value(Value::Object(object))),
       ))(input)?
     };
 
@@ -133,8 +130,39 @@ impl<'i> BinaryParser<'i> {
     Ok((input, member_references))
   }
 
+  /// Resolves members from already parsed objects or by parsing missing members.
+  fn resolve_members(
+    &mut self,
+    mut input: &'i [u8],
+    members: Vec<ValueOrRef<'i>>,
+  ) -> IResult<&'i [u8], Vec<Value<'i>>> {
+    let mut members2 = Vec::with_capacity(members.len());
+
+    for member in members.into_iter() {
+      members2.push(match member {
+        ValueOrRef::Value(value) => value,
+        ValueOrRef::Ref(id) => {
+          if let Some(value) = self.objects.remove(&id.0) {
+            value.clone()
+          } else {
+            let member2;
+            (input, member2) = verify(|input| self.parse_referenceable(input), |id2| id2.0 == id.0)(input)?;
+
+            if let Some(value) = self.objects.remove(&member2.0) {
+              value.clone()
+            } else {
+              return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+            }
+          }
+        },
+      })
+    }
+
+    Ok((input, members2))
+  }
+
   /// 2.7 Binary Record Grammar - `Classes`
-  fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId> {
+  fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Object<'i>)> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, (object_id, class)) = verify(
@@ -190,26 +218,19 @@ impl<'i> BinaryParser<'i> {
       },
     };
 
+    let (input, member_references) = self.resolve_members(input, member_references)?;
+
+    let members = HashMap::from_iter(
+      class_info
+        .member_names
+        .iter()
+        .zip(member_references.into_iter())
+        .map(|(member_name, member)| (member_name.as_str(), { member })),
+    );
+
     let class_name = class_info.name.as_str();
-    let object = Value::Object(Object {
-      class: class_name,
-      library,
-      members: HashMap::from_iter(class_info.member_names.iter().zip(member_references.iter().cloned()).map(
-        |(member_name, member)| {
-          (member_name.as_str(), {
-            match member {
-              ValueOrRef::Value(value) => value,
-              ValueOrRef::Ref(id) => Value::Ref(id.0),
-            }
-          })
-        },
-      )),
-    });
 
-    self.classes.insert(object_id, class);
-    self.objects.insert(object_id, object);
-
-    Ok((input, RefId(object_id)))
+    Ok((input, (RefId(object_id), Object { class: class_name, library, members })))
   }
 
   /// 2.7 Binary Record Grammar - `ArraySingleObject *(memberReference)`
@@ -232,30 +253,10 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    let mut members2 = vec![];
-
-    for member in members.into_iter() {
-      members2.push(match member {
-        ValueOrRef::Value(value) => value,
-        ValueOrRef::Ref(id) => {
-          if let Some(value) = self.objects.remove(&id.0) {
-            value.clone()
-          } else {
-            let member2;
-            (input, member2) = verify(|input| self.parse_referenceable(input), |id2| id2.0 == id.0)(input)?;
-
-            if let Some(value) = self.objects.remove(&member2.0) {
-              value.clone()
-            } else {
-              return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
-            }
-          }
-        },
-      })
-    }
+    let (input, members) = self.resolve_members(input, members)?;
 
     let object_id = array.object_id().into();
-    Ok((input, (RefId(object_id), members2)))
+    Ok((input, (RefId(object_id), members)))
   }
 
   /// 2.7 Binary Record Grammar - `ArraySinglePrimitive *(MemberPrimitiveUnTyped)`
@@ -293,30 +294,10 @@ impl<'i> BinaryParser<'i> {
       len_remaining -= count;
     }
 
-    let mut members2 = vec![];
-
-    for member in members.into_iter() {
-      members2.push(match member {
-        ValueOrRef::Value(value) => value,
-        ValueOrRef::Ref(id) => {
-          if let Some(value) = self.objects.remove(&id.0) {
-            value.clone()
-          } else {
-            let member2;
-            (input, member2) = verify(|input| self.parse_referenceable(input), |id2| id2.0 == id.0)(input)?;
-
-            if let Some(value) = self.objects.remove(&member2.0) {
-              value.clone()
-            } else {
-              return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
-            }
-          }
-        },
-      })
-    }
+    let (input, members) = self.resolve_members(input, members)?;
 
     let object_id = array.object_id().into();
-    Ok((input, (RefId(object_id), members2)))
+    Ok((input, (RefId(object_id), members)))
   }
 
   /// 2.7 Binary Record Grammar - `BinaryArray *(memberReference)`
@@ -334,34 +315,14 @@ impl<'i> BinaryParser<'i> {
       Some(member_count) => member_count.to_usize(),
       None => return fail(input),
     };
-    let (mut input, members) = many_m_n(member_count, member_count, |input| {
+    let (input, members) = many_m_n(member_count, member_count, |input| {
       self.parse_member_reference(input, Some((array.type_enum, array.additional_type_info.as_ref())))
     })(input)?;
 
-    let mut members2 = vec![];
-
-    for member in members.into_iter() {
-      members2.push(match member {
-        ValueOrRef::Value(value) => value,
-        ValueOrRef::Ref(id) => {
-          if let Some(value) = self.objects.remove(&id.0) {
-            value.clone()
-          } else {
-            let member2;
-            (input, member2) = verify(|input| self.parse_referenceable(input), |id2| id2.0 == id.0)(input)?;
-
-            if let Some(value) = self.objects.remove(&member2.0) {
-              value.clone()
-            } else {
-              return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
-            }
-          }
-        },
-      })
-    }
+    let (input, members) = self.resolve_members(input, members)?;
 
     let object_id = array.object_id().into();
-    Ok((input, (RefId(object_id), members2)))
+    Ok((input, (RefId(object_id), members)))
   }
 
   /// 2.7 Binary Record Grammar - `Arrays`
@@ -385,7 +346,8 @@ impl<'i> BinaryParser<'i> {
 
   /// 2.7 Binary Record Grammar - `referenceable`
   fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId> {
-    if let Ok((input, object_id)) = self.parse_classes(input) {
+    if let Ok((input, (object_id, object))) = self.parse_classes(input) {
+      self.objects.insert(object_id.0, Value::Object(object));
       return Ok((input, object_id))
     }
 
@@ -472,7 +434,7 @@ impl<'i> BinaryParser<'i> {
     let (input, call_array) = opt(|input| self.parse_call_array(input))(input)?;
 
     let args = if binary_method_return.message_enum.intersects(MessageFlags::ARGS_IS_ARRAY) {
-      if let Some((call_array_id, mut call_array)) = call_array {
+      if let Some((call_array_id, call_array)) = call_array {
         if call_array_id.0 == root_id {
           Some(call_array.clone())
         } else {
@@ -529,8 +491,6 @@ impl<'i> BinaryParser<'i> {
   fn parse_remoting_message(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>> {
     let (mut input, header) = SerializationHeader::parse(input)?;
 
-    let root_object = Value::Ref(header.root_id.into());
-
     while let Ok((input2, _)) = self.parse_referenceable(input) {
       input = input2;
     }
@@ -545,13 +505,17 @@ impl<'i> BinaryParser<'i> {
     let (input, MessageEnd) = MessageEnd::parse(input)?;
 
     let remoting_message = match method_call_or_return {
-      Some(MethodCallOrReturn::MethodCall(method_call)) => {
-        RemotingMessage::MethodCall(mem::take(&mut self.objects), method_call)
+      Some(MethodCallOrReturn::MethodCall(method_call)) => RemotingMessage::MethodCall(method_call),
+      Some(MethodCallOrReturn::MethodReturn(method_return)) => RemotingMessage::MethodReturn(method_return),
+      None => {
+        let root_object = if let Some(root_object) = self.objects.remove(&header.root_id.into()) {
+          root_object
+        } else {
+          return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+        };
+
+        RemotingMessage::Value(root_object)
       },
-      Some(MethodCallOrReturn::MethodReturn(method_return)) => {
-        RemotingMessage::MethodReturn(mem::take(&mut self.objects), method_return)
-      },
-      None => RemotingMessage::Value(mem::take(&mut self.objects), root_object),
     };
 
     Ok((input, remoting_message))

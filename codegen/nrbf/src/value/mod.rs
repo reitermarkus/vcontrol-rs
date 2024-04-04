@@ -19,21 +19,6 @@ use object::ObjectDeserializer;
 mod time_span;
 pub use time_span::TimeSpan;
 
-#[cfg(feature = "serde")]
-fn resolve_object<'de, 'o, V: Visitor<'de>>(
-  objects: &'o BTreeMap<i32, Value<'de>>,
-  id: &i32,
-  visitor: &V,
-) -> Result<&'o Value<'de>, Error> {
-  use serde::de::{Error, Unexpected};
-
-  if let Some(object) = objects.get(id) {
-    Ok(object)
-  } else {
-    Err(Error::invalid_value(Unexpected::Other("unresolved object ID"), visitor))
-  }
-}
-
 /// An NRBF value.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value<'i> {
@@ -75,8 +60,6 @@ pub enum Value<'i> {
   String(&'i str),
   /// A null value.
   Null(usize),
-  /// A value reference.
-  Ref(i32),
 }
 
 #[cfg(feature = "serde")]
@@ -224,7 +207,6 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
     match self.object {
       Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_any(visitor),
       Value::Array(members) => ArrayDeserializer::new(self.objects, members.iter()).deserialize_any(visitor),
-      Value::Ref(id) => Self::new(self.objects, resolve_object(self.objects, id, &visitor)?).deserialize_any(visitor),
       Value::Boolean(v) => visitor.visit_bool(*v),
       Value::SByte(v) => visitor.visit_i8(*v),
       Value::Int16(v) => visitor.visit_i16(*v),
@@ -273,9 +255,6 @@ impl<'de> Deserializer<'de> for ValueDeserializer<'de, '_> {
   {
     match self.object {
       Value::Object(object) => ObjectDeserializer::new(self.objects, object).deserialize_struct(name, fields, visitor),
-      Value::Ref(id) => {
-        Self::new(self.objects, resolve_object(self.objects, id, &visitor)?).deserialize_struct(name, fields, visitor)
-      },
       _ => self.deserialize_any(visitor),
     }
   }

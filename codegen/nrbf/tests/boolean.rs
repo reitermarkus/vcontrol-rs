@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use const_str::concat_bytes;
 use nrbf::{value::Object, RemotingMessage, Value};
@@ -23,17 +23,11 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn boolean() {
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(
-      1,
-      Value::Object(Object {
-        class: "System.Boolean",
-        library: None,
-        members: HashMap::from_iter([("m_value", Value::Boolean(true))]),
-      }),
-    )]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Object(Object {
+    class: "System.Boolean",
+    library: None,
+    members: HashMap::from_iter([("m_value", Value::Boolean(true))]),
+  }));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }

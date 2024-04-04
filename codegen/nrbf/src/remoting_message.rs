@@ -59,22 +59,17 @@ pub struct MethodReturn<'i> {
 ///
 /// assert_eq!(
 ///   RemotingMessage::parse(message),
-///   Ok(RemotingMessage::Value(
-///     BTreeMap::from_iter([
-///       (1, Value::String("This is a string.")),
-///     ]),
-///     Value::Ref(1),
-///   )),
+///   Ok(RemotingMessage::Value(Value::String("This is a string."))),
 /// );
 /// ```
 #[derive(Debug, Clone, PartialEq)]
 pub enum RemotingMessage<'i> {
   /// A method call.
-  MethodCall(BTreeMap<i32, Value<'i>>, MethodCall<'i>),
+  MethodCall(MethodCall<'i>),
   /// A method return.
-  MethodReturn(BTreeMap<i32, Value<'i>>, MethodReturn<'i>),
+  MethodReturn(MethodReturn<'i>),
   /// A value.
-  Value(BTreeMap<i32, Value<'i>>, Value<'i>),
+  Value(Value<'i>),
 }
 
 impl<'i> RemotingMessage<'i> {
@@ -94,10 +89,12 @@ impl<'i> RemotingMessage<'i> {
   fn to_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, Error> {
     use serde::de::{Error, Unexpected};
 
+    static EMPTY_MAP: BTreeMap<i32, Value<'static>> = BTreeMap::new();
+
     match self {
       Self::MethodCall(..) => Err(Error::invalid_type(Unexpected::Other("method call"), visitor)),
       Self::MethodReturn(..) => Err(Error::invalid_type(Unexpected::Other("method return"), visitor)),
-      Self::Value(objects, root_object) => Ok(ValueDeserializer::new(objects, root_object)),
+      Self::Value(root_object) => Ok(ValueDeserializer::new(&EMPTY_MAP, root_object)),
     }
   }
 }

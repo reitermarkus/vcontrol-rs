@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use const_str::concat_bytes;
 use nrbf::{
@@ -26,17 +26,11 @@ const INPUT: &[u8] = concat_bytes!(
 
 #[test]
 fn uint16() {
-  let output = RemotingMessage::Value(
-    BTreeMap::from_iter([(
-      1,
-      Value::Object(Object {
-        class: "System.UInt16",
-        library: None,
-        members: HashMap::from_iter([("m_value", Value::UInt16(65392))]),
-      }),
-    )]),
-    Value::Ref(1),
-  );
+  let output = RemotingMessage::Value(Value::Object(Object {
+    class: "System.UInt16",
+    library: None,
+    members: HashMap::from_iter([("m_value", Value::UInt16(65392))]),
+  }));
 
   assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }

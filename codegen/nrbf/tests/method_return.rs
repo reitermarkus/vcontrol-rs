@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use nrbf::{MethodReturn, RemotingMessage, Value};
 
 #[test]
@@ -11,10 +9,11 @@ fn method_return() {
     0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x64, 0x0B,                                           // received.
   ];
 
-  let output = RemotingMessage::MethodReturn(
-    BTreeMap::new(),
-    MethodReturn { return_value: Some(Value::String("Address received")), call_context: None, args: None },
-  );
+  let output = RemotingMessage::MethodReturn(MethodReturn {
+    return_value: Some(Value::String("Address received")),
+    call_context: None,
+    args: None,
+  });
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output))
 }
