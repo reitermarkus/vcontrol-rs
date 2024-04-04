@@ -41,5 +41,14 @@ fn double() {
 #[cfg(feature = "serde")]
 #[test]
 fn double_deserialize() {
+  use serde::Deserialize;
+
   assert_eq!(nrbf::from_slice(INPUT), Ok(-0.1067));
+
+  #[derive(Deserialize)]
+  struct Double {
+    pub m_value: f64,
+  }
+
+  assert_eq!(nrbf::from_slice::<Double>(INPUT).map(|v| v.m_value), Ok(-0.1067));
 }
