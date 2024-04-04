@@ -51,5 +51,5 @@ fn binary_array_single_offset() {
     Value::Ref(1),
   );
 
-  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(&input), Ok(output));
 }

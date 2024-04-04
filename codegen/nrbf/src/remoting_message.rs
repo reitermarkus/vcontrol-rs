@@ -1,6 +1,5 @@
 use std::collections::BTreeMap;
 
-use nom::IResult;
 #[cfg(feature = "serde")]
 use serde::{
   de::{value::Error, Deserializer, Visitor},
@@ -36,6 +35,38 @@ pub struct MethodReturn<'i> {
 }
 
 /// A .NET Remoting message.
+///
+/// # Example
+///
+/// ```
+/// use std::collections::BTreeMap;
+///
+/// use nrbf::{RemotingMessage, Value};
+///
+/// # use const_str::concat_bytes;
+/// # #[rustfmt::skip]
+/// let message = concat_bytes!(
+///   0,
+///     b"\x01\x00\x00\x00",
+///     b"\xFF\xFF\xFF\xFF",
+///     b"\x01\x00\x00\x00",
+///     b"\x00\x00\x00\x00",
+///   6,
+///     b"\x01\x00\x00\x00",
+///     17, "This is a string.",
+///   11,
+/// );
+///
+/// assert_eq!(
+///   RemotingMessage::parse(message),
+///   Ok(RemotingMessage::Value(
+///     BTreeMap::from_iter([
+///       (1, Value::String("This is a string.")),
+///     ]),
+///     Value::Ref(1),
+///   )),
+/// );
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub enum RemotingMessage<'i> {
   /// A method call.
@@ -48,9 +79,15 @@ pub enum RemotingMessage<'i> {
 
 impl<'i> RemotingMessage<'i> {
   /// Parse a [`RemotingMessage`] from bytes.
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let parser = BinaryParser::default();
-    parser.deserialize(input)
+  pub fn parse(input: &'i [u8]) -> Result<Self, nom::Err<nom::error::Error<&'i [u8]>>> {
+    use nom::combinator::all_consuming;
+
+    let (_, remoting_message) = all_consuming(|input| {
+      let parser = BinaryParser::default();
+      parser.deserialize(input)
+    })(input)?;
+
+    Ok(remoting_message)
   }
 
   #[cfg(feature = "serde")]

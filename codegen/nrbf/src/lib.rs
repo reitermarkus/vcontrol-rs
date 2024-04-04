@@ -46,10 +46,9 @@ pub fn from_slice<'i, T>(bytes: &'i [u8]) -> Result<T, Error>
 where
   T: Deserialize<'i>,
 {
-  use nom::combinator::all_consuming;
   use serde::de::Error;
 
-  let (_, remoting_message) =
-    all_consuming(RemotingMessage::parse)(bytes).map_err(|err| Error::custom(format!("parsing error: {}", err)))?;
+  let remoting_message =
+    RemotingMessage::parse(bytes).map_err(|err| Error::custom(format!("parsing error: {}", err)))?;
   T::deserialize(remoting_message)
 }

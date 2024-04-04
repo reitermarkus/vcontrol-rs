@@ -16,5 +16,5 @@ fn method_return() {
     MethodReturn { return_value: Some(Value::String("Address received")), call_context: None, args: None },
   );
 
-  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)))
+  assert_eq!(RemotingMessage::parse(&input), Ok(output))
 }
