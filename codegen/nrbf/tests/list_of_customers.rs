@@ -48,7 +48,8 @@ fn list_of_customers() {
           Value::Array(vec![
             Value::String("Bob"),
             Value::String("Rob"),
-            Value::Null(2),
+            Value::Null,
+            Value::Null,
           ]),
         ),
         ("_size", Value::Int32(2)),

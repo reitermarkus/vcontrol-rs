@@ -77,7 +77,7 @@ impl<'i> ValueWithCode<'i> {
       Self::UInt16(v) => Value::UInt16(v.into()),
       Self::UInt32(v) => Value::UInt32(v.into()),
       Self::UInt64(v) => Value::UInt64(v.into()),
-      Self::Null => Value::Null(1),
+      Self::Null => Value::Null,
       Self::String(s) => Value::String(s.as_str()),
     }
   }

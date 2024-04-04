@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 #[cfg(feature = "serde")]
-use std::{collections::BTreeMap, fmt};
+use std::fmt;
 
 #[cfg(feature = "serde")]
 use serde::{
@@ -28,14 +28,13 @@ pub struct Object<'i> {
 #[cfg(feature = "serde")]
 #[derive(Debug)]
 pub(crate) struct ObjectDeserializer<'de, 'o> {
-  objects: &'o BTreeMap<i32, Value<'de>>,
   object: &'o Object<'de>,
 }
 
 #[cfg(feature = "serde")]
 impl<'de, 'o> ObjectDeserializer<'de, 'o> {
-  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, object: &'o Object<'de>) -> Self {
-    Self { objects, object }
+  pub fn new(object: &'o Object<'de>) -> Self {
+    Self { object }
   }
 }
 
@@ -76,9 +75,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
       'de,
       std::iter::Map<std::collections::hash_map::Iter<'_, &'de str, Value<'de>>, _>,
       _,
-    > = MapDeserializer::new(
-      members.iter().map(|(key, value)| (StrDeserializer(*key), ValueDeserializer::new(self.objects, value))),
-    );
+    > = MapDeserializer::new(members.iter().map(|(key, value)| (StrDeserializer(*key), ValueDeserializer::new(value))));
 
     if library.is_some() {
       return map_deserializer.deserialize_map(visitor)
@@ -141,7 +138,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
             (members.get("_items"), members.get("_size"), members.get("_version"))
           {
             if let Value::Array(items) = items {
-              return ListDeserializer::new(self.objects, items.iter(), (*size) as usize).deserialize_any(visitor)
+              return ListDeserializer::new(items.iter(), (*size) as usize).deserialize_any(visitor)
             }
           }
         }
@@ -165,7 +162,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
 
     let Object { class: _, library: _, members } = self.object;
 
-    MapDeserializer::new(members.iter().map(|(key, value)| (*key, ValueDeserializer::new(self.objects, value))))
+    MapDeserializer::new(members.iter().map(|(key, value)| (*key, ValueDeserializer::new(value))))
       .deserialize_map(visitor)
   }
 
@@ -193,25 +190,26 @@ impl Expected for ExpectedInList {
 
 #[cfg(feature = "serde")]
 #[derive(Debug)]
-pub(crate) struct ListDeserializer<'de, 'o, I> {
-  array_deserializer: ArrayDeserializer<'de, 'o, I>,
+pub(crate) struct ListDeserializer<I> {
+  array_deserializer: ArrayDeserializer<I>,
   count: usize,
   size: usize,
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> ListDeserializer<'de, 'o, I>
+impl<I> ListDeserializer<I>
 where
   I: Iterator,
 {
-  pub fn new(objects: &'o BTreeMap<i32, Value<'de>>, iter: I, size: usize) -> Self {
-    Self { array_deserializer: ArrayDeserializer::new(objects, iter), count: 0, size }
+  pub fn new(iter: I, size: usize) -> Self {
+    Self { array_deserializer: ArrayDeserializer::new(iter), count: 0, size }
   }
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> ListDeserializer<'de, 'o, I>
+impl<'de, 'o, I> ListDeserializer<I>
 where
+  'de: 'o,
   I: Iterator<Item = &'o Value<'de>>,
 {
   /// Check for remaining elements after passing a `ListDeserializer` to
@@ -228,8 +226,9 @@ where
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> de::Deserializer<'de> for ListDeserializer<'de, 'o, I>
+impl<'de, 'o, I> de::Deserializer<'de> for ListDeserializer<I>
 where
+  'de: 'o,
   I: Iterator<Item = &'o Value<'de>>,
 {
   type Error = Error;
@@ -251,8 +250,9 @@ where
 }
 
 #[cfg(feature = "serde")]
-impl<'de, 'o, I> de::SeqAccess<'de> for ListDeserializer<'de, 'o, I>
+impl<'de, 'o, I> de::SeqAccess<'de> for ListDeserializer<I>
 where
+  'de: 'o,
   I: Iterator<Item = &'o Value<'de>>,
 {
   type Error = Error;
