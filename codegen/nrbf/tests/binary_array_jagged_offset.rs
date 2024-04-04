@@ -47,12 +47,14 @@ fn binary_array_jagged_offset() {
   ];
 
   let output = RemotingMessage::Value(
-    BTreeMap::from_iter([
-      (1, Value::Array(vec![Value::Ref(2), Value::Ref(3), Value::Ref(4)])),
-      (2, Value::Array(vec![Value::Int32(1)])),
-      (3, Value::Array(vec![Value::Int32(2), Value::Int32(3)])),
-      (4, Value::Array(vec![Value::Int32(4), Value::Int32(5), Value::Int32(6)])),
-    ]),
+    BTreeMap::from_iter([(
+      1,
+      Value::Array(vec![
+        Value::Array(vec![Value::Int32(1)]),
+        Value::Array(vec![Value::Int32(2), Value::Int32(3)]),
+        Value::Array(vec![Value::Int32(4), Value::Int32(5), Value::Int32(6)]),
+      ]),
+    )]),
     Value::Ref(1),
   );
 

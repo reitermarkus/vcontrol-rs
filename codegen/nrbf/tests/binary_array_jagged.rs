@@ -49,12 +49,14 @@ fn binary_array_jagged() {
   ];
 
   let output = RemotingMessage::Value(
-    BTreeMap::from_iter([
-      (1, Value::Array(vec![Value::Ref(2), Value::Ref(3), Value::Ref(4)])),
-      (2, Value::Array(vec![Value::Int32(1), Value::Int32(2)])),
-      (3, Value::Array(vec![Value::Int32(3), Value::Int32(4), Value::Int32(5)])),
-      (4, Value::Array(vec![Value::Int32(6), Value::Int32(7), Value::Int32(8), Value::Int32(9)])),
-    ]),
+    BTreeMap::from_iter([(
+      1,
+      Value::Array(vec![
+        Value::Array(vec![Value::Int32(1), Value::Int32(2)]),
+        Value::Array(vec![Value::Int32(3), Value::Int32(4), Value::Int32(5)]),
+        Value::Array(vec![Value::Int32(6), Value::Int32(7), Value::Int32(8), Value::Int32(9)]),
+      ]),
+    )]),
     Value::Ref(1),
   );
 
