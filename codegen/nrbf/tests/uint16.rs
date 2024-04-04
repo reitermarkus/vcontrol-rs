@@ -15,24 +15,24 @@ const INPUT: &[u8] = concat_bytes!(
     b"\x00\x00\x00\x00",
   4,
     b"\x01\x00\x00\x00",
-    12, "System.Int16",
+    13, "System.UInt16",
     b"\x01\x00\x00\x00",
     7, "m_value",
     0,
-    7,
+    14,
     b"\x70\xff",
   11
 );
 
 #[test]
-fn int16() {
+fn uint16() {
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([(
       1,
       Value::Object(Object {
-        class: "System.Int16",
+        class: "System.UInt16",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Int16(-144))]),
+        members: HashMap::from_iter([("m_value", Value::UInt16(65392))]),
       }),
     )]),
     Value::Ref(1),
@@ -43,6 +43,15 @@ fn int16() {
 
 #[cfg(feature = "serde")]
 #[test]
-fn int16_deserialize() {
-  assert_eq!(nrbf::from_slice(INPUT), Ok(-144));
+fn uint16_deserialize() {
+  use serde::Deserialize;
+
+  assert_eq!(nrbf::from_slice(INPUT), Ok(65392));
+
+  #[derive(Deserialize)]
+  struct UInt16 {
+    pub m_value: u16,
+  }
+
+  assert_eq!(nrbf::from_slice::<UInt16>(INPUT).map(|v| v.m_value), Ok(65392));
 }

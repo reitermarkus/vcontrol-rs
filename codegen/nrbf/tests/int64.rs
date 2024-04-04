@@ -1,10 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use const_str::concat_bytes;
-use nrbf::{
-  value::{Object, Value},
-  RemotingMessage,
-};
+use nrbf::{value::Object, RemotingMessage, Value};
 
 #[rustfmt::skip]
 const INPUT: &[u8] = concat_bytes!(
@@ -15,24 +12,24 @@ const INPUT: &[u8] = concat_bytes!(
     b"\x00\x00\x00\x00",
   4,
     b"\x01\x00\x00\x00",
-    12, "System.Int16",
+    12, "System.Int64",
     b"\x01\x00\x00\x00",
     7, "m_value",
     0,
-    7,
-    b"\x70\xff",
+    9,
+    b"\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
   11
 );
 
 #[test]
-fn int16() {
+fn int64() {
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([(
       1,
       Value::Object(Object {
-        class: "System.Int16",
+        class: "System.Int64",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::Int16(-144))]),
+        members: HashMap::from_iter([("m_value", Value::Int64(-1))]),
       }),
     )]),
     Value::Ref(1),
@@ -43,6 +40,15 @@ fn int16() {
 
 #[cfg(feature = "serde")]
 #[test]
-fn int16_deserialize() {
-  assert_eq!(nrbf::from_slice(INPUT), Ok(-144));
+fn int64_deserialize() {
+  use serde::Deserialize;
+
+  assert_eq!(nrbf::from_slice(INPUT), Ok(-1));
+
+  #[derive(Deserialize)]
+  struct Int64 {
+    pub m_value: i64,
+  }
+
+  assert_eq!(nrbf::from_slice::<Int64>(INPUT).map(|v| v.m_value), Ok(-1));
 }
