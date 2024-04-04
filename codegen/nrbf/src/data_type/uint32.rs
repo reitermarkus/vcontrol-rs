@@ -1,5 +1,7 @@
 use nom::{combinator::map, number::complete::le_u32, IResult};
 
+use super::impl_primitive;
+
 /// 2.1.1 `UINT32`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UInt32(pub u32);
@@ -10,16 +12,4 @@ impl UInt32 {
   }
 }
 
-impl From<u32> for UInt32 {
-  #[inline]
-  fn from(v: u32) -> Self {
-    Self(v)
-  }
-}
-
-impl From<UInt32> for u32 {
-  #[inline]
-  fn from(val: UInt32) -> Self {
-    val.0
-  }
-}
+impl_primitive!(UInt32, u32, visit_u32, deserialize_u32);

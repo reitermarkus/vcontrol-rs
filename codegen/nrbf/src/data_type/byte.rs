@@ -4,6 +4,8 @@ use nom::{
   IResult,
 };
 
+use super::impl_primitive;
+
 /// 2.1.1 `BYTE`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Byte(pub u8);
@@ -18,23 +20,4 @@ impl Byte {
   }
 }
 
-impl From<u8> for Byte {
-  #[inline]
-  fn from(v: u8) -> Self {
-    Self(v)
-  }
-}
-
-impl From<Byte> for u8 {
-  #[inline]
-  fn from(val: Byte) -> Self {
-    val.0
-  }
-}
-
-impl From<Byte> for i32 {
-  #[inline]
-  fn from(val: Byte) -> Self {
-    Self::from(val.0)
-  }
-}
+impl_primitive!(Byte, u8, visit_u8, deserialize_u8);

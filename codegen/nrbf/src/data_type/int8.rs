@@ -1,5 +1,7 @@
 use nom::{combinator::map, number::complete::i8, IResult};
 
+use super::impl_primitive;
+
 /// 2.1.1 `INT8`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Int8(pub i8);
@@ -10,16 +12,4 @@ impl Int8 {
   }
 }
 
-impl From<i8> for Int8 {
-  #[inline]
-  fn from(v: i8) -> Self {
-    Self(v)
-  }
-}
-
-impl From<Int8> for i8 {
-  #[inline]
-  fn from(val: Int8) -> Self {
-    val.0
-  }
-}
+impl_primitive!(Int8, i8, visit_i8, deserialize_i8);

@@ -1,5 +1,7 @@
 use nom::{combinator::map, number::complete::le_u64, IResult};
 
+use super::impl_primitive;
+
 /// 2.1.1 `UINT64`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UInt64(pub u64);
@@ -10,16 +12,4 @@ impl UInt64 {
   }
 }
 
-impl From<u64> for UInt64 {
-  #[inline]
-  fn from(v: u64) -> Self {
-    Self(v)
-  }
-}
-
-impl From<UInt64> for u64 {
-  #[inline]
-  fn from(val: UInt64) -> Self {
-    val.0
-  }
-}
+impl_primitive!(UInt64, u64, visit_u64, deserialize_u64);
