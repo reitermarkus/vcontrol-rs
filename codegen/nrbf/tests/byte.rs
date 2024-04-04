@@ -12,24 +12,24 @@ const INPUT: &[u8] = concat_bytes!(
     b"\x00\x00\x00\x00",
   4,
     b"\x01\x00\x00\x00",
-    12, "System.SByte",
+    11, "System.Byte",
     b"\x01\x00\x00\x00",
     7, "m_value",
     0,
-    10,
+    2,
     0x81,
   11
 );
 
 #[test]
-fn sbyte() {
+fn byte() {
   let output = RemotingMessage::Value(
     BTreeMap::from_iter([(
       1,
       Value::Object(Object {
-        class: "System.SByte",
+        class: "System.Byte",
         library: None,
-        members: HashMap::from_iter([("m_value", Value::SByte(-127))]),
+        members: HashMap::from_iter([("m_value", Value::Byte(129))]),
       }),
     )]),
     Value::Ref(1),
@@ -40,15 +40,15 @@ fn sbyte() {
 
 #[cfg(feature = "serde")]
 #[test]
-fn sbyte_deserialize() {
+fn byte_deserialize() {
   use serde::Deserialize;
 
-  assert_eq!(nrbf::from_slice(INPUT), Ok(-127));
+  assert_eq!(nrbf::from_slice(INPUT), Ok(129));
 
   #[derive(Deserialize)]
-  struct SByte {
-    pub m_value: i8,
+  struct Byte {
+    pub m_value: u8,
   }
 
-  assert_eq!(nrbf::from_slice::<SByte>(INPUT).map(|v| v.m_value), Ok(-127));
+  assert_eq!(nrbf::from_slice::<Byte>(INPUT).map(|v| v.m_value), Ok(129));
 }
