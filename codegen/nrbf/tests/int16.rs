@@ -38,7 +38,7 @@ fn int16() {
     Value::Ref(1),
   );
 
-  assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }
 
 #[cfg(feature = "serde")]

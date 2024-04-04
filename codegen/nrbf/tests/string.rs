@@ -20,7 +20,7 @@ fn string_empty() {
 
   let output = RemotingMessage::Value(BTreeMap::from_iter([(1, Value::String(""))]), Value::Ref(1));
 
-  assert_eq!(RemotingMessage::parse(input), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(input), Ok(output));
 }
 
 #[rustfmt::skip]
@@ -40,7 +40,7 @@ const INPUT: &[u8] = concat_bytes!(
 fn string() {
   let output = RemotingMessage::Value(BTreeMap::from_iter([(1, Value::String("This is a string."))]), Value::Ref(1));
 
-  assert_eq!(RemotingMessage::parse(INPUT), Ok(([].as_slice(), output)));
+  assert_eq!(RemotingMessage::parse(INPUT), Ok(output));
 }
 
 #[cfg(feature = "serde")]

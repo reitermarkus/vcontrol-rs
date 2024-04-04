@@ -63,5 +63,5 @@ fn method_call() {
       }
   );
 
-  assert_eq!(RemotingMessage::parse(&input), Ok(([].as_slice(), output)))
+  assert_eq!(RemotingMessage::parse(&input), Ok(output))
 }
