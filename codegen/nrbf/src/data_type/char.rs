@@ -5,6 +5,8 @@ use nom::{
   IResult,
 };
 
+use super::impl_primitive;
+
 /// 2.1.1.1 `Char`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Char(pub char);
@@ -23,16 +25,4 @@ impl Char {
   }
 }
 
-impl From<char> for Char {
-  #[inline]
-  fn from(v: char) -> Self {
-    Self(v)
-  }
-}
-
-impl From<Char> for char {
-  #[inline]
-  fn from(val: Char) -> Self {
-    val.0
-  }
-}
+impl_primitive!(Char, char, visit_char, deserialize_char);
