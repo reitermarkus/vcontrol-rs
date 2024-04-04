@@ -46,9 +46,9 @@ fn int32_deserialize() {
   assert_eq!(nrbf::from_slice(INPUT), Ok(-1));
 
   #[derive(Deserialize)]
-  struct SystemInt32 {
+  struct Int32 {
     pub m_value: i32,
   }
 
-  assert_eq!(nrbf::from_slice::<SystemInt32>(INPUT).map(|v| v.m_value), Ok(-1));
+  assert_eq!(nrbf::from_slice::<Int32>(INPUT).map(|v| v.m_value), Ok(-1));
 }
