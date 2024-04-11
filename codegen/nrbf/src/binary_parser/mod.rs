@@ -411,23 +411,37 @@ impl<'i> BinaryParser<'i> {
     ))(input)
   }
 
-  fn parse_call_array(&mut self, input: &'i [u8], root_id: i32) -> IResult<&'i [u8], Vec<Value<'i>>> {
-    let (input, ()) = self.parse_binary_library(input)?;
+  fn parse_call_array(
+    &mut self,
+    input: &'i [u8],
+    root_id: i32,
+  ) -> IResult<&'i [u8], Vec<Value<'i>>, ErrorWithInput<'i>> {
+    let (input, ()) = self
+      .parse_binary_library(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryLibrary)))?;
 
-    let (input, (call_array_id, call_array)) = self.parse_array_single_object(input)?;
+    let (input, (call_array_id, call_array)) =
+      self.parse_array_single_object(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedArray)))?;
 
     if call_array_id.0 != root_id {
-      return Err(nom::Err::Failure(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+      return Err(nom::Err::Failure(ErrorWithInput { input, inner: ErrorInner::CallArrayId }))
     }
 
     Ok((input, call_array))
   }
 
   /// 2.7 Binary Record Grammar - `methodCall`
-  fn parse_method_call(&mut self, input: &'i [u8], root_id: i32) -> IResult<&'i [u8], MethodCall<'i>> {
-    let (input, ()) = self.parse_binary_library(input)?;
+  fn parse_method_call(
+    &mut self,
+    input: &'i [u8],
+    root_id: i32,
+  ) -> IResult<&'i [u8], MethodCall<'i>, ErrorWithInput<'i>> {
+    let (input, ()) = self
+      .parse_binary_library(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryLibrary)))?;
 
-    let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
+    let (input, binary_method_call) =
+      BinaryMethodCall::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedMethodCall)))?;
 
     let (input, call_array) = opt(|input| self.parse_call_array(input, root_id))(input)?;
 
@@ -448,11 +462,10 @@ impl<'i> BinaryParser<'i> {
         return Ok(binary_method_call.args.map(|v| v.into_values()))
       }
 
-      Err(ErrorInner::InvalidArgs)
+      Err(nom::Err::Failure(error_position!(input, InvalidArgs)))
     };
 
-    let args = parse_args(binary_method_call.message_enum)
-      .map_err(|_| nom::Err::Failure(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))?;
+    let args = parse_args(binary_method_call.message_enum)?;
 
     let method_call = MethodCall {
       method_name: binary_method_call.method_name.as_str(),
@@ -465,10 +478,17 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `methodReturn`
-  fn parse_method_return(&mut self, input: &'i [u8], root_id: i32) -> IResult<&'i [u8], MethodReturn<'i>> {
-    let (input, ()) = self.parse_binary_library(input)?;
+  fn parse_method_return(
+    &mut self,
+    input: &'i [u8],
+    root_id: i32,
+  ) -> IResult<&'i [u8], MethodReturn<'i>, ErrorWithInput<'i>> {
+    let (input, ()) = self
+      .parse_binary_library(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryLibrary)))?;
 
-    let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
+    let (input, binary_method_return) = BinaryMethodReturn::parse(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedMethodReturn)))?;
 
     let (input, call_array) = opt(|input| self.parse_call_array(input, root_id))(input)?;
 
@@ -489,11 +509,10 @@ impl<'i> BinaryParser<'i> {
         return Ok(binary_method_return.args.map(|v| v.into_values()))
       }
 
-      Err(ErrorInner::InvalidArgs)
+      Err(nom::Err::Failure(error_position!(input, InvalidArgs)))
     };
 
-    let args = parse_args(binary_method_return.message_enum)
-      .map_err(|_| nom::Err::Failure(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))?;
+    let args = parse_args(binary_method_return.message_enum)?;
 
     let method_return = MethodReturn {
       return_value: binary_method_return.return_value.map(|v| v.into_value()),

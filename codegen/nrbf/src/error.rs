@@ -31,6 +31,11 @@ impl<'i> nom::error::ParseError<&'i [u8]> for ErrorWithInput<'i> {
 pub(crate) enum ErrorInner {
   ExpectedType(ExpectedType),
   ExpectedValue,
+  ExpectedMethodCall,
+  ExpectedBinaryLibrary,
+  ExpectedArray,
+  CallArrayId,
+  ExpectedMethodReturn,
   ExpectedRemotingMessage,
   Eof,
   TrailingData,
