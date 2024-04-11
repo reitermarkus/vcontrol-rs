@@ -1,7 +1,7 @@
 use nom::{combinator::map_res, number::complete::u8, IResult};
 
 use super::impl_primitive;
-use crate::{combinator::into_failure};
+use crate::combinator::into_failure;
 
 /// 2.1.1 `BOOLEAN`
 #[derive(Debug, Clone, Copy, PartialEq)]
