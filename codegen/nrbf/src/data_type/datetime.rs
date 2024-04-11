@@ -1,6 +1,6 @@
 use nom::{combinator::map, IResult};
 
-use crate::data_type::Int64;
+use crate::{combinator::into_failure, data_type::Int64};
 
 /// 2.1.1.5 `DateTime`
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -8,7 +8,7 @@ pub struct DateTime(pub Int64);
 
 impl DateTime {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    map(Int64::parse, Self)(input)
+    map(Int64::parse, Self)(input).map_err(into_failure)
   }
 }
 

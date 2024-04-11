@@ -12,6 +12,7 @@ use serde::{
 use super::Value;
 #[cfg(feature = "serde")]
 use super::{ArrayDeserializer, ValueDeserializer};
+#[cfg(feature = "serde")]
 use crate::data_type::{Boolean, Byte, Char, Double, Int16, Int32, Int64, Int8, Single, UInt16, UInt32, UInt64};
 
 /// An NRBF object.

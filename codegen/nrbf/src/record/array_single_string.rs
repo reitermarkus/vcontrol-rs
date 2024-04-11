@@ -1,6 +1,6 @@
 use nom::{IResult, Parser};
 
-use crate::{common::ArrayInfo, data_type::Int32, record::RecordType};
+use crate::{combinator::into_failure, common::ArrayInfo, data_type::Int32, record::RecordType};
 
 /// 2.4.3.4 `ArraySingleString`
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +12,7 @@ impl ArraySingleString {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
     let (input, _) = RecordType::ArraySingleString.parse(input)?;
 
-    let (input, array_info) = ArrayInfo::parse(input)?;
+    let (input, array_info) = ArrayInfo::parse(input).map_err(into_failure)?;
 
     Ok((input, Self { array_info }))
   }

@@ -4,6 +4,8 @@ use nom::{
   branch::alt, bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser,
 };
 
+use crate::combinator::into_failure;
+
 /// 2.1.2.2 `BinaryTypeEnumeration`
 #[derive(Debug, Clone, Copy, PartialEq)]
 #[repr(u8)]
@@ -30,6 +32,7 @@ impl BinaryType {
       Self::StringArray,
       Self::PrimitiveArray,
     ))(input)
+    .map_err(into_failure)
   }
 }
 
@@ -87,6 +90,7 @@ impl PrimitiveType {
       Self::Null,
       Self::String,
     ))(input)
+    .map_err(into_failure)
   }
 }
 
@@ -122,6 +126,7 @@ impl BinaryArrayType {
       Self::JaggedOffset,
       Self::RectangularOffset,
     ))(input)
+    .map_err(into_failure)
   }
 }
 

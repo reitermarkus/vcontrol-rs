@@ -4,6 +4,7 @@ use nom::{
 };
 
 use crate::{
+  combinator::into_failure,
   data_type::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, Single, TimeSpan, UInt16, UInt32, UInt64,
   },
@@ -49,8 +50,8 @@ impl MemberPrimitiveUnTyped {
       PrimitiveType::UInt16 => map(UInt16::parse, Self::UInt16)(input),
       PrimitiveType::UInt32 => map(UInt32::parse, Self::UInt32)(input),
       PrimitiveType::UInt64 => map(UInt64::parse, Self::UInt64)(input),
-      PrimitiveType::Null => fail(input),
-      PrimitiveType::String => fail(input),
+      PrimitiveType::Null => fail(input).map_err(into_failure),
+      PrimitiveType::String => fail(input).map_err(into_failure),
     }
   }
 
