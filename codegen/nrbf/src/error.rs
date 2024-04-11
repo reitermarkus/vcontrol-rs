@@ -6,6 +6,27 @@ pub struct Error {
   pub(crate) inner: ErrorInner,
 }
 
+pub(crate) struct ErrorWithInput<'i> {
+  pub(crate) input: &'i [u8],
+  pub(crate) inner: ErrorInner,
+}
+
+impl<'i> nom::error::ParseError<&'i [u8]> for ErrorWithInput<'i> {
+  fn from_error_kind(input: &'i [u8], kind: nom::error::ErrorKind) -> Self {
+    Self {
+      input,
+      inner: match kind {
+        nom::error::ErrorKind::Eof => ErrorInner::Eof,
+        _ => ErrorInner::Other,
+      },
+    }
+  }
+
+  fn append(_input: &'i [u8], _kind: nom::error::ErrorKind, other: Self) -> Self {
+    other
+  }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum ErrorInner {
   ExpectedType(ExpectedType),
@@ -15,10 +36,11 @@ pub(crate) enum ErrorInner {
   TrailingData,
   InvalidReferenceable,
   MissingRootObject,
-  MissingMessageEnd,
-  MissingHeader,
+  ExpectedMessageEnd,
+  ExpectedHeader,
   MethodCallOrReturn,
   ExpectedBoolean,
+  InvalidArgs,
   Other,
 }
 
