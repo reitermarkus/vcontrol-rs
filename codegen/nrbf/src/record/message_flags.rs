@@ -4,7 +4,7 @@ use nom::{
   IResult,
 };
 
-use crate::data_type::Int32;
+use crate::{combinator::into_failure, data_type::Int32};
 
 bitflags! {
   /// 2.2.1.1 `MessageFlags`
@@ -115,6 +115,6 @@ impl MessageFlags {
       }
 
       Ok(flags)
-    })(input)
+    })(input).map_err(into_failure)
   }
 }

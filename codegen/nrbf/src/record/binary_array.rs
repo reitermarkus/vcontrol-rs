@@ -1,6 +1,7 @@
 use nom::{combinator::cond, multi::many_m_n, IResult, Parser, ToUsize};
 
 use crate::{
+  combinator::into_failure,
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
@@ -29,14 +30,16 @@ impl<'i> BinaryArray<'i> {
 
     let rank_usize = (i32::from(rank) as u32).to_usize();
 
-    let (input, lengths) = many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero)(input)?;
+    let (input, lengths) =
+      many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero)(input).map_err(into_failure)?;
     let (input, lower_bounds) = cond(
       matches!(
         binary_array_type_enum,
         BinaryArrayType::SingleOffset | BinaryArrayType::JaggedOffset | BinaryArrayType::RectangularOffset
       ),
       many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero),
-    )(input)?;
+    )(input)
+    .map_err(into_failure)?;
     let (input, type_enum) = BinaryType::parse(input)?;
     let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
 

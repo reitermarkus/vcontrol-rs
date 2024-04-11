@@ -6,6 +6,7 @@ use nom::{
 };
 
 use crate::{
+  combinator::into_failure,
   data_type::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, LengthPrefixedString, Single, TimeSpan,
     UInt16, UInt32, UInt64,
@@ -57,6 +58,7 @@ impl<'i> ValueWithCode<'i> {
       value(Self::Null, PrimitiveType::Null),
       map(preceded(PrimitiveType::String, LengthPrefixedString::parse), Self::String),
     ))(input)
+    .map_err(into_failure)
   }
 
   #[inline]

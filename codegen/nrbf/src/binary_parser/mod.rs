@@ -11,6 +11,7 @@ use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::LengthPrefixedString,
   enumeration::{BinaryArrayType, BinaryType},
+  error::ErrorInner,
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
     BinaryMethodReturn, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes,
@@ -19,7 +20,7 @@ use crate::{
     SystemClassWithMembersAndTypes,
   },
   value::Object,
-  MethodCall, MethodReturn, RemotingMessage, Value,
+  Error, MethodCall, MethodReturn, RemotingMessage, Value,
 };
 
 #[derive(Debug, Clone)]
@@ -52,6 +53,36 @@ pub struct BinaryParser<'i> {
   binary_libraries: BTreeMap<i32, LengthPrefixedString<'i>>,
   classes: BTreeMap<i32, Class<'i>>,
   objects: BTreeMap<i32, Value<'i>>,
+}
+
+macro_rules! alt_mut {
+  ($input:expr => $($expr:expr),+ $(,)?) => {
+    'alt: {
+      $(
+        match $expr($input) {
+          Err(nom::Err::Error(_)) => (),
+          res => break 'alt res,
+        }
+      )+
+
+      Err(nom::Err::Error(nom::error::Error::new($input, nom::error::ErrorKind::Alt)))
+    }
+  };
+}
+
+macro_rules! error_position {
+  ($input:expr, $error_inner:ident) => {{
+    ($input, ErrorInner::$error_inner)
+  }};
+}
+
+macro_rules! into_failure {
+  ($res:expr) => {{
+    match $res {
+      Err(nom::Err::Error(e)) => Err(nom::Err::Failure(e)),
+      res => res,
+    }
+  }};
 }
 
 impl<'i> BinaryParser<'i> {
@@ -343,39 +374,26 @@ impl<'i> BinaryParser<'i> {
   fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>)> {
     let (input, ()) = self.parse_binary_library(input)?;
 
-    if let Ok((input, (object_id, array))) = self.parse_array_single_object(input) {
-      return Ok((input, (object_id, array)))
-    }
-
-    if let Ok((input, (object_id, array))) = self.parse_array_single_primitive(input) {
-      return Ok((input, (object_id, array)))
-    }
-
-    if let Ok((input, (object_id, array))) = self.parse_array_single_string(input) {
-      return Ok((input, (object_id, array)))
-    }
-
-    self.parse_binary_array(input)
+    alt_mut!(input =>
+      |input| self.parse_array_single_object(input),
+      |input| self.parse_array_single_primitive(input),
+      |input| self.parse_array_single_string(input),
+      |input| self.parse_binary_array(input),
+    )
   }
 
   /// 2.7 Binary Record Grammar - `referenceable`
   fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId> {
-    if let Ok((input, (object_id, object))) = self.parse_classes(input) {
-      self.objects.insert(object_id.0, Value::Object(object));
-      return Ok((input, object_id))
-    }
+    let (input, (object_id, object)) = alt_mut!(input =>
+      map(|input| self.parse_classes(input), |(object_id, object)| (object_id, Value::Object(object))),
+      map(|input| self.parse_arrays(input), |(object_id, array)| (object_id, Value::Array(array))),
+      map(BinaryObjectString::parse, |s| {
+        (RefId(s.object_id().into()), Value::String(s.as_str()))
+      }),
+    )?;
 
-    if let Ok((input, (object_id, array))) = self.parse_arrays(input) {
-      self.objects.insert(object_id.0, Value::Array(array));
-      return Ok((input, object_id))
-    }
-
-    let (input, s) = BinaryObjectString::parse(input)?;
-
-    let object_id = s.object_id().into();
-    self.objects.insert(object_id, Value::String(s.as_str()));
-
-    Ok((input, RefId(object_id)))
+    self.objects.insert(object_id.0, object);
+    Ok((input, object_id))
   }
 
   /// 2.7 Binary Record Grammar - `nullObject`
@@ -490,33 +508,51 @@ impl<'i> BinaryParser<'i> {
     input: &'i [u8],
     root_id: i32,
   ) -> IResult<&'i [u8], MethodCallOrReturn<'i>> {
-    if let Ok(s) = map(|input| self.parse_method_call(input, root_id), MethodCallOrReturn::MethodCall)(input) {
-      return Ok(s)
+    alt_mut!(input =>
+      map(|input| self.parse_method_call(input, root_id), MethodCallOrReturn::MethodCall),
+      map(|input| self.parse_method_return(input, root_id), MethodCallOrReturn::MethodReturn),
+    )
+  }
+
+  fn parse_referenceables(&mut self, mut input: &'i [u8]) -> IResult<&'i [u8], (), (&'i [u8], ErrorInner)> {
+    loop {
+      match self.parse_referenceable(input) {
+        Ok((input2, _)) => {
+          input = input2;
+        },
+        Err(nom::Err::Incomplete(n)) => return Err(nom::Err::Incomplete(n)),
+        Err(nom::Err::Error(_)) => break,
+        Err(nom::Err::Failure(err)) => {
+          return Err(nom::Err::Failure(error_position!(err.input, InvalidReferenceable)));
+        },
+      }
     }
 
-    if let Ok(s) = map(|input| self.parse_method_return(input, root_id), MethodCallOrReturn::MethodReturn)(input) {
-      return Ok(s)
-    }
-
-    Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Alt)))
+    Ok((input, ()))
   }
 
   /// 2.7 Binary Record Grammar - `remotingMessage`
-  fn parse_remoting_message(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>> {
-    let (mut input, header) = SerializationHeader::parse(input)?;
+  fn parse_remoting_message(
+    &mut self,
+    input: &'i [u8],
+  ) -> IResult<&'i [u8], RemotingMessage<'i>, (&'i [u8], ErrorInner)> {
+    let (mut input, header) =
+      SerializationHeader::parse(input).map_err(|err| err.map(|err| error_position!(err.input, MissingHeader)))?;
 
-    while let Ok((input2, _)) = self.parse_referenceable(input) {
-      input = input2;
-    }
+    (input, ()) = self.parse_referenceables(input)?;
 
     let (mut input, method_call_or_return) =
-      opt(|input| self.parse_method_call_or_return(input, header.root_id.into()))(input)?;
+      opt(|input| self.parse_method_call_or_return(input, header.root_id.into()))(input)
+        .map_err(|err| err.map(|err| error_position!(err.input, MethodCallOrReturn)))?;
 
-    while let Ok((input2, _)) = self.parse_referenceable(input) {
-      input = input2;
+    (input, ()) = self.parse_referenceables(input)?;
+
+    let (input, MessageEnd) =
+      MessageEnd::parse(input).map_err(|err| err.map(|err| error_position!(err.input, MissingMessageEnd)))?;
+
+    if !input.is_empty() {
+      return Err(nom::Err::Error(error_position!(input, TrailingData)))
     }
-
-    let (input, MessageEnd) = MessageEnd::parse(input)?;
 
     let remoting_message = match method_call_or_return {
       Some(MethodCallOrReturn::MethodCall(method_call)) => RemotingMessage::MethodCall(method_call),
@@ -525,7 +561,7 @@ impl<'i> BinaryParser<'i> {
         let root_object = if let Some(root_object) = self.objects.remove(&header.root_id.into()) {
           root_object
         } else {
-          return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+          return Err(nom::Err::Error(error_position!(input, MissingRootObject)))
         };
 
         RemotingMessage::Value(root_object)
@@ -536,7 +572,12 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// Deserializes a [`RemotingMessage`] from bytes.
-  pub fn deserialize(mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>> {
-    self.parse_remoting_message(input)
+  pub fn deserialize(mut self, input: &'i [u8]) -> Result<RemotingMessage<'i>, Error> {
+    self.parse_remoting_message(input).map(|(_, remoting_message)| remoting_message).map_err(|err| Error {
+      inner: match err {
+        nom::Err::Incomplete(_) => ErrorInner::Eof,
+        nom::Err::Error(_err) | nom::Err::Failure(_err) => ErrorInner::ExpectedRemotingMessage,
+      },
+    })
   }
 }

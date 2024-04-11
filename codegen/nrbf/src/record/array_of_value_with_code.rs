@@ -4,7 +4,7 @@ use nom::{
   IResult,
 };
 
-use crate::{data_type::Int32, record::ValueWithCode, Value};
+use crate::{combinator::into_failure, data_type::Int32, record::ValueWithCode, Value};
 
 /// 2.2.2.3 `ArrayOfValueWithCode`
 #[derive(Debug, Clone, PartialEq)]
@@ -12,8 +12,9 @@ pub struct ArrayOfValueWithCode<'i>(Vec<ValueWithCode<'i>>);
 
 impl<'i> ArrayOfValueWithCode<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, length) = map_res(Int32::parse, usize::try_from)(input)?;
-    map(many_m_n(length, length, ValueWithCode::parse), Self)(input)
+    map_res(Int32::parse, usize::try_from)(input)
+      .and_then(|(input, len)| map(many_m_n(len, len, ValueWithCode::parse), Self)(input))
+      .map_err(into_failure)
   }
 
   #[inline]
