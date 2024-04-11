@@ -1,6 +1,6 @@
 use nom::{combinator::map, sequence::preceded, IResult};
 
-use crate::{data_type::LengthPrefixedString, enumeration::PrimitiveType};
+use crate::{combinator::into_failure, data_type::LengthPrefixedString, enumeration::PrimitiveType};
 
 /// 2.2.2.2 `StringValueWithCode`
 #[derive(Debug, Clone, PartialEq)]
@@ -8,7 +8,7 @@ pub struct StringValueWithCode<'i>(LengthPrefixedString<'i>);
 
 impl<'i> StringValueWithCode<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(preceded(PrimitiveType::String, LengthPrefixedString::parse), Self)(input)
+    map(preceded(PrimitiveType::String, LengthPrefixedString::parse), Self)(input).map_err(into_failure)
   }
 
   #[inline]

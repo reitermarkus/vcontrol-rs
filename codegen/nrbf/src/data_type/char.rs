@@ -6,6 +6,7 @@ use nom::{
 };
 
 use super::impl_primitive;
+use crate::combinator::into_failure;
 
 /// 2.1.1.1 `Char`
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -22,6 +23,7 @@ impl Char {
       )),
       Self,
     )(input)
+    .map_err(into_failure)
   }
 }
 

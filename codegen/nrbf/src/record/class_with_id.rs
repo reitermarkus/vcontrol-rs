@@ -1,6 +1,6 @@
 use nom::{combinator::verify, IResult, Parser};
 
-use crate::{data_type::Int32, record::RecordType};
+use crate::{combinator::into_failure, data_type::Int32, record::RecordType};
 
 /// 2.3.2.5 `ClassWithId`
 #[derive(Debug, Clone, PartialEq)]
@@ -14,7 +14,8 @@ impl ClassWithId {
     let (input, _) = RecordType::ClassWithId.parse(input)?;
 
     let (input, object_id) = Int32::parse_positive(input)?;
-    let (input, metadata_id) = verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input)?;
+    let (input, metadata_id) =
+      verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input).map_err(into_failure)?;
 
     Ok((input, Self { object_id, metadata_id }))
   }

@@ -7,46 +7,57 @@ use nom::{
   IResult,
 };
 
+use crate::combinator::into_failure;
+
 /// 2.1.1.6 `LengthPrefixedString`
 #[derive(Debug, Clone, PartialEq)]
 pub struct LengthPrefixedString<'s>(pub(crate) &'s str);
 
 impl<'i> LengthPrefixedString<'i> {
-  fn parse_len(mut input: (&[u8], usize)) -> IResult<(&[u8], usize), u32> {
-    use nom::bits::complete::{bool, tag, take};
+  fn parse_len(input: &[u8]) -> IResult<&[u8], u32> {
+    let parse_len = |mut input| -> IResult<(&[u8], usize), u32> {
+      use nom::bits::complete::{bool, tag, take};
 
-    let mut len = 0;
+      let mut len = 0;
 
-    let (mut parse_next, mut len_part): (bool, u8);
-    (input, (parse_next, len_part)) = pair(bool, take(7usize))(input)?;
-    len |= len_part as u32;
-
-    if parse_next {
+      let (mut parse_next, mut len_part): (bool, u8);
       (input, (parse_next, len_part)) = pair(bool, take(7usize))(input)?;
-      len |= (len_part as u32) << 7;
+      len |= len_part as u32;
 
       if parse_next {
         (input, (parse_next, len_part)) = pair(bool, take(7usize))(input)?;
-        len |= (len_part as u32) << 14;
+        len |= (len_part as u32) << 7;
 
         if parse_next {
           (input, (parse_next, len_part)) = pair(bool, take(7usize))(input)?;
-          len |= (len_part as u32) << 21;
+          len |= (len_part as u32) << 14;
 
           if parse_next {
-            (input, len_part) = preceded(tag(0b00000, 5usize), take(3usize))(input)?;
-            len |= (len_part as u32) << 28;
+            (input, (parse_next, len_part)) = pair(bool, take(7usize))(input)?;
+            len |= (len_part as u32) << 21;
+
+            if parse_next {
+              (input, len_part) = preceded(tag(0b00000, 5usize), take(3usize))(input)?;
+              len |= (len_part as u32) << 28;
+            }
           }
         }
       }
-    }
 
-    Ok((input, len))
+      Ok((input, len))
+    };
+
+    match parse_len((input, 0)) {
+      Ok(((input, 0), len)) => Ok((input, len)),
+      Ok(_) => Err(nom::Err::Failure(nom::error::Error::new(input, nom::error::ErrorKind::Verify))),
+      Err(err) => Err(err.map_input(|(input, _)| input)),
+    }
   }
 
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let ((input, _), len) = Self::parse_len((input, 0)).map_err(|err| err.map_input(|(input, _)| input))?;
-    map(map_res(take(len), str::from_utf8), Self)(input)
+    Self::parse_len(input)
+      .and_then(|(input, len)| map(map_res(take(len), str::from_utf8), Self)(input))
+      .map_err(into_failure)
   }
 
   #[inline]

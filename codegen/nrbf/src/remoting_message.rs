@@ -1,12 +1,12 @@
 #[cfg(feature = "serde")]
 use serde::{
-  de::{value::Error, Deserializer, Visitor},
+  de::{self, Deserializer, Visitor},
   forward_to_deserialize_any,
 };
 
 #[cfg(feature = "serde")]
 use crate::value::ValueDeserializer;
-use crate::{BinaryParser, Value};
+use crate::{BinaryParser, Error, Value};
 
 /// A remote method call.
 #[derive(Debug, Clone, PartialEq)]
@@ -72,24 +72,18 @@ pub enum RemotingMessage<'i> {
 
 impl<'i> RemotingMessage<'i> {
   /// Parse a [`RemotingMessage`] from bytes.
-  pub fn parse(input: &'i [u8]) -> Result<Self, nom::Err<nom::error::Error<&'i [u8]>>> {
-    use nom::combinator::all_consuming;
-
-    let (_, remoting_message) = all_consuming(|input| {
-      let parser = BinaryParser::default();
-      parser.deserialize(input)
-    })(input)?;
-
-    Ok(remoting_message)
+  pub fn parse(input: &'i [u8]) -> Result<Self, Error> {
+    let parser = BinaryParser::default();
+    parser.deserialize(input)
   }
 
   #[cfg(feature = "serde")]
-  fn to_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, Error> {
+  fn to_deserializer<V: Visitor<'i>>(&self, visitor: &V) -> Result<ValueDeserializer<'i, '_>, de::value::Error> {
     use serde::de::{Error, Unexpected};
 
     match self {
-      Self::MethodCall(..) => Err(Error::invalid_type(Unexpected::Other("method call"), visitor)),
-      Self::MethodReturn(..) => Err(Error::invalid_type(Unexpected::Other("method return"), visitor)),
+      Self::MethodCall(..) => Err(de::value::Error::invalid_type(Unexpected::Other("method call"), visitor)),
+      Self::MethodReturn(..) => Err(de::value::Error::invalid_type(Unexpected::Other("method return"), visitor)),
       Self::Value(root_object) => Ok(ValueDeserializer::new(root_object)),
     }
   }
@@ -97,7 +91,7 @@ impl<'i> RemotingMessage<'i> {
 
 #[cfg(feature = "serde")]
 impl<'de> Deserializer<'de> for RemotingMessage<'de> {
-  type Error = Error;
+  type Error = de::value::Error;
 
   fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
   where

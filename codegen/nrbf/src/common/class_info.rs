@@ -1,6 +1,9 @@
 use nom::{multi::many_m_n, IResult, ToUsize};
 
-use crate::data_type::{Int32, LengthPrefixedString};
+use crate::{
+  combinator::into_failure,
+  data_type::{Int32, LengthPrefixedString},
+};
 
 /// 2.3.1.1 `ClassInfo`
 #[derive(Debug, Clone, PartialEq)]
@@ -18,7 +21,8 @@ impl<'i> ClassInfo<'i> {
 
     let member_count = (i32::from(member_count) as u32).to_usize();
 
-    let (input, member_names) = many_m_n(member_count, member_count, LengthPrefixedString::parse)(input)?;
+    let (input, member_names) =
+      many_m_n(member_count, member_count, LengthPrefixedString::parse)(input).map_err(into_failure)?;
 
     Ok((input, Self { object_id, name, member_names }))
   }

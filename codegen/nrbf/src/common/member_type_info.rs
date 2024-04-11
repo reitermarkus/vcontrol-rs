@@ -1,6 +1,7 @@
 use nom::{multi::many_m_n, IResult};
 
 use crate::{
+  combinator::into_failure,
   common::{AdditionalTypeInfo, ClassInfo},
   enumeration::BinaryType,
 };
@@ -16,7 +17,7 @@ impl<'i> MemberTypeInfo<'i> {
   pub fn parse(input: &'i [u8], class_info: &ClassInfo<'_>) -> IResult<&'i [u8], Self> {
     let count = class_info.member_names.len();
 
-    let (mut input, binary_type_enums) = many_m_n(count, count, BinaryType::parse)(input)?;
+    let (mut input, binary_type_enums) = many_m_n(count, count, BinaryType::parse)(input).map_err(into_failure)?;
 
     let mut additional_infos = vec![];
     for &binary_type_enum in binary_type_enums.iter() {

@@ -15,6 +15,7 @@ mod decimal;
 pub use decimal::Decimal;
 mod object;
 pub use object::Object;
+#[cfg(feature = "serde")]
 use object::ObjectDeserializer;
 mod time_span;
 pub use time_span::TimeSpan;
