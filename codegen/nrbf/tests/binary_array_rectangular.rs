@@ -22,7 +22,7 @@ fn binary_array_rectangular() {
     11,
   ];
 
-  let output = RemotingMessage::Value(Value::Array(vec![Value::Int64(67), Value::Int64(42)]));
+  let output = RemotingMessage::Value(Value::Array(vec![Value::Array(vec![Value::Int64(67), Value::Int64(42)])]));
 
   assert_eq!(RemotingMessage::parse(&input), Ok(output));
 }

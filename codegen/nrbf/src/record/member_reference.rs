@@ -18,8 +18,7 @@ impl MemberReference {
       .parse(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedMemberReference)))?;
 
-    let (input, id_ref) =
-      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, id_ref) = Int32::parse_positive(input)?;
 
     Ok((input, Self { id_ref }))
   }

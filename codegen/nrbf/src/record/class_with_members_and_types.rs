@@ -23,10 +23,8 @@ impl<'i> ClassWithMembersAndTypes<'i> {
 
     let (input, class_info) =
       ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
-    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedMemberTypeInfo)))?;
-    let (input, library_id) =
-      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)?;
+    let (input, library_id) = Int32::parse_positive(input)?;
 
     Ok((input, Self { class_info, member_type_info, library_id }))
   }

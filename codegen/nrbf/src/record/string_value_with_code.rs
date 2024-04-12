@@ -1,4 +1,4 @@
-use nom::{combinator::map, sequence::preceded, IResult, Parser};
+use nom::{combinator::map, IResult, Parser};
 
 use crate::{
   combinator::into_failure,

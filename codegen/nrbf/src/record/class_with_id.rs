@@ -20,11 +20,9 @@ impl ClassWithId {
       .parse(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedClassWithId)))?;
 
-    let (input, object_id) =
-      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
-    let (input, metadata_id) = verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, object_id) = Int32::parse_positive(input)?;
+    let (input, metadata_id) =
+      verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input).map_err(into_failure)?;
 
     Ok((input, Self { object_id, metadata_id }))
   }

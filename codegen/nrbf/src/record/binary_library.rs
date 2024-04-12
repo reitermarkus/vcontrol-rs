@@ -20,8 +20,7 @@ impl<'i> BinaryLibrary<'i> {
       .parse(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryLibrary)))?;
 
-    let (input, library_id) =
-      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, library_id) = Int32::parse_positive(input)?;
     let (input, library_name) = LengthPrefixedString::parse(input)
       .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))?;
 

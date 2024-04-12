@@ -36,8 +36,7 @@ impl MemberPrimitiveTyped {
       err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedMemberPrimitiveTyped))
     })?;
 
-    let (input, primitive_type) = PrimitiveType::parse(input)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitiveType)))?;
+    let (input, primitive_type) = PrimitiveType::parse(input)?;
     let (input, primitive_untyped) = MemberPrimitiveUnTyped::parse(input, primitive_type)?;
 
     let primitive_typed = match primitive_untyped {

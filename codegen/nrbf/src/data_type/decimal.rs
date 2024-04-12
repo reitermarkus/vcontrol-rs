@@ -1,17 +1,27 @@
 use std::str::FromStr;
 
-use nom::{combinator::map_res, IResult};
+use nom::{IResult};
 
-use crate::{combinator::into_failure, data_type::LengthPrefixedString};
+use crate::{
+  data_type::LengthPrefixedString,
+  error::{error_position, ErrorWithInput},
+};
 
 /// 2.1.1.7 `Decimal`
 #[derive(Debug, Clone, PartialEq)]
 pub struct Decimal(pub rust_decimal::Decimal);
 
 impl Decimal {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    map_res(LengthPrefixedString::parse, |s| rust_decimal::Decimal::from_str(s.as_str()).map(Self))(input)
-      .map_err(into_failure)
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+    let err_input = input;
+
+    let (input, s) = LengthPrefixedString::parse(input)?;
+
+    if let Ok(decimal) = rust_decimal::Decimal::from_str(s.as_str()) {
+      Ok((input, Self(decimal)))
+    } else {
+      Err(nom::Err::Failure(error_position!(err_input, ExpectedDecimal)))
+    }
   }
 }
 

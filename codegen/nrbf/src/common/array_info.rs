@@ -1,6 +1,9 @@
 use nom::{IResult, ToUsize};
 
-use crate::data_type::Int32;
+use crate::{
+  data_type::Int32,
+  error::{ErrorWithInput},
+};
 
 /// 2.4.2.1 `ArrayInfo`
 #[derive(Debug, Clone, PartialEq)]
@@ -10,7 +13,7 @@ pub struct ArrayInfo {
 }
 
 impl ArrayInfo {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     let (input, object_id) = Int32::parse_positive(input)?;
     let (input, length) = Int32::parse_positive_or_zero(input)?;
 
