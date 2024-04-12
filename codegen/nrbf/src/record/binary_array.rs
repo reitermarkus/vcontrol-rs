@@ -5,6 +5,7 @@ use crate::{
   common::AdditionalTypeInfo,
   data_type::Int32,
   enumeration::{BinaryArrayType, BinaryType},
+  error::{error_position, ErrorWithInput},
   record::RecordType,
 };
 
@@ -21,17 +22,23 @@ pub struct BinaryArray<'i> {
 }
 
 impl<'i> BinaryArray<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::BinaryArray.parse(input)?;
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'_>> {
+    let (input, _) = RecordType::BinaryArray
+      .parse(input)
+      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryArray)))?;
 
-    let (input, object_id) = Int32::parse_positive(input)?;
-    let (input, binary_array_type_enum) = BinaryArrayType::parse(input)?;
-    let (input, rank) = Int32::parse_positive_or_zero(input)?;
+    let (input, object_id) =
+      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, binary_array_type_enum) = BinaryArrayType::parse(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryArrayType)))?;
+    let (input, rank) =
+      Int32::parse_positive_or_zero(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
 
     let rank_usize = (i32::from(rank) as u32).to_usize();
 
-    let (input, lengths) =
-      many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero)(input).map_err(into_failure)?;
+    let (input, lengths) = many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero)(input)
+      .map_err(into_failure)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32Array)))?;
     let (input, lower_bounds) = cond(
       matches!(
         binary_array_type_enum,
@@ -39,9 +46,12 @@ impl<'i> BinaryArray<'i> {
       ),
       many_m_n(rank_usize, rank_usize, Int32::parse_positive_or_zero),
     )(input)
-    .map_err(into_failure)?;
-    let (input, type_enum) = BinaryType::parse(input)?;
-    let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)?;
+    .map_err(into_failure)
+    .map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32Array)))?;
+    let (input, type_enum) =
+      BinaryType::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryType)))?;
+    let (input, additional_type_info) = AdditionalTypeInfo::parse(input, type_enum)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedAdditionalTypeInfo)))?;
 
     Ok((
       input,

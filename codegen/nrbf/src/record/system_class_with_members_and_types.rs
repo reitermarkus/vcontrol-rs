@@ -3,6 +3,7 @@ use nom::{IResult, Parser};
 use crate::{
   common::{ClassInfo, MemberTypeInfo},
   data_type::Int32,
+  error::{error_position, ErrorWithInput},
   record::RecordType,
 };
 
@@ -14,11 +15,15 @@ pub struct SystemClassWithMembersAndTypes<'i> {
 }
 
 impl<'i> SystemClassWithMembersAndTypes<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::SystemClassWithMembersAndTypes.parse(input)?;
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (input, _) = RecordType::SystemClassWithMembersAndTypes.parse(input).map_err(|err| {
+      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedSystemClassWithMembersAndTypes))
+    })?;
 
-    let (input, class_info) = ClassInfo::parse(input)?;
-    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)?;
+    let (input, class_info) =
+      ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
+    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedMemberTypeInfo)))?;
 
     Ok((input, Self { class_info, member_type_info }))
   }
