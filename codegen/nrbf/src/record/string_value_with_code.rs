@@ -15,8 +15,7 @@ impl<'i> StringValueWithCode<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
     let (input, _) = PrimitiveType::String
       .parse(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitiveType)))?;
+      .map_err(into_failure)?;
 
     map(LengthPrefixedString::parse, Self)(input)
   }

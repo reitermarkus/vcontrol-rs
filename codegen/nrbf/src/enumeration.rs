@@ -97,7 +97,30 @@ impl PrimitiveType {
     .map_err(into_failure)
     .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitiveType)))
   }
+
+  pub(crate) fn description(&self) -> &'static str {
+    match self {
+      Self::Boolean => "a BOOLEAN",
+      Self::Byte => "a BYTE",
+      Self::Char => "a CHAR",
+      Self::Decimal => "a Decimal",
+      Self::Double => "a DOUBLE",
+      Self::Int16 => "an INT16",
+      Self::Int32 => "an INT32",
+      Self::Int64 => "an INT64",
+      Self::SByte => "an INT8",
+      Self::Single => "a SINGLE",
+      Self::TimeSpan => "a TimeSpan",
+      Self::DateTime => "a DateTime",
+      Self::UInt16 => "a UINT16",
+      Self::UInt32 => "a UINT32",
+      Self::UInt64 => "a UINT64",
+      Self::Null => "a NULL",
+      Self::String => "a LengthPrefixedString",
+    }
+  }
 }
+
 
 impl<I, E> Parser<I, Self, E> for PrimitiveType
 where
