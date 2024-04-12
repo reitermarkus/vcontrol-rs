@@ -16,9 +16,7 @@ pub struct BinaryMethodReturn<'i> {
 
 impl<'i> BinaryMethodReturn<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
-    let (input, _) = RecordType::MethodReturn
-      .parse(input)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryMethodReturn)))?;
+    let (input, _) = RecordType::MethodReturn.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;
     let (input, return_value) =

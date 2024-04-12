@@ -28,12 +28,6 @@ impl Int32 {
       .map_err(into_failure)
       .map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))
   }
-
-  pub fn parse_positive_or_zero(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
-    verify(Self::parse, |n| n.0 >= 0)(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))
-  }
 }
 
 impl TryFrom<Int32> for usize {
