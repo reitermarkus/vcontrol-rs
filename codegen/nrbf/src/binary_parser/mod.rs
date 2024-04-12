@@ -11,7 +11,7 @@ use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::LengthPrefixedString,
   enumeration::{BinaryArrayType, BinaryType},
-  error::{ErrorInner, ErrorWithInput},
+  error::{error_position, ErrorInner, ErrorWithInput},
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
     BinaryMethodReturn, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes,
@@ -65,40 +65,21 @@ macro_rules! alt_mut {
         }
       )+
 
-      Err(nom::Err::Error(nom::error::Error::new($input, nom::error::ErrorKind::Alt)))
-    }
-  };
-}
-
-macro_rules! alt_mut2 {
-  ($input:expr => $($expr:expr),+ $(,)?) => {
-    'alt: {
-      $(
-        match $expr($input) {
-          Err(nom::Err::Error(_)) => (),
-          res => break 'alt res,
-        }
-      )+
-
       Err(nom::Err::Error(nom::error::ParseError::from_error_kind($input, nom::error::ErrorKind::Alt)))
     }
   };
 }
 
-macro_rules! error_position {
-  ($input:expr, $error_inner:ident) => {{
-    ErrorWithInput { input: $input, inner: ErrorInner::$error_inner }
-  }};
-}
-
 impl<'i> BinaryParser<'i> {
-  fn parse_binary_library(&mut self, input: &'i [u8]) -> IResult<&'i [u8], ()> {
-    let (input, binary_library) = opt(verify(BinaryLibrary::parse, |binary_library| {
-      !self.binary_libraries.contains_key(&binary_library.library_id().into())
-    }))(input)?;
+  fn parse_binary_library(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (), ErrorWithInput<'i>> {
+    let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
 
     if let Some(binary_library) = binary_library {
-      self.binary_libraries.insert(binary_library.library_id().into(), binary_library.library_name);
+      let library_id = binary_library.library_id();
+
+      if self.binary_libraries.insert(library_id.into(), binary_library.library_name).is_some() {
+        return Err(nom::Err::Failure(error_position!(input, DuplicateBinaryLibrary)))
+      }
     }
 
     Ok((input, ()))
@@ -109,7 +90,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
     type_enum_and_additional_type_info: Option<(BinaryType, Option<&AdditionalTypeInfo<'i>>)>,
-  ) -> IResult<&'i [u8], ValueOrRef<'i>> {
+  ) -> IResult<&'i [u8], ValueOrRef<'i>, ErrorWithInput<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, object) = if let Some((type_enum, additional_type_info)) = type_enum_and_additional_type_info {
@@ -119,7 +100,7 @@ impl<'i> BinaryParser<'i> {
           |primitive| ValueOrRef::Value(primitive.into_value()),
         )(input)?,
         (BinaryType::String, None) => {
-          map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str())))(input)?
+          map(|input| BinaryObjectString::parse(input), |s| ValueOrRef::Value(Value::String(s.as_str())))(input)?
         },
         (BinaryType::Object, None) => return self.parse_member_reference(input, None),
         (BinaryType::SystemClass, Some(class_name)) => unimplemented!("{class_name:?}"),
@@ -128,20 +109,27 @@ impl<'i> BinaryParser<'i> {
         },
         (BinaryType::ObjectArray, None) => return self.parse_member_reference(input, None),
         (BinaryType::StringArray, None) => alt((
-          map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
-          map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into()))),
+          map(|input| BinaryObjectString::parse(input), |s| ValueOrRef::Value(Value::String(s.as_str()))),
+          map(
+            |input| MemberReference::parse(input),
+            |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into())),
+          ),
           map(Self::parse_null_object, |null_object| null_object),
         ))(input)?,
-        (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => {
-          map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into())))(input)?
-        },
+        (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => map(
+          |input| MemberReference::parse(input),
+          |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into())),
+        )(input)?,
         _ => unreachable!(),
       }
     } else {
       alt((
-        map(MemberPrimitiveTyped::parse, |primitive| ValueOrRef::Value(primitive.into_value())),
-        map(MemberReference::parse, |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into()))),
-        map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
+        map(|input| MemberPrimitiveTyped::parse(input), |primitive| ValueOrRef::Value(primitive.into_value())),
+        map(
+          |input| MemberReference::parse(input),
+          |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref.into())),
+        ),
+        map(|input| BinaryObjectString::parse(input), |s| ValueOrRef::Value(Value::String(s.as_str()))),
         map(Self::parse_null_object, |null_object| null_object),
         map(|input| self.parse_classes(input), |(_, object)| ValueOrRef::Value(Value::Object(object))),
       ))(input)?
@@ -154,7 +142,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     mut input: &'i [u8],
     member_type_info: &MemberTypeInfo<'i>,
-  ) -> IResult<&'i [u8], Vec<ValueOrRef<'i>>> {
+  ) -> IResult<&'i [u8], Vec<ValueOrRef<'i>>, ErrorWithInput<'i>> {
     let mut member_references = vec![];
 
     for (binary_type_enum, additional_info) in
@@ -173,7 +161,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     mut input: &'i [u8],
     members: Vec<ValueOrRef<'i>>,
-  ) -> IResult<&'i [u8], Vec<Value<'i>>> {
+  ) -> IResult<&'i [u8], Vec<Value<'i>>, ErrorWithInput<'i>> {
     let mut members2 = Vec::with_capacity(members.len());
 
     for member in members.into_iter() {
@@ -196,7 +184,7 @@ impl<'i> BinaryParser<'i> {
             if let Some(value) = self.objects.remove(&member2.0) {
               members2.push(value);
             } else {
-              return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Verify)))
+              return Err(nom::Err::Failure(error_position!(input, UnresolvableMemberReference)))
             }
           }
         },
@@ -207,30 +195,44 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `Classes`
-  fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Object<'i>)> {
+  fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Object<'i>), ErrorWithInput<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
-    let (input, (object_id, class)) = verify(
-      alt((
-        map_opt(ClassWithId::parse, |class| {
+    let (input, (object_id, class)) = alt((
+      map_opt(
+        |input| ClassWithId::parse(input),
+        |class| {
           let object_id = class.object_id().into();
           self.classes.get(&class.metadata_id().into()).map(|class| (object_id, class.clone()))
-        }),
-        map(
-          verify(ClassWithMembers::parse, |class| self.binary_libraries.contains_key(&class.library_id.into())),
-          |class| (class.object_id().into(), Class::ClassWithMembers(class)),
+        },
+      ),
+      map(
+        verify(
+          |input| ClassWithMembers::parse(input),
+          |class| self.binary_libraries.contains_key(&class.library_id.into()),
         ),
-        map(
-          verify(ClassWithMembersAndTypes::parse, |class| self.binary_libraries.contains_key(&class.library_id.into())),
-          |class| (class.object_id().into(), Class::ClassWithMembersAndTypes(class)),
+        |class| (class.object_id().into(), Class::ClassWithMembers(class)),
+      ),
+      map(
+        verify(
+          |input| ClassWithMembersAndTypes::parse(input),
+          |class| self.binary_libraries.contains_key(&class.library_id.into()),
         ),
-        map(SystemClassWithMembers::parse, |class| (class.object_id().into(), Class::SystemClassWithMembers(class))),
-        map(SystemClassWithMembersAndTypes::parse, |class| {
-          (class.object_id().into(), Class::SystemClassWithMembersAndTypes(class))
-        }),
-      )),
-      |(object_id, _)| !self.classes.contains_key(object_id),
-    )(input)?;
+        |class| (class.object_id().into(), Class::ClassWithMembersAndTypes(class)),
+      ),
+      map(
+        |input| SystemClassWithMembers::parse(input),
+        |class| (class.object_id().into(), Class::SystemClassWithMembers(class)),
+      ),
+      map(
+        |input| SystemClassWithMembersAndTypes::parse(input),
+        |class| (class.object_id().into(), Class::SystemClassWithMembersAndTypes(class)),
+      ),
+    ))(input)?;
+
+    if self.classes.contains_key(&object_id) {
+      return Err(nom::Err::Failure(error_position!(input, DuplicateObjectId)))
+    }
 
     let (input, (class_info, library, member_references)) = match class {
       Class::ClassWithMembers(ref class) => {
@@ -279,7 +281,10 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `ArraySingleObject *(memberReference)`
-  fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>)> {
+  fn parse_array_single_object(
+    &mut self,
+    input: &'i [u8],
+  ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
     let (mut input, array) = ArraySingleObject::parse(input)?;
 
     let mut members = vec![];
@@ -308,7 +313,10 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `ArraySinglePrimitive *(MemberPrimitiveUnTyped)`
-  fn parse_array_single_primitive(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>)> {
+  fn parse_array_single_primitive(
+    &mut self,
+    input: &'i [u8],
+  ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
     let (input, array) = ArraySinglePrimitive::parse(input)?;
 
     let length = array.array_info.len();
@@ -323,7 +331,10 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `ArraySingleString *(BinaryObjectString/MemberReference/nullObject)`
-  fn parse_array_single_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>)> {
+  fn parse_array_single_string(
+    &mut self,
+    input: &'i [u8],
+  ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
     let (mut input, array) = ArraySingleString::parse(input)?;
 
     let mut members = vec![];
@@ -352,7 +363,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `BinaryArray *(memberReference)`
-  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>)> {
+  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
     let (input, array) = BinaryArray::parse(input)?;
 
     let member_count = match array.binary_array_type_enum {
@@ -377,7 +388,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `Arrays`
-  fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>)> {
+  fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     alt_mut!(input =>
@@ -389,13 +400,20 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `referenceable`
-  fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId> {
+  fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId, ErrorWithInput<'i>> {
     let (input, (object_id, object)) = alt_mut!(input =>
-      map(|input| self.parse_classes(input), |(object_id, object)| (object_id, Value::Object(object))),
-      map(|input| self.parse_arrays(input), |(object_id, array)| (object_id, Value::Array(array))),
-      map(BinaryObjectString::parse, |s| {
-        (RefId(s.object_id().into()), Value::String(s.as_str()))
-      }),
+      map(
+        |input| self.parse_classes(input),
+        |(object_id, object)| (object_id, Value::Object(object)),
+      ),
+      map(
+        |input| self.parse_arrays(input),
+        |(object_id, array)| (object_id, Value::Array(array)),
+      ),
+      map(
+        |input| BinaryObjectString::parse(input),
+        |s| (RefId(s.object_id().into()), Value::String(s.as_str())),
+      ),
     )?;
 
     self.objects.insert(object_id.0, object);
@@ -403,11 +421,25 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `nullObject`
-  fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], ValueOrRef<'i>> {
+  fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], ValueOrRef<'i>, ErrorWithInput<'i>> {
     alt((
-      map(ObjectNull::parse, |n| ValueOrRef::Null(n.null_count())),
-      map(ObjectNullMultiple::parse, |n| ValueOrRef::Null(n.null_count())),
-      map(ObjectNullMultiple256::parse, |n| ValueOrRef::Null(n.null_count())),
+      map(
+        |input| ObjectNull::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedNullObject))),
+        |n| ValueOrRef::Null(n.null_count()),
+      ),
+      map(
+        |input| {
+          ObjectNullMultiple::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedNullObject)))
+        },
+        |n| ValueOrRef::Null(n.null_count()),
+      ),
+      map(
+        |input| {
+          ObjectNullMultiple256::parse(input)
+            .map_err(|err| err.map(|err| error_position!(err.input, ExpectedNullObject)))
+        },
+        |n| ValueOrRef::Null(n.null_count()),
+      ),
     ))(input)
   }
 
@@ -416,12 +448,9 @@ impl<'i> BinaryParser<'i> {
     input: &'i [u8],
     root_id: i32,
   ) -> IResult<&'i [u8], Vec<Value<'i>>, ErrorWithInput<'i>> {
-    let (input, ()) = self
-      .parse_binary_library(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryLibrary)))?;
+    let (input, ()) = self.parse_binary_library(input)?;
 
-    let (input, (call_array_id, call_array)) =
-      self.parse_array_single_object(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedArray)))?;
+    let (input, (call_array_id, call_array)) = self.parse_array_single_object(input)?;
 
     if call_array_id.0 != root_id {
       return Err(nom::Err::Failure(ErrorWithInput { input, inner: ErrorInner::CallArrayId }))
@@ -436,12 +465,9 @@ impl<'i> BinaryParser<'i> {
     input: &'i [u8],
     root_id: i32,
   ) -> IResult<&'i [u8], MethodCall<'i>, ErrorWithInput<'i>> {
-    let (input, ()) = self
-      .parse_binary_library(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryLibrary)))?;
+    let (input, ()) = self.parse_binary_library(input)?;
 
-    let (input, binary_method_call) =
-      BinaryMethodCall::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedMethodCall)))?;
+    let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
 
     let (input, call_array) = opt(|input| self.parse_call_array(input, root_id))(input)?;
 
@@ -483,9 +509,7 @@ impl<'i> BinaryParser<'i> {
     input: &'i [u8],
     root_id: i32,
   ) -> IResult<&'i [u8], MethodReturn<'i>, ErrorWithInput<'i>> {
-    let (input, ()) = self
-      .parse_binary_library(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedBinaryLibrary)))?;
+    let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_return) = BinaryMethodReturn::parse(input)
       .map_err(|err| err.map(|err| error_position!(err.input, ExpectedMethodReturn)))?;
@@ -529,9 +553,9 @@ impl<'i> BinaryParser<'i> {
     input: &'i [u8],
     root_id: i32,
   ) -> IResult<&'i [u8], MethodCallOrReturn<'i>, ErrorWithInput<'i>> {
-    alt_mut2!(input =>
-      map(|input| self.parse_method_call(input, root_id).map_err(|err| err.map(|err| error_position!(err.input, MethodCallOrReturn))), MethodCallOrReturn::MethodCall),
-      map(|input| self.parse_method_return(input, root_id).map_err(|err| err.map(|err| error_position!(err.input, MethodCallOrReturn))), MethodCallOrReturn::MethodReturn),
+    alt_mut!(input =>
+      map(|input| self.parse_method_call(input, root_id), MethodCallOrReturn::MethodCall),
+      map(|input| self.parse_method_return(input, root_id), MethodCallOrReturn::MethodReturn),
     )
   }
 
@@ -544,7 +568,7 @@ impl<'i> BinaryParser<'i> {
         Err(nom::Err::Incomplete(n)) => return Err(nom::Err::Incomplete(n)),
         Err(nom::Err::Error(_)) => break,
         Err(nom::Err::Failure(err)) => {
-          return Err(nom::Err::Failure(error_position!(err.input, InvalidReferenceable)));
+          return Err(nom::Err::Failure(err));
         },
       }
     }
@@ -554,8 +578,7 @@ impl<'i> BinaryParser<'i> {
 
   /// 2.7 Binary Record Grammar - `remotingMessage`
   fn parse_remoting_message(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>, ErrorWithInput<'i>> {
-    let (mut input, header) =
-      SerializationHeader::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedHeader)))?;
+    let (mut input, header) = SerializationHeader::parse(input)?;
 
     (input, ()) = self.parse_referenceables(input)?;
 
@@ -564,8 +587,7 @@ impl<'i> BinaryParser<'i> {
 
     (input, ()) = self.parse_referenceables(input)?;
 
-    let (input, MessageEnd) =
-      MessageEnd::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedMessageEnd)))?;
+    let (input, MessageEnd) = MessageEnd::parse(input)?;
 
     if !input.is_empty() {
       return Err(nom::Err::Error(error_position!(input, TrailingData)))
@@ -593,7 +615,7 @@ impl<'i> BinaryParser<'i> {
     self.parse_remoting_message(input).map(|(_, remoting_message)| remoting_message).map_err(|err| Error {
       inner: match err {
         nom::Err::Incomplete(_) => ErrorInner::Eof,
-        nom::Err::Error(_err) | nom::Err::Failure(_err) => ErrorInner::ExpectedRemotingMessage,
+        nom::Err::Error(err) | nom::Err::Failure(err) => err.inner,
       },
     })
   }

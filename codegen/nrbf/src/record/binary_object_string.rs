@@ -2,6 +2,7 @@ use nom::{IResult, Parser};
 
 use crate::{
   data_type::{Int32, LengthPrefixedString},
+  error::{error_position, ErrorWithInput},
   record::RecordType,
 };
 
@@ -13,11 +14,15 @@ pub struct BinaryObjectString<'s> {
 }
 
 impl<'i> BinaryObjectString<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::BinaryObjectString.parse(input)?;
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (input, _) = RecordType::BinaryObjectString
+      .parse(input)
+      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryObjectString)))?;
 
-    let (input, object_id) = Int32::parse_positive(input)?;
-    let (input, value) = LengthPrefixedString::parse(input)?;
+    let (input, object_id) =
+      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, value) = LengthPrefixedString::parse(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))?;
 
     Ok((input, Self { object_id, value }))
   }

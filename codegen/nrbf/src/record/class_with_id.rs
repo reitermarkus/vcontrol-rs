@@ -1,6 +1,11 @@
 use nom::{combinator::verify, IResult, Parser};
 
-use crate::{combinator::into_failure, data_type::Int32, record::RecordType};
+use crate::{
+  combinator::into_failure,
+  data_type::Int32,
+  error::{error_position, ErrorWithInput},
+  record::RecordType,
+};
 
 /// 2.3.2.5 `ClassWithId`
 #[derive(Debug, Clone, PartialEq)]
@@ -10,12 +15,16 @@ pub struct ClassWithId {
 }
 
 impl ClassWithId {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    let (input, _) = RecordType::ClassWithId.parse(input)?;
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+    let (input, _) = RecordType::ClassWithId
+      .parse(input)
+      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedClassWithId)))?;
 
-    let (input, object_id) = Int32::parse_positive(input)?;
-    let (input, metadata_id) =
-      verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input).map_err(into_failure)?;
+    let (input, object_id) =
+      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, metadata_id) = verify(Int32::parse_positive, |&metadata_id| metadata_id != object_id)(input)
+      .map_err(into_failure)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
 
     Ok((input, Self { object_id, metadata_id }))
   }

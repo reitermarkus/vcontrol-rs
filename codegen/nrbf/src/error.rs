@@ -30,6 +30,19 @@ impl<'i> nom::error::ParseError<&'i [u8]> for ErrorWithInput<'i> {
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum ErrorInner {
   ExpectedType(ExpectedType),
+  InvalidArray,
+  ExpectedArraySingleObject,
+  ExpectedMemberReference,
+  UnresolvableMemberReference,
+  ExpectedArraySinglePrimitive,
+  ExptectedMemberPrimitiveUnTypedArray,
+  ExpectedArraySingleString,
+  ExpectedBinaryArray,
+  ExpectedMemberReferenceArray,
+  ExptectedMemberReferenceArray,
+  ExpectedMemberReferencesWithTypeInfo,
+  ExpectedNullObject,
+  ExpectedClass,
   ExpectedValue,
   ExpectedMethodCall,
   ExpectedBinaryLibrary,
@@ -46,6 +59,33 @@ pub(crate) enum ErrorInner {
   MethodCallOrReturn,
   ExpectedBoolean,
   InvalidArgs,
+  ExpectedInt32Array,
+  ExpectedBinaryType,
+  ExpectedAdditionalTypeInfo,
+  ExpectedBinaryArrayType,
+  DuplicateBinaryLibrary,
+  DuplicateClass,
+  ExpectedSystemClassWithMembersAndTypes,
+  ExpectedSystemClassWithMembers,
+  ExpectedClassWithMembersAndTypes,
+  ExpectedClassWithId,
+  ExpectedClassWithMembers,
+  ExpectedMemberTypeInfo,
+  ExpectedClassInfo,
+  DuplicateObjectId,
+  ExpectedBinaryMethodCall,
+  ExpectedStringValueWithCode,
+  ExpectedArrayOfValueWithCode,
+  ExpectedMessageFlags,
+  ExpectedBinaryMethodReturn,
+  ExpectedValueWithCode,
+  ExpectedBinaryObjectString,
+  ExpectedPrimitive,
+  ExpectedArrayInfo,
+  ExpectedPrimitiveType,
+  ExpectedMemberPrimitiveTyped,
+  ExpectedInt32,
+  ExpectedLengthPrefixedString,
   Other,
 }
 
@@ -104,3 +144,10 @@ impl fmt::Display for Error {
     }
   }
 }
+
+macro_rules! error_position {
+  ($input:expr, $error_inner:ident) => {{
+    $crate::error::ErrorWithInput { input: $input, inner: $crate::error::ErrorInner::$error_inner }
+  }};
+}
+pub(crate) use error_position;

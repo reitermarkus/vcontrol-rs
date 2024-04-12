@@ -1,6 +1,11 @@
 use nom::{IResult, Parser};
 
-use crate::{common::ClassInfo, data_type::Int32, record::RecordType};
+use crate::{
+  common::ClassInfo,
+  data_type::Int32,
+  error::{error_position, ErrorWithInput},
+  record::RecordType,
+};
 
 /// 2.3.2.2 `ClassWithMembers`
 #[derive(Debug, Clone, PartialEq)]
@@ -10,11 +15,15 @@ pub struct ClassWithMembers<'i> {
 }
 
 impl<'i> ClassWithMembers<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, _) = RecordType::ClassWithMembers.parse(input)?;
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (input, _) = RecordType::ClassWithMembers
+      .parse(input)
+      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedClassWithMembers)))?;
 
-    let (input, class_info) = ClassInfo::parse(input)?;
-    let (input, library_id) = Int32::parse_positive(input)?;
+    let (input, class_info) =
+      ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
+    let (input, library_id) =
+      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
 
     Ok((input, Self { class_info, library_id }))
   }
