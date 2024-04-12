@@ -5,22 +5,17 @@ use crate::{enumeration::PrimitiveType, record::RecordType};
 /// Error while parsing a [`RemotingMessage`](crate::RemotingMessage).
 #[derive(Debug, Clone, PartialEq)]
 pub struct Error<'i> {
-  pub(crate) inner: ErrorWithInput<'i>,
-}
-
-impl fmt::Display for Error<'_> {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.inner.inner)
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) struct ErrorWithInput<'i> {
   pub(crate) input: &'i [u8],
   pub(crate) inner: ErrorInner,
 }
 
-impl<'i> nom::error::ParseError<&'i [u8]> for ErrorWithInput<'i> {
+impl fmt::Display for Error<'_> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.inner)
+  }
+}
+
+impl<'i> nom::error::ParseError<&'i [u8]> for Error<'i> {
   fn from_error_kind(input: &'i [u8], kind: nom::error::ErrorKind) -> Self {
     Self {
       input,
@@ -45,6 +40,7 @@ pub(crate) enum ErrorInner {
   MissingRootObject,
   InvalidNullCount,
   InvalidObjectId,
+  DuplicateObjectId,
   InvalidLength,
   InvalidMajorVersion,
   InvalidMinorVersion,
@@ -56,13 +52,9 @@ pub(crate) enum ErrorInner {
   ExpectedBinaryArrayType,
   MissingLibraryId,
   InvalidLibraryId,
-  DuplicateBinaryLibrary,
-  DuplicateClass,
+  DuplicateLibraryId,
   ExpectedRecordType(RecordType),
   ExpectedClassInfo,
-  DuplicateObjectId,
-  ExpectedStringValueWithCode,
-  ExpectedArrayOfValueWithCode,
   ExpectedMessageFlags,
   InvalidMessageFlags,
   ExpectedPrimitiveType,
@@ -80,6 +72,7 @@ impl fmt::Display for ErrorInner {
       Self::MissingRootObject => write!(f, "missing root object"),
       Self::InvalidNullCount => write!(f, "invalid NULL count"),
       Self::InvalidObjectId => write!(f, "invalid object ID"),
+      Self::DuplicateObjectId => write!(f, "duplicate object ID"),
       Self::InvalidLength => write!(f, "invalid length"),
       Self::InvalidMajorVersion => write!(f, "invalid major version"),
       Self::InvalidMinorVersion => write!(f, "invalid minor version"),
@@ -91,13 +84,9 @@ impl fmt::Display for ErrorInner {
       Self::ExpectedBinaryArrayType => write!(f, "expected BinaryArrayType"),
       Self::MissingLibraryId => write!(f, "missing library ID"),
       Self::InvalidLibraryId => write!(f, "invalid library ID"),
-      Self::DuplicateBinaryLibrary => write!(f, "duplicate BinaryLibrary"),
-      Self::DuplicateClass => write!(f, "duplicate class"),
+      Self::DuplicateLibraryId => write!(f, "duplicate library ID"),
       Self::ExpectedRecordType(record_type) => write!(f, "expected {}", record_type.description()),
       Self::ExpectedClassInfo => write!(f, "expected ClassInfo"),
-      Self::DuplicateObjectId => write!(f, "duplicate object ID"),
-      Self::ExpectedStringValueWithCode => write!(f, "expected StringValueWithCode"),
-      Self::ExpectedArrayOfValueWithCode => write!(f, "expected ArrayOfValueWithCode"),
       Self::ExpectedMessageFlags => write!(f, "expected MessageFlags"),
       Self::InvalidMessageFlags => write!(f, "invalid MessageFlags"),
       Self::ExpectedPrimitiveType => write!(f, "expected PrimitiveType"),
@@ -107,13 +96,12 @@ impl fmt::Display for ErrorInner {
   }
 }
 
-
 macro_rules! error_position {
   ($input:expr, $error_inner:ident) => {{
-    $crate::error::ErrorWithInput { input: $input, inner: $crate::error::ErrorInner::$error_inner }
+    $crate::error::Error { input: $input, inner: $crate::error::ErrorInner::$error_inner }
   }};
   ($input:expr, $error_inner:ident ( $expr:expr )) => {{
-    $crate::error::ErrorWithInput { input: $input, inner: $crate::error::ErrorInner::$error_inner($expr) }
+    $crate::error::Error { input: $input, inner: $crate::error::ErrorInner::$error_inner($expr) }
   }};
 }
 pub(crate) use error_position;

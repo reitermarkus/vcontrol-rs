@@ -3,7 +3,7 @@ use nom::{combinator::map, IResult};
 
 use crate::{
   data_type::Int32,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 bitflags! {
@@ -67,7 +67,7 @@ bitflags! {
 }
 
 impl MessageFlags {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     let err_input = input;
 
     let (input, flags) = map(Int32::parse, |n| Self::from_bits_retain(n.0))(input)

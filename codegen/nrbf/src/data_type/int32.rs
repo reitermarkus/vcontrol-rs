@@ -6,7 +6,7 @@ use super::impl_primitive;
 use crate::{
   combinator::into_failure,
   enumeration::PrimitiveType,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 /// 2.1.1 `INT32`
@@ -14,7 +14,7 @@ use crate::{
 pub struct Int32(pub i32);
 
 impl Int32 {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     map(le_i32, Self)(input).map_err(into_failure).map_err(|err| {
       err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitive(PrimitiveType::Int32)))
     })

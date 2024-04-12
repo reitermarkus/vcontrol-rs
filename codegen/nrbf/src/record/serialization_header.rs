@@ -4,7 +4,7 @@ use nom::IResult;
 
 use crate::{
   data_type::Int32,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
   record::RecordType,
 };
 
@@ -18,7 +18,7 @@ pub struct SerializationHeader {
 }
 
 impl SerializationHeader {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     let (input, _) = RecordType::SerializedStreamHeader.parse(input)?;
 
     let err_input = input;

@@ -2,7 +2,7 @@ use nom::{IResult, ToUsize};
 
 use crate::{
   data_type::Byte,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
   record::RecordType,
 };
 
@@ -13,7 +13,7 @@ pub struct ObjectNullMultiple256 {
 }
 
 impl ObjectNullMultiple256 {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     let (input, _) = RecordType::ObjectNullMultiple256.parse(input)?;
 
     match Byte::parse(input) {

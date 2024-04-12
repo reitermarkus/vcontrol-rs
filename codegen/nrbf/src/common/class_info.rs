@@ -5,7 +5,7 @@ use nom::{multi::length_count, IResult};
 use crate::{
   combinator::{length, object_id},
   data_type::LengthPrefixedString,
-  error::ErrorWithInput,
+  error::Error,
 };
 
 /// 2.3.1.1 `ClassInfo`
@@ -17,7 +17,7 @@ pub struct ClassInfo<'i> {
 }
 
 impl<'i> ClassInfo<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, object_id) = object_id(input)?;
     let (input, name) = LengthPrefixedString::parse(input)?;
     let (input, member_names) = length_count(length, LengthPrefixedString::parse)(input)?;

@@ -4,7 +4,7 @@ use crate::{
   combinator::into_failure,
   data_type::Int64,
   enumeration::PrimitiveType,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 /// 2.1.1.5 `DateTime`
@@ -12,7 +12,7 @@ use crate::{
 pub struct DateTime(pub Int64);
 
 impl DateTime {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     map(Int64::parse, Self)(input)
       .map_err(into_failure)
       .map_err(|err| err.map(|err| error_position!(err.input, ExpectedPrimitive(PrimitiveType::DateTime))))

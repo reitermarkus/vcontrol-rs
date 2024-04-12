@@ -2,7 +2,7 @@ use std::num::NonZeroU32;
 
 use nom::IResult;
 
-use crate::{combinator::library_id, data_type::LengthPrefixedString, error::ErrorWithInput};
+use crate::{combinator::library_id, data_type::LengthPrefixedString, error::Error};
 
 use super::RecordType;
 
@@ -14,7 +14,7 @@ pub struct BinaryLibrary<'i> {
 }
 
 impl<'i> BinaryLibrary<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'_>> {
     let (input, _) = RecordType::BinaryLibrary.parse(input)?;
 
     let (input, library_id) = library_id(input)?;

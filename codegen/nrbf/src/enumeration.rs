@@ -6,7 +6,7 @@ use nom::{
 
 use crate::{
   combinator::into_failure,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 /// 2.1.2.2 `BinaryTypeEnumeration`
@@ -24,7 +24,7 @@ pub enum BinaryType {
 }
 
 impl BinaryType {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     alt((
       Self::Primitive,
       Self::String,
@@ -74,7 +74,7 @@ pub enum PrimitiveType {
 }
 
 impl PrimitiveType {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     alt((
       Self::Boolean,
       Self::Byte,
@@ -121,7 +121,6 @@ impl PrimitiveType {
   }
 }
 
-
 impl<I, E> Parser<I, Self, E> for PrimitiveType
 where
   I: InputTake + Compare<[u8; 1]>,
@@ -145,7 +144,7 @@ pub enum BinaryArrayType {
 }
 
 impl BinaryArrayType {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     alt((
       Self::Single,
       Self::Jagged,

@@ -5,7 +5,7 @@ use nom::IResult;
 use crate::{
   combinator::library_id,
   common::{ClassInfo, MemberTypeInfo},
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
   record::RecordType,
 };
 
@@ -18,7 +18,7 @@ pub struct ClassWithMembersAndTypes<'i> {
 }
 
 impl<'i> ClassWithMembersAndTypes<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, _) = RecordType::ClassWithMembersAndTypes.parse(input)?;
 
     let (input, class_info) =

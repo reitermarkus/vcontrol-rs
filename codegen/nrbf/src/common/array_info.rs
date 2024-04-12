@@ -4,7 +4,7 @@ use nom::IResult;
 
 use crate::{
   combinator::{length, object_id},
-  error::ErrorWithInput,
+  error::Error,
 };
 
 /// 2.4.2.1 `ArrayInfo`
@@ -15,7 +15,7 @@ pub struct ArrayInfo {
 }
 
 impl ArrayInfo {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     let (input, object_id) = object_id(input)?;
     let (input, length) = length(input)?;
 
