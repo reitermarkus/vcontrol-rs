@@ -1,14 +1,24 @@
-use nom::{combinator::map, sequence::preceded, IResult};
+use nom::{combinator::map, sequence::preceded, IResult, Parser};
 
-use crate::{combinator::into_failure, data_type::LengthPrefixedString, enumeration::PrimitiveType};
+use crate::{
+  combinator::into_failure,
+  data_type::LengthPrefixedString,
+  enumeration::PrimitiveType,
+  error::{error_position, ErrorWithInput},
+};
 
 /// 2.2.2.2 `StringValueWithCode`
 #[derive(Debug, Clone, PartialEq)]
 pub struct StringValueWithCode<'i>(LengthPrefixedString<'i>);
 
 impl<'i> StringValueWithCode<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    map(preceded(PrimitiveType::String, LengthPrefixedString::parse), Self)(input).map_err(into_failure)
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (input, _) = PrimitiveType::String.parse(input).map_err(into_failure).map_err(|err| {
+      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedStringValueWithCode))
+    })?;
+
+    map(LengthPrefixedString::parse, Self)(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))
   }
 
   #[inline]

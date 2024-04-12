@@ -9,6 +9,7 @@ use crate::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, Single, TimeSpan, UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
+  error::{error_position, ErrorWithInput},
   value, Value,
 };
 
@@ -33,7 +34,7 @@ pub enum MemberPrimitiveUnTyped {
 }
 
 impl MemberPrimitiveUnTyped {
-  pub fn parse(input: &[u8], primitive_type: PrimitiveType) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8], primitive_type: PrimitiveType) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     match primitive_type {
       PrimitiveType::Boolean => map(Boolean::parse, Self::Boolean)(input),
       PrimitiveType::Byte => map(Byte::parse, Self::Byte)(input),
@@ -53,6 +54,7 @@ impl MemberPrimitiveUnTyped {
       PrimitiveType::Null => fail(input).map_err(into_failure),
       PrimitiveType::String => fail(input).map_err(into_failure),
     }
+    .map_err(|err| err.map(|err| error_position!(err.input, ExpectedPrimitive)))
   }
 
   #[inline]
