@@ -76,7 +76,7 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
       'de,
       std::iter::Map<std::collections::hash_map::Iter<'_, &'de str, Value<'de>>, _>,
       _,
-    > = MapDeserializer::new(members.iter().map(|(key, value)| (StrDeserializer(*key), ValueDeserializer::new(value))));
+    > = MapDeserializer::new(members.iter().map(|(key, value)| (StrDeserializer(key), ValueDeserializer::new(value))));
 
     if library.is_some() {
       return map_deserializer.deserialize_map(visitor)
@@ -135,12 +135,10 @@ impl<'de, 'o> de::Deserializer<'de> for ObjectDeserializer<'de, 'o> {
       },
       "System.Collections.Generic.List" => {
         if members.len() == 3 {
-          if let (Some(items), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
+          if let (Some(Value::Array(items)), Some(Value::Int32(size)), Some(Value::Int32(_version))) =
             (members.get("_items"), members.get("_size"), members.get("_version"))
           {
-            if let Value::Array(items) = items {
-              return ListDeserializer::new(items.iter(), (*size) as usize).deserialize_any(visitor)
-            }
+            return ListDeserializer::new(items.iter(), (*size) as usize).deserialize_any(visitor)
           }
         }
       },
