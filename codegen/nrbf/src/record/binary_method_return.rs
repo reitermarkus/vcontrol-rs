@@ -1,4 +1,4 @@
-use nom::{combinator::cond, IResult, Parser};
+use nom::{combinator::cond, IResult};
 
 use crate::{
   error::{error_position, ErrorWithInput},

@@ -53,7 +53,7 @@ impl<'i> ValueWithCode<'i> {
       PrimitiveType::UInt32 => map(|input| UInt32::parse(input), Self::UInt32)(input),
       PrimitiveType::UInt64 => map(|input| UInt64::parse(input), Self::UInt64)(input),
       PrimitiveType::Null => Ok((input, Self::Null)),
-      PrimitiveType::String => map(|input| LengthPrefixedString::parse(input), Self::String)(input),
+      PrimitiveType::String => map(LengthPrefixedString::parse, Self::String)(input),
     }
   }
 
