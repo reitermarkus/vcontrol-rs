@@ -9,6 +9,7 @@ use nom::{
 
 use crate::{
   combinator::into_failure,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -61,7 +62,7 @@ impl<'i> LengthPrefixedString<'i> {
     Self::parse_len(input)
       .and_then(|(input, len)| map(map_res(take(len), str::from_utf8), Self)(input))
       .map_err(into_failure)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedPrimitive(PrimitiveType::String))))
   }
 
   #[inline]

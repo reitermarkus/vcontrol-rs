@@ -86,6 +86,32 @@ impl RecordType {
     value(self, tag([self as u8]))(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedRecordType(self))))
   }
+
+
+  pub(crate) fn description(&self) -> &'static str {
+    match self {
+      Self::SerializedStreamHeader => "a SerializedStreamHeader",
+      Self::ClassWithId => "a ClassWithId",
+      Self::SystemClassWithMembers => "a SystemClassWithMembers",
+      Self::ClassWithMembers => "a ClassWithMembers",
+      Self::SystemClassWithMembersAndTypes => "a SystemClassWithMembersAndTypes",
+      Self::ClassWithMembersAndTypes => "a ClassWithMembersAndTypes",
+      Self::BinaryObjectString => "a BinaryObjectString",
+      Self::BinaryArray => "a BinaryArray",
+      Self::MemberPrimitiveTyped => "a MemberPrimitiveTyped",
+      Self::MemberReference => "a MemberReference",
+      Self::ObjectNull => "an ObjectNull",
+      Self::MessageEnd => "a MessageEnd",
+      Self::BinaryLibrary => "a BinaryLibrary",
+      Self::ObjectNullMultiple256 => "an ObjectNullMultiple256",
+      Self::ObjectNullMultiple => "an ObjectNullMultiple",
+      Self::ArraySinglePrimitive => "an ArraySinglePrimitive",
+      Self::ArraySingleObject => "an ArraySingleObject",
+      Self::ArraySingleString => "an ArraySingleString",
+      Self::MethodCall => "a MethodCall",
+      Self::MethodReturn => "a MethodReturn",
+    }
+  }
 }
 
 impl<I, E> Parser<I, Self, E> for RecordType

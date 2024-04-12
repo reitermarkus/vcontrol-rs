@@ -10,11 +10,7 @@ pub struct Error<'i> {
 
 impl fmt::Display for Error<'_> {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match &self.inner.inner {
-      ErrorInner::ExpectedType(expected_type) => write!(f, "expected {}", expected_type),
-      ErrorInner::Eof => write!(f, "unexpected end of input"),
-      _ => todo!(),
-    }
+    write!(f, "{}", self.inner.inner)
   }
 }
 
@@ -42,11 +38,10 @@ impl<'i> nom::error::ParseError<&'i [u8]> for ErrorWithInput<'i> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum ErrorInner {
-  ExpectedType(ExpectedType),
-  UnresolvableMemberReference,
-  InvalidCallArrayId,
   Eof,
   TrailingData,
+  UnresolvableMemberReference,
+  InvalidCallArrayId,
   MissingRootObject,
   InvalidNullCount,
   InvalidObjectId,
@@ -66,60 +61,52 @@ pub(crate) enum ErrorInner {
   ExpectedRecordType(RecordType),
   ExpectedClassInfo,
   DuplicateObjectId,
-  ExpectedBinaryMethodCall,
   ExpectedStringValueWithCode,
   ExpectedArrayOfValueWithCode,
   ExpectedMessageFlags,
-  ExpectedPrimitiveType,
-  ExpectedLengthPrefixedString,
-  Other,
   InvalidMessageFlags,
+  ExpectedPrimitiveType,
+  Other,
   ExpectedPrimitive(PrimitiveType),
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) enum ExpectedType {
-  Boolean,
-  Byte,
-  Char,
-  DateTime,
-  Decimal,
-  Double,
-  Int8,
-  Int16,
-  Int32,
-  Int64,
-  LengthPrefixedString,
-  Single,
-  TimeSpan,
-  UInt16,
-  UInt32,
-  UInt64,
-}
-
-impl fmt::Display for ExpectedType {
+impl fmt::Display for ErrorInner {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      Self::Boolean => "a BOOLEAN",
-      Self::Byte => "a BYTE",
-      Self::Char => "a CHAR",
-      Self::DateTime => "a DateTime",
-      Self::Decimal => "a Decimal",
-      Self::Double => "a DOUBLE",
-      Self::Int8 => "an INT8",
-      Self::Int16 => "an INT16",
-      Self::Int32 => "an INT32",
-      Self::Int64 => "an INT64",
-      Self::LengthPrefixedString => "a LengthPrefixedString",
-      Self::Single => "a SINGLE",
-      Self::TimeSpan => "a TimeSpan",
-      Self::UInt16 => "a UINT16",
-      Self::UInt32 => "a UINT32",
-      Self::UInt64 => "a UINT64",
+      Self::Eof => write!(f, "unexpected end of input"),
+      Self::TrailingData => write!(f, "unexpected trailing data"),
+      Self::UnresolvableMemberReference => write!(f, "unresolvable member reference"),
+      Self::InvalidCallArrayId => write!(f, "invalid call array ID"),
+      Self::MissingRootObject => write!(f, "missing root object"),
+      Self::InvalidNullCount => write!(f, "invalid NULL count"),
+      Self::InvalidObjectId => write!(f, "invalid object ID"),
+      Self::InvalidLength => write!(f, "invalid length"),
+      Self::InvalidMajorVersion => write!(f, "invalid major version"),
+      Self::InvalidMinorVersion => write!(f, "invalid minor version"),
+      Self::InvalidRootId => write!(f, "invalid root ID"),
+      Self::MissingMetadataId => write!(f, "missing metadata ID"),
+      Self::InvalidMetadataId => write!(f, "invalid metadata ID"),
+      Self::InvalidArgs => write!(f, "invalid method arguments"),
+      Self::ExpectedBinaryType => write!(f, "expected BinaryType"),
+      Self::ExpectedBinaryArrayType => write!(f, "expected BinaryArrayType"),
+      Self::MissingLibraryId => write!(f, "missing library ID"),
+      Self::InvalidLibraryId => write!(f, "invalid library ID"),
+      Self::DuplicateBinaryLibrary => write!(f, "duplicate BinaryLibrary"),
+      Self::DuplicateClass => write!(f, "duplicate class"),
+      Self::ExpectedRecordType(record_type) => write!(f, "expected {}", record_type.description()),
+      Self::ExpectedClassInfo => write!(f, "expected ClassInfo"),
+      Self::DuplicateObjectId => write!(f, "duplicate object ID"),
+      Self::ExpectedStringValueWithCode => write!(f, "expected StringValueWithCode"),
+      Self::ExpectedArrayOfValueWithCode => write!(f, "expected ArrayOfValueWithCode"),
+      Self::ExpectedMessageFlags => write!(f, "expected MessageFlags"),
+      Self::InvalidMessageFlags => write!(f, "invalid MessageFlags"),
+      Self::ExpectedPrimitiveType => write!(f, "expected PrimitiveType"),
+      Self::Other => write!(f, "other error"),
+      Self::ExpectedPrimitive(primitive_type) => write!(f, "expected {}", primitive_type.description()),
     }
-    .fmt(f)
   }
 }
+
 
 macro_rules! error_position {
   ($input:expr, $error_inner:ident) => {{
