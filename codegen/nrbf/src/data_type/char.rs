@@ -9,7 +9,7 @@ use super::impl_primitive;
 use crate::{
   combinator::into_failure,
   enumeration::PrimitiveType,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 /// 2.1.1.1 `Char`
@@ -17,7 +17,7 @@ use crate::{
 pub struct Char(pub char);
 
 impl Char {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     map(
       alt((
         map_opt(u8, |n| char::from_u32(n as u32)),

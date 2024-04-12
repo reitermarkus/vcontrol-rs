@@ -1,20 +1,14 @@
 use nom::{combinator::map, multi::length_count, IResult};
 
-use crate::{
-  combinator::length,
-  error::{error_position, ErrorWithInput},
-  record::ValueWithCode,
-  Value,
-};
+use crate::{combinator::length, error::Error, record::ValueWithCode, Value};
 
 /// 2.2.2.3 `ArrayOfValueWithCode`
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrayOfValueWithCode<'i>(Vec<ValueWithCode<'i>>);
 
 impl<'i> ArrayOfValueWithCode<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     map(length_count(length, ValueWithCode::parse), Self)(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedArrayOfValueWithCode)))
   }
 
   #[inline]

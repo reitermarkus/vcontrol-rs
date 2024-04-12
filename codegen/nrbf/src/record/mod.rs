@@ -2,7 +2,7 @@
 
 use nom::{bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser};
 
-use crate::error::{error_position, ErrorWithInput};
+use crate::error::{error_position, Error};
 
 mod serialization_header;
 pub use serialization_header::SerializationHeader;
@@ -82,11 +82,10 @@ pub enum RecordType {
 }
 
 impl RecordType {
-  fn parse(self, input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  fn parse(self, input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     value(self, tag([self as u8]))(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedRecordType(self))))
   }
-
 
   pub(crate) fn description(&self) -> &'static str {
     match self {

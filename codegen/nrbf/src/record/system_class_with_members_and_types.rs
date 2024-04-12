@@ -4,7 +4,7 @@ use nom::IResult;
 
 use crate::{
   common::{ClassInfo, MemberTypeInfo},
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
   record::RecordType,
 };
 
@@ -16,7 +16,7 @@ pub struct SystemClassWithMembersAndTypes<'i> {
 }
 
 impl<'i> SystemClassWithMembersAndTypes<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, _) = RecordType::SystemClassWithMembersAndTypes.parse(input)?;
 
     let (input, class_info) =

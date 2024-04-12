@@ -6,7 +6,7 @@ use crate::{
     UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
-  error::ErrorWithInput,
+  error::Error,
   value, Value,
 };
 
@@ -33,7 +33,7 @@ pub enum ValueWithCode<'i> {
 }
 
 impl<'i> ValueWithCode<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, primitive_type) = PrimitiveType::parse(input)?;
 
     match primitive_type {

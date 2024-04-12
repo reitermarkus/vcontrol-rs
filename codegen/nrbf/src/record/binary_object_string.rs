@@ -2,7 +2,7 @@ use std::num::NonZeroU32;
 
 use nom::IResult;
 
-use crate::{combinator::object_id, data_type::LengthPrefixedString, error::ErrorWithInput, record::RecordType};
+use crate::{combinator::object_id, data_type::LengthPrefixedString, error::Error, record::RecordType};
 
 /// 2.5.7 `BinaryObjectString`
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +12,7 @@ pub struct BinaryObjectString<'s> {
 }
 
 impl<'i> BinaryObjectString<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, _) = RecordType::BinaryObjectString.parse(input)?;
 
     let (input, object_id) = object_id(input)?;
