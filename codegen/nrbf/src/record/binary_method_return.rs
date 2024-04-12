@@ -20,11 +20,9 @@ impl<'i> BinaryMethodReturn<'i> {
       .parse(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryMethodReturn)))?;
 
-    let (input, message_enum) =
-      MessageFlags::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedMessageFlags)))?;
+    let (input, message_enum) = MessageFlags::parse(input)?;
     let (input, return_value) =
-      cond(message_enum.intersects(MessageFlags::RETURN_VALUE_INLINE), ValueWithCode::parse)(input)
-        .map_err(|err| err.map(|err| error_position!(err.input, ExpectedValueWithCode)))?;
+      cond(message_enum.intersects(MessageFlags::RETURN_VALUE_INLINE), ValueWithCode::parse)(input)?;
     let (input, call_context) =
       cond(message_enum.intersects(MessageFlags::CONTEXT_INLINE), StringValueWithCode::parse)(input)?;
     let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)

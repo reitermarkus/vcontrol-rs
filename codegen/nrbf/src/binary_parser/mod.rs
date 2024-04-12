@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, HashMap};
 use nom::{
   branch::alt,
   combinator::{fail, map, map_opt, opt, verify},
-  multi::many_m_n,
+  multi::count,
   IResult, ToUsize,
 };
 
@@ -239,8 +239,7 @@ impl<'i> BinaryParser<'i> {
         let library = self.binary_libraries[&class.library_id.into()].as_str();
 
         let member_count = class.class_info().member_names.len();
-        let (input, member_references) =
-          many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
+        let (input, member_references) = count(|input| self.parse_member_reference(input, None), member_count)(input)?;
 
         (input, (class.class_info(), Some(library), member_references))
       },
@@ -253,8 +252,7 @@ impl<'i> BinaryParser<'i> {
       },
       Class::SystemClassWithMembers(ref class) => {
         let member_count = class.class_info().member_names.len();
-        let (input, member_references) =
-          many_m_n(member_count, member_count, |input| self.parse_member_reference(input, None))(input)?;
+        let (input, member_references) = count(|input| self.parse_member_reference(input, None), member_count)(input)?;
 
         (input, (class.class_info(), None, member_references))
       },
@@ -285,11 +283,11 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
   ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
-    let (mut input, array) = ArraySingleObject::parse(input)?;
+    let (mut input, array_single_object) = ArraySingleObject::parse(input)?;
 
     let mut members = vec![];
 
-    let len = array.array_info.len();
+    let len = array_single_object.array_info.len();
     while members.len() < len {
       let member;
       (input, member) = self.parse_member_reference(input, None)?;
@@ -308,7 +306,7 @@ impl<'i> BinaryParser<'i> {
 
     let (input, members) = self.resolve_members(input, members)?;
 
-    let object_id = array.object_id().into();
+    let object_id = array_single_object.object_id().into();
     Ok((input, (RefId(object_id), members)))
   }
 
@@ -317,16 +315,17 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
   ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
-    let (input, array) = ArraySinglePrimitive::parse(input)?;
+    let (input, array_single_primitive) = ArraySinglePrimitive::parse(input)?;
 
-    let length = array.array_info.len();
-    let (input, members) = many_m_n(
-      length,
-      length,
-      map(|input| MemberPrimitiveUnTyped::parse(input, array.primitive_type), |primitive| primitive.into_value()),
+    let (input, members) = count(
+      map(
+        |input| MemberPrimitiveUnTyped::parse(input, array_single_primitive.primitive_type),
+        |primitive| primitive.into_value(),
+      ),
+      array_single_primitive.array_info.len(),
     )(input)?;
 
-    let object_id = array.object_id().into();
+    let object_id = array_single_primitive.object_id().into();
     Ok((input, (RefId(object_id), members)))
   }
 
@@ -335,11 +334,11 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
   ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
-    let (mut input, array) = ArraySingleString::parse(input)?;
+    let (mut input, array_single_string) = ArraySingleString::parse(input)?;
 
     let mut members = vec![];
 
-    let len = array.array_info.len();
+    let len = array_single_string.array_info.len();
     while members.len() < len {
       let member;
       (input, member) = self.parse_member_reference(input, Some((BinaryType::StringArray, None)))?;
@@ -358,32 +357,50 @@ impl<'i> BinaryParser<'i> {
 
     let (input, members) = self.resolve_members(input, members)?;
 
-    let object_id = array.object_id().into();
+    let object_id = array_single_string.object_id().into();
     Ok((input, (RefId(object_id), members)))
   }
 
   /// 2.7 Binary Record Grammar - `BinaryArray *(memberReference)`
   fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
-    let (input, array) = BinaryArray::parse(input)?;
+    let (input, binary_array) = BinaryArray::parse(input)?;
 
-    let member_count = match array.binary_array_type_enum {
-      BinaryArrayType::Single | BinaryArrayType::SingleOffset => array.lengths.first().map(|n| i32::from(*n) as u32),
-      BinaryArrayType::Rectangular | BinaryArrayType::RectangularOffset => {
-        array.lengths.iter().try_fold(1u32, |acc, n| acc.checked_mul(i32::from(*n) as u32))
+    let member_count = match binary_array.binary_array_type_enum {
+      BinaryArrayType::Single | BinaryArrayType::SingleOffset => {
+        binary_array.lengths.first().map(|n| i32::from(*n) as u32)
       },
-      BinaryArrayType::Jagged | BinaryArrayType::JaggedOffset => array.lengths.first().map(|n| i32::from(*n) as u32),
+      BinaryArrayType::Rectangular | BinaryArrayType::RectangularOffset => {
+        binary_array.lengths.iter().try_fold(1u32, |acc, n| acc.checked_mul(i32::from(*n) as u32))
+      },
+      BinaryArrayType::Jagged | BinaryArrayType::JaggedOffset => {
+        binary_array.lengths.first().map(|n| i32::from(*n) as u32)
+      },
     };
     let member_count = match member_count {
-      Some(member_count) => member_count.to_usize(),
+      Some(member_count) => member_count,
       None => return fail(input),
     };
-    let (input, members) = many_m_n(member_count, member_count, |input| {
-      self.parse_member_reference(input, Some((array.type_enum, array.additional_type_info.as_ref())))
-    })(input)?;
+    let (input, members) = count(
+      |input| {
+        self.parse_member_reference(input, Some((binary_array.type_enum, binary_array.additional_type_info.as_ref())))
+      },
+      member_count.to_usize(),
+    )(input)?;
 
     let (input, members) = self.resolve_members(input, members)?;
 
-    let object_id = array.object_id().into();
+    let mut members = members;
+    for l in binary_array.lengths.iter().skip(1).rev() {
+      let mut members2 = vec![];
+
+      while !members.is_empty() {
+        members2.push(Value::Array(members.drain(0..(i32::from(*l) as u32).to_usize()).collect::<Vec<_>>()));
+      }
+
+      members = members2;
+    }
+
+    let object_id = binary_array.object_id().into();
     Ok((input, (RefId(object_id), members)))
   }
 
@@ -423,23 +440,9 @@ impl<'i> BinaryParser<'i> {
   /// 2.7 Binary Record Grammar - `nullObject`
   fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], ValueOrRef<'i>, ErrorWithInput<'i>> {
     alt((
-      map(
-        |input| ObjectNull::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedNullObject))),
-        |n| ValueOrRef::Null(n.null_count()),
-      ),
-      map(
-        |input| {
-          ObjectNullMultiple::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedNullObject)))
-        },
-        |n| ValueOrRef::Null(n.null_count()),
-      ),
-      map(
-        |input| {
-          ObjectNullMultiple256::parse(input)
-            .map_err(|err| err.map(|err| error_position!(err.input, ExpectedNullObject)))
-        },
-        |n| ValueOrRef::Null(n.null_count()),
-      ),
+      map(|input| ObjectNull::parse(input), |n| ValueOrRef::Null(n.null_count())),
+      map(|input| ObjectNullMultiple::parse(input), |n| ValueOrRef::Null(n.null_count())),
+      map(|input| ObjectNullMultiple256::parse(input), |n| ValueOrRef::Null(n.null_count())),
     ))(input)
   }
 

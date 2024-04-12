@@ -22,8 +22,7 @@ impl<'i> SystemClassWithMembersAndTypes<'i> {
 
     let (input, class_info) =
       ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
-    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedMemberTypeInfo)))?;
+    let (input, member_type_info) = MemberTypeInfo::parse(input, &class_info)?;
 
     Ok((input, Self { class_info, member_type_info }))
   }

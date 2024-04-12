@@ -6,6 +6,7 @@ pub struct Error {
   pub(crate) inner: ErrorInner,
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct ErrorWithInput<'i> {
   pub(crate) input: &'i [u8],
   pub(crate) inner: ErrorInner,
@@ -33,6 +34,7 @@ pub(crate) enum ErrorInner {
   InvalidArray,
   ExpectedArraySingleObject,
   ExpectedMemberReference,
+  ArrayOfValueWithCode,
   UnresolvableMemberReference,
   ExpectedArraySinglePrimitive,
   ExptectedMemberPrimitiveUnTypedArray,
@@ -87,6 +89,24 @@ pub(crate) enum ErrorInner {
   ExpectedInt32,
   ExpectedLengthPrefixedString,
   Other,
+  ExpectedObjectNullMultiple,
+  ExpectedObjectNullMultiple256,
+  ExpectedObjectNull,
+  ExpectedUInt16,
+  ExpectedUInt32,
+  ExpectedUInt8,
+  ExpectedUInt64,
+  ExpectedInt16,
+  ExpectedInt8,
+  ExpectedInt64,
+  ExpectedDouble,
+  ExpectedSingle,
+  ExpectedTimeSpan,
+  ExpectedDecimal,
+  ExpectedDateTime,
+  ExpectedByte,
+  ExpectedChar,
+  InvalidMessageFlags,
 }
 
 #[derive(Debug, Clone, PartialEq)]

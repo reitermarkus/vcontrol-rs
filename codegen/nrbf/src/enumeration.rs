@@ -4,7 +4,10 @@ use nom::{
   branch::alt, bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser,
 };
 
-use crate::combinator::into_failure;
+use crate::{
+  combinator::into_failure,
+  error::{error_position, ErrorWithInput},
+};
 
 /// 2.1.2.2 `BinaryTypeEnumeration`
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -21,7 +24,7 @@ pub enum BinaryType {
 }
 
 impl BinaryType {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     alt((
       Self::Primitive,
       Self::String,
@@ -33,6 +36,7 @@ impl BinaryType {
       Self::PrimitiveArray,
     ))(input)
     .map_err(into_failure)
+    .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryType)))
   }
 }
 
@@ -70,7 +74,7 @@ pub enum PrimitiveType {
 }
 
 impl PrimitiveType {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     alt((
       Self::Boolean,
       Self::Byte,
@@ -91,6 +95,7 @@ impl PrimitiveType {
       Self::String,
     ))(input)
     .map_err(into_failure)
+    .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitiveType)))
   }
 }
 
@@ -117,7 +122,7 @@ pub enum BinaryArrayType {
 }
 
 impl BinaryArrayType {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     alt((
       Self::Single,
       Self::Jagged,
@@ -127,6 +132,7 @@ impl BinaryArrayType {
       Self::RectangularOffset,
     ))(input)
     .map_err(into_failure)
+    .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryArrayType)))
   }
 }
 

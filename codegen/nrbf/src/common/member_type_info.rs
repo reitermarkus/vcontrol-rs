@@ -1,9 +1,9 @@
-use nom::{multi::many_m_n, IResult};
+use nom::{multi::count, IResult};
 
 use crate::{
-  combinator::into_failure,
   common::{AdditionalTypeInfo, ClassInfo},
   enumeration::BinaryType,
+  error::{ErrorWithInput},
 };
 
 /// 2.3.1.2 `MemberTypeInfo`
@@ -14,10 +14,8 @@ pub struct MemberTypeInfo<'i> {
 }
 
 impl<'i> MemberTypeInfo<'i> {
-  pub fn parse(input: &'i [u8], class_info: &ClassInfo<'_>) -> IResult<&'i [u8], Self> {
-    let count = class_info.member_names.len();
-
-    let (mut input, binary_type_enums) = many_m_n(count, count, BinaryType::parse)(input).map_err(into_failure)?;
+  pub fn parse(input: &'i [u8], class_info: &ClassInfo<'_>) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (mut input, binary_type_enums) = count(BinaryType::parse, class_info.member_names.len())(input)?;
 
     let mut additional_infos = vec![];
     for &binary_type_enum in binary_type_enums.iter() {

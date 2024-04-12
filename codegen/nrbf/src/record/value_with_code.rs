@@ -1,17 +1,15 @@
 use nom::{
-  branch::alt,
-  combinator::{map, value},
-  sequence::preceded,
+  combinator::{map},
   IResult,
 };
 
 use crate::{
-  combinator::into_failure,
   data_type::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, LengthPrefixedString, Single, TimeSpan,
     UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
+  error::{ErrorWithInput},
   value, Value,
 };
 
@@ -38,27 +36,28 @@ pub enum ValueWithCode<'i> {
 }
 
 impl<'i> ValueWithCode<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    alt((
-      map(preceded(PrimitiveType::Boolean, Boolean::parse), Self::Boolean),
-      map(preceded(PrimitiveType::Byte, Byte::parse), Self::Byte),
-      map(preceded(PrimitiveType::Char, Char::parse), Self::Char),
-      map(preceded(PrimitiveType::Decimal, Decimal::parse), Self::Decimal),
-      map(preceded(PrimitiveType::Double, Double::parse), Self::Double),
-      map(preceded(PrimitiveType::Int16, Int16::parse), Self::Int16),
-      map(preceded(PrimitiveType::Int32, Int32::parse), Self::Int32),
-      map(preceded(PrimitiveType::Int64, Int64::parse), Self::Int64),
-      map(preceded(PrimitiveType::SByte, Int8::parse), Self::SByte),
-      map(preceded(PrimitiveType::Single, Single::parse), Self::Single),
-      map(preceded(PrimitiveType::TimeSpan, TimeSpan::parse), Self::TimeSpan),
-      map(preceded(PrimitiveType::DateTime, DateTime::parse), Self::DateTime),
-      map(preceded(PrimitiveType::UInt16, UInt16::parse), Self::UInt16),
-      map(preceded(PrimitiveType::UInt32, UInt32::parse), Self::UInt32),
-      map(preceded(PrimitiveType::UInt64, UInt64::parse), Self::UInt64),
-      value(Self::Null, PrimitiveType::Null),
-      map(preceded(PrimitiveType::String, LengthPrefixedString::parse), Self::String),
-    ))(input)
-    .map_err(into_failure)
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (input, primitive_type) = PrimitiveType::parse(input)?;
+
+    match primitive_type {
+      PrimitiveType::Boolean => map(|input| Boolean::parse(input), Self::Boolean)(input),
+      PrimitiveType::Byte => map(|input| Byte::parse(input), Self::Byte)(input),
+      PrimitiveType::Char => map(|input| Char::parse(input), Self::Char)(input),
+      PrimitiveType::Decimal => map(|input| Decimal::parse(input), Self::Decimal)(input),
+      PrimitiveType::Double => map(|input| Double::parse(input), Self::Double)(input),
+      PrimitiveType::Int16 => map(|input| Int16::parse(input), Self::Int16)(input),
+      PrimitiveType::Int32 => map(|input| Int32::parse(input), Self::Int32)(input),
+      PrimitiveType::Int64 => map(|input| Int64::parse(input), Self::Int64)(input),
+      PrimitiveType::SByte => map(|input| Int8::parse(input), Self::SByte)(input),
+      PrimitiveType::Single => map(|input| Single::parse(input), Self::Single)(input),
+      PrimitiveType::TimeSpan => map(|input| TimeSpan::parse(input), Self::TimeSpan)(input),
+      PrimitiveType::DateTime => map(|input| DateTime::parse(input), Self::DateTime)(input),
+      PrimitiveType::UInt16 => map(|input| UInt16::parse(input), Self::UInt16)(input),
+      PrimitiveType::UInt32 => map(|input| UInt32::parse(input), Self::UInt32)(input),
+      PrimitiveType::UInt64 => map(|input| UInt64::parse(input), Self::UInt64)(input),
+      PrimitiveType::Null => Ok((input, Self::Null)),
+      PrimitiveType::String => map(|input| LengthPrefixedString::parse(input), Self::String)(input),
+    }
   }
 
   #[inline]
