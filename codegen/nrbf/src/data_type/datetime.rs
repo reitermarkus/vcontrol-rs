@@ -3,6 +3,7 @@ use nom::{combinator::map, IResult};
 use crate::{
   combinator::into_failure,
   data_type::Int64,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -14,7 +15,7 @@ impl DateTime {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     map(Int64::parse, Self)(input)
       .map_err(into_failure)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedDateTime)))
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedPrimitive(PrimitiveType::DateTime))))
   }
 }
 

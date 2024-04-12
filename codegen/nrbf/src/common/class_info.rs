@@ -4,7 +4,7 @@ use nom::{multi::length_count, IResult};
 
 use crate::{
   combinator::{length, object_id},
-  data_type::{LengthPrefixedString},
+  data_type::LengthPrefixedString,
   error::ErrorWithInput,
 };
 

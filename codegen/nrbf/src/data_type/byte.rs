@@ -1,8 +1,4 @@
-use nom::{
-  combinator::{map},
-  number::complete::u8,
-  IResult,
-};
+use nom::{combinator::map, number::complete::u8, IResult};
 
 use super::impl_primitive;
 use crate::{

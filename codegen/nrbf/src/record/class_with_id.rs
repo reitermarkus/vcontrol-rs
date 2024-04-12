@@ -1,6 +1,6 @@
 use std::num::NonZeroU32;
 
-use nom::{IResult};
+use nom::IResult;
 
 use crate::{
   combinator::{self, object_id},
@@ -11,8 +11,8 @@ use crate::{
 /// 2.3.2.5 `ClassWithId`
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassWithId {
-  pub object_id: NonZeroU32,
-  pub metadata_id: NonZeroU32,
+  object_id: NonZeroU32,
+  metadata_id: NonZeroU32,
 }
 
 impl ClassWithId {

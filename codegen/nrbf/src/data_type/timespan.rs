@@ -2,6 +2,7 @@ use nom::{combinator::map, number::complete::le_i64, IResult};
 
 use crate::{
   combinator::into_failure,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -11,9 +12,9 @@ pub struct TimeSpan(pub i64);
 
 impl TimeSpan {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
-    map(le_i64, Self)(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedTimeSpan)))
+    map(le_i64, Self)(input).map_err(into_failure).map_err(|err| {
+      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitive(PrimitiveType::TimeSpan)))
+    })
   }
 }
 

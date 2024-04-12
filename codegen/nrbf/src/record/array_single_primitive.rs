@@ -1,10 +1,8 @@
 use std::num::NonZeroU32;
 
-use nom::{IResult};
+use nom::IResult;
 
-use crate::{
-  common::ArrayInfo, enumeration::PrimitiveType, error::ErrorWithInput, record::RecordType,
-};
+use crate::{common::ArrayInfo, enumeration::PrimitiveType, error::ErrorWithInput, record::RecordType};
 
 /// 2.4.3.3 `ArraySinglePrimitive`
 #[derive(Debug, Clone, PartialEq)]

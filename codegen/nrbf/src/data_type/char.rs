@@ -8,6 +8,7 @@ use nom::{
 use super::impl_primitive;
 use crate::{
   combinator::into_failure,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -27,7 +28,9 @@ impl Char {
       Self,
     )(input)
     .map_err(into_failure)
-    .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedChar)))
+    .map_err(|err| {
+      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitive(PrimitiveType::Char)))
+    })
   }
 }
 

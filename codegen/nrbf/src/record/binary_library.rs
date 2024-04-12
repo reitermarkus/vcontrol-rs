@@ -1,12 +1,8 @@
 use std::num::NonZeroU32;
 
-use nom::{IResult};
+use nom::IResult;
 
-use crate::{
-  combinator::library_id,
-  data_type::{LengthPrefixedString},
-  error::{error_position, ErrorWithInput},
-};
+use crate::{combinator::library_id, data_type::LengthPrefixedString, error::ErrorWithInput};
 
 use super::RecordType;
 
@@ -22,8 +18,7 @@ impl<'i> BinaryLibrary<'i> {
     let (input, _) = RecordType::BinaryLibrary.parse(input)?;
 
     let (input, library_id) = library_id(input)?;
-    let (input, library_name) = LengthPrefixedString::parse(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))?;
+    let (input, library_name) = LengthPrefixedString::parse(input)?;
 
     Ok((input, Self { library_id, library_name }))
   }

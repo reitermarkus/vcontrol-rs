@@ -1,7 +1,7 @@
 use nom::{combinator::cond, IResult};
 
 use crate::{
-  error::{error_position, ErrorWithInput},
+  error::ErrorWithInput,
   record::{ArrayOfValueWithCode, MessageFlags, RecordType, StringValueWithCode, ValueWithCode},
 };
 
@@ -23,8 +23,7 @@ impl<'i> BinaryMethodReturn<'i> {
       cond(message_enum.intersects(MessageFlags::RETURN_VALUE_INLINE), ValueWithCode::parse)(input)?;
     let (input, call_context) =
       cond(message_enum.intersects(MessageFlags::CONTEXT_INLINE), StringValueWithCode::parse)(input)?;
-    let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedArrayOfValueWithCode)))?;
+    let (input, args) = cond(message_enum.intersects(MessageFlags::ARGS_INLINE), ArrayOfValueWithCode::parse)(input)?;
 
     Ok((input, Self { message_enum, return_value, call_context, args }))
   }
