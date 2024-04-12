@@ -3,6 +3,7 @@ use nom::{combinator::map_res, number::complete::u8, IResult};
 use super::impl_primitive;
 use crate::{
   combinator::into_failure,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -20,7 +21,9 @@ impl Boolean {
       }))
     })(input)
     .map_err(into_failure)
-    .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBoolean)))
+    .map_err(|err| {
+      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitive(PrimitiveType::Boolean)))
+    })
   }
 }
 

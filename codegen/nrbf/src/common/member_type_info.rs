@@ -3,7 +3,7 @@ use nom::{multi::count, IResult};
 use crate::{
   common::{AdditionalTypeInfo, ClassInfo},
   enumeration::BinaryType,
-  error::{ErrorWithInput},
+  error::ErrorWithInput,
 };
 
 /// 2.3.1.2 `MemberTypeInfo`

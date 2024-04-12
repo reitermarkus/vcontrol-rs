@@ -1,8 +1,5 @@
 use bitflags::bitflags;
-use nom::{
-  combinator::{map},
-  IResult,
-};
+use nom::{combinator::map, IResult};
 
 use crate::{
   data_type::Int32,

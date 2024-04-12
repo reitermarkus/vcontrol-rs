@@ -9,7 +9,7 @@ use crate::{
     Boolean, Byte, Char, DateTime, Decimal, Double, Int16, Int32, Int64, Int8, Single, TimeSpan, UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
-  error::{ErrorWithInput},
+  error::ErrorWithInput,
   value, Value,
 };
 

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use nom::{IResult};
+use nom::IResult;
 
 use crate::{
   data_type::LengthPrefixedString,

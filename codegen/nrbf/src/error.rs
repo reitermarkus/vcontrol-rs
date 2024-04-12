@@ -1,9 +1,23 @@
 use std::fmt;
 
+use crate::{enumeration::PrimitiveType, record::RecordType};
+
 /// Error while parsing a [`RemotingMessage`](crate::RemotingMessage).
 #[derive(Debug, Clone, PartialEq)]
-pub struct Error {
-  pub(crate) inner: ErrorInner,
+pub struct Error<'i> {
+  pub(crate) inner: ErrorWithInput<'i>,
+}
+
+impl fmt::Display for Error<'_> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match &self.inner.inner {
+      ErrorInner::ExpectedType(expected_type) => write!(f, "expected {}", expected_type),
+      ErrorInner::ExpectedValue => write!(f, "expected a value"),
+      ErrorInner::ExpectedRemotingMessage => write!(f, "expected a remoting message"),
+      ErrorInner::Eof => write!(f, "unexpected end of input"),
+      _ => todo!(),
+    }
+  }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -36,21 +50,9 @@ pub(crate) enum ErrorInner {
   ExpectedMemberReference,
   ArrayOfValueWithCode,
   UnresolvableMemberReference,
-  ExpectedArraySinglePrimitive,
-  ExptectedMemberPrimitiveUnTypedArray,
-  ExpectedArraySingleString,
-  ExpectedBinaryArray,
-  ExpectedMemberReferenceArray,
-  ExptectedMemberReferenceArray,
-  ExpectedMemberReferencesWithTypeInfo,
-  ExpectedNullObject,
-  ExpectedClass,
   ExpectedValue,
-  ExpectedMethodCall,
-  ExpectedBinaryLibrary,
   ExpectedArray,
   CallArrayId,
-  ExpectedMethodReturn,
   ExpectedRemotingMessage,
   Eof,
   TrailingData,
@@ -59,12 +61,18 @@ pub(crate) enum ErrorInner {
   ExpectedMessageEnd,
   ExpectedHeader,
   MethodCallOrReturn,
+  InvalidNullCount,
+  InvalidObjectId,
+  InvalidArrayLength,
   ExpectedBoolean,
+  InvalidMajorVersion,
+  InvalidMinorVersion,
+  InvalidRootId,
+  InvalidMetadataId,
   InvalidArgs,
-  ExpectedInt32Array,
   ExpectedBinaryType,
-  ExpectedAdditionalTypeInfo,
   ExpectedBinaryArrayType,
+  InvalidLibraryId,
   DuplicateBinaryLibrary,
   DuplicateClass,
   ExpectedSystemClassWithMembersAndTypes,
@@ -72,6 +80,7 @@ pub(crate) enum ErrorInner {
   ExpectedClassWithMembersAndTypes,
   ExpectedClassWithId,
   ExpectedClassWithMembers,
+  ExpectedRecordType(RecordType),
   ExpectedMemberTypeInfo,
   ExpectedClassInfo,
   DuplicateObjectId,
@@ -82,7 +91,6 @@ pub(crate) enum ErrorInner {
   ExpectedBinaryMethodReturn,
   ExpectedValueWithCode,
   ExpectedBinaryObjectString,
-  ExpectedPrimitive,
   ExpectedArrayInfo,
   ExpectedPrimitiveType,
   ExpectedMemberPrimitiveTyped,
@@ -107,6 +115,7 @@ pub(crate) enum ErrorInner {
   ExpectedByte,
   ExpectedChar,
   InvalidMessageFlags,
+  ExpectedPrimitive(PrimitiveType),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -153,21 +162,12 @@ impl fmt::Display for ExpectedType {
   }
 }
 
-impl fmt::Display for Error {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match &self.inner {
-      ErrorInner::ExpectedType(expected_type) => write!(f, "expected {}", expected_type),
-      ErrorInner::ExpectedValue => write!(f, "expected a value"),
-      ErrorInner::ExpectedRemotingMessage => write!(f, "expected a remoting message"),
-      ErrorInner::Eof => write!(f, "unexpected end of input"),
-      _ => todo!(),
-    }
-  }
-}
-
 macro_rules! error_position {
   ($input:expr, $error_inner:ident) => {{
     $crate::error::ErrorWithInput { input: $input, inner: $crate::error::ErrorInner::$error_inner }
+  }};
+  ($input:expr, $error_inner:ident ( $expr:expr )) => {{
+    $crate::error::ErrorWithInput { input: $input, inner: $crate::error::ErrorInner::$error_inner($expr) }
   }};
 }
 pub(crate) use error_position;

@@ -17,9 +17,7 @@ pub struct BinaryMethodCall<'i> {
 
 impl<'i> BinaryMethodCall<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
-    let (input, _) = RecordType::MethodCall
-      .parse(input)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryMethodCall)))?;
+    let (input, _) = RecordType::MethodCall.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;
     let (input, method_name) = StringValueWithCode::parse(input)?;

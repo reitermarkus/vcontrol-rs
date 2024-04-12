@@ -1,8 +1,12 @@
 //! 2.1.1 Common Data Types
+use std::num::NonZeroU32;
 
 use nom::IResult;
 
-use crate::error::{error_position, ErrorWithInput};
+use crate::{
+  combinator::library_id,
+  error::{error_position, ErrorWithInput},
+};
 
 mod boolean;
 pub use boolean::Boolean;
@@ -41,16 +45,21 @@ pub use length_prefixed_string::LengthPrefixedString;
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassTypeInfo<'i> {
   pub type_name: LengthPrefixedString<'i>,
-  pub library_id: Int32,
+  pub library_id: NonZeroU32,
 }
 
 impl<'i> ClassTypeInfo<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
     let (input, type_name) = LengthPrefixedString::parse(input)
       .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))?;
-    let (input, library_id) = Int32::parse_positive(input)?;
+    let (input, library_id) = library_id(input)?;
 
     Ok((input, Self { type_name, library_id }))
+  }
+
+  #[inline]
+  pub(crate) fn library_id(&self) -> NonZeroU32 {
+    self.library_id
   }
 }
 

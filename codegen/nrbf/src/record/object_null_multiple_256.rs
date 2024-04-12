@@ -14,13 +14,13 @@ pub struct ObjectNullMultiple256 {
 
 impl ObjectNullMultiple256 {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
-    let (input, _) = RecordType::ObjectNullMultiple256.parse(input).map_err(|err| {
-      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedObjectNullMultiple256))
-    })?;
+    let (input, _) = RecordType::ObjectNullMultiple256.parse(input)?;
 
-    let (input, null_count) = Byte::parse_positive(input)?;
-
-    Ok((input, Self { null_count }))
+    match Byte::parse(input) {
+      Ok((input, null_count)) if null_count.0 > 0 => Ok((input, Self { null_count })),
+      Ok(_) => Err(nom::Err::Failure(error_position!(input, InvalidNullCount))),
+      Err(err) => Err(err),
+    }
   }
 
   #[inline]
