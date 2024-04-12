@@ -1,4 +1,4 @@
-use nom::{IResult, Parser};
+use nom::{IResult};
 
 use crate::{error::ErrorWithInput, record::RecordType};
 

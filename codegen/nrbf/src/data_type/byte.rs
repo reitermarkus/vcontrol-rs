@@ -1,7 +1,7 @@
 use nom::{
   combinator::{map},
   number::complete::u8,
-  IResult, Parser,
+  IResult,
 };
 
 use super::impl_primitive;

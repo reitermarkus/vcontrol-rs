@@ -1,6 +1,6 @@
 use std::num::NonZeroU32;
 
-use nom::{IResult, Parser};
+use nom::{IResult};
 
 use crate::{
   common::ClassInfo,

@@ -80,7 +80,7 @@ impl<'i> BinaryParser<'i> {
     if let Some(binary_library) = binary_library {
       let library_id = binary_library.library_id();
 
-      if self.binary_libraries.insert(library_id.into(), binary_library.library_name).is_some() {
+      if self.binary_libraries.insert(library_id, binary_library.library_name).is_some() {
         return Err(nom::Err::Failure(error_position!(input, DuplicateBinaryLibrary)))
       }
     }
@@ -103,7 +103,7 @@ impl<'i> BinaryParser<'i> {
           |primitive| ValueOrRef::Value(primitive.into_value()),
         )(input)?,
         (BinaryType::String, None) => {
-          map(|input| BinaryObjectString::parse(input), |s| ValueOrRef::Value(Value::String(s.as_str())))(input)?
+          map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str())))(input)?
         },
         (BinaryType::Object, None) => return self.parse_member_reference(input, None),
         (BinaryType::SystemClass, Some(class_name)) => unimplemented!("{class_name:?}"),
@@ -112,7 +112,7 @@ impl<'i> BinaryParser<'i> {
         },
         (BinaryType::ObjectArray, None) => return self.parse_member_reference(input, None),
         (BinaryType::StringArray, None) => alt((
-          map(|input| BinaryObjectString::parse(input), |s| ValueOrRef::Value(Value::String(s.as_str()))),
+          map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
           map(
             |input| MemberReference::parse(input),
             |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref)),
@@ -129,7 +129,7 @@ impl<'i> BinaryParser<'i> {
       alt((
         map(|input| MemberPrimitiveTyped::parse(input), |primitive| ValueOrRef::Value(primitive.into_value())),
         map(|input| MemberReference::parse(input), |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref))),
-        map(|input| BinaryObjectString::parse(input), |s| ValueOrRef::Value(Value::String(s.as_str()))),
+        map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
         map(Self::parse_null_object, |null_object| null_object),
         map(|input| self.parse_classes(input), |(_, object)| ValueOrRef::Value(Value::Object(object))),
       ))(input)?
@@ -203,26 +203,26 @@ impl<'i> BinaryParser<'i> {
         |input| ClassWithId::parse(input),
         |class| {
           let object_id = class.object_id();
-          self.classes.get(&class.metadata_id().into()).map(|class| (object_id, class.clone()))
+          self.classes.get(&class.metadata_id()).map(|class| (object_id, class.clone()))
         },
       ),
       map(
-        verify(|input| ClassWithMembers::parse(input), |class| self.binary_libraries.contains_key(&class.library_id())),
+        verify(ClassWithMembers::parse, |class| self.binary_libraries.contains_key(&class.library_id())),
         |class| (class.object_id(), Class::ClassWithMembers(class)),
       ),
       map(
         verify(
-          |input| ClassWithMembersAndTypes::parse(input),
+          ClassWithMembersAndTypes::parse,
           |class| self.binary_libraries.contains_key(&class.library_id()),
         ),
         |class| (class.object_id(), Class::ClassWithMembersAndTypes(class)),
       ),
       map(
-        |input| SystemClassWithMembers::parse(input),
+        SystemClassWithMembers::parse,
         |class| (class.object_id(), Class::SystemClassWithMembers(class)),
       ),
       map(
-        |input| SystemClassWithMembersAndTypes::parse(input),
+        SystemClassWithMembersAndTypes::parse,
         |class| (class.object_id(), Class::SystemClassWithMembersAndTypes(class)),
       ),
     ))(input)?;
@@ -266,7 +266,7 @@ impl<'i> BinaryParser<'i> {
       class_info
         .member_names
         .iter()
-        .zip(member_references.into_iter())
+        .zip(member_references)
         .map(|(member_name, member)| (member_name.as_str(), { member })),
     );
 
@@ -416,7 +416,7 @@ impl<'i> BinaryParser<'i> {
         |(object_id, array)| (object_id, Value::Array(array)),
       ),
       map(
-        |input| BinaryObjectString::parse(input),
+        BinaryObjectString::parse,
         |s| (RefId(s.object_id()), Value::String(s.as_str())),
       ),
     )?;
