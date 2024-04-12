@@ -1,8 +1,10 @@
+use std::num::NonZeroU32;
+
 use nom::{IResult, Parser};
 
 use crate::{
+  combinator::library_id,
   common::ClassInfo,
-  data_type::Int32,
   error::{error_position, ErrorWithInput},
   record::RecordType,
 };
@@ -11,18 +13,16 @@ use crate::{
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassWithMembers<'i> {
   pub class_info: ClassInfo<'i>,
-  pub library_id: Int32,
+  pub library_id: NonZeroU32,
 }
 
 impl<'i> ClassWithMembers<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
-    let (input, _) = RecordType::ClassWithMembers
-      .parse(input)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedClassWithMembers)))?;
+    let (input, _) = RecordType::ClassWithMembers.parse(input)?;
 
     let (input, class_info) =
       ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
-    let (input, library_id) = Int32::parse_positive(input)?;
+    let (input, library_id) = library_id(input)?;
 
     Ok((input, Self { class_info, library_id }))
   }
@@ -33,7 +33,12 @@ impl<'i> ClassWithMembers<'i> {
   }
 
   #[inline]
-  pub(crate) fn object_id(&self) -> Int32 {
+  pub(crate) fn object_id(&self) -> NonZeroU32 {
     self.class_info.object_id()
+  }
+
+  #[inline]
+  pub(crate) fn library_id(&self) -> NonZeroU32 {
+    self.library_id
   }
 }

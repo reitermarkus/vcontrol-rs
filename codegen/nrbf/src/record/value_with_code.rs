@@ -1,7 +1,4 @@
-use nom::{
-  combinator::{map},
-  IResult,
-};
+use nom::{combinator::map, IResult};
 
 use crate::{
   data_type::{
@@ -9,7 +6,7 @@ use crate::{
     UInt16, UInt32, UInt64,
   },
   enumeration::PrimitiveType,
-  error::{ErrorWithInput},
+  error::ErrorWithInput,
   value, Value,
 };
 

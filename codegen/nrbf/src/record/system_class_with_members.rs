@@ -1,8 +1,9 @@
+use std::num::NonZeroU32;
+
 use nom::{IResult, Parser};
 
 use crate::{
   common::ClassInfo,
-  data_type::Int32,
   error::{error_position, ErrorWithInput},
   record::RecordType,
 };
@@ -15,9 +16,7 @@ pub struct SystemClassWithMembers<'i> {
 
 impl<'i> SystemClassWithMembers<'i> {
   pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
-    let (input, _) = RecordType::SystemClassWithMembers.parse(input).map_err(|err| {
-      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedSystemClassWithMembers))
-    })?;
+    let (input, _) = RecordType::SystemClassWithMembers.parse(input)?;
 
     let (input, class_info) =
       ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
@@ -31,7 +30,7 @@ impl<'i> SystemClassWithMembers<'i> {
   }
 
   #[inline]
-  pub(crate) fn object_id(&self) -> Int32 {
+  pub(crate) fn object_id(&self) -> NonZeroU32 {
     self.class_info.object_id()
   }
 }

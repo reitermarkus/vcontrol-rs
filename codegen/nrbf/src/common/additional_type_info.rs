@@ -3,7 +3,7 @@ use nom::IResult;
 use crate::{
   data_type::{ClassTypeInfo, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  error::{ErrorWithInput},
+  error::ErrorWithInput,
 };
 
 #[derive(Debug, Clone, PartialEq)]

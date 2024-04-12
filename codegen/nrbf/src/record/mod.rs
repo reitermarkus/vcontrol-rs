@@ -2,6 +2,8 @@
 
 use nom::{bytes::complete::tag, combinator::value, error::ParseError, Compare, IResult, InputTake, Parser};
 
+use crate::error::{error_position, ErrorWithInput};
+
 mod serialization_header;
 pub use serialization_header::SerializationHeader;
 mod class_with_id;
@@ -77,6 +79,13 @@ pub enum RecordType {
   ArraySingleString              = 17,
   MethodCall                     = 21,
   MethodReturn                   = 22,
+}
+
+impl RecordType {
+  fn parse(self, input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+    value(self, tag([self as u8]))(input)
+      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedRecordType(self))))
+  }
 }
 
 impl<I, E> Parser<I, Self, E> for RecordType
