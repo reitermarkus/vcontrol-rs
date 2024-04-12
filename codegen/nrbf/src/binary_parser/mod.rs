@@ -5,7 +5,7 @@ use std::{
 
 use nom::{
   branch::alt,
-  combinator::{map, map_opt, opt, verify},
+  combinator::{map, opt, verify},
   multi::count,
   IResult,
 };
@@ -13,7 +13,7 @@ use nom::{
 use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::LengthPrefixedString,
-  enumeration::{BinaryType},
+  enumeration::BinaryType,
   error::{error_position, ErrorInner, ErrorWithInput},
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
@@ -198,34 +198,26 @@ impl<'i> BinaryParser<'i> {
   fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Object<'i>), ErrorWithInput<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
-    let (input, (object_id, class)) = alt((
-      map_opt(
-        |input| ClassWithId::parse(input),
-        |class| {
-          let object_id = class.object_id();
-          self.classes.get(&class.metadata_id()).map(|class| (object_id, class.clone()))
-        },
-      ),
-      map(
-        verify(ClassWithMembers::parse, |class| self.binary_libraries.contains_key(&class.library_id())),
-        |class| (class.object_id(), Class::ClassWithMembers(class)),
-      ),
-      map(
-        verify(
-          ClassWithMembersAndTypes::parse,
-          |class| self.binary_libraries.contains_key(&class.library_id()),
-        ),
-        |class| (class.object_id(), Class::ClassWithMembersAndTypes(class)),
-      ),
-      map(
-        SystemClassWithMembers::parse,
-        |class| (class.object_id(), Class::SystemClassWithMembers(class)),
-      ),
-      map(
-        SystemClassWithMembersAndTypes::parse,
-        |class| (class.object_id(), Class::SystemClassWithMembersAndTypes(class)),
-      ),
-    ))(input)?;
+    let err_input = input;
+
+    let (input, (object_id, class)) = match ClassWithId::parse(input) {
+      Ok((input, class_with_id)) => {
+        if let Some(class) = self.classes.get(&class_with_id.metadata_id()) {
+          (input, (class_with_id.object_id(), class.clone()))
+        } else {
+          return Err(nom::Err::Failure(error_position!(err_input, MissingMetadataId)))
+        }
+      },
+      Err(nom::Err::Error(_)) => alt((
+        map(ClassWithMembers::parse, |class| (class.object_id(), Class::ClassWithMembers(class))),
+        map(ClassWithMembersAndTypes::parse, |class| (class.object_id(), Class::ClassWithMembersAndTypes(class))),
+        map(SystemClassWithMembers::parse, |class| (class.object_id(), Class::SystemClassWithMembers(class))),
+        map(SystemClassWithMembersAndTypes::parse, |class| {
+          (class.object_id(), Class::SystemClassWithMembersAndTypes(class))
+        }),
+      ))(input)?,
+      Err(err) => return Err(err),
+    };
 
     if self.classes.contains_key(&object_id) {
       return Err(nom::Err::Failure(error_position!(input, DuplicateObjectId)))
@@ -233,7 +225,11 @@ impl<'i> BinaryParser<'i> {
 
     let (input, (class_info, library, member_references)) = match class {
       Class::ClassWithMembers(ref class) => {
-        let library = self.binary_libraries[&class.library_id()].as_str();
+        let library = if let Some(library) = self.binary_libraries.get(&class.library_id()) {
+          library.as_str()
+        } else {
+          return Err(nom::Err::Failure(error_position!(err_input, MissingLibraryId)))
+        };
 
         let member_count = class.class_info().member_names.len();
         let (input, member_references) = count(|input| self.parse_member_reference(input, None), member_count)(input)?;
@@ -241,7 +237,11 @@ impl<'i> BinaryParser<'i> {
         (input, (class.class_info(), Some(library), member_references))
       },
       Class::ClassWithMembersAndTypes(ref class) => {
-        let library = self.binary_libraries[&class.library_id()].as_str();
+        let library = if let Some(library) = self.binary_libraries.get(&class.library_id()) {
+          library.as_str()
+        } else {
+          return Err(nom::Err::Failure(error_position!(err_input, MissingLibraryId)))
+        };
 
         let (input, member_references) = self.parse_members_with_type_info(input, &class.member_type_info)?;
 
@@ -366,7 +366,7 @@ impl<'i> BinaryParser<'i> {
 
     let member_count = match binary_array.lengths.iter().copied().try_fold(1usize, |acc, n| acc.checked_mul(n)) {
       Some(member_count) => member_count,
-      None => return Err(nom::Err::Failure(error_position!(err_input, InvalidArrayLength))),
+      None => return Err(nom::Err::Failure(error_position!(err_input, InvalidLength))),
     };
     let (input, members) = count(
       |input| {
@@ -444,7 +444,7 @@ impl<'i> BinaryParser<'i> {
     let (input, (call_array_id, call_array)) = self.parse_array_single_object(input)?;
 
     if Some(call_array_id.0) != root_id {
-      return Err(nom::Err::Failure(ErrorWithInput { input, inner: ErrorInner::CallArrayId }))
+      return Err(nom::Err::Failure(ErrorWithInput { input, inner: ErrorInner::InvalidCallArrayId }))
     }
 
     Ok((input, call_array))

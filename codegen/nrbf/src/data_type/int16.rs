@@ -3,6 +3,7 @@ use nom::{combinator::map, number::complete::le_i16, IResult};
 use super::impl_primitive;
 use crate::{
   combinator::into_failure,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -12,9 +13,9 @@ pub struct Int16(pub i16);
 
 impl Int16 {
   pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
-    map(le_i16, Self)(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedInt16)))
+    map(le_i16, Self)(input).map_err(into_failure).map_err(|err| {
+      err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitive(PrimitiveType::Int16)))
+    })
   }
 }
 

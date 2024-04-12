@@ -1,4 +1,4 @@
-use nom::{IResult,  ToUsize};
+use nom::{IResult, ToUsize};
 
 use crate::{
   data_type::Int32,
