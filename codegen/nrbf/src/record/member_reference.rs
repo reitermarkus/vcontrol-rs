@@ -1,6 +1,6 @@
 use std::num::NonZeroU32;
 
-use nom::{IResult};
+use nom::IResult;
 
 use crate::{combinator::object_id, error::ErrorWithInput, record::RecordType};
 

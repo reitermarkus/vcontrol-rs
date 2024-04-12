@@ -1,13 +1,8 @@
 use std::num::NonZeroU32;
 
-use nom::{IResult};
+use nom::IResult;
 
-use crate::{
-  combinator::object_id,
-  data_type::{LengthPrefixedString},
-  error::{error_position, ErrorWithInput},
-  record::RecordType,
-};
+use crate::{combinator::object_id, data_type::LengthPrefixedString, error::ErrorWithInput, record::RecordType};
 
 /// 2.5.7 `BinaryObjectString`
 #[derive(Debug, Clone, PartialEq)]
@@ -21,8 +16,7 @@ impl<'i> BinaryObjectString<'i> {
     let (input, _) = RecordType::BinaryObjectString.parse(input)?;
 
     let (input, object_id) = object_id(input)?;
-    let (input, value) = LengthPrefixedString::parse(input)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))?;
+    let (input, value) = LengthPrefixedString::parse(input)?;
 
     Ok((input, Self { object_id, value }))
   }

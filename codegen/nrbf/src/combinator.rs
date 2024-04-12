@@ -52,7 +52,7 @@ pub fn length(input: &[u8]) -> IResult<&[u8], usize, ErrorWithInput<'_>> {
       if let Ok(length) = u32::try_from(i32::from(length)) {
         Ok((input, length.to_usize()))
       } else {
-        Err(nom::Err::Failure(error_position!(err_input, InvalidArrayLength)))
+        Err(nom::Err::Failure(error_position!(err_input, InvalidLength)))
       }
     },
     Err(err) => Err(err),

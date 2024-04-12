@@ -4,6 +4,7 @@ use nom::IResult;
 
 use crate::{
   data_type::LengthPrefixedString,
+  enumeration::PrimitiveType,
   error::{error_position, ErrorWithInput},
 };
 
@@ -20,7 +21,7 @@ impl Decimal {
     if let Ok(decimal) = rust_decimal::Decimal::from_str(s.as_str()) {
       Ok((input, Self(decimal)))
     } else {
-      Err(nom::Err::Failure(error_position!(err_input, ExpectedDecimal)))
+      Err(nom::Err::Failure(error_position!(err_input, ExpectedPrimitive(PrimitiveType::Decimal))))
     }
   }
 }
