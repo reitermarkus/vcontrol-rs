@@ -3,7 +3,7 @@ use nom::{multi::count, IResult};
 use crate::{
   common::{AdditionalTypeInfo, ClassInfo},
   enumeration::BinaryType,
-  error::ErrorWithInput,
+  error::Error,
 };
 
 /// 2.3.1.2 `MemberTypeInfo`
@@ -14,7 +14,7 @@ pub struct MemberTypeInfo<'i> {
 }
 
 impl<'i> MemberTypeInfo<'i> {
-  pub fn parse(input: &'i [u8], class_info: &ClassInfo<'_>) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8], class_info: &ClassInfo<'_>) -> IResult<&'i [u8], Self, Error<'i>> {
     let (mut input, binary_type_enums) = count(BinaryType::parse, class_info.member_names.len())(input)?;
 
     let mut additional_infos = vec![];

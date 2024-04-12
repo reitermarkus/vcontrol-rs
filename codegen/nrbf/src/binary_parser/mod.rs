@@ -14,7 +14,7 @@ use crate::{
   common::{AdditionalTypeInfo, MemberTypeInfo},
   data_type::LengthPrefixedString,
   enumeration::BinaryType,
-  error::{error_position, ErrorInner, ErrorWithInput},
+  error::{error_position, Error, ErrorInner},
   record::{
     ArraySingleObject, ArraySinglePrimitive, ArraySingleString, BinaryArray, BinaryLibrary, BinaryMethodCall,
     BinaryMethodReturn, BinaryObjectString, ClassWithId, ClassWithMembers, ClassWithMembersAndTypes,
@@ -23,7 +23,7 @@ use crate::{
     SystemClassWithMembersAndTypes,
   },
   value::Object,
-  Error, MethodCall, MethodReturn, RemotingMessage, Value,
+  MethodCall, MethodReturn, RemotingMessage, Value,
 };
 
 #[derive(Debug, Clone)]
@@ -74,14 +74,14 @@ macro_rules! alt_mut {
 }
 
 impl<'i> BinaryParser<'i> {
-  fn parse_binary_library(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (), ErrorWithInput<'i>> {
+  fn parse_binary_library(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (), Error<'i>> {
     let (input, binary_library) = opt(BinaryLibrary::parse)(input)?;
 
     if let Some(binary_library) = binary_library {
       let library_id = binary_library.library_id();
 
       if self.binary_libraries.insert(library_id, binary_library.library_name).is_some() {
-        return Err(nom::Err::Failure(error_position!(input, DuplicateBinaryLibrary)))
+        return Err(nom::Err::Failure(error_position!(input, DuplicateLibraryId)))
       }
     }
 
@@ -93,7 +93,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
     type_enum_and_additional_type_info: Option<(BinaryType, Option<&AdditionalTypeInfo<'i>>)>,
-  ) -> IResult<&'i [u8], ValueOrRef<'i>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], ValueOrRef<'i>, Error<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, object) = if let Some((type_enum, additional_type_info)) = type_enum_and_additional_type_info {
@@ -142,7 +142,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     mut input: &'i [u8],
     member_type_info: &MemberTypeInfo<'i>,
-  ) -> IResult<&'i [u8], Vec<ValueOrRef<'i>>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], Vec<ValueOrRef<'i>>, Error<'i>> {
     let mut member_references = vec![];
 
     for (binary_type_enum, additional_info) in
@@ -161,7 +161,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     mut input: &'i [u8],
     members: Vec<ValueOrRef<'i>>,
-  ) -> IResult<&'i [u8], Vec<Value<'i>>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], Vec<Value<'i>>, Error<'i>> {
     let mut members2 = Vec::with_capacity(members.len());
 
     for member in members.into_iter() {
@@ -195,7 +195,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `Classes`
-  fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Object<'i>), ErrorWithInput<'i>> {
+  fn parse_classes(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Object<'i>), Error<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let err_input = input;
@@ -276,10 +276,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `ArraySingleObject *(memberReference)`
-  fn parse_array_single_object(
-    &mut self,
-    input: &'i [u8],
-  ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
+  fn parse_array_single_object(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), Error<'i>> {
     let (mut input, array_single_object) = ArraySingleObject::parse(input)?;
 
     let mut members = vec![];
@@ -308,10 +305,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `ArraySinglePrimitive *(MemberPrimitiveUnTyped)`
-  fn parse_array_single_primitive(
-    &mut self,
-    input: &'i [u8],
-  ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
+  fn parse_array_single_primitive(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), Error<'i>> {
     let (input, array_single_primitive) = ArraySinglePrimitive::parse(input)?;
 
     let (input, members) = count(
@@ -327,10 +321,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `ArraySingleString *(BinaryObjectString/MemberReference/nullObject)`
-  fn parse_array_single_string(
-    &mut self,
-    input: &'i [u8],
-  ) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
+  fn parse_array_single_string(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), Error<'i>> {
     let (mut input, array_single_string) = ArraySingleString::parse(input)?;
 
     let mut members = vec![];
@@ -359,7 +350,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `BinaryArray *(memberReference)`
-  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
+  fn parse_binary_array(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), Error<'i>> {
     let err_input = input;
 
     let (input, binary_array) = BinaryArray::parse(input)?;
@@ -393,7 +384,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `Arrays`
-  fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), ErrorWithInput<'i>> {
+  fn parse_arrays(&mut self, input: &'i [u8]) -> IResult<&'i [u8], (RefId, Vec<Value<'i>>), Error<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     alt_mut!(input =>
@@ -405,7 +396,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `referenceable`
-  fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId, ErrorWithInput<'i>> {
+  fn parse_referenceable(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RefId, Error<'i>> {
     let (input, (object_id, object)) = alt_mut!(input =>
       map(
         |input| self.parse_classes(input),
@@ -426,7 +417,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `nullObject`
-  fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], ValueOrRef<'i>, ErrorWithInput<'i>> {
+  fn parse_null_object(input: &'i [u8]) -> IResult<&'i [u8], ValueOrRef<'i>, Error<'i>> {
     alt((
       map(|input| ObjectNull::parse(input), |n| ValueOrRef::Null(n.null_count())),
       map(|input| ObjectNullMultiple::parse(input), |n| ValueOrRef::Null(n.null_count())),
@@ -438,13 +429,13 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
     root_id: Option<NonZeroU32>,
-  ) -> IResult<&'i [u8], Vec<Value<'i>>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], Vec<Value<'i>>, Error<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, (call_array_id, call_array)) = self.parse_array_single_object(input)?;
 
     if Some(call_array_id.0) != root_id {
-      return Err(nom::Err::Failure(ErrorWithInput { input, inner: ErrorInner::InvalidCallArrayId }))
+      return Err(nom::Err::Failure(Error { input, inner: ErrorInner::InvalidCallArrayId }))
     }
 
     Ok((input, call_array))
@@ -455,7 +446,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
     root_id: Option<NonZeroU32>,
-  ) -> IResult<&'i [u8], MethodCall<'i>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], MethodCall<'i>, Error<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_call) = BinaryMethodCall::parse(input)?;
@@ -499,7 +490,7 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
     root_id: Option<NonZeroU32>,
-  ) -> IResult<&'i [u8], MethodReturn<'i>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], MethodReturn<'i>, Error<'i>> {
     let (input, ()) = self.parse_binary_library(input)?;
 
     let (input, binary_method_return) = BinaryMethodReturn::parse(input)?;
@@ -542,14 +533,14 @@ impl<'i> BinaryParser<'i> {
     &mut self,
     input: &'i [u8],
     root_id: Option<NonZeroU32>,
-  ) -> IResult<&'i [u8], MethodCallOrReturn<'i>, ErrorWithInput<'i>> {
+  ) -> IResult<&'i [u8], MethodCallOrReturn<'i>, Error<'i>> {
     alt_mut!(input =>
       map(|input| self.parse_method_call(input, root_id), MethodCallOrReturn::MethodCall),
       map(|input| self.parse_method_return(input, root_id), MethodCallOrReturn::MethodReturn),
     )
   }
 
-  fn parse_referenceables(&mut self, mut input: &'i [u8]) -> IResult<&'i [u8], (), ErrorWithInput<'i>> {
+  fn parse_referenceables(&mut self, mut input: &'i [u8]) -> IResult<&'i [u8], (), Error<'i>> {
     loop {
       match self.parse_referenceable(input) {
         Ok((input2, _)) => {
@@ -567,7 +558,7 @@ impl<'i> BinaryParser<'i> {
   }
 
   /// 2.7 Binary Record Grammar - `remotingMessage`
-  fn parse_remoting_message(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>, ErrorWithInput<'i>> {
+  fn parse_remoting_message(&mut self, input: &'i [u8]) -> IResult<&'i [u8], RemotingMessage<'i>, Error<'i>> {
     let (mut input, header) = SerializationHeader::parse(input)?;
 
     (input, ()) = self.parse_referenceables(input)?;
@@ -605,8 +596,8 @@ impl<'i> BinaryParser<'i> {
   /// Deserializes a [`RemotingMessage`] from bytes.
   pub fn deserialize(mut self, input: &'i [u8]) -> Result<RemotingMessage<'i>, Error> {
     self.parse_remoting_message(input).map(|(_, remoting_message)| remoting_message).map_err(|err| match err {
-      nom::Err::Incomplete(_) => Error { inner: ErrorWithInput { input, inner: ErrorInner::Eof } },
-      nom::Err::Error(err) | nom::Err::Failure(err) => Error { inner: err },
+      nom::Err::Incomplete(_) => Error { input, inner: ErrorInner::Eof },
+      nom::Err::Error(err) | nom::Err::Failure(err) => err,
     })
   }
 }

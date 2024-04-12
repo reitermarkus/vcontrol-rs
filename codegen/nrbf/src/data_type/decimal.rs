@@ -5,7 +5,7 @@ use nom::IResult;
 use crate::{
   data_type::LengthPrefixedString,
   enumeration::PrimitiveType,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 /// 2.1.1.7 `Decimal`
@@ -13,7 +13,7 @@ use crate::{
 pub struct Decimal(pub rust_decimal::Decimal);
 
 impl Decimal {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     let err_input = input;
 
     let (input, s) = LengthPrefixedString::parse(input)?;

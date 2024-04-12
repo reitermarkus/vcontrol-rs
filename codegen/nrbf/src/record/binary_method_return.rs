@@ -1,7 +1,7 @@
 use nom::{combinator::cond, IResult};
 
 use crate::{
-  error::ErrorWithInput,
+  error::Error,
   record::{ArrayOfValueWithCode, MessageFlags, RecordType, StringValueWithCode, ValueWithCode},
 };
 
@@ -15,7 +15,7 @@ pub struct BinaryMethodReturn<'i> {
 }
 
 impl<'i> BinaryMethodReturn<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, _) = RecordType::MethodReturn.parse(input)?;
 
     let (input, message_enum) = MessageFlags::parse(input)?;

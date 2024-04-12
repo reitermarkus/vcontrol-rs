@@ -3,7 +3,7 @@ use nom::IResult;
 use crate::{
   data_type::{ClassTypeInfo, LengthPrefixedString},
   enumeration::{BinaryType, PrimitiveType},
-  error::ErrorWithInput,
+  error::Error,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -14,10 +14,7 @@ pub enum AdditionalTypeInfo<'i> {
 }
 
 impl<'i> AdditionalTypeInfo<'i> {
-  pub fn parse(
-    mut input: &'i [u8],
-    binary_type_enum: BinaryType,
-  ) -> IResult<&'i [u8], Option<Self>, ErrorWithInput<'i>> {
+  pub fn parse(mut input: &'i [u8], binary_type_enum: BinaryType) -> IResult<&'i [u8], Option<Self>, Error<'i>> {
     let additional_info = match binary_type_enum {
       BinaryType::Primitive => {
         let primitive_type;

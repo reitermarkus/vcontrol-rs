@@ -4,7 +4,7 @@ use nom::{Err, IResult, ToUsize};
 
 use crate::{
   data_type::Int32,
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
 };
 
 pub fn into_failure<E>(err: Err<E>) -> nom::Err<E> {
@@ -14,7 +14,7 @@ pub fn into_failure<E>(err: Err<E>) -> nom::Err<E> {
   }
 }
 
-pub fn library_id(input: &[u8]) -> IResult<&[u8], NonZeroU32, ErrorWithInput<'_>> {
+pub fn library_id(input: &[u8]) -> IResult<&[u8], NonZeroU32, Error<'_>> {
   let err_input = input;
 
   match Int32::parse(input) {
@@ -29,7 +29,7 @@ pub fn library_id(input: &[u8]) -> IResult<&[u8], NonZeroU32, ErrorWithInput<'_>
   }
 }
 
-pub fn object_id(input: &[u8]) -> IResult<&[u8], NonZeroU32, ErrorWithInput<'_>> {
+pub fn object_id(input: &[u8]) -> IResult<&[u8], NonZeroU32, Error<'_>> {
   let err_input = input;
 
   match Int32::parse(input) {
@@ -44,7 +44,7 @@ pub fn object_id(input: &[u8]) -> IResult<&[u8], NonZeroU32, ErrorWithInput<'_>>
   }
 }
 
-pub fn length(input: &[u8]) -> IResult<&[u8], usize, ErrorWithInput<'_>> {
+pub fn length(input: &[u8]) -> IResult<&[u8], usize, Error<'_>> {
   let err_input = input;
 
   match Int32::parse(input) {

@@ -3,7 +3,7 @@ use std::num::NonZeroU32;
 
 use nom::IResult;
 
-use crate::{combinator::library_id, error::ErrorWithInput};
+use crate::{combinator::library_id, error::Error};
 
 mod boolean;
 pub use boolean::Boolean;
@@ -46,7 +46,7 @@ pub struct ClassTypeInfo<'i> {
 }
 
 impl<'i> ClassTypeInfo<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, Error<'i>> {
     let (input, type_name) = LengthPrefixedString::parse(input)?;
     let (input, library_id) = library_id(input)?;
 

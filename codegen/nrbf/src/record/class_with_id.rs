@@ -4,7 +4,7 @@ use nom::IResult;
 
 use crate::{
   combinator::{self, object_id},
-  error::{error_position, ErrorWithInput},
+  error::{error_position, Error},
   record::RecordType,
 };
 
@@ -16,7 +16,7 @@ pub struct ClassWithId {
 }
 
 impl ClassWithId {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, Error<'_>> {
     let (input, _) = RecordType::ClassWithId.parse(input)?;
 
     let (input, object_id) = object_id(input)?;
