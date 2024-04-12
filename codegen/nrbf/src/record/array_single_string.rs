@@ -1,7 +1,6 @@
 use nom::{IResult, Parser};
 
 use crate::{
-  combinator::into_failure,
   common::ArrayInfo,
   data_type::Int32,
   error::{error_position, ErrorWithInput},
@@ -20,9 +19,7 @@ impl ArraySingleString {
       .parse(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedArraySingleString)))?;
 
-    let (input, array_info) = ArrayInfo::parse(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedArrayInfo)))?;
+    let (input, array_info) = ArrayInfo::parse(input)?;
 
     Ok((input, Self { array_info }))
   }

@@ -6,14 +6,17 @@ use nom::{
 };
 
 use super::impl_primitive;
-use crate::combinator::into_failure;
+use crate::{
+  combinator::into_failure,
+  error::{error_position, ErrorWithInput},
+};
 
 /// 2.1.1.1 `Char`
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Char(pub char);
 
 impl Char {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
     map(
       alt((
         map_opt(u8, |n| char::from_u32(n as u32)),
@@ -24,6 +27,7 @@ impl Char {
       Self,
     )(input)
     .map_err(into_failure)
+    .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedChar)))
   }
 }
 

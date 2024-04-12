@@ -2,6 +2,8 @@
 
 use nom::IResult;
 
+use crate::error::{error_position, ErrorWithInput};
+
 mod boolean;
 pub use boolean::Boolean;
 mod byte;
@@ -43,8 +45,9 @@ pub struct ClassTypeInfo<'i> {
 }
 
 impl<'i> ClassTypeInfo<'i> {
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
-    let (input, type_name) = LengthPrefixedString::parse(input)?;
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
+    let (input, type_name) = LengthPrefixedString::parse(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))?;
     let (input, library_id) = Int32::parse_positive(input)?;
 
     Ok((input, Self { type_name, library_id }))

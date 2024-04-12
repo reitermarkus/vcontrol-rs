@@ -1,10 +1,13 @@
 use bitflags::bitflags;
 use nom::{
-  combinator::{map, map_res},
+  combinator::{map},
   IResult,
 };
 
-use crate::{combinator::into_failure, data_type::Int32};
+use crate::{
+  data_type::Int32,
+  error::{error_position, ErrorWithInput},
+};
 
 bitflags! {
   /// 2.2.1.1 `MessageFlags`
@@ -66,55 +69,59 @@ bitflags! {
   }
 }
 
-#[rustfmt::skip]
 impl MessageFlags {
-  pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-    map_res(map(Int32::parse, |n| Self::from_bits_retain(n.0)), |flags| {
-      let args_flags = flags.intersection(
+  pub fn parse(input: &[u8]) -> IResult<&[u8], Self, ErrorWithInput<'_>> {
+    let err_input = input;
 
-      Self::NO_ARGS.union(Self::ARGS_INLINE).union(
+    let (input, flags) = map(Int32::parse, |n| Self::from_bits_retain(n.0))(input)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedMessageFlags)))?;
 
-      Self::ARGS_IS_ARRAY).union(Self::ARGS_IN_ARRAY)
-      );
-      let context_flags = flags.intersection(Self::NO_CONTEXT.union(Self::CONTEXT_INLINE).union(Self::CONTEXT_IN_ARRAY));
-      let return_flags = flags.intersection(Self::NO_RETURN_VALUE.union(
-          Self::RETURN_VALUE_VOID).union(
-          Self::RETURN_VALUE_IN_ARRAY).union(
-          Self::RETURN_VALUE_IN_ARRAY));
-      let signature_flags = flags.intersection(Self::METHOD_SIGNATURE_IN_ARRAY);
-      let exception_flags = flags.intersection(Self::EXCEPTION_IN_ARRAY);
+    let args_flags =
+      flags.intersection(Self::NO_ARGS.union(Self::ARGS_INLINE).union(Self::ARGS_IS_ARRAY).union(Self::ARGS_IN_ARRAY));
 
-      // For each flags category given in the preceding table (Arg, Context, Signature, Return, Exception,
-      // Property, and Generic), the value MUST NOT have more than one flag from the Category set.
-      if args_flags.bits().count_ones() > 1 || context_flags.bits().count_ones() > 1 || return_flags.bits().count_ones() > 1 {
-        return Err(())
-      }
+    let context_flags = flags.intersection(Self::NO_CONTEXT.union(Self::CONTEXT_INLINE).union(Self::CONTEXT_IN_ARRAY));
+    let return_flags = flags.intersection(
+      Self::NO_RETURN_VALUE
+        .union(Self::RETURN_VALUE_VOID)
+        .union(Self::RETURN_VALUE_IN_ARRAY)
+        .union(Self::RETURN_VALUE_IN_ARRAY),
+    );
+    let signature_flags = flags.intersection(Self::METHOD_SIGNATURE_IN_ARRAY);
+    let exception_flags = flags.intersection(Self::EXCEPTION_IN_ARRAY);
 
-      // The Args and Exception flag categories are exclusive: if a flag from the Args category is set, the
-      // value MUST NOT have any flag from the Exception category set, and vice versa.
-      if !args_flags.is_empty() && !exception_flags.is_empty() {
-        return Err(())
-      }
+    // For each flags category given in the preceding table (Arg, Context, Signature, Return, Exception,
+    // Property, and Generic), the value MUST NOT have more than one flag from the Category set.
+    if args_flags.bits().count_ones() > 1
+      || context_flags.bits().count_ones() > 1
+      || return_flags.bits().count_ones() > 1
+    {
+      return Err(nom::Err::Failure(error_position!(err_input, InvalidMessageFlags)))
+    }
 
-      // The Return and Exception flag categories are exclusive: if a flag from the Return category is set,
-      // the value MUST NOT have any flag from the Exception category set, and vice versa.
-      if !return_flags.is_empty() && !exception_flags.is_empty() {
-        return Err(())
-      }
+    // The Args and Exception flag categories are exclusive: if a flag from the Args category is set, the
+    // value MUST NOT have any flag from the Exception category set, and vice versa.
+    if !args_flags.is_empty() && !exception_flags.is_empty() {
+      return Err(nom::Err::Failure(error_position!(err_input, InvalidMessageFlags)))
+    }
 
-      // The Return and Signature categories are exclusive: if a flag from the Return category is set, the
-      // value MUST NOT have any flag from the Signature category set, and vice versa.
-      if !return_flags.is_empty() && !signature_flags.is_empty() {
-        return Err(())
-      }
+    // The Return and Exception flag categories are exclusive: if a flag from the Return category is set,
+    // the value MUST NOT have any flag from the Exception category set, and vice versa.
+    if !return_flags.is_empty() && !exception_flags.is_empty() {
+      return Err(nom::Err::Failure(error_position!(err_input, InvalidMessageFlags)))
+    }
 
-      // The Exception and Signature categories are exclusive: if a flag from the Signature category is set,
-      // the value MUST NOT have any flag from the Exception category set, and vice versa.
-      if !exception_flags.is_empty() && !signature_flags.is_empty() {
-        return Err(())
-      }
+    // The Return and Signature categories are exclusive: if a flag from the Return category is set, the
+    // value MUST NOT have any flag from the Signature category set, and vice versa.
+    if !return_flags.is_empty() && !signature_flags.is_empty() {
+      return Err(nom::Err::Failure(error_position!(err_input, InvalidMessageFlags)))
+    }
 
-      Ok(flags)
-    })(input).map_err(into_failure)
+    // The Exception and Signature categories are exclusive: if a flag from the Signature category is set,
+    // the value MUST NOT have any flag from the Exception category set, and vice versa.
+    if !exception_flags.is_empty() && !signature_flags.is_empty() {
+      return Err(nom::Err::Failure(error_position!(err_input, InvalidMessageFlags)))
+    }
+
+    Ok((input, flags))
   }
 }

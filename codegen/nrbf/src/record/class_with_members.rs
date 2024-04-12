@@ -22,8 +22,7 @@ impl<'i> ClassWithMembers<'i> {
 
     let (input, class_info) =
       ClassInfo::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedClassInfo)))?;
-    let (input, library_id) =
-      Int32::parse_positive(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedInt32)))?;
+    let (input, library_id) = Int32::parse_positive(input)?;
 
     Ok((input, Self { class_info, library_id }))
   }

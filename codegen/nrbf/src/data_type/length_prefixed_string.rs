@@ -7,7 +7,10 @@ use nom::{
   IResult,
 };
 
-use crate::combinator::into_failure;
+use crate::{
+  combinator::into_failure,
+  error::{error_position, ErrorWithInput},
+};
 
 /// 2.1.1.6 `LengthPrefixedString`
 #[derive(Debug, Clone, PartialEq)]
@@ -54,10 +57,11 @@ impl<'i> LengthPrefixedString<'i> {
     }
   }
 
-  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self> {
+  pub fn parse(input: &'i [u8]) -> IResult<&'i [u8], Self, ErrorWithInput<'i>> {
     Self::parse_len(input)
       .and_then(|(input, len)| map(map_res(take(len), str::from_utf8), Self)(input))
       .map_err(into_failure)
+      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedLengthPrefixedString)))
   }
 
   #[inline]

@@ -21,8 +21,7 @@ impl<'i> BinaryMethodCall<'i> {
       .parse(input)
       .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedBinaryMethodCall)))?;
 
-    let (input, message_enum) =
-      MessageFlags::parse(input).map_err(|err| err.map(|err| error_position!(err.input, ExpectedMessageFlags)))?;
+    let (input, message_enum) = MessageFlags::parse(input)?;
     let (input, method_name) = StringValueWithCode::parse(input)?;
     let (input, type_name) = StringValueWithCode::parse(input)?;
     let (input, call_context) =

@@ -1,7 +1,6 @@
 use nom::{IResult, Parser};
 
 use crate::{
-  combinator::into_failure,
   common::ArrayInfo,
   data_type::Int32,
   enumeration::PrimitiveType,
@@ -22,11 +21,8 @@ impl ArraySinglePrimitive {
       err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedArraySinglePrimitive))
     })?;
 
-    let (input, array_info) = ArrayInfo::parse(input)
-      .map_err(into_failure)
-      .map_err(|err| err.map(|err| error_position!(err.input, ExpectedArrayInfo)))?;
-    let (input, primitive_type) = PrimitiveType::parse(input)
-      .map_err(|err| err.map(|err: nom::error::Error<&[u8]>| error_position!(err.input, ExpectedPrimitiveType)))?;
+    let (input, array_info) = ArrayInfo::parse(input)?;
+    let (input, primitive_type) = PrimitiveType::parse(input)?;
 
     Ok((input, Self { array_info, primitive_type }))
   }
