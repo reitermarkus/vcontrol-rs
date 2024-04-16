@@ -82,7 +82,6 @@ impl Expected for ExpectedInArray {
 #[derive(Debug)]
 pub(crate) struct ArrayDeserializer<I> {
   iter: iter::Fuse<I>,
-  null_count: usize,
   count: usize,
 }
 
@@ -92,7 +91,7 @@ where
   I: Iterator,
 {
   pub fn new(iter: I) -> Self {
-    Self { iter: iter.fuse(), null_count: 0, count: 0 }
+    Self { iter: iter.fuse(), count: 0 }
   }
 }
 
@@ -105,7 +104,7 @@ where
   /// Check for remaining elements after passing an `ArrayDeserializer` to
   /// `Visitor::visit_seq`.
   pub fn end<E: de::Error>(self) -> Result<(), E> {
-    let remaining = self.iter.count() + self.null_count;
+    let remaining = self.iter.count();
     if remaining == 0 {
       Ok(())
     } else {
@@ -152,18 +151,7 @@ where
   where
     V: de::DeserializeSeed<'de>,
   {
-    if self.null_count > 0 {
-      self.count += 1;
-      self.null_count -= 1;
-      return seed.deserialize(ValueDeserializer::new(&Value::Null)).map(Some)
-    }
-
     match self.iter.next() {
-      Some(Value::Null) => {
-        self.count += 1;
-        self.null_count = 0;
-        seed.deserialize(ValueDeserializer::new(&Value::Null)).map(Some)
-      },
       Some(object) => {
         self.count += 1;
         seed.deserialize(ValueDeserializer::new(object)).map(Some)
