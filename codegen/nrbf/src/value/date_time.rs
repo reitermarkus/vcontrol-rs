@@ -24,7 +24,7 @@ impl DateTime {
   pub fn kind(&self) -> Option<DateTimeKind> {
     match i64::from(self.0) & 0b11 {
       1 => Some(DateTimeKind::Utc),
-      2 => Some(DateTimeKind::Utc),
+      2 => Some(DateTimeKind::Local),
       _ => None,
     }
   }
