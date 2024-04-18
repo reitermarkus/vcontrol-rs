@@ -106,9 +106,35 @@ impl<'i> BinaryParser<'i> {
           map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str())))(input)?
         },
         (BinaryType::Object, None) => return self.parse_member_reference(input, None),
-        (BinaryType::SystemClass, Some(class_name)) => unimplemented!("{class_name:?}"),
-        (BinaryType::Class, Some(class_type_info)) => {
-          unimplemented!("{class_type_info:?}")
+        (BinaryType::SystemClass, Some(AdditionalTypeInfo::SystemClass(class_name))) => {
+          if let Ok((input, (_, object))) = self.parse_classes(input) {
+            if object.class != class_name.as_str() || object.library.is_some() {
+              return Err(nom::Err::Failure(error_position!(input, UnexpectedClass)))
+            }
+
+            (input, ValueOrRef::Value(Value::Object(object)))
+          } else {
+            Self::parse_null_object(input)?
+          }
+        },
+        (BinaryType::Class, Some(AdditionalTypeInfo::Class(class_type_info))) => {
+          let err_input = input;
+
+          let library = if let Some(library) = self.binary_libraries.get(&class_type_info.library_id()) {
+            library.as_str()
+          } else {
+            return Err(nom::Err::Failure(error_position!(err_input, MissingLibraryId)))
+          };
+
+          if let Ok((input, (_, object))) = self.parse_classes(input) {
+            if object.class != class_type_info.type_name.as_str() || object.library != Some(library) {
+              return Err(nom::Err::Failure(error_position!(input, UnexpectedClass)))
+            }
+
+            (input, ValueOrRef::Value(Value::Object(object)))
+          } else {
+            Self::parse_null_object(input)?
+          }
         },
         (BinaryType::ObjectArray, None) => return self.parse_member_reference(input, None),
         (BinaryType::StringArray, None) => alt((
@@ -117,7 +143,7 @@ impl<'i> BinaryParser<'i> {
             |input| MemberReference::parse(input),
             |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref)),
           ),
-          map(Self::parse_null_object, |null_object| null_object),
+          Self::parse_null_object,
         ))(input)?,
         (BinaryType::PrimitiveArray, Some(AdditionalTypeInfo::Primitive(_primitive_type))) => map(
           |input| MemberReference::parse(input),
@@ -130,7 +156,7 @@ impl<'i> BinaryParser<'i> {
         map(|input| MemberPrimitiveTyped::parse(input), |primitive| ValueOrRef::Value(primitive.into_value())),
         map(|input| MemberReference::parse(input), |member_reference| ValueOrRef::Ref(RefId(member_reference.id_ref))),
         map(BinaryObjectString::parse, |s| ValueOrRef::Value(Value::String(s.as_str()))),
-        map(Self::parse_null_object, |null_object| null_object),
+        Self::parse_null_object,
         map(|input| self.parse_classes(input), |(_, object)| ValueOrRef::Value(Value::Object(object))),
       ))(input)?
     };

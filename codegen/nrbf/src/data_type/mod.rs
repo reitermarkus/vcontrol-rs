@@ -42,7 +42,7 @@ pub use length_prefixed_string::LengthPrefixedString;
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassTypeInfo<'i> {
   pub type_name: LengthPrefixedString<'i>,
-  pub library_id: NonZeroU32,
+  library_id: NonZeroU32,
 }
 
 impl<'i> ClassTypeInfo<'i> {
