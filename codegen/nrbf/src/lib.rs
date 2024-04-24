@@ -12,6 +12,7 @@ pub(crate) mod record;
 
 mod binary_parser;
 pub(crate) use binary_parser::BinaryParser;
+mod combinator;
 mod error;
 #[doc(inline)]
 pub use error::Error;
@@ -52,5 +53,3 @@ where
     RemotingMessage::parse(bytes).map_err(|err| de::Error::custom(format!("parsing error: {}", err)))?;
   T::deserialize(remoting_message)
 }
-
-mod combinator;
