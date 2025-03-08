@@ -14,10 +14,18 @@ license = "MIT OR Apache-2.0"
 readme = "ReadMe.md"
 
 [features]
-cli = ["actix-rt", "clap", "serde_json", "env_logger", "impl_webthing", "impl_json_schema"]
+cli = [
+  "actix-rt",
+  "clap",
+  "serde_json",
+  "env_logger",
+  "impl_webthing",
+  "impl_json_schema",
+]
 impl_json_schema = ["schemars"]
 impl_webthing = ["impl_json_schema", "serde_json", "webthing", "actix-rt"]
 cat = ["env_logger", "tokio/rt-multi-thread"]
+serde_yaml = ["dep:serde_yaml"]
 
 [dependencies]
 actix-rt = { version = "2.7", optional = true }
@@ -37,6 +45,7 @@ tokio-serial = "5.4.2"
 pin-project = "1.0.10"
 num_enum = "0.5.7"
 serialport = { version = "4", default-features = false }
+serde_yaml = { version = "0.8", optional = true }
 
 [[bin]]
 name = "vcontrol"
