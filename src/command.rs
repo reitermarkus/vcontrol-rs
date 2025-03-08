@@ -103,7 +103,7 @@ impl Command {
 
         if let Some(bit_len) = self.bit_len {
           for i in 0..bit_len {
-            let bit_pos = self.bit_pos + i;
+            let bit_pos = self.bit_pos + i - self.byte_pos * 8;
 
             let byte = bit_pos / 8;
             let bit = bit_pos % 8;
