@@ -354,7 +354,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
       case v.fetch('name')
       when 'ecnsysEventType~ErrorIndex'
         { 'value_type' => 'ErrorIndex' }
-      when 'ecnsysEventType~Error'
+      when 'ecnsysEventType~Error', /\A@@viessmann.eventvaluetype.name.FehlerHisFA[0-9]+\Z/
         { 'value_type' => 'Error' }
       when 'Mapping~Schaltzeiten'
         { 'value_type' => 'CircuitTimes' }
