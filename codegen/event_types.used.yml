@@ -1881,7 +1881,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA01
   parameter: array
@@ -1891,7 +1891,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA02
   parameter: array
@@ -1901,7 +1901,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA03
   parameter: array
@@ -1911,7 +1911,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA04
   parameter: array
@@ -1921,7 +1921,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA05
   parameter: array
@@ -1931,7 +1931,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA06
   parameter: array
@@ -1941,7 +1941,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA07
   parameter: array
@@ -1951,7 +1951,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA08
   parameter: array
@@ -1961,7 +1961,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA09
   parameter: array
@@ -1971,7 +1971,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA10
   parameter: array
@@ -1981,7 +1981,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA11
   parameter: array
@@ -1991,7 +1991,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA12
   parameter: array
@@ -2001,7 +2001,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA13
   parameter: array
@@ -2011,7 +2011,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA14
   parameter: array
@@ -2021,7 +2021,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA15
   parameter: array
@@ -2031,7 +2031,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA16
   parameter: array
@@ -2041,7 +2041,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA17
   parameter: array
@@ -2051,7 +2051,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA18
   parameter: array
@@ -2061,7 +2061,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA19
   parameter: array
@@ -2071,7 +2071,7 @@
   block_len: 9
   byte_len: 9
   byte_pos: 0
-  data_type: ByteArray
+  data_type: Error
   mode: read
   name: FehlerHisFA20
   parameter: array
