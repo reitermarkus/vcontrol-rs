@@ -16,34 +16,34 @@ impl VControl {
   async fn renegotiate(&mut self) -> Result<(), Error> {
     log::trace!("VControl::reneogiate()");
 
-    if !self.connected {
-      let mut reinitialized = false;
-      loop {
-        match self.protocol.negotiate(&mut self.optolink).await {
-          Ok(()) => {
-            self.connected = true;
-            return Ok(());
-          },
-          Err(err) if reinitialized => return Err(err.into()),
-          Err(err) => {
-            match self.optolink.reinitialize().await {
-              Ok(()) => {
-                log::info!("Optolink port successfully re-initialized after error.");
-                reinitialized = true;
-                continue;
-              },
-              Err(err) => {
-                log::warn!("Failed to re-initialize Optolink port after error: {err}");
-              },
-            }
-
-            return Err(err.into());
-          },
-        }
-      }
+    if self.connected {
+      return Ok(());
     }
 
-    return Ok(());
+    let mut reinitialized = false;
+    loop {
+      match self.protocol.negotiate(&mut self.optolink).await {
+        Ok(()) => {
+          self.connected = true;
+          return Ok(());
+        },
+        Err(err) if reinitialized => return Err(err.into()),
+        Err(err) => {
+          match self.optolink.reinitialize().await {
+            Ok(()) => {
+              log::info!("Optolink port successfully re-initialized after error.");
+              reinitialized = true;
+              continue;
+            },
+            Err(err) => {
+              log::warn!("Failed to re-initialize Optolink port after error: {err}");
+            },
+          }
+
+          return Err(err.into());
+        },
+      }
+    }
   }
 
   /// Automatically detect the `Device` and `Protocol` and connect to it.
