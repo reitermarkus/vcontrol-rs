@@ -32,7 +32,7 @@ impl ValueForwarder for VcontrolValueForwarder {
       DataType::Date => serde_json::from_value::<Date>(value).map(Value::Date),
       DataType::DateTime => serde_json::from_value::<DateTime>(value).map(Value::DateTime),
       DataType::Error => serde_json::from_value::<Error>(value).map(Value::Error),
-      DataType::CircuitTimes => serde_json::from_value::<CircuitTimes>(value).map(Value::CircuitTimes),
+      DataType::CircuitTimes => serde_json::from_value::<CircuitTimes>(value).map(Box::new).map(Value::CircuitTimes),
       DataType::ByteArray => serde_json::from_value::<Vec<u8>>(value).map(Value::ByteArray),
     };
 
@@ -148,8 +148,7 @@ fn add_command(
   let schema = serde_json::to_value(root_schema).unwrap().as_object().unwrap().clone();
   let description = schema;
 
-  let value_forwarder =
-    VcontrolValueForwarder { command_name: command_name.clone(), command: command.clone(), vcontrol: vcontrol.clone() };
+  let value_forwarder = VcontrolValueForwarder { command_name, command, vcontrol: vcontrol.clone() };
 
   thing.add_property(Box::new(BaseProperty::new(
     command_name.to_string(),
