@@ -305,7 +305,7 @@ def strip_address(s)
 end
 
 def load_yaml(path)
-  YAML.safe_load(File.read(path), [Symbol])
+  YAML.safe_load(File.read(path), permitted_classes: [Symbol])
 end
 
 def type_to_command(type_id, type, mappings:, translations:)
