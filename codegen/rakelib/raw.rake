@@ -215,7 +215,7 @@ def event_types(path, reverse_translations: {})
   document = Nokogiri::XML.parse(File.read(path))
   document.remove_namespaces!
 
-  types = document.xpath('.//EventTypes/EventType').filter_map { |fragment|
+  types = document.xpath('./EventTypes/EventType').filter_map { |fragment|
     next if fragment.children.empty?
 
     event_type = fragment.children.filter_map { |n|
@@ -318,7 +318,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
   document = Nokogiri::XML.parse(File.read(datapoint_definitions_raw))
   document.remove_namespaces!
 
-  dataset = document.at_xpath('.//ImportExportDataHolder/ECNDataSet/diffgram/ECNDataSet')
+  dataset = document.at_xpath('./ImportExportDataHolder/ECNDataSet/diffgram/ECNDataSet')
 
   definitions = Parallel.map({
     ['ecnVersion', 'versions'] => ->(fragment) {
@@ -604,9 +604,9 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     document = Nokogiri::XML.parse(text_resource.read)
     document.remove_namespaces!
 
-    document = document.at_xpath('.//DocumentElement')
-    cultures = document.xpath('.//Cultures/Culture')
-    translations = document.xpath('.//TextResources/TextResource')
+    document = document.at_xpath('./DocumentElement')
+    cultures = document.xpath('./Cultures/Culture')
+    translations = document.xpath('./TextResources/TextResource')
 
     languages = cultures.reduce({}) { |h, node|
       id = node.attribute('Id').text
