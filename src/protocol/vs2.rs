@@ -161,7 +161,7 @@ impl Vs2 {
 
     o.read_exact(&mut buffer[0..1]).await?;
     if buffer[0] != LEADIN {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, "telegram leadin expected"))
+      return Err(io::Error::new(io::ErrorKind::InvalidData, "telegram leadin expected"));
     }
 
     o.read_exact(&mut buffer[1..2]).await?;
@@ -181,7 +181,7 @@ impl Vs2 {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
         format!("invalid checksum: {} != {}", checksum, buffer[checksum_index]),
-      ))
+      ));
     }
 
     let message_type = buffer[2];
@@ -201,14 +201,14 @@ impl Vs2 {
         return Err(io::Error::new(
           io::ErrorKind::InvalidData,
           format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len),
-        ))
+        ));
       }
 
       if payload.len() != payload_len as usize {
         return Err(io::Error::new(
           io::ErrorKind::InvalidData,
           format!("invalid payload length, expected {}, got {}", payload.len(), payload_len),
-        ))
+        ));
       }
 
       payload.copy_from_slice(&buffer[7..(7 + payload.len())])
@@ -216,7 +216,7 @@ impl Vs2 {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
         format!("invalid message length, expected 5, got {}", message_len),
-      ))
+      ));
     }
 
     Ok(Header { message_type, function, addr, payload_len })
@@ -237,24 +237,16 @@ impl Vs2 {
     o.flush().await
   }
 
-  async fn wait_for_sync(o: &mut Optolink) -> Result<(), io::Error> {
-    log::trace!("Vs2::wait_for_sync(…)");
-
-    match Self::read_status(o).await? {
-      SYNC => Ok(()),
-      byte => {
-        Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected SYNC (0x{SYNC:02X}), received 0x{byte:02X}")))
-      },
-    }
-  }
-
   pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
     log::trace!("Vs2::negotiate(…)");
 
-    loop {
-      Self::reset(o).await?;
+    Self::reset(o).await?;
 
-      Self::wait_for_sync(o).await?;
+    loop {
+      match Self::read_status(o).await? {
+        SYNC => {},
+        _ => continue,
+      }
 
       o.write_all(&START).await?;
       o.flush().await?;
@@ -288,7 +280,7 @@ impl Vs2 {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
         format!("expected to read {expected_len}, read {actual_len}"),
-      ))
+      ));
     }
 
     Ok(())
@@ -315,7 +307,7 @@ impl Vs2 {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
         format!("expected to write {expected_len}, wrote {actual_len}"),
-      ))
+      ));
     }
 
     Ok(())
@@ -326,18 +318,18 @@ impl Vs2 {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
         format!("expected response message identifier, got {}", header.message_type),
-      ))
+      ));
     }
 
     if header.function != function {
       return Err(io::Error::new(
         io::ErrorKind::InvalidData,
         format!("expected function {:?}, got {:?}", function, header.function),
-      ))
+      ));
     }
 
     if header.addr != addr {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected address {}, got {}", addr, header.addr)))
+      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected address {}, got {}", addr, header.addr)));
     }
 
     Ok(())
