@@ -599,6 +599,7 @@ end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   text_resources = Pathname(t.source).glob('Textresource_*.xml')
+  raise if text_resources.empty?
 
   translations = Parallel.map(text_resources) { |text_resource|
     document = Nokogiri::XML.parse(text_resource.read)
