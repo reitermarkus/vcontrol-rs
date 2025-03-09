@@ -130,7 +130,12 @@ impl fmt::Display for OutputValue {
       Value::DeviceIdF0(device_id_f0) => write!(f, "{:#?}", device_id_f0)?,
       Value::Int(n) => {
         if let Some(mapping) = self.mapping {
-          write!(f, "{}", mapping.get(&(*n as i32)).unwrap())?;
+          if let Some(mapping) = mapping.get(&(*n as i32)) {
+            write!(f, "{}", mapping)?;
+          } else {
+            log::warn!("Missing mapping for {n}.");
+            write!(f, "{}", n)?;
+          }
         } else {
           write!(f, "{}", n)?;
         }
