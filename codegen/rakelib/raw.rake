@@ -2,7 +2,6 @@ require 'open3'
 require 'tempfile'
 require 'base64'
 require 'stringio'
-require 'parallel'
 require 'deepsort'
 require 'backports/2.7.0/enumerable/filter_map'
 
@@ -320,7 +319,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
   dataset = document.at_xpath('./ImportExportDataHolder/ECNDataSet/diffgram/ECNDataSet')
 
-  definitions = Parallel.map({
+  definitions = {
     ['ecnVersion', 'versions'] => ->(fragment) {
       next if fragment.children.empty?
 
@@ -568,7 +567,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
       { fragment['id'] => link }
     },
-  }) { |(tag, key), parse_fragment|
+  }.map { |(tag, key), parse_fragment|
     {
       key => (dataset > tag).reduce({}) { |h, fragment|
         h.merge!(parse_fragment.call(fragment))
@@ -600,7 +599,7 @@ end
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   text_resources = Pathname(t.source).glob('Textresource_*.xml')
 
-  translations = Parallel.map(text_resources) { |text_resource|
+  translations = text_resources.map { |text_resource|
     document = Nokogiri::XML.parse(text_resource.read)
     document.remove_namespaces!
 
