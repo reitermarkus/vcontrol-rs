@@ -46,7 +46,7 @@ file MAPPINGS_USED => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_UNIQUE, TRANSLAT
     h
   }.deep_sort!
 
-  File.write t.name, used_mappings.to_yaml
+  File.write t.name, used_mappings.to_yaml(line_width: -1)
 end
 
 file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
@@ -62,7 +62,7 @@ file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
     }
     .deep_sort!
 
-  File.write t.name, used_translations.to_yaml
+  File.write t.name, used_translations.to_yaml(line_width: -1)
 end
 
 file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_UNIQUE] do |t|
@@ -90,7 +90,7 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
     h
   }
 
-  File.write t.name, create_mapping_to_unique(mappings.merge(error_mappings)).to_yaml
+  File.write t.name, create_mapping_to_unique(mappings.merge(error_mappings)).to_yaml(line_width: -1)
 end
 
 def create_mapping_to_unique(input)
@@ -136,7 +136,7 @@ end
 
 file TRANSLATIONS_UNIQUE => TRANSLATIONS_CLEANED do |t|
   translations = load_yaml(t.sources.first)
-  File.write t.name, create_mapping_to_unique(translations).to_yaml
+  File.write t.name, create_mapping_to_unique(translations).to_yaml(line_width: -1)
 end
 
 def map_command_id(id)
@@ -389,7 +389,7 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
     h
   }.deep_sort!
 
-  File.write t.name, devices.to_yaml
+  File.write t.name, devices.to_yaml(line_width: -1)
 end
 
 file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
@@ -409,7 +409,7 @@ file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EV
     h
   }.deep_sort!
 
-  File.write t.name, used_commands.to_yaml
+  File.write t.name, used_commands.to_yaml(line_width: -1)
 end
 
 file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
@@ -437,13 +437,13 @@ file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TR
     h
   }.deep_sort!
 
-  File.write t.name, system_event_types.to_yaml
+  File.write t.name, system_event_types.to_yaml(line_width: -1)
 end
 
 file VERSIONS_USED => DATAPOINT_DEFINITIONS_RAW do |t|
   datapoint_definitions, = t.sources.map { |source| load_yaml(source) }
 
-  File.write t.name, datapoint_definitions['versions'].to_yaml
+  File.write t.name, datapoint_definitions['versions'].to_yaml(line_width: -1)
 end
 
 multitask :default => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED, VERSIONS_USED]

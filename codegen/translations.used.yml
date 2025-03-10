@@ -108,8 +108,7 @@
 2823: BE Vitotrol remote control incorrectly programmed
 2882: BF Incorrect LON communication module
 2883: C2 Communication fault solar control unit
-2884: C5 Communication fault variable speed circulation pump in the heating circuit
-  connection set
+2884: C5 Communication fault variable speed circulation pump in the heating circuit connection set
 2885: C6 Communication fault variable speed heating circuit pump heating circuit M2
 2886: C7 Communication fault variable speed heating circuit pump heating circuit A1
 2887: CD Communication fault Vitocom 100 (KM BUS)
@@ -750,8 +749,7 @@
 4305: Feedback oil preheating not in tolerated time
 4306: Fault electrical control fuel valve
 4307: Fault fuel valve
-4308: Incompatible coding card, Parameter setting coding card, Invalid data set coding
-  card
+4308: Incompatible coding card, Parameter setting coding card, Invalid data set coding card
 4309: Communication error, flow sensor
 4310: Fault, flow sensor, fault 1
 4311: Fault, flow sensor, fault 2
@@ -815,8 +813,7 @@
 4369: Sorber outlet sensor faulty.
 4370: Process flow sensor faulty
 4371: Process return sensor faulty
-4372: Incompatible coding card, coding card parameter setting, invalid coding card
-  data set
+4372: Incompatible coding card, coding card parameter setting, invalid coding card data set
 4769: '20: Boiler sensor 1'
 4795: '30: Flow sensor 1'
 4796: '32: Flow sensor 2'
@@ -1503,8 +1500,7 @@
 19189: BV or return
 19190: Butterfly valve (delivered condition for 100M)
 19191: Return control (delivered condition for 300M and cascade)
-19192: Primary circuit mixer for control unit, heat exchanger set (300M, cascade,
-  HC3, (delivered condition for 333 MW2)
+19192: Primary circuit mixer for control unit, heat exchanger set (300M, cascade, HC3, (delivered condition for 333 MW2)
 19193: Mixer for mixer heating circuit 1 (only for HC1 and HC3, in delivered condition)
 19194: OFAN max
 19195: Stop rise
@@ -1779,8 +1775,7 @@
 19529: Fault BWTS - no CTS
 19530: BWTS ok - no CTS
 19531: 'Low loss header: Internal pump runs on demand'
-19532: 'Low loss header: Internal pump only runs on demand when the burner is running
-  (with run-on time)'
+19532: 'Low loss header: Internal pump only runs on demand when the burner is running (with run-on time)'
 19533: 'Buffer cylinder: Internal pump only runs on demand when the burner is running'
 19534: Temp_okay
 19535: Temp_sensor short circuit
@@ -1920,10 +1915,8 @@
 19672: Switching heating circuit pump M2 to low speed (night contact)
 19673: Switching heating circuit pump M3 to low speed (night contact)
 19674: 'Low loss header: Boiler circuit pump always runs on demand'
-19675: 'Low loss header: Boiler circuit pump only runs on demand when the burner is
-  running'
-19676: 'Low loss header: Boiler circuit pump runs on demand only if the burner is
-  running (application: buffer cylinder)'
+19675: 'Low loss header: Boiler circuit pump only runs on demand when the burner is running'
+19676: 'Low loss header: Boiler circuit pump runs on demand only if the burner is running (application: buffer cylinder)'
 19677: Without extension DAP 1
 19678: With extension DAP 1
 19679: Without extension DAP 2
@@ -2093,10 +2086,8 @@
 19864: Reserved for variable speed pump
 19865: Reserved for variable speed pump (do not adjust)
 19866: Deactivation of CHP unit when cancelling VEE enabling
-19867: Deactivation of CHP unit as soon as the lower buffer temperature = set flow
-  temperature
-19868: Deactivation of CHP unit as soon as the lower buffer temperature = maximum
-  return temperature
+19867: Deactivation of CHP unit as soon as the lower buffer temperature = set flow temperature
+19868: Deactivation of CHP unit as soon as the lower buffer temperature = maximum return temperature
 19869: Variable speed pump
 19870: '255'
 19871: '61'

@@ -2,7 +2,6 @@ require 'open3'
 require 'tempfile'
 require 'base64'
 require 'stringio'
-require 'parallel'
 require 'deepsort'
 require 'backports/2.7.0/enumerable/filter_map'
 
@@ -282,7 +281,7 @@ end
 file SYSTEM_EVENT_TYPES_RAW => [SYSTEM_EVENT_TYPES_XML, REVERSE_TRANSLATIONS_RAW] do |t|
   system_event_types_xml, reverse_translations_raw = t.sources
   reverse_translations = load_yaml(reverse_translations_raw)
-  File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml
+  File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml(line_width: -1)
 end
 
 def add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations:)
@@ -320,7 +319,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
   dataset = document.at_xpath('./ImportExportDataHolder/ECNDataSet/diffgram/ECNDataSet')
 
-  definitions = Parallel.map({
+  definitions = {
     ['ecnVersion', 'versions'] => ->(fragment) {
       next if fragment.children.empty?
 
@@ -568,7 +567,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
       { fragment['id'] => link }
     },
-  }) { |(tag, key), parse_fragment|
+  }.map { |(tag, key), parse_fragment|
     {
       key => (dataset > tag).reduce({}) { |h, fragment|
         h.merge!(parse_fragment.call(fragment))
@@ -594,13 +593,13 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
     event_type['groups'].push(link.fetch('event_type_group_id'))
   end
 
-  File.write t.name, definitions.to_yaml
+  File.write t.name, definitions.to_yaml(line_width: -1)
 end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   text_resources = Pathname(t.source).glob('Textresource_*.xml')
 
-  translations = Parallel.map(text_resources) { |text_resource|
+  translations = text_resources.map { |text_resource|
     document = Nokogiri::XML.parse(text_resource.read)
     document.remove_namespaces!
 
@@ -629,7 +628,7 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     h.deep_merge!(translations)
   }
 
-  File.write t.name, translations.to_yaml
+  File.write t.name, translations.to_yaml(line_width: -1)
 end
 
 file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
@@ -641,5 +640,5 @@ file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
     [text, k]
   }.to_h
 
-  File.write t.name, reverse_translations_raw.to_yaml
+  File.write t.name, reverse_translations_raw.to_yaml(line_width: -1)
 end
