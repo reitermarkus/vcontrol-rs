@@ -15,6 +15,8 @@ async fn main() -> anyhow::Result<()> {
   let mut translations = BTreeMap::<String, BTreeMap<String, String>>::new();
 
   for text_resource in glob("src/Textresource_*.xml")? {
+    let text_resource = text_resource?;
+
     let f = File::open(text_resource)?;
     let decoder = DecodeReaderBytes::new(f);
     let io = BufReader::new(decoder);

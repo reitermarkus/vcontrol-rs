@@ -9,7 +9,6 @@ nrbf = { version = "0.2", features = ["serde"] }
 quick-xml = { version = "0.37.2", features = [
   "serde",
   "async-tokio",
-  "encoding",
   "serialize",
 ] }
 serde_json = "1.0.140"
