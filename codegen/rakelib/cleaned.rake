@@ -236,7 +236,7 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW, DA
     h
   }
 
-  File.write t.name, system_event_types.to_yaml
+  File.write t.name, system_event_types.to_yaml(line_width: -1)
 end
 
 file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
@@ -414,7 +414,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     'event_type_groups' => event_type_groups,
   }
 
-  File.write t.name, datapoint_definitions.to_yaml
+  File.write t.name, datapoint_definitions.to_yaml(line_width: -1)
 end
 
 def event_type_supported?(type_id, type)
@@ -479,7 +479,7 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
     [datapoint_type_id, v]
   }.to_h
 
-  File.write t.name, devices.to_yaml
+  File.write t.name, devices.to_yaml(line_width: -1)
 end
 
 file TRANSLATIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_RAW, REVERSE_TRANSLATIONS_RAW] do |t|
@@ -494,5 +494,5 @@ file TRANSLATIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_RAW, REVER
     add_missing_enum_replace_value_translations(event_value_type, translations_cleaned, reverse_translations: reverse_translations_raw)
   end
 
-  File.write t.name, translations_cleaned.to_yaml
+  File.write t.name, translations_cleaned.to_yaml(line_width: -1)
 end

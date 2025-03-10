@@ -282,7 +282,7 @@ end
 file SYSTEM_EVENT_TYPES_RAW => [SYSTEM_EVENT_TYPES_XML, REVERSE_TRANSLATIONS_RAW] do |t|
   system_event_types_xml, reverse_translations_raw = t.sources
   reverse_translations = load_yaml(reverse_translations_raw)
-  File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml
+  File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml(line_width: -1)
 end
 
 def add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations:)
@@ -594,7 +594,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
     event_type['groups'].push(link.fetch('event_type_group_id'))
   end
 
-  File.write t.name, definitions.to_yaml
+  File.write t.name, definitions.to_yaml(line_width: -1)
 end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
@@ -629,7 +629,7 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     h.deep_merge!(translations)
   }
 
-  File.write t.name, translations.to_yaml
+  File.write t.name, translations.to_yaml(line_width: -1)
 end
 
 file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
@@ -641,5 +641,5 @@ file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
     [text, k]
   }.to_h
 
-  File.write t.name, reverse_translations_raw.to_yaml
+  File.write t.name, reverse_translations_raw.to_yaml(line_width: -1)
 end
