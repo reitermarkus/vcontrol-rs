@@ -17,59 +17,63 @@ class Pathname
   alias to_str to_s
 end
 
-DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions.raw.yml'
-DATAPOINT_DEFINITIONS_CLEANED                     = 'datapoint_definitions.cleaned.yml'
-DATAPOINT_TYPES_RAW                               = 'datapoint_types.raw.yml'
-DATAPOINT_TYPES                                   = 'datapoint_types.yml'
-TRANSLATIONS_RAW                                  = 'translations.raw.yml'
-TRANSLATIONS_CLEANED                              = 'translations.cleaned.yml'
-REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.yml'
-SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.yml'
-SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.yml'
-SYSTEM_EVENT_TYPES_USED                           = 'system_event_types.used.yml'
-DEVICES_CLEANED                                   = 'devices.cleaned.yml'
-MAPPINGS_UNIQUE                                   = 'mappings.unique.yml'
-TRANSLATIONS_UNIQUE                               = 'translations.unique.yml'
-EVENT_TYPES_USED                                  = 'event_types.used.yml'
-MAPPINGS_USED                                     = 'mappings.used.yml'
-TRANSLATIONS_USED                                 = 'translations.used.yml'
-DEVICES_USED                                      = 'devices.used.yml'
-VERSIONS_USED                                     = 'versions.used.yml'
+DATAPOINT_DEFINITIONS_RAW                         = 'datapoint_definitions.raw.json'
+DATAPOINT_DEFINITIONS_CLEANED                     = 'datapoint_definitions.cleaned.json'
+DATAPOINT_TYPES_RAW                               = 'datapoint_types.raw.json'
+DATAPOINT_TYPES                                   = 'datapoint_types.json'
+TRANSLATIONS_RAW                                  = 'translations.raw.json'
+TRANSLATIONS_CLEANED                              = 'translations.cleaned.json'
+REVERSE_TRANSLATIONS_RAW                          = 'reverse_translations.raw.json'
+SYSTEM_EVENT_TYPES_RAW                            = 'system_event_types.raw.json'
+SYSTEM_EVENT_TYPES_CLEANED                        = 'system_event_types.cleaned.json'
+SYSTEM_EVENT_TYPES_USED                           = 'system_event_types.used.json'
+DEVICES_CLEANED                                   = 'devices.cleaned.json'
+MAPPINGS_UNIQUE                                   = 'mappings.unique.json'
+TRANSLATIONS_UNIQUE                               = 'translations.unique.json'
+EVENT_TYPES_USED                                  = 'event_types.used.json'
+MAPPINGS_USED                                     = 'mappings.used.json'
+TRANSLATIONS_USED                                 = 'translations.used.json'
+DEVICES_USED                                      = 'devices.used.json'
+VERSIONS_USED                                     = 'versions.used.json'
 
 file MAPPINGS_USED => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  used_devices, used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
+  used_devices, used_commands, mappings_unique, translations_unique = t.sources.map { |source| load_json(source) }
   device_error_mappings = used_devices.map { |_, v| v.fetch('error_mapping') }
   command_mappings = used_commands.filter_map { |_, v| v['mapping'] }
 
+  translations = mappings_unique.fetch("translations").transform_keys { Integer(_1) }
+
   used_mappings = (device_error_mappings + command_mappings).uniq.reduce({}) { |h, k|
-    h[k] = mappings_unique.fetch(:translations).fetch(k)
+    h[k] = translations.fetch(k).transform_keys { Integer(_1) }
     h
   }.deep_sort!
 
-  File.write t.name, used_mappings.to_yaml(line_width: -1)
+  save_json(t.name, used_mappings)
 end
 
 file TRANSLATIONS_USED => [MAPPINGS_USED, TRANSLATIONS_UNIQUE] do |t|
-  used_mappings, translations_unique = t.sources.map { |source| load_yaml(source) }
+  used_mappings, translations_unique = t.sources.map { |source| load_json(source) }
 
-  used_translations = used_mappings
+  translations_unique = translations_unique.fetch("translations").transform_keys { Integer(_1) }
+
+  used_translations = used_mappings.transform_keys { Integer(_1) }
     .flat_map { |_, translations|
       translations.map { |_, translation_id| translation_id }
     }
     .reduce({}) { |h, translation_id|
-      h[translation_id] = translations_unique.fetch(:translations).fetch(translation_id)
+      h[translation_id] = translations_unique.fetch(translation_id)
       h
     }
     .deep_sort!
 
-  File.write t.name, used_translations.to_yaml(line_width: -1)
+  save_json(t.name, used_translations)
 end
 
 file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, TRANSLATIONS_UNIQUE] do |t|
-  datapoint_definitions, system_event_types, translations = t.sources.map { |source| load_yaml(source) }
+  datapoint_definitions, system_event_types, translations = t.sources.map { |source| load_json(source) }
   event_types = datapoint_definitions.fetch('event_types')
 
-  error_mappings = translations.fetch(:mapping).reduce({}) { |h, (translation_id, mapping_id)|
+  error_mappings = translations.fetch("mapping").reduce({}) { |h, (translation_id, mapping_id)|
     if /^(?<id>viessmann\.errorcode(?:\.SMS)?(?:\.[^.]+)?)\.(?<value>\h{2})$/ =~ translation_id
       h[id] ||= {}
       h[id][value.to_i(16)] = mapping_id
@@ -84,13 +88,13 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
     next h if value_list.empty?
 
     h[event_type.fetch('type_id')] = value_list.transform_values { |translation_id|
-      translations.fetch(:mapping).fetch(translation_id)
+      translations.fetch("mapping").fetch(translation_id)
     }
 
     h
   }
 
-  File.write t.name, create_mapping_to_unique(mappings.merge(error_mappings)).to_yaml(line_width: -1)
+  save_json(t.name, create_mapping_to_unique(mappings.merge(error_mappings)))
 end
 
 def create_mapping_to_unique(input)
@@ -135,8 +139,8 @@ def create_mapping_to_unique(input)
 end
 
 file TRANSLATIONS_UNIQUE => TRANSLATIONS_CLEANED do |t|
-  translations = load_yaml(t.sources.first)
-  File.write t.name, create_mapping_to_unique(translations).to_yaml(line_width: -1)
+  translations = load_json(t.sources.first)
+  save_json(t.name, create_mapping_to_unique(translations))
 end
 
 def map_command_id(id)
@@ -304,8 +308,13 @@ def strip_address(s)
   s.sub(/[~+](:?0x|hx)?\h{4}\Z/, '')
 end
 
-def load_yaml(path)
-  YAML.safe_load(File.read(path), permitted_classes: [Symbol])
+def load_json(path)
+  JSON.parse(File.read(path))
+end
+
+def save_json(path, value)
+  File.write path, JSON.pretty_generate(value) + "\n"
+  File.write Pathname(path).sub_ext('.yml'), value.to_yaml(line_width: -1)
 end
 
 def type_to_command(type_id, type, mappings:, translations:)
@@ -362,16 +371,16 @@ def type_to_command(type_id, type, mappings:, translations:)
   enum_type = value_list.any?
 
   if enum_type
-    command['mapping'] = mappings.fetch(:mapping).fetch(type_id)
+    command['mapping'] = mappings.fetch("mapping").fetch(type_id)
   end
 
   command.compact
 end
 
 file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
-  devices, mappings_unique = t.sources.map { |source| load_yaml(source) }
+  devices, mappings_unique = t.sources.map { |source| load_json(source) }
 
-  default_error_mapping = mappings_unique.fetch(:mapping).fetch('viessmann.errorcode')
+  default_error_mapping = mappings_unique.fetch("mapping").fetch('viessmann.errorcode')
 
   devices = devices.reduce({}) { |h, (device_id, device)|
     h[device_id] = {
@@ -384,18 +393,18 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
         .map { |command_name| command_name }
         .uniq
         .sort,
-      'error_mapping' => mappings_unique.fetch(:mapping).fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
+      'error_mapping' => mappings_unique.fetch("mapping").fetch("viessmann.errorcode.#{device_id}", default_error_mapping),
     }
     h
   }.deep_sort!
 
-  File.write t.name, devices.to_yaml(line_width: -1)
+  save_json(t.name, devices)
 end
 
 file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
   used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
-    t.sources.map { |source| load_yaml(source) }
-  event_types = datapoint_definitions.fetch('event_types')
+    t.sources.map { |source| load_json(source) }
+  event_types = datapoint_definitions.fetch('event_types').transform_keys { Integer(_1) }
 
   used_event_type_ids = used_devices.each_value.reduce(Set.new) { |s, d| s | d['commands'].to_set }
 
@@ -409,11 +418,11 @@ file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EV
     h
   }.deep_sort!
 
-  File.write t.name, used_commands.to_yaml(line_width: -1)
+  save_json(t.name, used_commands)
 end
 
 file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  system_event_types_cleaned, mappings_unique, translations_unique = t.sources.map { |source| load_yaml(source) }
+  system_event_types_cleaned, mappings_unique, translations_unique = t.sources.map { |source| load_json(source) }
 
   system_event_types = system_event_types_cleaned.reduce({}) { |h, (event_type_id, event_type)|
     id = event_type_id
@@ -437,17 +446,17 @@ file SYSTEM_EVENT_TYPES_USED => [SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TR
     h
   }.deep_sort!
 
-  File.write t.name, system_event_types.to_yaml(line_width: -1)
+  save_json(t.name, system_event_types)
 end
 
 file VERSIONS_USED => DATAPOINT_DEFINITIONS_RAW do |t|
-  datapoint_definitions, = t.sources.map { |source| load_yaml(source) }
+  datapoint_definitions, = t.sources.map { |source| load_json(source) }
 
-  File.write t.name, datapoint_definitions['versions'].to_yaml(line_width: -1)
+  save_json(t.name, datapoint_definitions['versions'])
 end
 
 multitask :default => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED, VERSIONS_USED]
 
 task :clean do
-  rm Dir.glob('*.yml')
+  rm Dir.glob('*.{yml,json}')
 end

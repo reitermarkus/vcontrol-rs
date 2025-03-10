@@ -211,7 +211,7 @@ def map_event_type_name(name)
 end
 
 file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW, DATAPOINT_DEFINITIONS_CLEANED] do |t|
-  system_event_types_raw, translations_raw, datapoint_definitions_cleaned = t.sources.map { |source| load_yaml(source) }
+  system_event_types_raw, translations_raw, datapoint_definitions_cleaned = t.sources.map { |source| load_json(source) }
 
   event_type_ids = datapoint_definitions_cleaned.fetch('event_types').map { |_, v| v.fetch('type_id') }
 
@@ -236,18 +236,18 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW, DA
     h
   }
 
-  File.write t.name, system_event_types.to_yaml(line_width: -1)
+  save_json(t.name, system_event_types)
 end
 
 file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
-  datapoint_definitions_raw = load_yaml(t.source)
+  datapoint_definitions_raw = load_json(t.source)
 
-  datapoints = datapoint_definitions_raw.fetch('datapoints')
-  event_types = datapoint_definitions_raw.fetch('event_types')
-  event_value_types = datapoint_definitions_raw.fetch('event_value_types')
-  event_type_groups = datapoint_definitions_raw.fetch('event_type_groups')
-  table_extensions = datapoint_definitions_raw.fetch('table_extensions')
-  table_extension_values = datapoint_definitions_raw.fetch('table_extension_values')
+  datapoints = datapoint_definitions_raw.fetch('datapoints').transform_keys { Integer(_1) }
+  event_types = datapoint_definitions_raw.fetch('event_types').transform_keys { Integer(_1) }
+  event_value_types = datapoint_definitions_raw.fetch('event_value_types').transform_keys { Integer(_1) }
+  event_type_groups = datapoint_definitions_raw.fetch('event_type_groups').transform_keys { Integer(_1) }
+  table_extensions = datapoint_definitions_raw.fetch('table_extensions').transform_keys { Integer(_1) }
+  table_extension_values = datapoint_definitions_raw.fetch('table_extension_values').transform_keys { Integer(_1) }
 
   table_extension_values.each do |_, v|
     table_extension = table_extensions.fetch(v.fetch('ref_id'))
@@ -301,7 +301,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
         field_name = 'option_list'
         parse_option_list(value)
       when 'mapping_type'
-        mapping_types = table_extension.fetch('options_value')
+        mapping_types = table_extension.fetch('options_value').transform_keys { Integer(_1) }
         mapping_type = mapping_types.fetch(value)
         mapping_type unless mapping_type == 'NoMap'
       else
@@ -414,7 +414,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
     'event_type_groups' => event_type_groups,
   }
 
-  File.write t.name, datapoint_definitions.to_yaml(line_width: -1)
+  save_json(t.name, datapoint_definitions)
 end
 
 def event_type_supported?(type_id, type)
@@ -464,10 +464,10 @@ def clean_event_type(event_type)
 end
 
 file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED] do |t|
-  datapoint_definitions, system_event_types = t.sources.map { |source| load_yaml(source) }
+  datapoint_definitions, system_event_types = t.sources.map { |source| load_json(source) }
 
   datapoints = datapoint_definitions.fetch('datapoints')
-  event_types = datapoint_definitions.fetch('event_types')
+  event_types = datapoint_definitions.fetch('event_types').transform_keys { Integer(_1) }
 
   devices = datapoints.filter_map { |datapoint_type_id, v|
     # Remove devices without any supported event types.
@@ -479,11 +479,11 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
     [datapoint_type_id, v]
   }.to_h
 
-  File.write t.name, devices.to_yaml(line_width: -1)
+  save_json(t.name, devices)
 end
 
 file TRANSLATIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_RAW, REVERSE_TRANSLATIONS_RAW] do |t|
-  datapoint_definitions_raw, translations_raw, reverse_translations_raw = t.sources.map { |source| load_yaml(source) }
+  datapoint_definitions_raw, translations_raw, reverse_translations_raw = t.sources.map { |source| load_json(source) }
 
   translations_cleaned = translations_raw.reduce({}) { |h, (k, v)|
     h[TRANSLATION_FIXES.fetch(k, k)] = v.fetch('en')
@@ -494,5 +494,7 @@ file TRANSLATIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_RAW, REVER
     add_missing_enum_replace_value_translations(event_value_type, translations_cleaned, reverse_translations: reverse_translations_raw)
   end
 
-  File.write t.name, translations_cleaned.to_yaml(line_width: -1)
+  translations_cleaned = translations_cleaned.sort_by { |key,| key.bytes }.to_h
+
+  save_json(t.name, translations_cleaned)
 end

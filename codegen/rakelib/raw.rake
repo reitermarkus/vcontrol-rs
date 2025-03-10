@@ -280,16 +280,18 @@ end
 
 file SYSTEM_EVENT_TYPES_RAW => [SYSTEM_EVENT_TYPES_XML, REVERSE_TRANSLATIONS_RAW] do |t|
   system_event_types_xml, reverse_translations_raw = t.sources
-  reverse_translations = load_yaml(reverse_translations_raw)
-  File.write t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations).to_yaml(line_width: -1)
+  reverse_translations = load_json(reverse_translations_raw)
+  save_json(t.name, event_types(system_event_types_xml, reverse_translations: reverse_translations))
 end
 
 def add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations:)
-  if event_value_type.key?('enum_replace_value')
+  return unless event_value_type.key?('enum_replace_value')
+
     enum_replace_value = event_value_type['enum_replace_value']
 
     translation_id = enum_replace_value.delete_prefix('@@')
-    unless translations.key?(translation_id)
+  return if translations.key?(translation_id)
+
       if (description = event_value_type['description'])
         if enum_replace_value&.match?(/ecnStatusEventType~\d+/)
           translations[translation_id] = description.delete_prefix('ecnStatusEventType~')
@@ -305,15 +307,13 @@ def add_missing_enum_replace_value_translations(event_value_type, translations, 
       end
 
       translations[translation_id] = enum_replace_value
-    end
-  end
 end
 
 file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, REVERSE_TRANSLATIONS_RAW] do |t|
   datapoint_definitions_raw, translations_raw, reverse_translations_raw = t.sources
 
-  translations = load_yaml(translations_raw)
-  reverse_translations = load_yaml(reverse_translations_raw)
+  translations = load_json(translations_raw)
+  reverse_translations = load_json(reverse_translations_raw)
   document = Nokogiri::XML.parse(File.read(datapoint_definitions_raw))
   document.remove_namespaces!
 
@@ -593,11 +593,12 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
     event_type['groups'].push(link.fetch('event_type_group_id'))
   end
 
-  File.write t.name, definitions.to_yaml(line_width: -1)
+  save_json(t.name, definitions)
 end
 
 file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
   text_resources = Pathname(t.source).glob('Textresource_*.xml')
+  raise if text_resources.empty?
 
   translations = text_resources.map { |text_resource|
     document = Nokogiri::XML.parse(text_resource.read)
@@ -626,13 +627,13 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     }
   }.reduce({}) { |h, translations|
     h.deep_merge!(translations)
-  }
+  }.sort_by { |key, | key.bytes }.to_h
 
-  File.write t.name, translations.to_yaml(line_width: -1)
+  save_json(t.name, translations)
 end
 
 file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
-  translations_raw = load_yaml(t.source)
+  translations_raw = load_json(t.source)
 
   reverse_translations_raw = translations_raw.filter_map { |k, v|
     text = simplify_translation_text(v.fetch('de'))
@@ -640,5 +641,5 @@ file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
     [text, k]
   }.to_h
 
-  File.write t.name, reverse_translations_raw.to_yaml(line_width: -1)
+  save_json(t.name, reverse_translations_raw)
 end
