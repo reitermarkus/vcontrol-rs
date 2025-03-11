@@ -64,11 +64,11 @@ pub struct DocumentElement {
   pub text_resources: TextResources,
 }
 
-pub fn parse_translation_text(text: String) -> String {
-  lazy_static! {
-    static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
-  }
+lazy_static! {
+  static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
+}
 
+pub fn parse_translation_text(text: String) -> String {
   let text = text.trim();
   let text = WHITESPACE.replace_all(&text, " ");
   let text = text
@@ -108,4 +108,250 @@ pub fn clean_enum_text<'a, 'b, 'c>(translation_id: &'a str, index: Option<&'b st
   };
 
   text.trim().to_owned()
+}
+
+pub fn simplify_translation_text(text: &str) -> String {
+  WHITESPACE.replace_all(text, " ").trim().to_owned()
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnCulture {
+  #[serde(rename = "Id")]
+  pub id: u8,
+  #[serde(rename = "CompanyId")]
+  #[allow(unused)]
+  pub company_id: u8,
+  #[serde(rename = "Name")]
+  pub name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnDataPointType {
+  #[serde(rename = "Id")]
+  pub id: u16,
+  #[serde(rename = "CompanyId")]
+  #[allow(unused)]
+  pub company_id: u8,
+  #[serde(rename = "Name")]
+  pub name: String,
+  #[serde(rename = "Description")]
+  pub description: String,
+  #[serde(rename = "StatusEventTypeId")]
+  pub status_event_type_id: u8,
+  #[serde(rename = "Address")]
+  pub address: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnDataPointTypeEventTypeLink {
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "DataPointTypeId")]
+  pub data_point_type_id: u16,
+  #[serde(rename = "EventTypeId")]
+  pub event_type_id: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnDeviceType {
+  #[serde(rename = "Id")]
+  pub id: u8,
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "Name")]
+  pub name: String,
+  #[serde(rename = "Manufacturer")]
+  pub manufacturer: String,
+  #[serde(rename = "Description")]
+  pub description: String,
+  #[serde(rename = "StatusDataPointTypeId")]
+  pub status_data_point_type_id: u8,
+  #[serde(rename = "TechnicalIdentificationAddress")]
+  pub technical_identification_address: u8,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnDeviceTypeDataPointTypeLink {
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "DeviceTypeId")]
+  pub device_type_id: u8,
+  #[serde(rename = "DataPointTypeId")]
+  pub data_point_type_id: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnEventType {
+  #[serde(rename = "Id")]
+  pub id: u16,
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "EnumType")]
+  pub enum_type: bool,
+  #[serde(rename = "Name")]
+  pub name: String,
+  #[serde(rename = "Address")]
+  pub address: String,
+  #[serde(rename = "Conversion")]
+  pub conversion: String,
+  #[serde(rename = "Description")]
+  pub description: String,
+  #[serde(rename = "Priority")]
+  pub priority: u8,
+  #[serde(rename = "Filtercriterion")]
+  pub filter_criterion: bool,
+  #[serde(rename = "Reportingcriterion")]
+  pub reporting_criterion: bool,
+  #[serde(rename = "Type")]
+  pub type_: u8,
+  #[serde(rename = "URL")]
+  pub url: String,
+  #[serde(rename = "DefaultValue")]
+  pub default_value: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnEventTypeEventValueTypeLink {
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "EventTypeId")]
+  pub event_type_id: u16,
+  #[serde(rename = "EventValueId")]
+  pub event_value_id: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnEventValueType {
+  #[serde(rename = "Id")]
+  pub id: u16,
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "Name")]
+  pub name: String,
+  #[serde(default, rename = "EnumAddressValue")]
+  pub enum_address_value: i32,
+  #[serde(rename = "EnumReplaceValue")]
+  pub enum_replace_value: String,
+  #[serde(rename = "StatusTypeId")]
+  pub status_type_id: u8,
+  #[serde(rename = "Unit")]
+  pub unit: String,
+  #[serde(rename = "DataType")]
+  pub data_type: String,
+  #[serde(rename = "Description")]
+  pub description: String,
+}
+
+use serde_with::base64::Base64;
+use serde_with::serde_as;
+
+#[serde_as]
+#[derive(Debug, Deserialize)]
+pub struct EcnTableExtensionValue {
+  #[serde(rename = "Id")]
+  pub id: u32,
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "RefId")]
+  pub ref_id: u16,
+  #[serde(rename = "PkValue")]
+  pub pk_value: String,
+  #[serde(rename = "InternalValue")]
+  #[serde_as(as = "Base64")]
+  pub internal_value: Vec<u8>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnVersion {
+  #[serde(rename = "Id")]
+  pub id: u8,
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "Name")]
+  pub name: String,
+  #[serde(rename = "Value")]
+  pub value: String,
+  #[serde(rename = "Description")]
+  pub description: String,
+}
+
+#[serde_as]
+#[derive(Debug, Deserialize)]
+pub struct EcnTableExtension {
+  #[serde(rename = "Id")]
+  pub id: u16,
+  #[serde(rename = "CompanyId")]
+  pub company_id: u8,
+  #[serde(rename = "TableName")]
+  pub table_name: String,
+  #[serde(rename = "FieldName")]
+  pub field_name: String,
+  #[serde(rename = "Label")]
+  pub label: String,
+  #[serde(rename = "PkFields")]
+  pub pk_fields: String,
+  #[serde(rename = "InternalDefaultValue")]
+  #[serde_as(as = "Base64")]
+  pub internal_default_value: Vec<u8>,
+  #[serde(rename = "InternalDataType")]
+  pub internal_data_type: u8,
+  #[serde(default, rename = "OptionsValue")]
+  pub options_value: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EcnDataSetInner {
+  #[serde(rename = "ecnCulture")]
+  ecn_culture: Vec<EcnCulture>,
+  #[serde(rename = "ecnDatapointType")]
+  ecn_datapoint_type: Vec<EcnDataPointType>,
+  #[serde(rename = "ecnDataPointTypeEventTypeLink")]
+  ecn_data_point_type_event_type_link: Vec<EcnDataPointTypeEventTypeLink>,
+  #[serde(rename = "ecnDeviceType")]
+  ecn_device_type: Vec<EcnDeviceType>,
+  #[serde(rename = "ecnDeviceTypeDataPointTypeLink")]
+  ecn_device_type_data_point_type_link: Vec<EcnDeviceTypeDataPointTypeLink>,
+  #[serde(rename = "ecnEventType")]
+  ecn_event_type: Vec<EcnEventType>,
+  #[serde(rename = "ecnEventTypeEventValueTypeLink")]
+  ecn_event_type_event_value_type_link: Vec<EcnEventTypeEventValueTypeLink>,
+  #[serde(rename = "ecnEventValueType")]
+  ecn_event_value_type: Vec<EcnEventValueType>,
+  #[serde(rename = "ecnTableExtensionValue")]
+  ecn_table_extension_value: Vec<EcnTableExtensionValue>,
+  #[serde(rename = "ecnVersion")]
+  ecn_version: Vec<EcnVersion>,
+  #[serde(rename = "ecnTableExtension")]
+  ecn_table_extension: Vec<EcnTableExtension>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ECNDataSetDiffGram {
+  #[serde(rename = "ECNDataSet")]
+  ecn_data_set: EcnDataSetInner,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ECNDataSet {
+  #[serde(rename = "diffgram")]
+  diff_gram: ECNDataSetDiffGram,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct DocumentServerDataSetDiffGram {}
+
+#[derive(Debug, Deserialize)]
+pub struct DocumentServerDataSet {
+  #[serde(rename = "diffgram")]
+  diff_gram: DocumentServerDataSetDiffGram,
+}
+
+// Datapoint definitions.
+
+#[derive(Debug, Deserialize)]
+pub struct ImportExportDataHolder {
+  #[serde(rename = "ECNDataSet")]
+  ecn_data_set: ECNDataSet,
+  #[serde(rename = "DocumentServerDataSet")]
+  document_server_data_set: DocumentServerDataSet,
 }

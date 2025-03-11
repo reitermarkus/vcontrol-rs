@@ -12,7 +12,7 @@ mod raw;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
   let mut cultures = BTreeMap::<u8, String>::new();
-  let mut translations = BTreeMap::<String, BTreeMap<String, String>>::new();
+  let mut translations_raw = BTreeMap::<String, BTreeMap<String, String>>::new();
 
   for text_resource in glob("src/Textresource_*.xml")? {
     let text_resource = text_resource?;
@@ -33,13 +33,37 @@ async fn main() -> anyhow::Result<()> {
       let value = raw::parse_translation_text(text_resource.value);
       let value = raw::clean_enum_text(&text_resource.label, None, value);
 
-      let inner = translations.entry(text_resource.label).or_insert_with(BTreeMap::new);
+      let inner = translations_raw.entry(text_resource.label).or_insert_with(BTreeMap::new);
       inner.insert(name.clone(), value);
     }
   }
 
   let f = File::create("translations.raw.yml")?;
-  serde_yaml::to_writer(f, &translations)?;
+  serde_yaml::to_writer(f, &translations_raw)?;
+
+  let reverse_translations: BTreeMap<_, _> = translations_raw
+    .into_iter()
+    .filter_map(|(k, v)| {
+      let text = raw::simplify_translation_text(v.get("de").unwrap());
+
+      if text.is_empty() {
+        return None;
+      }
+
+      Some((text, k))
+    })
+    .collect();
+
+  let f = File::create("reverse_translations.raw.yml")?;
+  serde_yaml::to_writer(f, &reverse_translations)?;
+
+  let f = File::open("src/DPDefinitions.xml")?;
+  let decoder = DecodeReaderBytes::new(f);
+  let io = BufReader::new(decoder);
+
+  let datapoint_definitions: raw::ImportExportDataHolder = quick_xml::de::from_reader(io)?;
+
+  dbg!(datapoint_definitions);
 
   return Ok(());
 
