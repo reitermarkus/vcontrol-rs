@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use base64::prelude::*;
+use convert_case::{Case, Casing};
 use encoding_rs_io::DecodeReaderBytes;
 use glob::glob;
 use serde::Serialize;
@@ -48,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
   serde_yaml::to_writer(f, &translations_raw)?;
 
   let reverse_translations_raw: BTreeMap<_, _> = translations_raw
-    .into_iter()
+    .iter()
     .filter_map(|(k, v)| {
       let text = raw::simplify_translation_text(v.get("de").unwrap());
 
@@ -73,8 +74,11 @@ async fn main() -> anyhow::Result<()> {
 
   let mut versions = BTreeMap::<String, String>::new();
   for version in ecn_data_set.ecn_version {
-    versions.insert(version.name, version.value);
+    versions.insert(version.name.to_case(Case::Snake), version.value);
   }
+
+  let f = File::create("versions.used.yml")?;
+  serde_yaml::to_writer(f, &versions)?;
 
   #[derive(Debug, Serialize)]
   struct DataPointType {
@@ -112,7 +116,7 @@ async fn main() -> anyhow::Result<()> {
     pub enum_type: bool,
     pub name: String,
     pub address: String,
-    pub conversion: String,
+    pub conversion: Option<String>,
     pub description: String,
     pub priority: u8,
     pub filter_criterion: bool,
@@ -124,6 +128,13 @@ async fn main() -> anyhow::Result<()> {
 
   let mut event_types = BTreeMap::<u16, EventType>::new();
   for event_type in ecn_data_set.ecn_event_type {
+    fn parse_conversion(conversion: String) -> Option<String> {
+      match conversion.as_str() {
+        "NoConversion" | "" | "GWG_2010_Kennung~0x00F9" => None,
+        _ => Some(conversion.replace("Mult", "Mul").replace("MBus", "Mbus").replace("2", "To").to_owned()),
+      }
+    }
+
     let id = event_type.id;
     event_types.insert(
       id,
@@ -131,7 +142,7 @@ async fn main() -> anyhow::Result<()> {
         enum_type: event_type.enum_type,
         name: event_type.name,
         address: event_type.address,
-        conversion: event_type.conversion,
+        conversion: parse_conversion(event_type.conversion),
         description: event_type.description,
         priority: event_type.priority,
         filter_criterion: event_type.filter_criterion,
@@ -179,6 +190,114 @@ async fn main() -> anyhow::Result<()> {
       },
     );
   }
+
+  fn parse_description(text: &str, reverse_translations: &BTreeMap<String, &String>) -> Option<String> {
+    match text.trim() {
+      "" => None,
+      v if v.starts_with("@@") => Some(v.to_owned()),
+      v => {
+        let k = raw::simplify_translation_text(v);
+        if let Some(translation_id) = reverse_translations.get(&k) {
+          Some(format!("@@#{translation_id}"))
+        } else {
+          None
+        }
+      },
+    }
+  }
+
+  fn add_missing_enum_replace_value_translations(
+    event_value_type: &mut EventValueType,
+    mut translations: &mut BTreeMap<String, String>,
+    reverse_translations: &BTreeMap<String, &String>,
+  ) {
+    if event_value_type.enum_replace_value.is_empty() {
+      return;
+    }
+
+    let translation_id =
+      event_value_type.enum_replace_value.strip_prefix("@@").unwrap_or(&event_value_type.enum_replace_value);
+
+    if translations.contains_key(translation_id) {
+      return;
+    }
+
+    if !event_value_type.description.is_empty() {
+      if event_value_type.enum_replace_value.starts_with("ecnStatusEventType~") {
+        let description =
+          event_value_type.description.strip_prefix("ecnStatusEventType~").unwrap_or(&event_value_type.description);
+        translations.insert(translation_id.to_owned(), description.to_owned());
+        return;
+      }
+
+      let enum_text =
+        raw::clean_enum_text(&event_value_type.enum_replace_value, None, event_value_type.description.clone());
+
+      if let Some(reverse_translation_id) = parse_description(&enum_text, reverse_translations) {
+        event_value_type.enum_replace_value = reverse_translation_id;
+        return;
+      }
+    }
+
+    translations.insert(translation_id.to_owned(), event_value_type.enum_replace_value.clone());
+  }
+
+  fn translation_fixes(id: &str) -> String {
+    match id {
+      "viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~0" => {
+        "viessmann-ess.eventvaluetype.AnwahlDrosselklappe~0".to_owned()
+      },
+      "viessmann-ess.eventvaluetype.AnwahlDrsosselklappe~1" => {
+        "viessmann-ess.eventvaluetype.AnwahlDrosselklappe~1".to_owned()
+      },
+      "viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~0" => {
+        "viessmann.eventvaluetype.WPR3_SGReady_Funktionen~0".to_owned()
+      },
+      "viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~1" => {
+        "viessmann.eventvaluetype.WPR3_SGReady_Funktionen~1".to_owned()
+      },
+      "viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~2" => {
+        "viessmann.eventvaluetype.WPR3_SGReady_Funktionen~2".to_owned()
+      },
+      "viessmann.eventvaluetype.name.WPR3_SGReady_Funktionen~3" => {
+        "viessmann.eventvaluetype.WPR3_SGReady_Funktionen~3".to_owned()
+      },
+      "viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~0" => {
+        "viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~0".to_owned()
+      },
+      "viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~2" => {
+        "viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~2".to_owned()
+      },
+      "viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateoper_shortLWT~3" => {
+        "viessmann.eventvaluetype.WPR3_Split.K43_Flagtoindicateopen_shortLWT~3".to_owned()
+      },
+      "viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~0" => {
+        "viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~0".to_owned()
+      },
+      "viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~2" => {
+        "viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~2".to_owned()
+      },
+      "viessmann.eventvaluetype.K44_Flagtoindicateopen.shortICT~3" => {
+        "viessmann.eventvaluetype.K44_Flagtoindicateopen_shortICT~3".to_owned()
+      },
+      "viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~2" => {
+        "viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~2".to_owned()
+      },
+      "viessmann.eventvaluetype.K45_Flagtoindicateoper/shortLWT~3" => {
+        "viessmann.eventvaluetype.K45_Flagtoindicateopen_shortICT~3".to_owned()
+      },
+      _ => id.to_owned(),
+    }
+  }
+  let mut translations_cleaned: BTreeMap<String, String> =
+    translations_raw.iter().map(|(k, mut v)| (translation_fixes(k), v.get("en").cloned().unwrap())).collect();
+
+  for (ref mut event_value_type_id, event_value_type) in &mut event_value_types {
+    add_missing_enum_replace_value_translations(event_value_type, &mut translations_cleaned, &reverse_translations_raw)
+  }
+
+  let f = File::create("translations.cleaned.yml")?;
+  serde_yaml::to_writer(f, &translations_cleaned)?;
 
   let mut event_type_event_value_type_links = BTreeMap::<u16, Vec<u16>>::new();
   for event_type_event_value_type_link in ecn_data_set.ecn_event_type_event_value_type_link {
@@ -233,7 +352,7 @@ async fn main() -> anyhow::Result<()> {
     );
   }
 
-  dbg!(event_type_event_value_type_links);
+  // dbg!(event_type_event_value_type_links);
 
   return Ok(());
 
