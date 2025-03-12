@@ -1,6 +1,9 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::Deserialize;
+use serde::de::IgnoredAny;
+use serde_with::base64::Base64;
+use serde_with::serde_as;
 
 #[derive(Debug, Deserialize)]
 pub struct DefaultCulture {
@@ -115,7 +118,15 @@ pub fn simplify_translation_text(text: &str) -> String {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnCulture {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u8,
   #[serde(rename = "CompanyId")]
@@ -126,7 +137,15 @@ pub struct EcnCulture {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnDataPointType {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u16,
   #[serde(rename = "CompanyId")]
@@ -143,8 +162,17 @@ pub struct EcnDataPointType {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnDataPointTypeEventTypeLink {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "DataPointTypeId")]
   pub data_point_type_id: u16,
@@ -153,10 +181,19 @@ pub struct EcnDataPointTypeEventTypeLink {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnDeviceType {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u8,
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "Name")]
   pub name: String,
@@ -171,8 +208,17 @@ pub struct EcnDeviceType {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnDeviceTypeDataPointTypeLink {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "DeviceTypeId")]
   pub device_type_id: u8,
@@ -181,10 +227,19 @@ pub struct EcnDeviceTypeDataPointTypeLink {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnEventType {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u16,
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "EnumType")]
   pub enum_type: bool,
@@ -208,11 +263,24 @@ pub struct EcnEventType {
   pub url: String,
   #[serde(rename = "DefaultValue")]
   pub default_value: String,
+  #[serde(rename = "ConfigSetId")]
+  pub config_set_id: Option<u8>,
+  #[serde(rename = "ConfigSetParameterId")]
+  pub config_set_parameter_id: Option<u16>,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnEventTypeEventValueTypeLink {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "EventTypeId")]
   pub event_type_id: u16,
@@ -221,10 +289,19 @@ pub struct EcnEventTypeEventValueTypeLink {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnEventValueType {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u16,
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "Name")]
   pub name: String,
@@ -238,19 +315,35 @@ pub struct EcnEventValueType {
   pub unit: String,
   #[serde(rename = "DataType")]
   pub data_type: String,
+  #[serde(rename = "Length")]
+  pub length: Option<u8>,
+  #[serde(rename = "Stepping")]
+  pub stepping: Option<f32>,
+  #[serde(rename = "ValuePrecision")]
+  pub value_precision: Option<u16>,
+  #[serde(rename = "LowerBorder")]
+  pub lower_border: Option<f32>,
+  #[serde(rename = "UpperBorder")]
+  pub uppwer_border: Option<f32>,
   #[serde(rename = "Description")]
   pub description: String,
 }
 
-use serde_with::base64::Base64;
-use serde_with::serde_as;
-
 #[serde_as]
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnTableExtensionValue {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u32,
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "RefId")]
   pub ref_id: u16,
@@ -262,10 +355,19 @@ pub struct EcnTableExtensionValue {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnVersion {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u8,
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "Name")]
   pub name: String,
@@ -277,10 +379,19 @@ pub struct EcnVersion {
 
 #[serde_as]
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnTableExtension {
+  #[serde(rename = "@id")]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  pub msdata_row_order: IgnoredAny, // u16
+
   #[serde(rename = "Id")]
   pub id: u16,
   #[serde(rename = "CompanyId")]
+  #[allow(unused)]
   pub company_id: u8,
   #[serde(rename = "TableName")]
   pub table_name: String,
@@ -302,39 +413,39 @@ pub struct EcnTableExtension {
 #[derive(Debug, Deserialize)]
 pub struct EcnDataSetInner {
   #[serde(rename = "ecnCulture")]
-  ecn_culture: Vec<EcnCulture>,
+  pub ecn_culture: Vec<EcnCulture>,
   #[serde(rename = "ecnDatapointType")]
-  ecn_datapoint_type: Vec<EcnDataPointType>,
+  pub ecn_datapoint_type: Vec<EcnDataPointType>,
   #[serde(rename = "ecnDataPointTypeEventTypeLink")]
-  ecn_data_point_type_event_type_link: Vec<EcnDataPointTypeEventTypeLink>,
+  pub ecn_data_point_type_event_type_link: Vec<EcnDataPointTypeEventTypeLink>,
   #[serde(rename = "ecnDeviceType")]
-  ecn_device_type: Vec<EcnDeviceType>,
+  pub ecn_device_type: Vec<EcnDeviceType>,
   #[serde(rename = "ecnDeviceTypeDataPointTypeLink")]
-  ecn_device_type_data_point_type_link: Vec<EcnDeviceTypeDataPointTypeLink>,
+  pub ecn_device_type_data_point_type_link: Vec<EcnDeviceTypeDataPointTypeLink>,
   #[serde(rename = "ecnEventType")]
-  ecn_event_type: Vec<EcnEventType>,
+  pub ecn_event_type: Vec<EcnEventType>,
   #[serde(rename = "ecnEventTypeEventValueTypeLink")]
-  ecn_event_type_event_value_type_link: Vec<EcnEventTypeEventValueTypeLink>,
+  pub ecn_event_type_event_value_type_link: Vec<EcnEventTypeEventValueTypeLink>,
   #[serde(rename = "ecnEventValueType")]
-  ecn_event_value_type: Vec<EcnEventValueType>,
+  pub ecn_event_value_type: Vec<EcnEventValueType>,
   #[serde(rename = "ecnTableExtensionValue")]
-  ecn_table_extension_value: Vec<EcnTableExtensionValue>,
+  pub ecn_table_extension_value: Vec<EcnTableExtensionValue>,
   #[serde(rename = "ecnVersion")]
-  ecn_version: Vec<EcnVersion>,
+  pub ecn_version: Vec<EcnVersion>,
   #[serde(rename = "ecnTableExtension")]
-  ecn_table_extension: Vec<EcnTableExtension>,
+  pub ecn_table_extension: Vec<EcnTableExtension>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ECNDataSetDiffGram {
   #[serde(rename = "ECNDataSet")]
-  ecn_data_set: EcnDataSetInner,
+  pub ecn_data_set: EcnDataSetInner,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ECNDataSet {
   #[serde(rename = "diffgram")]
-  diff_gram: ECNDataSetDiffGram,
+  pub diff_gram: ECNDataSetDiffGram,
 }
 
 #[derive(Debug, Deserialize)]
@@ -343,7 +454,7 @@ pub struct DocumentServerDataSetDiffGram {}
 #[derive(Debug, Deserialize)]
 pub struct DocumentServerDataSet {
   #[serde(rename = "diffgram")]
-  diff_gram: DocumentServerDataSetDiffGram,
+  pub diff_gram: DocumentServerDataSetDiffGram,
 }
 
 // Datapoint definitions.
@@ -351,7 +462,7 @@ pub struct DocumentServerDataSet {
 #[derive(Debug, Deserialize)]
 pub struct ImportExportDataHolder {
   #[serde(rename = "ECNDataSet")]
-  ecn_data_set: ECNDataSet,
+  pub ecn_data_set: ECNDataSet,
   #[serde(rename = "DocumentServerDataSet")]
-  document_server_data_set: DocumentServerDataSet,
+  pub document_server_data_set: DocumentServerDataSet,
 }
