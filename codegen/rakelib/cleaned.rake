@@ -340,7 +340,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
       id
     }
     [datapoint_type_id, v]
-  }.to_h
+  }.sort_by { |key, | key.bytes }.to_h
 
   event_value_types = event_value_types.reduce({}) { |h, (k, v)|
     if unit = v.delete('unit')
@@ -477,7 +477,7 @@ file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
     }.empty?
 
     [datapoint_type_id, v]
-  }.to_h
+  }.sort_by { |key, | key.bytes }.to_h
 
   save_json(t.name, devices)
 end
