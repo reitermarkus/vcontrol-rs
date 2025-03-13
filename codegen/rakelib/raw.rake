@@ -164,7 +164,7 @@ end
 
 def parse_translation_text(text)
   text.strip
-      .gsub(/\s+/, ' ')
+      .gsub(/\p{Space}+/, ' ')
       .gsub('##ecnnewline##', "\n")
       .gsub('##ecntab##', "\t")
       .gsub('##ecnsemicolon##', ';')
@@ -174,7 +174,7 @@ end
 
 # Simplify all whitespace, since some translations differ only by whitespace.
 def simplify_translation_text(text)
-  text.gsub(/\s+/, ' ').strip
+  text.gsub(/\p{Space}+/, ' ').strip
 end
 
 def parse_description(text, reverse_translations:)
