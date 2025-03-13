@@ -363,7 +363,16 @@ async fn main() -> anyhow::Result<()> {
   let f = File::open("src/sysDeviceIdent.xml")?;
   let io = BufReader::new(f);
   let system_event_types = raw::sys_device_ident::EventTypes::from_reader(io)?;
+  dbg!(system_event_types);
 
+  let f = File::open("src/sysDeviceIdentExt.xml")?;
+  let io = BufReader::new(f);
+  let system_event_types_ext = raw::sys_device_ident::EventTypes::from_reader(io)?;
+  dbg!(system_event_types_ext);
+
+  let f = File::open("src/sysEventType.xml")?;
+  let io = BufReader::new(f);
+  let system_event_types = raw::sys_device_ident::EventTypes::from_reader(io)?;
   dbg!(system_event_types);
 
   return Ok(());
