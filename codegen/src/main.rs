@@ -360,6 +360,12 @@ async fn main() -> anyhow::Result<()> {
 
   // dbg!(event_type_event_value_type_links);
 
+  let f = File::open("src/sysDeviceIdent.xml")?;
+  let io = BufReader::new(f);
+  let system_event_types = raw::sys_device_ident::EventTypes::from_reader(io)?;
+
+  dbg!(system_event_types);
+
   return Ok(());
 
   let input = env::args().nth(1).unwrap();

@@ -5,6 +5,8 @@ use serde::de::IgnoredAny;
 use serde_with::base64::Base64;
 use serde_with::serde_as;
 
+pub mod sys_device_ident;
+
 #[derive(Debug, Deserialize)]
 pub struct DefaultCulture {
   #[serde(rename = "@CompanyId")]
@@ -121,10 +123,13 @@ pub fn simplify_translation_text(text: &str) -> String {
 #[serde(deny_unknown_fields)]
 pub struct EcnCulture {
   #[serde(rename = "@id")]
+  #[allow(unused)]
   pub diffgr_id: IgnoredAny, // String
   #[serde(rename = "@hasChanges")]
+  #[allow(unused)]
   pub diffgr_has_changes: IgnoredAny, // String
   #[serde(rename = "@rowOrder")]
+  #[allow(unused)]
   pub msdata_row_order: IgnoredAny, // u16
 
   #[serde(rename = "Id")]

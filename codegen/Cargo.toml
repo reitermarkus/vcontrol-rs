@@ -19,11 +19,12 @@ tokio = { version = "1.44.0", features = [
   "rt-multi-thread",
 ] }
 serde = { version = "1", features = ["derive"] }
+serde_with = { version = "3.12.0", features = ["base64"] }
 regex = "1.11.1"
 lazy_static = "1.5.0"
 anyhow = "1.0.97"
 encoding_rs_io = "0.1.7"
 serde-xml-rs = "0.6.0"
 glob = "0.3.2"
-serde_with = { version = "3.12.0", features = ["base64"] }
 convert_case = "0.8.0"
+hex-serde-util = "0.1.0"
