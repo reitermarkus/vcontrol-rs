@@ -115,13 +115,13 @@ end
 def parse_value_list(text)
   return if text.empty?
 
-  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [Integer(k), clean_enum_text(nil, k, v)] }.to_h
+  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [Integer(k), clean_enum_text(nil, k, v)] }.sort.to_h
 end
 
 def parse_options_value(text)
   return if text.empty?
 
-  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [v, k] }.to_h
+  text.split(';').map { |v| v.split('=', 2) }.map { |(k, v)| [v, k] }.sort_by { |key, | key.bytes }.to_h
 end
 
 def parse_option_list(text)
@@ -267,13 +267,13 @@ def event_types(path, reverse_translations: {})
       next if value.nil?
 
       [name, value]
-    }.to_h
+    }.sort_by { |key, | key.bytes }.to_h
 
     [
       event_type.delete('id'),
       event_type,
     ]
-  }.to_h
+  }.sort_by { |key, | key.bytes }.to_h
 
   types
 end
@@ -337,7 +337,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { version.delete('name') => version.fetch('value') }
     },
@@ -359,7 +359,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { datapoint_type.delete('id') => datapoint_type }
     },
@@ -378,7 +378,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { fragment['id'] => link }
     },
@@ -418,7 +418,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { event_type.delete('id') => event_type }
     },
@@ -441,7 +441,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       add_missing_enum_replace_value_translations(event_value_type, translations, reverse_translations: reverse_translations)
 
@@ -462,7 +462,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { fragment['id'] => link }
     },
@@ -490,7 +490,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       case table_extension['internal_data_type']
       when 6
@@ -523,7 +523,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { table_extension_value.delete('id') => table_extension_value }
     },
@@ -544,7 +544,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { event_type_group_value.delete('id') => event_type_group_value }
     },
@@ -563,7 +563,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value]
-      }.to_h
+      }.sort_by { |key, | key.bytes }.to_h
 
       { fragment['id'] => link }
     },
@@ -627,6 +627,7 @@ file TRANSLATIONS_RAW => TEXT_RESOURCES_DIR.to_s do |t|
     }
   }.reduce({}) { |h, translations|
     h.deep_merge!(translations)
+    h.transform_values! { |v| v.sort_by { |key, | key.bytes }.to_h }
   }.sort_by { |key, | key.bytes }.to_h
 
   save_json(t.name, translations)
@@ -639,7 +640,7 @@ file REVERSE_TRANSLATIONS_RAW => TRANSLATIONS_RAW do |t|
     text = simplify_translation_text(v.fetch('de'))
     next if text.empty?
     [text, k]
-  }.to_h
+  }.sort_by { |key, value| [key.bytes, value.bytes] }.to_h
 
   save_json(t.name, reverse_translations_raw)
 end
