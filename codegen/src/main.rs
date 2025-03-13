@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
+use std::io::Write;
 
 use base64::prelude::*;
 use convert_case::{Case, Casing};
@@ -45,8 +46,9 @@ async fn main() -> anyhow::Result<()> {
     }
   }
 
-  let f = File::create("translations.raw.yml")?;
-  serde_yaml::to_writer(f, &translations_raw)?;
+  let mut f = File::create("translations.raw.json")?;
+  serde_json::to_writer_pretty(&mut f, &translations_raw)?;
+  writeln!(f)?;
 
   let reverse_translations_raw: BTreeMap<_, _> = translations_raw
     .iter()
@@ -61,8 +63,9 @@ async fn main() -> anyhow::Result<()> {
     })
     .collect();
 
-  let f = File::create("reverse_translations.raw.yml")?;
-  serde_yaml::to_writer(f, &reverse_translations_raw)?;
+  let mut f = File::create("reverse_translations.raw.json")?;
+  serde_json::to_writer_pretty(&mut f, &reverse_translations_raw)?;
+  writeln!(f)?;
 
   let f = File::open("src/DPDefinitions.xml")?;
   let decoder = DecodeReaderBytes::new(f);
@@ -77,8 +80,9 @@ async fn main() -> anyhow::Result<()> {
     versions.insert(version.name.to_case(Case::Snake), version.value);
   }
 
-  let f = File::create("versions.used.yml")?;
-  serde_yaml::to_writer(f, &versions)?;
+  let mut f = File::create("versions.used.json")?;
+  serde_json::to_writer_pretty(&mut f, &versions)?;
+  writeln!(f)?;
 
   #[derive(Debug, Serialize)]
   struct DataPointType {
@@ -100,8 +104,9 @@ async fn main() -> anyhow::Result<()> {
     data_point_types.insert(id, data_point_type);
   }
 
-  let f = File::create("datapoint_definitions.raw.yml")?;
-  serde_yaml::to_writer(f, &data_point_types)?;
+  let mut f = File::create("datapoint_definitions.raw.json")?;
+  serde_json::to_writer_pretty(&mut f, &data_point_types)?;
+  writeln!(f)?;
 
   let mut data_point_type_event_type_links = BTreeMap::<u16, Vec<u16>>::new();
   for data_point_type_event_type_link in ecn_data_set.ecn_data_point_type_event_type_link {
@@ -290,14 +295,15 @@ async fn main() -> anyhow::Result<()> {
     }
   }
   let mut translations_cleaned: BTreeMap<String, String> =
-    translations_raw.iter().map(|(k, mut v)| (translation_fixes(k), v.get("en").cloned().unwrap())).collect();
+    translations_raw.iter().map(|(k, v)| (translation_fixes(k), v.get("en").cloned().unwrap())).collect();
 
   for (ref mut event_value_type_id, event_value_type) in &mut event_value_types {
     add_missing_enum_replace_value_translations(event_value_type, &mut translations_cleaned, &reverse_translations_raw)
   }
 
-  let f = File::create("translations.cleaned.yml")?;
-  serde_yaml::to_writer(f, &translations_cleaned)?;
+  let mut f = File::create("translations.cleaned.json")?;
+  serde_json::to_writer_pretty(&mut f, &translations_cleaned)?;
+  writeln!(f)?;
 
   let mut event_type_event_value_type_links = BTreeMap::<u16, Vec<u16>>::new();
   for event_type_event_value_type_link in ecn_data_set.ecn_event_type_event_value_type_link {
