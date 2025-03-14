@@ -12,11 +12,6 @@ use serde::Serialize;
 
 mod raw;
 
-fn value_if_non_empty(value: String) -> Option<String> {
-  let value = value.trim();
-  if value.is_empty() { None } else { Some(value.to_owned()) }
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
   let mut cultures = BTreeMap::<u8, String>::new();
@@ -39,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
       let name = cultures.get(&text_resource.culture_id).unwrap();
 
       let value = raw::parse_translation_text(text_resource.value);
-      let value = raw::clean_enum_text(&text_resource.label, None, value);
+      let value = raw::clean_enum_text(Some(&text_resource.label), None, value);
 
       let inner = translations_raw.entry(text_resource.label).or_insert_with(BTreeMap::new);
       inner.insert(name.clone(), value);
@@ -133,13 +128,6 @@ async fn main() -> anyhow::Result<()> {
 
   let mut event_types = BTreeMap::<u16, EventType>::new();
   for event_type in ecn_data_set.ecn_event_type {
-    fn parse_conversion(conversion: String) -> Option<String> {
-      match conversion.as_str() {
-        "NoConversion" | "" | "GWG_2010_Kennung~0x00F9" => None,
-        _ => Some(conversion.replace("Mult", "Mul").replace("MBus", "Mbus").replace("2", "To").to_owned()),
-      }
-    }
-
     let id = event_type.id;
     event_types.insert(
       id,
@@ -147,7 +135,7 @@ async fn main() -> anyhow::Result<()> {
         enum_type: event_type.enum_type,
         name: event_type.name,
         address: event_type.address,
-        conversion: parse_conversion(event_type.conversion),
+        conversion: raw::parse_conversion(&event_type.conversion),
         description: event_type.description,
         priority: event_type.priority,
         filter_criterion: event_type.filter_criterion,
@@ -196,24 +184,9 @@ async fn main() -> anyhow::Result<()> {
     );
   }
 
-  fn parse_description(text: &str, reverse_translations: &BTreeMap<String, &String>) -> Option<String> {
-    match text.trim() {
-      "" => None,
-      v if v.starts_with("@@") => Some(v.to_owned()),
-      v => {
-        let k = raw::simplify_translation_text(v);
-        if let Some(translation_id) = reverse_translations.get(&k) {
-          Some(format!("@@#{translation_id}"))
-        } else {
-          None
-        }
-      },
-    }
-  }
-
   fn add_missing_enum_replace_value_translations(
     event_value_type: &mut EventValueType,
-    mut translations: &mut BTreeMap<String, String>,
+    translations: &mut BTreeMap<String, String>,
     reverse_translations: &BTreeMap<String, &String>,
   ) {
     if event_value_type.enum_replace_value.is_empty() {
@@ -236,9 +209,9 @@ async fn main() -> anyhow::Result<()> {
       }
 
       let enum_text =
-        raw::clean_enum_text(&event_value_type.enum_replace_value, None, event_value_type.description.clone());
+        raw::clean_enum_text(Some(&event_value_type.enum_replace_value), None, event_value_type.description.clone());
 
-      if let Some(reverse_translation_id) = parse_description(&enum_text, reverse_translations) {
+      if let Some(reverse_translation_id) = raw::parse_description(&enum_text, reverse_translations) {
         event_value_type.enum_replace_value = reverse_translation_id;
         return;
       }
@@ -362,18 +335,104 @@ async fn main() -> anyhow::Result<()> {
 
   let f = File::open("src/sysDeviceIdent.xml")?;
   let io = BufReader::new(f);
-  let system_event_types = raw::sys_device_ident::EventTypes::from_reader(io)?;
-  dbg!(system_event_types);
+  let _system_device_identifier_event_types = raw::event_type::EventTypes::from_reader(io)?;
 
   let f = File::open("src/sysDeviceIdentExt.xml")?;
   let io = BufReader::new(f);
-  let system_event_types_ext = raw::sys_device_ident::EventTypes::from_reader(io)?;
-  dbg!(system_event_types_ext);
+  let _system_device_identifier_event_types_ext = raw::event_type::EventTypes::from_reader(io)?;
 
   let f = File::open("src/sysEventType.xml")?;
   let io = BufReader::new(f);
-  let system_event_types = raw::sys_device_ident::EventTypes::from_reader(io)?;
-  dbg!(system_event_types);
+  let system_event_types_raw = raw::event_type::EventTypes::from_reader(io)?;
+
+  #[derive(Debug, Serialize)]
+  struct SysEventType {
+    pub access_mode: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
+    pub address: u16,
+    pub bit_length: u8,
+    pub bit_position: u8,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub block_factor: Option<u8>,
+    pub block_length: u16,
+    pub byte_length: u16,
+    pub byte_position: u8,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conversion: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conversion_factor: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conversion_offset: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_value: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fc_read: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fc_write: Option<&'static str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lower_border: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mapping_type: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub option_list: Vec<String>,
+    pub parameter: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub priority: Option<u8>,
+    pub sdk_data_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stepping: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub upper_border: Option<u8>,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub value_list: BTreeMap<u8, String>,
+  }
+
+  let mut system_event_types = BTreeMap::<String, SysEventType>::new();
+  for event_type in system_event_types_raw.event_type {
+    system_event_types.insert(
+      raw::strip_address(&event_type.id).into_owned(),
+      SysEventType {
+        access_mode: event_type.access_mode.to_case(Case::Snake),
+        active: event_type.active,
+        address: (*event_type.address),
+        bit_length: event_type.bit_length,
+        bit_position: event_type.bit_position,
+        block_factor: event_type.block_factor,
+        block_length: event_type.block_length,
+        byte_length: event_type.byte_length,
+        byte_position: event_type.byte_position,
+        conversion: raw::parse_conversion(&event_type.conversion),
+        conversion_factor: event_type.conversion_factor,
+        conversion_offset: event_type.conversion_offset,
+        default_value: event_type.alz,
+        description: raw::parse_description(&event_type.description, &reverse_translations_raw),
+        fc_read: raw::parse_function(&event_type.fc_read),
+        fc_write: raw::parse_function(&event_type.fc_write),
+        lower_border: event_type.lower_border,
+        mapping_type: event_type.mapping_type,
+        name: event_type.name,
+        parameter: event_type.parameter,
+        priority: event_type.priority,
+        sdk_data_type: event_type.sdk_data_type,
+        stepping: event_type.stepping,
+        option_list: raw::parse_option_list(&event_type.option_list),
+        upper_border: event_type.upper_border,
+        value_list: raw::parse_value_list(&event_type.value_list)
+          .into_iter()
+          .map(|(k, v)| (k, raw::parse_description(&v, &reverse_translations_raw).unwrap()))
+          .collect(),
+      },
+    );
+  }
+
+  let mut f = File::create("system_event_types.raw.json")?;
+  serde_json::to_writer_pretty(&mut f, &system_event_types)?;
+  writeln!(f)?;
 
   return Ok(());
 

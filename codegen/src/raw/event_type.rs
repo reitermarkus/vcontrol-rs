@@ -7,81 +7,81 @@ use serde::{Deserialize, de::IgnoredAny};
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventType {
-  #[serde(default, rename = "Name")]
-  name: String,
+  #[serde(rename = "Name")]
+  pub name: Option<String>,
   #[serde(rename = "ID")]
-  id: String,
+  pub id: String,
   #[serde(default, rename = "Description")]
-  description: String,
+  pub description: String,
   #[serde(rename = "Active")]
-  active: Option<bool>,
+  pub active: Option<bool>,
   #[serde(rename = "Priority")]
-  priority: Option<u8>,
+  pub priority: Option<u8>,
   #[serde(rename = "DataType")]
-  data_type: Option<String>,
+  pub data_type: Option<String>,
   #[serde(rename = "SDKDataType")]
-  sdk_data_type: String,
+  pub sdk_data_type: String,
   #[serde(rename = "ALZ")]
-  alz: Option<u8>,
+  pub alz: Option<u8>,
   #[serde(rename = "LowerBorder")]
-  lower_border: Option<u8>,
+  pub lower_border: Option<u8>,
   #[serde(rename = "UpperBorder")]
-  upper_border: Option<u8>,
+  pub upper_border: Option<u8>,
   #[serde(rename = "Stepping")]
-  stepping: Option<u8>,
+  pub stepping: Option<u8>,
   #[serde(rename = "AccessMode")]
-  access_mode: String,
+  pub access_mode: String,
   #[serde(default, rename = "Conversion")]
-  conversion: String,
-  #[serde(default, rename = "ConversionFactor")]
-  conversion_factor: u8,
-  #[serde(default, rename = "ConversionOffset")]
-  conversion_offset: u8,
+  pub conversion: String,
+  #[serde(rename = "ConversionFactor")]
+  pub conversion_factor: Option<u8>,
+  #[serde(rename = "ConversionOffset")]
+  pub conversion_offset: Option<u8>,
   #[serde(rename = "Address")]
-  address: HexU16PrefixUpper,
+  pub address: HexU16PrefixUpper,
   #[serde(default, rename = "PrefixRead")]
   #[allow(unused)]
-  prefix_read: IgnoredAny,
+  pub prefix_read: IgnoredAny,
   #[serde(default, rename = "VitocomChannelID")]
   #[allow(unused)]
-  vitocom_channel_id: IgnoredAny,
+  pub vitocom_channel_id: IgnoredAny,
   #[serde(rename = "FCRead")]
-  fc_read: String,
+  pub fc_read: String,
   #[serde(rename = "FCWrite")]
-  fc_write: String,
+  pub fc_write: String,
   #[serde(default, rename = "PrefixWrite")]
   #[allow(unused)]
-  prefix_write: IgnoredAny,
+  pub prefix_write: IgnoredAny,
   #[serde(rename = "Parameter")]
-  parameter: String,
+  pub parameter: String,
   #[serde(rename = "BlockLength")]
-  block_length: u16,
+  pub block_length: u16,
   #[serde(rename = "BytePosition")]
-  byte_position: u8,
+  pub byte_position: u8,
   #[serde(rename = "ByteLength")]
-  byte_length: u16,
+  pub byte_length: u16,
   #[serde(default, rename = "BitPosition")]
-  bit_position: u8,
+  pub bit_position: u8,
   #[serde(default, rename = "BitLength")]
-  bit_length: u8,
+  pub bit_length: u8,
   #[serde(rename = "BlockFactor")]
-  block_factor: Option<u8>,
+  pub block_factor: Option<u8>,
   #[serde(default, rename = "OptionList")]
-  option_list: String,
+  pub option_list: String,
   #[serde(default, rename = "ValueList")]
-  value_list: String,
+  pub value_list: String,
   #[serde(rename = "MappingType")]
-  mapping_type: Option<u8>,
+  pub mapping_type: Option<u8>,
   #[serde(default, rename = "RPCHandler")]
   #[allow(unused)]
-  rpc_handler: IgnoredAny,
+  pub rpc_handler: IgnoredAny,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventTypes {
   #[serde(rename = "EventType")]
-  event_type: Vec<EventType>,
+  pub event_type: Vec<EventType>,
 }
 
 impl EventTypes {

@@ -1,3 +1,7 @@
+use std::borrow::Cow;
+use std::collections::BTreeMap;
+
+use convert_case::{Case, Casing};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::Deserialize;
@@ -5,7 +9,7 @@ use serde::de::IgnoredAny;
 use serde_with::base64::Base64;
 use serde_with::serde_as;
 
-pub mod sys_device_ident;
+pub mod event_type;
 
 #[derive(Debug, Deserialize)]
 pub struct DefaultCulture {
@@ -85,12 +89,12 @@ pub fn parse_translation_text(text: String) -> String {
   text.lines().map(str::trim).collect::<Vec<_>>().join("\n")
 }
 
-pub fn clean_enum_text<'a, 'b, 'c>(translation_id: &'a str, index: Option<&'b str>, text: String) -> String {
+pub fn clean_enum_text<'a, 'b, 'c>(translation_id: Option<&'a str>, index: Option<&'b str>, text: String) -> String {
   lazy_static! {
     static ref INDEX: Regex = Regex::new(r"^(?<name>.*)~(?<index>\d+)$").unwrap();
   }
 
-  let index = if let Some(captures) = INDEX.captures(translation_id) {
+  let index = if let Some(captures) = translation_id.and_then(|translation_id| INDEX.captures(translation_id)) {
     if captures.name("name").map(|m| m.as_str()) == Some("viessmann.eventvaluetype.K73_KonfiZpumpeIntervallFreigabe") {
       // False positive: <index> per hour
       None
@@ -387,10 +391,13 @@ pub struct EcnVersion {
 #[serde(deny_unknown_fields)]
 pub struct EcnTableExtension {
   #[serde(rename = "@id")]
+  #[allow(unused)]
   pub diffgr_id: IgnoredAny, // String
   #[serde(rename = "@hasChanges")]
+  #[allow(unused)]
   pub diffgr_has_changes: IgnoredAny, // String
   #[serde(rename = "@rowOrder")]
+  #[allow(unused)]
   pub msdata_row_order: IgnoredAny, // u16
 
   #[serde(rename = "Id")]
@@ -459,6 +466,7 @@ pub struct DocumentServerDataSetDiffGram {}
 #[derive(Debug, Deserialize)]
 pub struct DocumentServerDataSet {
   #[serde(rename = "diffgram")]
+  #[allow(unused)]
   pub diff_gram: DocumentServerDataSetDiffGram,
 }
 
@@ -469,5 +477,66 @@ pub struct ImportExportDataHolder {
   #[serde(rename = "ECNDataSet")]
   pub ecn_data_set: ECNDataSet,
   #[serde(rename = "DocumentServerDataSet")]
+  #[allow(unused)]
   pub document_server_data_set: DocumentServerDataSet,
+}
+
+pub fn parse_description(text: &str, reverse_translations: &BTreeMap<String, &String>) -> Option<String> {
+  match text.trim() {
+    "" => None,
+    v if v.starts_with("@@") => Some(v.to_owned()),
+    v => {
+      let k = simplify_translation_text(v);
+      if let Some(translation_id) = reverse_translations.get(&k) { Some(format!("@@{translation_id}")) } else { None }
+    },
+  }
+}
+
+pub fn parse_function(text: &str) -> Option<&'static str> {
+  Some(match text {
+    "" | "undefined" => return None,
+    "Virtual_READ" => "virtual_read",
+    "Virtual_WRITE" => "virtual_write",
+    "Virtual_MarktManager_READ" => "virtual_market_manager_read",
+    "Virtual_MarktManager_WRITE" => "virtual_market_manager_write",
+    "Remote_Procedure_Call" => "remote_procedure_call",
+    _ => unreachable!("unknown function: {text:?}"),
+  })
+}
+
+pub fn parse_conversion(conversion: &str) -> Option<String> {
+  match conversion {
+    "NoConversion" | "" | "GWG_2010_Kennung~0x00F9" => None,
+    _ => {
+      Some(conversion.replace("Mult", "Mul").replace("MBus", "Mbus").replace("2", "To").to_case(Case::Snake).to_owned())
+    },
+  }
+}
+
+pub fn parse_option_list(text: &str) -> Vec<String> {
+  if text.is_empty() {
+    return Vec::new();
+  }
+
+  text.split(";").map(|v| v.to_case(Case::Snake)).collect()
+}
+
+pub fn parse_value_list(text: &str) -> BTreeMap<u8, String> {
+  if text.is_empty() {
+    return BTreeMap::new();
+  }
+
+  text
+    .split(";")
+    .map(|v| v.split_once("=").unwrap())
+    .map(|(k, v)| (k.parse::<u8>().unwrap(), clean_enum_text(None, Some(k), v.to_owned())))
+    .collect()
+}
+
+pub fn strip_address(s: &str) -> Cow<'_, str> {
+  lazy_static! {
+    static ref ADDRESS_SUFFIX: Regex = Regex::new(r"~0x[[:xdigit:]]{4}$").unwrap();
+  }
+
+  ADDRESS_SUFFIX.replace_all(s, "")
 }
