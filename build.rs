@@ -7,7 +7,7 @@ use std::{
 };
 
 use anyhow::Context;
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::{Deserialize, de::DeserializeOwned};
 
 #[path = "src/access_mode.rs"]
 mod access_mode;
@@ -229,7 +229,6 @@ pub struct Command {
   byte_pos: usize,
   bit_pos: usize,
   bit_len: Option<usize>,
-  #[serde(flatten)]
   conversion: Option<Conversion>,
   lower_border: Option<f64>,
   upper_border: Option<f64>,

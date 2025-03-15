@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
 #[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(tag = "conversion", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub(crate) enum Conversion {
   Div2,
   Div5,
@@ -15,9 +15,8 @@ pub(crate) enum Conversion {
   Mul100,
   Mul1000,
   MulOffset {
-    #[serde(flatten, rename = "conversion_factor")]
     factor: f64,
-    #[serde(flatten, rename = "conversion_offset")]
+    #[serde(default)]
     offset: f64,
   },
   SecToMinute,
