@@ -5617,8 +5617,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -6782,8 +6783,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -32813,7 +32815,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 0.1
+  conversion:
+    mul_offset:
+      factor: 0.1
   data_type: Int
   mode: read
   name: WPR_WO1H_Energie_Verdichter1_0_1
@@ -32836,7 +32840,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Int
   mode: read
   name: WPR_WO1H_Energie_Verdichter1_10
@@ -32848,7 +32854,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 0.1
+  conversion:
+    mul_offset:
+      factor: 0.1
   data_type: Int
   mode: read
   name: WPR_WO1H_Energie_Verdichter2_0_1
@@ -32871,7 +32879,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Int
   mode: read
   name: WPR_WO1H_Energie_Verdichter2_10
@@ -32883,7 +32893,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 0.1
+  conversion:
+    mul_offset:
+      factor: 0.1
   data_type: Int
   mode: read
   name: WPR_WO1H_ElektroenergieWW_Verdichter1_0_1
@@ -32928,7 +32940,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 0.1
+  conversion:
+    mul_offset:
+      factor: 0.1
   data_type: Int
   mode: read
   name: WPR_WO1H_ElektroenergieWW_Verdichter2_0_1
@@ -32940,7 +32954,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Int
   mode: read
   name: WPR_WO1H_ElektroenergieWW_Verdichter2_10
@@ -49532,8 +49548,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_2000_Komfortsollwert
@@ -49545,8 +49562,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_2003_Reduziertsollwert
@@ -49558,8 +49576,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.02
+  conversion:
+    mul_offset:
+      factor: 0.02
   data_type: Double
   lower_border: 0.1
   mode: read_write
@@ -49572,8 +49591,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_2009_Niveau
@@ -49595,8 +49615,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_2011_Mischererhoehung
@@ -49652,8 +49673,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1202_Kesseltemperatur
@@ -49665,8 +49687,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1205_Kesselsolltemperatur
@@ -49711,8 +49734,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1300_Aussentemperatur
@@ -49724,8 +49748,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_3000_Komfortsollwert
@@ -49737,8 +49762,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_3003_Reduziertsollwert
@@ -49750,8 +49776,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.02
+  conversion:
+    mul_offset:
+      factor: 0.02
   data_type: Double
   lower_border: 0.1
   mode: read_write
@@ -49764,8 +49791,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_3009_Niveau
@@ -49787,8 +49815,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_3011_Mischererhoehung
@@ -49844,8 +49873,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_4000_Komfortsollwert
@@ -49857,8 +49887,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   lower_border: 6.0
   mode: read_write
@@ -49872,8 +49903,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.02
+  conversion:
+    mul_offset:
+      factor: 0.02
   data_type: Double
   lower_border: 0.1
   mode: read_write
@@ -49886,8 +49918,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_4009_Niveau
@@ -49909,8 +49942,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read_write
   name: Vitotwin_4011_Mischererhoehung
@@ -49966,8 +50000,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   lower_border: 8.0
   mode: read_write
@@ -50003,8 +50038,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -50040,8 +50076,9 @@
   block_len: 5
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1050_Stirlingkopftemperatur_B24
@@ -50053,8 +50090,9 @@
   block_len: 5
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1055_Stirlingkopftemperatur_B25
@@ -50066,8 +50104,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_105D_Fühlertemperatur_BX3
@@ -50079,8 +50118,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1060_Fühlertemperatur_BX4
@@ -50092,8 +50132,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1063_Fühlertemperatur_BX5
@@ -50105,8 +50146,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1069_Fühlertemperatur_BX7
@@ -50118,8 +50160,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1066_Fühlertemperatur_BX6
@@ -50208,8 +50251,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.01
+  conversion:
+    mul_offset:
+      factor: 0.01
   data_type: Double
   mode: read
   name: Vitotwin_1106_Strom
@@ -50232,8 +50276,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1208_Kesselrücklauftemperatur
@@ -50277,8 +50322,9 @@
   block_len: 5
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1225_Stirlingkopftemperatur
@@ -50290,8 +50336,9 @@
   block_len: 5
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_122A_Stirlingkopfsollwert
@@ -50303,8 +50350,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.1
+  conversion:
+    mul_offset:
+      factor: 0.1
   data_type: Double
   mode: read
   name: Vitotwin_122F_Kesseldurchfluss
@@ -50316,8 +50364,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1303_Raumtemperatur_1
@@ -50329,8 +50378,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1306_Raumsollwert_1
@@ -50342,8 +50392,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1309_Raumtemperatur_2
@@ -50355,8 +50406,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_130C_Raumsollwert_2
@@ -50368,8 +50420,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_130F_Raumtemperatur_3
@@ -50381,8 +50434,9 @@
   block_len: 3
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 0.015625
+  conversion:
+    mul_offset:
+      factor: 0.015625
   data_type: Double
   mode: read
   name: Vitotwin_1312_Raumsollwert_3
@@ -50451,7 +50505,9 @@
   block_len: 5
   byte_len: 4
   byte_pos: 0
-  conversion_factor: 0.1
+  conversion:
+    mul_offset:
+      factor: 0.1
   data_type: Int
   mode: read
   name: Vitotwin_143C_Gasmenge_Stirlingbrenner_2
@@ -51248,8 +51304,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_0
@@ -51261,8 +51318,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_1
@@ -51274,8 +51332,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_2
@@ -51287,8 +51346,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_3
@@ -51300,8 +51360,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_4
@@ -51313,8 +51374,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_5
@@ -51326,8 +51388,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_6
@@ -51339,8 +51402,9 @@
   block_len: 4
   byte_len: 4
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 2.8e-07
+  conversion:
+    mul_offset:
+      factor: 2.8e-07
   data_type: Double
   mode: read
   name: VSorp_Umgebungswaerme_7
@@ -59204,8 +59268,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 100.0
+  conversion:
+    mul_offset:
+      factor: 100.0
   data_type: Double
   lower_border: 100.0
   mode: read_write
@@ -59414,8 +59479,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59428,8 +59494,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59442,8 +59509,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59456,8 +59524,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59470,8 +59539,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59484,8 +59554,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59498,8 +59569,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59512,8 +59584,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59526,8 +59599,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59540,8 +59614,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59554,8 +59629,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59568,8 +59644,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59582,8 +59659,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59596,8 +59674,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59610,8 +59689,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -59624,8 +59704,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -70149,8 +70230,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Heute
@@ -70162,8 +70244,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-1
@@ -70175,8 +70258,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-2
@@ -70188,8 +70272,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-3
@@ -70201,8 +70286,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-4
@@ -70214,8 +70300,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-5
@@ -70227,8 +70314,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-6
@@ -71287,8 +71375,9 @@
   block_len: 2
   byte_len: 2
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 1000.0
+  conversion:
+    mul_offset:
+      factor: 1000.0
   data_type: Int
   mode: read
   name: Ecotronic_Solarertrag_Tag-7
@@ -75069,8 +75158,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -75666,8 +75756,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 10.0
+  conversion:
+    mul_offset:
+      factor: 10.0
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -76679,8 +76770,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 3.0
+  conversion:
+    mul_offset:
+      factor: 3.0
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -76722,8 +76814,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 3.0
+  conversion:
+    mul_offset:
+      factor: 3.0
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -76807,8 +76900,9 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mul_offset
-  conversion_factor: 3.0
+  conversion:
+    mul_offset:
+      factor: 3.0
   data_type: Double
   lower_border: 0.0
   mode: read_write

@@ -229,7 +229,6 @@ pub struct Command {
   byte_pos: usize,
   bit_pos: usize,
   bit_len: Option<usize>,
-  #[serde(flatten)]
   conversion: Option<Conversion>,
   lower_border: Option<f64>,
   upper_border: Option<f64>,
