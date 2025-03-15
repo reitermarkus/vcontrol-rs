@@ -2332,7 +2332,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   mode: read
   name: GWG_Codierstecker_BROpt
@@ -2432,7 +2432,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 5
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWG85
@@ -2444,7 +2444,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 6
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWG86
@@ -2608,7 +2608,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWGA2
@@ -2619,7 +2619,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWGA3
@@ -2720,7 +2720,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWGB2
@@ -2731,7 +2731,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWGB3
@@ -2832,7 +2832,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWGC2
@@ -2843,7 +2843,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   mode: read
   name: GWG_Codierstecker_GWGC3
@@ -3011,7 +3011,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   mode: read
   name: GWG_Codierstecker_N_KT_Regler
@@ -3388,7 +3388,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -3402,7 +3402,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -3416,7 +3416,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -4433,7 +4433,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -4589,7 +4589,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -4847,7 +4847,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   mode: read
   name: K1F_KonfiAbgastemperaturMax_Wartung
@@ -4870,7 +4870,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -4884,7 +4884,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   mode: read_write
   name: K21_KonfiBetriebsstdBrenner_Wartung
@@ -4920,7 +4920,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -5039,7 +5039,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -5101,7 +5101,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -6550,7 +6550,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult5
+  conversion: mul5
   data_type: Double
   lower_border: 5.0
   mode: read_write
@@ -8004,7 +8004,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -8018,7 +8018,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -8032,7 +8032,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -9698,7 +9698,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -9712,7 +9712,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -9726,7 +9726,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -10084,7 +10084,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 1
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 1.0
   mode: read
@@ -10122,7 +10122,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 1.0
   mode: read
@@ -10674,7 +10674,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 10
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -10955,7 +10955,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 1
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 1.0
   mode: read
@@ -10993,7 +10993,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 3
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 1.0
   mode: read
@@ -11472,7 +11472,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -12430,7 +12430,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 500.0
   mode: read_write
@@ -12444,7 +12444,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 500.0
   mode: read_write
@@ -12458,7 +12458,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -12472,7 +12472,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -12514,7 +12514,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 500.0
   mode: read_write
@@ -12528,7 +12528,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 500.0
   mode: read_write
@@ -12542,7 +12542,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -12556,7 +12556,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 60.0
   mode: read_write
@@ -12570,7 +12570,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 30.0
   mode: read_write
@@ -12634,7 +12634,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -13535,7 +13535,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult5
+  conversion: mul5
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -13733,7 +13733,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -13747,7 +13747,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -14796,7 +14796,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -14810,7 +14810,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -14824,7 +14824,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -14838,7 +14838,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -15208,7 +15208,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 8
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -15222,7 +15222,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 8
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -15236,7 +15236,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 8
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -15250,7 +15250,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 8
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -15411,7 +15411,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -15469,7 +15469,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -15483,7 +15483,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -15497,7 +15497,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read_write
   name: nviBoilerState_PM_value_Boiler3
@@ -15509,7 +15509,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -15727,7 +15727,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -15885,7 +15885,7 @@
   block_len: 4
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16232,7 +16232,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16347,7 +16347,7 @@
   block_len: 10
   byte_len: 1
   byte_pos: 8
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16439,7 +16439,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16453,7 +16453,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16467,7 +16467,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16481,7 +16481,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16506,7 +16506,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16848,7 +16848,7 @@
   block_len: 4
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -16873,7 +16873,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -17699,7 +17699,7 @@
   block_len: 4
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: RKR_03PSoll_Kessel
@@ -17711,7 +17711,7 @@
   block_len: 24
   byte_len: 1
   byte_pos: 4
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -17725,7 +17725,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -17801,7 +17801,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: RKR_12PSolleff_Kessel
@@ -19784,7 +19784,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 0
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   lower_border: 19.0
   mode: read_write
@@ -24205,7 +24205,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_EEV1_ECV_Umschaltventil_IstPos
@@ -24217,7 +24217,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_EEV1_ECV_Umschaltventil_SollPos
@@ -24252,7 +24252,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_EEV2_ECV_Umschaltventil_IstPos
@@ -24264,7 +24264,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_EEV2_ECV_Umschaltventil_SollPos
@@ -24299,7 +24299,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_ext_Waermerzeuger_IstPos
@@ -24311,7 +24311,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_ext_Waermerzeuger_SollPos
@@ -24346,7 +24346,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_HK_M2_IstPos
@@ -24358,7 +24358,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_HK_M2_SollPos
@@ -24393,7 +24393,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_HK_M3_IstPos
@@ -24405,7 +24405,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_HK_M3_SollPos
@@ -24440,7 +24440,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_Kuehlkreis_NatCooling_IstPos
@@ -24452,7 +24452,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_Kuehlkreis_NatCooling_SollPos
@@ -24498,7 +24498,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_sep_NatCooling_Kreis_SollPos
@@ -24533,7 +24533,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 3
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_Umschaltventil_HeizenWW1_IstPos
@@ -24545,7 +24545,7 @@
   block_len: 8
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: WPR_Mischer_Umschaltventil_HeizenWW1_SollPos
@@ -43098,7 +43098,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -43112,7 +43112,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -43126,7 +43126,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -51515,7 +51515,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: VSorp_Desorptionstemp
@@ -52137,7 +52137,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 1
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 1.0
   mode: read
@@ -52315,7 +52315,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -52377,7 +52377,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 10.0
   mode: read_write
@@ -52456,7 +52456,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Int
   lower_border: 1.0
   mode: read_write
@@ -52533,7 +52533,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult100
+  conversion: mul100
   data_type: Double
   mode: read_write
   name: SR13_K21_KonfiBetriebsstdBrenner_Wartung
@@ -52582,7 +52582,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -52619,7 +52619,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -59830,7 +59830,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -59844,7 +59844,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -59858,7 +59858,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -59872,7 +59872,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -69082,7 +69082,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -69096,7 +69096,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -69110,7 +69110,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -69124,7 +69124,7 @@
   block_len: 2
   byte_len: 1
   byte_pos: 0
-  conversion: div_to
+  conversion: div2
   data_type: Double
   lower_border: 0.0
   mode: read
@@ -69330,7 +69330,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Int
   mode: read_write
   name: HO2B_Lueftung_Dauer_Intensiv
@@ -69342,7 +69342,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Int
   mode: read_write
   name: HO2B_Lueftung_Dauer_Eco
@@ -73869,7 +73869,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist
@@ -74121,7 +74121,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Brennerleistung_Relativ_Ist
@@ -74453,7 +74453,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -74718,7 +74718,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -74983,7 +74983,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult_to
+  conversion: mul2
   data_type: Double
   lower_border: 0.0
   mode: read_write
@@ -75355,7 +75355,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_2
@@ -75367,7 +75367,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_3
@@ -75379,7 +75379,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_4
@@ -75391,7 +75391,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_5
@@ -75403,7 +75403,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_6
@@ -75415,7 +75415,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_7
@@ -75427,7 +75427,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_8
@@ -75439,7 +75439,7 @@
   block_len: 16
   byte_len: 1
   byte_pos: 2
-  conversion: div_to
+  conversion: div2
   data_type: Double
   mode: read
   name: NRP_BDE_Kesselleistung_Ist_1
@@ -76765,7 +76765,7 @@
   block_len: 1
   byte_len: 1
   byte_pos: 0
-  conversion: mult10
+  conversion: mul10
   data_type: Double
   lower_border: 0.0
   mode: read_write
