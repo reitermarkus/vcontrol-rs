@@ -1,0 +1,30 @@
+[package]
+name = "codegen"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+base64 = "0.22.1"
+nrbf = { version = "0.2", features = ["serde"] }
+quick-xml = { version = "0.37.2", features = [
+  "serde",
+  "async-tokio",
+  "serialize",
+] }
+serde_json = "1.0.140"
+tokio = { version = "1.44.0", features = [
+  "rt",
+  "macros",
+  "fs",
+  "rt-multi-thread",
+] }
+serde = { version = "1", features = ["derive"] }
+serde_with = { version = "3.12.0", features = ["base64", "hex"] }
+regex = "1.11.1"
+lazy_static = "1.5.0"
+anyhow = "1.0.97"
+encoding_rs_io = "0.1.7"
+serde-xml-rs = "0.6.0"
+glob = "0.3.2"
+convert_case = "0.8.0"
+hex-serde-util = "0.1.0"
