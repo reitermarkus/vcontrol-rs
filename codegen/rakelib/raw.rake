@@ -201,9 +201,9 @@ def parse_conversion(text)
   when 'NoConversion', '', nil, 'GWG_2010_Kennung~0x00F9'
     nil
   else
-    text.sub(/(\A|[a-z])Mult([A-Z]|\Z)/, '\1Mul\2')
+    text.sub(/(\A|[a-z])Mult([A-Z]|\d|\Z)/, '\1Mul\2')
         .sub(/(\A|[a-z])MBus([A-Z]|\Z)/, '\1Mbus\2')
-        .sub(/(\A|[a-z])2([A-Z]|\Z)/, '\1To\2')
+        .sub(/(\A|[a-z])2([A-Z])/, '\1To\2')
         .underscore
   end
 
