@@ -8,7 +8,10 @@ use base64::prelude::*;
 use convert_case::{Case, Casing};
 use encoding_rs_io::DecodeReaderBytes;
 use glob::glob;
+use lazy_static::lazy_static;
+use regex::Regex;
 use serde::Serialize;
+use serde_json::Value;
 
 mod raw;
 
@@ -81,49 +84,55 @@ async fn main() -> anyhow::Result<()> {
 
   #[derive(Debug, Serialize)]
   struct DataPointType {
-    name: String,
-    description: String,
-    status_event_type_id: u8,
     address: String,
+    name: String,
+    status_event_type_id: u8,
+    event_types: Vec<u16>,
   }
   let mut data_point_types = BTreeMap::<u16, DataPointType>::new();
   for data_point_type in ecn_data_set.ecn_datapoint_type {
     let id = data_point_type.id;
     let data_point_type = DataPointType {
-      name: data_point_type.name,
-      description: data_point_type.description,
-      status_event_type_id: data_point_type.status_event_type_id,
       address: data_point_type.address,
+      name: data_point_type.name,
+      status_event_type_id: data_point_type.status_event_type_id,
+      event_types: Vec::new(),
     };
 
     data_point_types.insert(id, data_point_type);
   }
 
-  let mut f = File::create("datapoint_definitions.raw.json")?;
-  serde_json::to_writer_pretty(&mut f, &data_point_types)?;
-  writeln!(f)?;
-
-  let mut data_point_type_event_type_links = BTreeMap::<u16, Vec<u16>>::new();
   for data_point_type_event_type_link in ecn_data_set.ecn_data_point_type_event_type_link {
-    let event_type_ids = data_point_type_event_type_links
-      .entry(data_point_type_event_type_link.data_point_type_id)
-      .or_insert_with(Vec::new);
-    event_type_ids.push(data_point_type_event_type_link.event_type_id);
+    let data_point_type = data_point_types.get_mut(&data_point_type_event_type_link.data_point_type_id).unwrap();
+    data_point_type.event_types.push(data_point_type_event_type_link.event_type_id);
   }
 
   #[derive(Debug, Serialize)]
   pub struct EventType {
-    pub enum_type: bool,
-    pub name: String,
+    pub access_mode: &'static str,
     pub address: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub conversion: Option<String>,
-    pub description: String,
-    pub priority: u8,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_value: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    pub enum_type: bool,
     pub filter_criterion: bool,
+    pub name: String,
+    pub priority: u8,
     pub reporting_criterion: bool,
-    pub type_: u8,
-    pub url: String,
-    pub default_value: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    pub value_types: Vec<u16>,
+  }
+
+  fn value_if_non_empty(value: String) -> Option<String> {
+    if value.is_empty() {
+      return None;
+    }
+
+    Some(value)
   }
 
   let mut event_types = BTreeMap::<u16, EventType>::new();
@@ -132,17 +141,66 @@ async fn main() -> anyhow::Result<()> {
     event_types.insert(
       id,
       EventType {
-        enum_type: event_type.enum_type,
-        name: event_type.name,
-        address: event_type.address,
+        access_mode: match event_type.type_ {
+          1 => "read",
+          2 => "write",
+          3 => "read_write",
+          t => unreachable!("unknown type: {t}"),
+        },
+        address: raw::strip_address(&event_type.address).into_owned(),
         conversion: raw::parse_conversion(&event_type.conversion),
-        description: event_type.description,
-        priority: event_type.priority,
+        default_value: match value_if_non_empty(event_type.default_value) {
+          Some(value) => {
+            let value = value.replace(",", ".");
+            if let Ok(value) = serde_json::from_str::<serde_json::Value>(&value) {
+              Some(value)
+            } else {
+              lazy_static! {
+                static ref DATE_REGEX: Regex = Regex::new(r"^(?<day>\d{2})\.(?<month>\d{2})\.(?<year>\d{4})$").unwrap();
+                static ref DATE_TIME_REGEX: Regex = Regex::new(
+                  r"^(?<day>\d{2})\.(?<month>\d{2})\.(?<year>\d{4})\s+(?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})$"
+                )
+                .unwrap();
+              }
+
+              if let Some(captures) = DATE_REGEX.captures(&value) {
+                let day = captures["day"].parse::<u8>().unwrap();
+                let month = captures["month"].parse::<u8>().unwrap();
+                let year = captures["year"].parse::<u16>().unwrap();
+                Some(Value::String(format!("{year:04}-{month:02}-{day:02}")))
+              } else if let Some(captures) = DATE_TIME_REGEX.captures(&value) {
+                let day = captures["day"].parse::<u8>().unwrap();
+                let month = captures["month"].parse::<u8>().unwrap();
+                let year = captures["year"].parse::<u16>().unwrap();
+                let hour = captures["hour"].parse::<u8>().unwrap();
+                let minute = captures["minute"].parse::<u8>().unwrap();
+                let second = captures["second"].parse::<u8>().unwrap();
+                Some(Value::String(format!("{year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}")))
+              } else if let Some(value) = value.strip_prefix("0x") {
+                use serde_with::DeserializeAs;
+
+                let deserializer: serde::de::value::StrDeserializer<'_, serde::de::value::Error> =
+                  serde::de::value::StrDeserializer::new(value);
+                let bytes: Vec<u8> =
+                  serde_with::hex::Hex::<serde_with::formats::Uppercase>::deserialize_as(deserializer).unwrap();
+                Some(serde_json::to_value(bytes).unwrap())
+              } else if matches!(value.as_str(), "" | "--" | "TBD") {
+                None
+              } else {
+                Some(Value::String(value))
+              }
+            }
+          },
+          None => None,
+        },
+        description: value_if_non_empty(event_type.description),
+        enum_type: event_type.enum_type,
         filter_criterion: event_type.filter_criterion,
+        name: event_type.name,
+        priority: event_type.priority,
         reporting_criterion: event_type.reporting_criterion,
-        type_: event_type.type_,
-        url: event_type.url,
-        default_value: event_type.default_value,
+        url: value_if_non_empty(event_type.url),
+        value_types: Vec::new(),
       },
     );
   }
@@ -280,9 +338,8 @@ async fn main() -> anyhow::Result<()> {
 
   let mut event_type_event_value_type_links = BTreeMap::<u16, Vec<u16>>::new();
   for event_type_event_value_type_link in ecn_data_set.ecn_event_type_event_value_type_link {
-    let value_types =
-      event_type_event_value_type_links.entry(event_type_event_value_type_link.event_type_id).or_insert_with(Vec::new);
-    value_types.push(event_type_event_value_type_link.event_value_id);
+    let event_type = event_types.get_mut(&event_type_event_value_type_link.event_type_id).unwrap();
+    event_type.value_types.push(event_type_event_value_type_link.event_value_id);
   }
 
   #[derive(Debug, Serialize)]
@@ -331,7 +388,26 @@ async fn main() -> anyhow::Result<()> {
     );
   }
 
-  // dbg!(event_type_event_value_type_links);
+  #[derive(Debug, Serialize)]
+  struct DataPointDefinitions {
+    versions: BTreeMap<String, String>,
+    datapoints: BTreeMap<u16, DataPointType>,
+    event_types: BTreeMap<u16, EventType>,
+    event_value_types: BTreeMap<u16, EventValueType>,
+    table_extension_values: BTreeMap<u32, TableExtensionValue>,
+    table_extensions: BTreeMap<u16, TableExtension>,
+  }
+  let data_point_definitions = DataPointDefinitions {
+    versions: versions,
+    datapoints: data_point_types,
+    event_types: event_types,
+    event_value_types: event_value_types,
+    table_extension_values: table_extension_values,
+    table_extensions: table_extensions,
+  };
+  let mut f = File::create("datapoint_definitions.raw.json")?;
+  serde_json::to_writer_pretty(&mut f, &data_point_definitions)?;
+  writeln!(f)?;
 
   let f = File::open("src/sysDeviceIdent.xml")?;
   let io = BufReader::new(f);

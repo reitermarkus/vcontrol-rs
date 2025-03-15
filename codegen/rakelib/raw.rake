@@ -582,9 +582,9 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
   end
 
   definitions.delete('event_type_event_type_group_links').each do |_, link|
-    event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
-    event_type['groups'] ||= []
-    event_type['groups'].push(link.fetch('event_type_group_id'))
+  #   event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
+  #   event_type['groups'] ||= []
+  #   event_type['groups'].push(link.fetch('event_type_group_id'))
   end
 
   save_json(t.name, definitions)

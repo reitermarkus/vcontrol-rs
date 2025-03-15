@@ -149,10 +149,13 @@ pub struct EcnCulture {
 #[serde(deny_unknown_fields)]
 pub struct EcnDataPointType {
   #[serde(rename = "@id")]
+  #[allow(unused)]
   pub diffgr_id: IgnoredAny, // String
   #[serde(rename = "@hasChanges")]
+  #[allow(unused)]
   pub diffgr_has_changes: IgnoredAny, // String
   #[serde(rename = "@rowOrder")]
+  #[allow(unused)]
   pub msdata_row_order: IgnoredAny, // u16
 
   #[serde(rename = "Id")]
@@ -507,6 +510,11 @@ pub fn parse_function(text: &str) -> Option<&'static str> {
 pub fn parse_conversion(conversion: &str) -> Option<String> {
   match conversion {
     "NoConversion" | "" | "GWG_2010_Kennung~0x00F9" => None,
+    "Mult2" => Some("mul2".to_owned()),
+    "Mult10" => Some("mul10".to_owned()),
+    "Mult100" => Some("mul100".to_owned()),
+    "Div10" => Some("div10".to_owned()),
+    "Div100" => Some("div100".to_owned()),
     _ => {
       Some(conversion.replace("Mult", "Mul").replace("MBus", "Mbus").replace("2", "To").to_case(Case::Snake).to_owned())
     },
