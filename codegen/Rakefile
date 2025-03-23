@@ -99,8 +99,6 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
 end
 
 def create_mapping_to_unique(input)
-  input.deep_sort!
-
   reversed = {}
 
   input.each do |k, v|
@@ -108,7 +106,8 @@ def create_mapping_to_unique(input)
     reversed[v] << k
   end
 
-  reversed.transform_values! { |v| v.sort.uniq }
+  reversed = reversed.transform_values { |v| v.sort_by { |key, _| key.bytes }.uniq }
+                     .sort_by { |key, _| key.is_a?(String) ? key.bytes : key }.to_h
 
   mapping = {}
   combined = {}
@@ -134,9 +133,9 @@ def create_mapping_to_unique(input)
   end
 
   {
-    mapping: mapping,
-    translations: combined,
-  }.deep_sort!
+    mapping: mapping.sort_by { |key, _| key.bytes }.to_h,
+    translations: combined.sort_by { |key, _| key.bytes }.to_h,
+  }
 end
 
 file TRANSLATIONS_UNIQUE => TRANSLATIONS_CLEANED do |t|
