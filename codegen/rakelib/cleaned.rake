@@ -323,8 +323,9 @@ file DATAPOINT_DEFINITIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_C
         [value].pack('n').unpack('n').first
       when 'options'
         value.split(";")
-        else
-        nil # Unused.
+      else
+        # Unused.
+        nil
       end
 
       datapoint[field_name] = value unless value.nil?
