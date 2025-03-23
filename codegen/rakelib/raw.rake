@@ -125,7 +125,8 @@ def parse_options_value(text)
 end
 
 def parse_option_list(text)
-  text.split(';').map(&:underscore)
+  option_list = text.split(';').map(&:underscore)
+  option_list unless option_list.empty?
 end
 
 def parse_byte_array(text)
@@ -224,7 +225,7 @@ def event_types(path, reverse_translations: {})
       when 'active'
         parse_bool(n.text)
       when 'address'
-        n.text.empty? ? nil : Integer(n.text, 16) rescue Float(n.text)
+        n.text
       when 'alz'
         name = 'default_value'
         parse_value(n.text.strip)
@@ -267,11 +268,11 @@ def event_types(path, reverse_translations: {})
       next if value.nil?
 
       [name, value]
-    }.sort_by { |key, | key.bytes }.to_h
+    }.to_h
 
     [
       event_type.delete('id'),
-      event_type,
+      event_type.sort_by { |key, | key.bytes }.to_h,
     ]
   }.sort_by { |key, | key.bytes }.to_h
 
@@ -387,8 +388,11 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
 
       event_type = fragment.children.filter_map { |n|
         value = case name = n.name.underscore
-        when 'id', 'priority', 'config_set_id', 'config_set_parameter_id'
+        when 'id', 'priority'
           Integer(n.text.strip)
+        when 'config_set_id', 'config_set_parameter_id'
+          # Unused.
+          next
         when 'company_id'
           assert_company_id(n.text.strip)
           nil
@@ -418,9 +422,9 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value] unless value.nil?
-      }.sort_by { |key, | key.bytes }.to_h
+      }.to_h
 
-      { event_type.delete('id') => event_type }
+      { event_type.delete('id') => event_type.sort_by { |key, _| key.bytes }.to_h }
     },
     ['ecnEventValueType', 'event_value_types'] => ->(fragment) {
       next if fragment.children.empty?
@@ -502,7 +506,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
       table_name = table_extension.fetch('table_name')
       table_extension['field_name'] = table_extension.delete('field_name').delete_prefix("label.tableextension.#{table_name}.").underscore
 
-      { table_extension.delete('id') => table_extension }
+      { table_extension.delete('id') => table_extension.sort_by { |key, | key.bytes }.to_h }
     },
     ['ecnTableExtensionValue', 'table_extension_values'] => ->(fragment) {
       next if fragment.children.empty?
@@ -563,7 +567,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         end
 
         [name, value]
-      }.sort_by { |key, | key.bytes }.to_h
+      }.sort_by { |key, _| key.bytes }.to_h
 
       { fragment['id'] => link }
     },
@@ -571,7 +575,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
     {
       key => (dataset > tag).reduce({}) { |h, fragment|
         h.merge!(parse_fragment.call(fragment))
-      }
+      }.sort_by { |key, _| key.bytes }.to_h
     }
   }.reduce({}) { |h, v| h.merge!(v) }
 
@@ -579,18 +583,21 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
     data_point_type = definitions.fetch('datapoints').fetch(link.fetch('data_point_type_id'))
     data_point_type['event_types'] ||= []
     data_point_type['event_types'].push(link.fetch('event_type_id'))
+    data_point_type['event_types'].sort!
   end
 
   definitions.delete('event_type_event_value_type_links').each do |_, link|
     event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
     event_type['value_types'] ||= []
     event_type['value_types'].push(link.fetch('event_value_id'))
+    event_type['value_types'].sort!
   end
 
   definitions.delete('event_type_event_type_group_links').each do |_, link|
     event_type = definitions.fetch('event_types').fetch(link.fetch('event_type_id'))
     event_type['groups'] ||= []
     event_type['groups'].push(link.fetch('event_type_group_id'))
+    event_type['groups'].sort!
   end
 
   save_json(t.name, definitions)
