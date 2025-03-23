@@ -289,12 +289,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
 
       value = case field_name
       when 'address'
-        case value
-        when /\A0x\h+\Z/
-          Integer(value.delete_prefix('0x'), 16)
-        else
-          nil
-        end
+        value
       when /^fc_(read|write)$/
         parse_function(value)
       when 'option'

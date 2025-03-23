@@ -76,14 +76,14 @@ file MAPPINGS_UNIQUE => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEAN
   error_mappings = translations.fetch("mapping").reduce({}) { |h, (translation_id, mapping_id)|
     if /^(?<id>viessmann\.errorcode(?:\.SMS)?(?:\.[^.]+)?)\.(?<value>\h{2})$/ =~ translation_id
       h[id] ||= {}
-      h[id][value.to_i(16)] = mapping_id
+      h[id][Integer(value, 16)] = mapping_id
     end
 
     h
   }
 
   mappings = system_event_types.merge(event_types).reduce({}) { |h, (id, event_type)|
-    value_list = event_type.fetch('value_list', {})
+    value_list = event_type.fetch('value_list', {}).transform_keys { Integer(_1) }
 
     next h if value_list.empty?
 
@@ -322,7 +322,7 @@ def type_to_command(type_id, type, mappings:, translations:)
 
   command['name'] = type_id
 
-  command['addr'] = type.fetch('address')
+  command['addr'] = Integer(type.fetch('address'), 16)
   command['mode'] = type.fetch('access_mode')
 
   command['parameter'] = map_parameter(type['parameter'])
@@ -373,7 +373,7 @@ def type_to_command(type_id, type, mappings:, translations:)
     command['upper_border'] = upper_border
   end
 
-  value_list = type.fetch('value_list', {})
+  value_list = type.fetch('value_list', {}).transform_keys { Integer(_1) }
   enum_type = value_list.any?
 
   if enum_type
