@@ -211,6 +211,24 @@ def parse_conversion(text)
   @conversion_cache[text] = conversion
 end
 
+def simplify_conversion(type)
+  if (conversion = type.delete('conversion'))
+    conversion = parse_conversion(conversion)
+    type['conversion'] = conversion if conversion
+  end
+
+  conversion_factor = type.delete('conversion_factor')&.yield_self { _1 if _1 != 0}
+  conversion_offset = type.delete('conversion_offset')&.yield_self { _1 if _1 != 0}
+  if conversion_factor || conversion_offset
+    type['conversion'] = {
+      type.fetch('conversion', 'mul_offset') => {
+        'factor' => conversion_factor,
+        'offset' => conversion_offset,
+      }.compact
+    }
+  end
+end
+
 def event_types(path, reverse_translations: {})
   document = Nokogiri::XML.parse(File.read(path))
   document.remove_namespaces!
@@ -236,8 +254,8 @@ def event_types(path, reverse_translations: {})
         # Unused.
         next
       when 'conversion'
-        parse_conversion(n.text)
-      when /^conversion_(factor|offset)$/
+        n.text
+      when 'conversion_factor', 'conversion_offset'
         Float(n.text)
       when /^((lower|upper)_border|stepping)$/
         Float(n.text)
@@ -257,7 +275,8 @@ def event_types(path, reverse_translations: {})
           parse_description(v, reverse_translations: reverse_translations)
         }.compact
       when /^prefix_(read|write)$/
-        n.text.empty? ? nil : n.text.delete_prefix('0x').each_char.each_slice(2).map { |c| Integer(c.join, 16) }
+        # Unused.
+        next
       else
         value_if_non_empty(n)
       end
@@ -399,7 +418,7 @@ file DATAPOINT_DEFINITIONS_RAW => [DATAPOINT_DEFINITIONS_XML, TRANSLATIONS_RAW, 
         when 'address'
           strip_address(n.text.strip)
         when 'conversion'
-          parse_conversion(n.text)
+          n.text
         when 'default_value'
           parse_value(n.text.strip)
         when 'type'
