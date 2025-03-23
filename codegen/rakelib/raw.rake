@@ -310,7 +310,7 @@ def add_missing_enum_replace_value_translations(event_value_type, translations, 
   return if translations.key?(translation_id)
 
       if (description = event_value_type['description'])
-        if enum_replace_value&.match?(/ecnStatusEventType~\d+/)
+        if enum_replace_value&.start_with?('ecnStatusEventType~')
           translations[translation_id] = description.delete_prefix('ecnStatusEventType~')
           return
         end
