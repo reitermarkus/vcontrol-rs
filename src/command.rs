@@ -223,16 +223,14 @@ impl Command {
       (DataType::Error, Value::Error(error)) => error.to_bytes().to_vec(),
       (DataType::Int | DataType::Byte, Value::Int(n)) => {
         if let Some(lower_bound) = self.lower_bound {
-          let lower_bound = lower_bound as _;
-          if n < lower_bound {
-            return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)))
+          if (n as f64) < lower_bound {
+            return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)));
           }
         }
 
         if let Some(upper_bound) = self.upper_bound {
-          let upper_bound = upper_bound as _;
-          if n > upper_bound {
-            return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)))
+          if (n as f64) > upper_bound {
+            return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)));
           }
         }
 
