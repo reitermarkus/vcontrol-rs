@@ -3,7 +3,6 @@ require "active_support/core_ext"
 require 'json'
 require 'nokogiri'
 require 'pathname'
-require 'yaml'
 require 'open3'
 
 Dir.chdir __dir__
@@ -314,7 +313,6 @@ end
 
 def save_json(path, value)
   File.write path, JSON.pretty_generate(value) + "\n"
-  File.write Pathname(path).sub_ext('.yml'), value.to_yaml(line_width: -1)
 end
 
 def type_to_command(type_id, type, mappings:, translations:)
@@ -454,5 +452,5 @@ end
 multitask :default => [DEVICES_USED, EVENT_TYPES_USED, MAPPINGS_USED, TRANSLATIONS_USED, SYSTEM_EVENT_TYPES_USED, VERSIONS_USED]
 
 task :clean do
-  rm Dir.glob('*.{yml,json}')
+  rm Dir.glob('*.json')
 end
