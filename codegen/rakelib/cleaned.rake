@@ -230,8 +230,6 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW, DA
       next h
     end
 
-    event_type['value_list']&.transform_values! { |v| v.delete_prefix('@@') }
-
     h[event_type_id] = clean_event_type(event_type)
     h
   }
@@ -253,89 +251,6 @@ file DATAPOINT_DEFINITIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_C
     add_missing_enum_replace_value_translations(event_value_type, translations_cleaned, reverse_translations: reverse_translations_raw)
   end
 
-  table_extension_values.each do |_, v|
-    table_extension = table_extensions.fetch(v.fetch('ref_id'))
-
-    pk = table_extension.fetch('pk_fields').zip(v.fetch('pk_value')).to_h
-    id = pk.fetch('id')
-
-    table_name = table_extension.fetch('table_name')
-    field_name = table_extension.fetch('field_name')
-    value = v.fetch('internal_value')
-
-    case table_name
-    when 'ecnDatapointType'
-      next unless datapoint = datapoints[id]
-
-      value = case field_name
-      when 'identification', 'identification_extension', 'identification_extension_till'
-        value unless value.empty?
-      when 'f0', 'f0_till'
-        [value].pack('n').unpack('n').first
-      when 'options'
-        if value == 'undefined'
-          nil
-        else
-          value.underscore
-        end
-      else
-        value
-      end
-
-      datapoint[field_name] = value unless value.nil?
-    when 'ecnEventType'
-      next unless event_type = event_types[id]
-
-      value = case field_name
-      when 'address'
-        value
-      when /^fc_(read|write)$/
-        parse_function(value)
-      when 'option'
-        field_name = 'option_list'
-        parse_option_list(value)
-      when 'mapping_type'
-        mapping_types = table_extension.fetch('options_value').transform_keys { Integer(_1) }
-        mapping_type = mapping_types.fetch(value)
-        mapping_type unless mapping_type == 'NoMap'
-      else
-        value
-      end
-
-      event_type[field_name] = value unless value.nil?
-    when 'ecnEventTypeGroup'
-      next unless event_type_group = event_type_groups[id]
-
-      event_type_group[field_name] = value
-    else
-      raise "Unknown table: #{table_name}"
-    end
-  end
-
-  datapoints = datapoints.filter_map { |k, v|
-    datapoint_type_id = v.delete('address')
-
-    # Remove devices without identification number.
-    next unless v.key?('identification')
-
-    # Remove unsupported devices.
-    next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
-    next if datapoint_type_id.start_with?('BESS')
-    next if datapoint_type_id.start_with?('DEKATEL')
-    next if datapoint_type_id.start_with?('OpenTherm')
-    next if datapoint_type_id.start_with?('Vitocom')
-    next if datapoint_type_id.start_with?('Vitogate')
-    next if datapoint_type_id.start_with?('Vitowin')
-
-    v['event_types'] = v.fetch('event_types').filter_map { |id|
-      event_type = event_types.fetch(id)
-      event_type_id = map_event_type_name(event_type.fetch('name'))
-      next unless event_type_supported?(event_type_id, event_type)
-      id
-    }
-    [datapoint_type_id, v]
-  }.sort_by { |key, | key.bytes }.to_h
-
   event_value_types = event_value_types.reduce({}) { |h, (k, v)|
     if unit = v.delete('unit')
       v['unit'] = map_unit(unit)
@@ -356,14 +271,14 @@ file DATAPOINT_DEFINITIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_C
         { 'value_type' => 'ByteArray' }
       end
     when 'VarChar', 'NText'
-      if v.key?('enum_address_value')
+      if (address_value = v.fetch('enum_address_value', nil))
         enum_replace_value = v.fetch('enum_replace_value').delete_prefix('@@')
         enum_replace_value = TRANSLATION_FIXES.fetch(enum_replace_value, enum_replace_value)
-        value_list = VALUE_LIST_FIXES.fetch(enum_replace_value, enum_replace_value)
+        value_list_entry = VALUE_LIST_FIXES.fetch(enum_replace_value, enum_replace_value)
 
         {
           'value_list' => {
-            v.fetch('enum_address_value') => value_list
+            address_value => value_list_entry
           }
         }
       else
@@ -387,6 +302,70 @@ file DATAPOINT_DEFINITIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_C
     h
   }
 
+  table_extension_values.each do |_, v|
+    table_extension = table_extensions.fetch(v.fetch('ref_id'))
+
+    pk = table_extension.fetch('pk_fields').zip(v.fetch('pk_value')).to_h
+    id = pk.fetch('id')
+
+    table_name = table_extension.fetch('table_name')
+    field_name = table_extension.fetch('field_name')
+    value = v.fetch('internal_value')
+
+    case table_name
+    when 'ecnDatapointType'
+      next unless datapoint = datapoints[id]
+
+      value = case field_name
+      when 'identification', 'identification_extension', 'identification_extension_till'
+        value unless value.empty?
+      when 'f0', 'f0_till'
+        [value].pack('n').unpack('n').first
+      when 'options'
+        value.split(";")
+        else
+        nil # Unused.
+      end
+
+      datapoint[field_name] = value unless value.nil?
+    when 'ecnEventType'
+      next unless event_type = event_types[id]
+
+      value = case field_name
+      when 'address'
+        value
+      when /^fc_(read|write)$/
+        parse_function(value)
+      when 'option'
+        field_name = 'option_list'
+        parse_option_list(value)
+      when 'mapping_type'
+        mapping_types = table_extension.fetch('options_value').transform_keys { Integer(_1) }
+        mapping_type = mapping_types.fetch(value)
+        mapping_type unless mapping_type == 'NoMap'
+      when 'ba_cnet_gateway', 'ba_cnet_gateway_objekt',
+           'dpt_sub', 'dpt_typ', 'knx_conversion',
+           'knx_gateway', 'knx_gateway_objekt', 'lon_snvt_gateway', 'lon_snvt_gateway_objekt',
+           'mod_bus_gateway', 'mod_bus_gateway_objekt',
+           'is_vd100', 'prefix_read', 'prefix_write', 'qo_s_level', 'vitocom_channel_id',
+           'definition_type', 'rpc_handler', 'trigger_mode',
+           'trigger_mode_parameter_n', 'trigger_mode_parameter_t', 'function_value'
+        # Unused.
+        nil
+      else
+        value
+      end
+
+      event_type[field_name] = value unless value.nil?
+    when 'ecnEventTypeGroup'
+      next unless event_type_group = event_type_groups[id]
+
+      event_type_group[field_name] = value
+    else
+      raise "Unknown table: #{table_name}"
+    end
+  end
+
   event_types = event_types.reduce({}) { |h, (id, event_type)|
     event_type_id = map_event_type_name(event_type.fetch('name'))
     next h unless event_type_supported?(event_type_id, event_type)
@@ -396,11 +375,35 @@ file DATAPOINT_DEFINITIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_C
       h.deep_merge!(event_value_types.fetch(value_type).deep_dup)
     }
 
-    event_type.merge!(value_types) if value_types
+    if value_types
+      if (value_list = value_types.fetch('value_list', nil))
+        value_types['value_list'] = value_list.sort_by { |key, _| key }.to_h
+      end
+      event_type.merge!(value_types)
+    end
 
     h[id] = clean_event_type(event_type)
     h
   }
+
+  datapoints = datapoints.filter_map { |k, v|
+    datapoint_type_id = v.delete('address')
+
+    # Remove devices without identification number.
+    next unless v.key?('identification')
+
+    # Remove unsupported devices.
+    next if datapoint_type_id.start_with?('@@BatteryEnergyStorageSystem.')
+    next if datapoint_type_id.start_with?('BESS')
+    next if datapoint_type_id.start_with?('DEKATEL')
+    next if datapoint_type_id.start_with?('OpenTherm')
+    next if datapoint_type_id.start_with?('Vitocom')
+    next if datapoint_type_id.start_with?('Vitogate')
+    next if datapoint_type_id.start_with?('Vitowin')
+
+    v['event_types'] = v.fetch('event_types').select { event_types.key?(_1) }
+    [datapoint_type_id, v.sort_by { |key, | key.bytes }.to_h]
+  }.sort_by { |key, | key.bytes }.to_h
 
   datapoint_definitions = {
     'datapoints' => datapoints,
