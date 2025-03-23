@@ -239,8 +239,8 @@ file SYSTEM_EVENT_TYPES_CLEANED => [SYSTEM_EVENT_TYPES_RAW, TRANSLATIONS_RAW, DA
   save_json(t.name, system_event_types)
 end
 
-file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
-  datapoint_definitions_raw = load_json(t.source)
+file DATAPOINT_DEFINITIONS_CLEANED => [DATAPOINT_DEFINITIONS_RAW, TRANSLATIONS_CLEANED, REVERSE_TRANSLATIONS_RAW] do |t|
+  datapoint_definitions_raw, translations_cleaned, reverse_translations_raw = t.sources.map { |source| load_json(source) }
 
   datapoints = datapoint_definitions_raw.fetch('datapoints').transform_keys { Integer(_1) }
   event_types = datapoint_definitions_raw.fetch('event_types').transform_keys { Integer(_1) }
@@ -248,6 +248,10 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
   event_type_groups = datapoint_definitions_raw.fetch('event_type_groups').transform_keys { Integer(_1) }
   table_extensions = datapoint_definitions_raw.fetch('table_extensions').transform_keys { Integer(_1) }
   table_extension_values = datapoint_definitions_raw.fetch('table_extension_values').transform_keys { Integer(_1) }
+
+  event_value_types.each do |_, event_value_type|
+    add_missing_enum_replace_value_translations(event_value_type, translations_cleaned, reverse_translations: reverse_translations_raw)
+  end
 
   table_extension_values.each do |_, v|
     table_extension = table_extensions.fetch(v.fetch('ref_id'))
@@ -447,10 +451,10 @@ def clean_event_type(event_type)
   end
 
   event_type.delete('bit_length') if event_type['bit_length']&.zero?
-  event_type.delete('conversion_factor') if event_type['conversion_factor']&.zero?
-  event_type.delete('conversion_offset') if event_type['conversion_offset']&.zero?
 
-  event_type
+  simplify_conversion(event_type)
+
+  event_type.sort_by { |key, | key.bytes }.to_h
 end
 
 file DEVICES_CLEANED => [DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED] do |t|
