@@ -265,12 +265,7 @@ file DATAPOINT_DEFINITIONS_CLEANED => DATAPOINT_DEFINITIONS_RAW do |t|
 
       value = case field_name
       when 'identification', 'identification_extension', 'identification_extension_till'
-        case value
-        when /\A\h{4}\Z/i
-          Integer(value, 16)
-        else
-          nil
-        end
+        value unless value.empty?
       when 'f0', 'f0_till'
         [value].pack('n').unpack('n').first
       when 'options'

@@ -390,9 +390,9 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
 
   devices = devices.reduce({}) { |h, (device_id, device)|
     h[device_id] = {
-      'id' => device.fetch('identification', nil),
-      'id_ext' => device.fetch('identification_extension', nil),
-      'id_ext_till' => device.fetch('identification_extension_till', nil),
+      'id' => device.fetch('identification', nil)&.yield_self { Integer(_1, 16) },
+      'id_ext' => device.fetch('identification_extension', nil)&.yield_self { Integer(_1, 16) },
+      'id_ext_till' => device.fetch('identification_extension_till', nil)&.yield_self { Integer(_1, 16) },
       'f0' => device.fetch('f0', nil),
       'f0_till' => device.fetch('f0_till', nil),
       'commands' => device['event_types']
@@ -407,14 +407,14 @@ file DEVICES_USED => [DEVICES_CLEANED, MAPPINGS_UNIQUE] do |t|
   save_json(t.name, devices)
 end
 
-file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, SYSTEM_EVENT_TYPES_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
-  used_devices, datapoint_definitions, system_event_types, mappings_unique, translations_unique =
+file EVENT_TYPES_USED => [DEVICES_USED, DATAPOINT_DEFINITIONS_CLEANED, MAPPINGS_UNIQUE, TRANSLATIONS_UNIQUE] do |t|
+  used_devices, datapoint_definitions, mappings_unique, translations_unique =
     t.sources.map { |source| load_json(source) }
   event_types = datapoint_definitions.fetch('event_types').transform_keys { Integer(_1) }
 
   used_event_type_ids = used_devices.each_value.reduce(Set.new) { |s, d| s | d['commands'].to_set }
 
-  used_event_types = system_event_types.merge(event_types).keep_if { |event_type_id,|
+  used_event_types = event_types.keep_if { |event_type_id,|
     used_event_type_ids.include?(event_type_id)
   }
 

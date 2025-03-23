@@ -223,14 +223,18 @@ def event_types(path, reverse_translations: {})
       when 'id'
         strip_address(n.text.strip)
       when 'active'
-        parse_bool(n.text)
+        # Unused.
+        next
       when 'address'
         n.text
       when 'alz'
         name = 'default_value'
         parse_value(n.text.strip)
-      when /^(block|byte|bit)_(length|position|factor)$/, 'mapping_type', 'rpc_handler', 'priority'
+      when /^(block|byte|bit)_(length|position|factor)$/, 'mapping_type', 'priority'
         Integer(n.text)
+      when 'rpc_handler'
+        # Unused.
+        next
       when 'conversion'
         parse_conversion(n.text)
       when /^conversion_(factor|offset)$/
@@ -242,15 +246,8 @@ def event_types(path, reverse_translations: {})
       when 'description'
         parse_description(n.text, reverse_translations: reverse_translations)
       when 'data_type'
-        case value = n.text.underscore
-        when 'readonly'
-          name = 'access_mode'
-          'read'
-        when 'dropdown'
-          next
-        else
-          raise "Unknown `data_type` value: #{value}"
-        end
+        # Unused.
+        next
       when /^fc_(read|write)$/
         parse_function(n.text)
       when 'option_list'
