@@ -1,0 +1,24 @@
+{
+  "device_id": {
+    "addr": 248,
+    "bit_pos": 0,
+    "block_len": 8,
+    "byte_len": 8,
+    "byte_pos": 0,
+    "data_type": "DeviceId",
+    "mode": "read",
+    "name": "ecnsysDeviceIdent",
+    "parameter": "byte"
+  },
+  "device_id_f0": {
+    "addr": 240,
+    "bit_pos": 0,
+    "block_len": 2,
+    "byte_len": 2,
+    "byte_pos": 0,
+    "data_type": "DeviceIdF0",
+    "mode": "read",
+    "name": "ecnsysDeviceIdentF0",
+    "parameter": "byte"
+  }
+}

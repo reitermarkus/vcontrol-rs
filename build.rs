@@ -34,11 +34,11 @@ fn escape_const_name(s: &str) -> String {
 }
 
 #[track_caller]
-fn load_yaml<T: DeserializeOwned>(file_name: &str) -> anyhow::Result<T> {
+fn load_json<T: DeserializeOwned>(file_name: &str) -> anyhow::Result<T> {
   let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is not set");
   let path = Path::new(&cargo_manifest_dir).join("codegen").join(file_name);
   let file = BufReader::new(File::open(&path).with_context(|| format!("Error opening {:?}", path))?);
-  Ok(serde_yaml::from_reader(file)?)
+  Ok(serde_json::from_reader(file)?)
 }
 
 fn output_file(file_name: &str) -> io::Result<BufWriter<File>> {
@@ -49,7 +49,7 @@ fn output_file(file_name: &str) -> io::Result<BufWriter<File>> {
 fn generate_translations() -> anyhow::Result<()> {
   println!("Generating translations.");
 
-  let translations: BTreeMap<u16, String> = load_yaml("translations.used.yml")?;
+  let translations: BTreeMap<u16, String> = load_json("translations.used.json")?;
 
   let mut file = output_file("translations.rs")?;
 
@@ -63,7 +63,7 @@ fn generate_translations() -> anyhow::Result<()> {
 fn generate_mappings() -> anyhow::Result<()> {
   println!("Generating mappings.");
 
-  let mappings: BTreeMap<u16, BTreeMap<i32, u16>> = load_yaml("mappings.used.yml")?;
+  let mappings: BTreeMap<u16, BTreeMap<i32, u16>> = load_json("mappings.used.json")?;
 
   let mut file = output_file("mappings.rs")?;
 
@@ -86,7 +86,7 @@ fn generate_commands() -> anyhow::Result<BTreeMap<u16, String>> {
   println!("Generating commands.");
 
   let mut command_name_map = BTreeMap::new();
-  let mappings: BTreeMap<u16, Command> = load_yaml("event_types.used.yml")?;
+  let mappings: BTreeMap<u16, Command> = load_json("event_types.used.json")?;
 
   let mut file = output_file("commands.rs")?;
 
@@ -109,7 +109,7 @@ fn generate_commands() -> anyhow::Result<BTreeMap<u16, String>> {
 fn generate_system_commands() -> anyhow::Result<()> {
   println!("Generating system commands.");
 
-  let commands: BTreeMap<String, Command> = load_yaml("system_event_types.used.yml")?;
+  let commands: BTreeMap<String, Command> = load_json("system_event_types.used.json")?;
 
   let mut file = output_file("system_commands.rs")?;
 
@@ -139,7 +139,7 @@ fn generate_system_commands() -> anyhow::Result<()> {
 fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<()> {
   println!("Generating devices.");
 
-  let mappings: BTreeMap<String, Device> = load_yaml("devices.used.yml")?;
+  let mappings: BTreeMap<String, Device> = load_json("devices.used.json")?;
 
   let mut file = output_file("devices.rs")?;
 
@@ -233,13 +233,13 @@ pub struct Command {
   lower_border: Option<f64>,
   upper_border: Option<f64>,
   unit: Option<String>,
-  mapping: Option<String>,
+  mapping: Option<u16>,
 }
 
 impl fmt::Debug for Command {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let mapping = if let Some(mapping) = &self.mapping {
-      format!("Some(crate::mappings::MAPPING_{})", escape_const_name(mapping))
+      format!("Some(crate::mappings::MAPPING_{})", mapping)
     } else {
       "None".into()
     };
