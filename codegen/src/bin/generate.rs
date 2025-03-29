@@ -1,7 +1,7 @@
 use std::{
   collections::{BTreeMap, BTreeSet},
   fmt::Debug,
-  fs::File,
+  fs::{self, File},
   io::{BufReader, BufWriter, Write},
   path::Path,
 };
@@ -336,14 +336,16 @@ fn add_missing_enum_replace_value_translations(
 }
 
 fn load_xml<P: AsRef<Path>, T: DeserializeOwned>(path: P) -> anyhow::Result<T> {
-  let f = File::open(path)?;
+  let f = File::open(Path::new(env!("CARGO_MANIFEST_DIR")).join(path))?;
   let decoder = DecodeReaderBytes::new(f);
   let io = BufReader::new(decoder);
   Ok(quick_xml::de::from_reader(io)?)
 }
 
 fn save_json<P: AsRef<Path>, V: Serialize>(path: P, data: V) -> anyhow::Result<()> {
-  let mut f = BufWriter::new(File::create(path)?);
+  let build_dir = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../build"));
+  fs::create_dir_all(build_dir)?;
+  let mut f = BufWriter::new(File::create(build_dir.join(path))?);
   serde_json::to_writer_pretty(&mut f, &data)?;
   writeln!(f)?;
   Ok(())
@@ -359,7 +361,7 @@ fn main() -> anyhow::Result<()> {
 
   let versions: BTreeMap<_, _> =
     ecn_data_set.ecn_version.into_iter().map(|version| (snake_case(&version.name), version.value)).collect();
-  save_json("versions.used.json", &versions)?;
+  save_json(format!("versions.used.json"), &versions)?;
 
   let data_point_types_raw: BTreeMap<_, _> = ecn_data_set
     .ecn_datapoint_type

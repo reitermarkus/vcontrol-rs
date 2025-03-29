@@ -36,7 +36,7 @@ fn escape_const_name(s: &str) -> String {
 #[track_caller]
 fn load_json<T: DeserializeOwned>(file_name: &str) -> anyhow::Result<T> {
   let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is not set");
-  let path = Path::new(&cargo_manifest_dir).join("codegen").join(file_name);
+  let path = Path::new(&cargo_manifest_dir).join("build").join(file_name);
   let file = BufReader::new(File::open(&path).with_context(|| format!("Error opening {:?}", path))?);
   Ok(serde_json::from_reader(file)?)
 }
