@@ -494,6 +494,7 @@ fn main() -> anyhow::Result<()> {
   for event_value_type in event_value_types_raw.values_mut() {
     add_missing_enum_replace_value_translations(event_value_type, &mut translations_cleaned, &reverse_translations_raw)
   }
+  save_json("translations.cleaned.json", &translations_cleaned)?;
 
   let event_value_types_cleaned: BTreeMap<_, _> = event_value_types_raw
     .into_iter()
@@ -510,38 +511,21 @@ fn main() -> anyhow::Result<()> {
         },
         "Binary" => {
           let name = event_value_type.name.as_str();
-          if name == "ecnsysEventType~ErrorIndex" {
-            cleaned::EventValueType::Single {
-              value_type: "ErrorIndex",
-              lower_border: None,
-              upper_border: None,
-              stepping: None,
-              unit: None,
-            }
+          let value_type = if name == "ecnsysEventType~ErrorIndex" {
+            "ErrorIndex"
           } else if name == "ecnsysEventType~Error" || name.starts_with("@@viessmann.eventvaluetype.name.FehlerHisFA") {
-            cleaned::EventValueType::Single {
-              value_type: "Error",
-              lower_border: None,
-              upper_border: None,
-              stepping: None,
-              unit: None,
-            }
+            "Error"
           } else if name == "Mapping~Schaltzeiten" {
-            cleaned::EventValueType::Single {
-              value_type: "CircuitTimes",
-              lower_border: None,
-              upper_border: None,
-              stepping: None,
-              unit: None,
-            }
+            "CircuitTimes"
           } else {
-            cleaned::EventValueType::Single {
-              value_type: "ByteArray",
-              lower_border: None,
-              upper_border: None,
-              stepping: None,
-              unit: None,
-            }
+            "ByteArray"
+          };
+          cleaned::EventValueType::Single {
+            value_type,
+            lower_border: None,
+            upper_border: None,
+            stepping: None,
+            unit: None,
           }
         },
         "VarChar" | "NText" => {
@@ -585,7 +569,6 @@ fn main() -> anyhow::Result<()> {
       Some((event_value_type_id, data_type))
     })
     .collect();
-  save_json("translations.cleaned.json", &translations_cleaned)?;
 
   let _system_device_identifier_event_types_raw: raw::EventTypes = load_xml(files::SYS_DEVICE_IDENT)?;
   let _system_device_identifier_event_types_ext_raw: raw::EventTypes = load_xml(files::SYS_DEVICE_IDENT_EXT)?;
