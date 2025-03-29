@@ -13,7 +13,6 @@ pub(crate) enum Conversion {
   Mul5,
   Mul10,
   Mul100,
-  Mul1000,
   MulOffset {
     factor: f64,
     #[serde(default)]
