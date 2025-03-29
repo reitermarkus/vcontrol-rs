@@ -12,7 +12,8 @@ repository = "https://github.com/reitermarkus/vcontrol-rs"
 homepage = "https://github.com/reitermarkus/vcontrol-rs"
 keywords = ["heating", "control", "automation"]
 categories = ["hardware-support"]
-exclude = ["/.travis.yml"]
+include = ["build", "build.rs", "examples", "ReadMe.md", "src"]
+exclude = []
 license = "MIT OR Apache-2.0"
 readme = "ReadMe.md"
 

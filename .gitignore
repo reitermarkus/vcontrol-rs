@@ -1,9 +1,8 @@
 /target
 Cargo.lock
 
-codegen/.bundle
-codegen/*.json
+build/*.json
+!build/*.used.json
 codegen/data
 codegen/vitosoft.exe
-!codegen/*.used.json
 scan-cache.yml
