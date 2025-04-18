@@ -167,7 +167,7 @@ impl Optolink {
 
     match self.device {
       Device::Tty(ref mut tty, ref port) => {
-        use tokio::time::{sleep, Duration};
+        use tokio::time::{Duration, sleep};
 
         // Disable exclusive access so the device can be openend again.
         let _ = tty.set_exclusive(false);

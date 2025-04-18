@@ -1,15 +1,15 @@
 use std::{
   collections::HashMap,
-  sync::{mpsc::channel, Arc, RwLock, Weak},
+  sync::{Arc, RwLock, Weak, mpsc::channel},
 };
 
 use schemars::{schema, schema_for};
 use serde_json::json;
-use webthing::{property::ValueForwarder, BaseProperty, BaseThing, Thing};
+use webthing::{BaseProperty, BaseThing, Thing, property::ValueForwarder};
 
 use crate::{
-  types::{CircuitTimes, Date, DateTime, DeviceId, DeviceIdF0, Error},
   AccessMode, Command, DataType, Device, VControl, Value,
+  types::{CircuitTimes, Date, DateTime, DeviceId, DeviceIdF0, Error},
 };
 
 struct VcontrolValueForwarder {

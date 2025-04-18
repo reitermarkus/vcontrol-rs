@@ -3,7 +3,7 @@ use core::{fmt, str::FromStr};
 use arrayref::array_ref;
 #[cfg(feature = "impl_json_schema")]
 use schemars::JsonSchema;
-use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
 
 #[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
