@@ -1,8 +1,8 @@
 use phf;
 
 use crate::{
-  types::{DeviceId, DeviceIdF0},
   Command,
+  types::{DeviceId, DeviceIdF0},
 };
 
 mod device_id_range;

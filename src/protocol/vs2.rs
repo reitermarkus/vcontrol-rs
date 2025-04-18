@@ -4,7 +4,7 @@ use std::io;
 use num_enum::TryFromPrimitive;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::{commands::MAX_PAYLOAD_LEN, Optolink};
+use crate::{Optolink, commands::MAX_PAYLOAD_LEN};
 
 const LEADIN: u8 = 0x41;
 

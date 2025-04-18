@@ -1,6 +1,6 @@
 use std::{process::exit, sync::Arc};
 
-use clap::{crate_version, App, AppSettings::ArgRequiredElseHelp, Arg, SubCommand};
+use clap::{App, AppSettings::ArgRequiredElseHelp, Arg, SubCommand, crate_version};
 use serde_json;
 use webthing::{BaseActionGenerator, ThingsType, WebThingServer};
 

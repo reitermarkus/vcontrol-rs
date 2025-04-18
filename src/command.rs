@@ -1,10 +1,10 @@
 use arrayref::array_ref;
 
 use crate::{
+  AccessMode, DataType, Error, Optolink, Parameter, Value,
   conversion::Conversion,
   protocol::Protocol,
   types::{self, CircuitTimes, Date, DateTime, DeviceId, DeviceIdF0},
-  AccessMode, DataType, Error, Optolink, Parameter, Value,
 };
 
 /// A command which can be executed on an Optolink connection.
