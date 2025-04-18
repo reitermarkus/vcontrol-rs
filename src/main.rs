@@ -1,6 +1,6 @@
 use std::{process::exit, sync::Arc};
 
-use clap::{App, AppSettings::ArgRequiredElseHelp, Arg, SubCommand, crate_version};
+use clap::{Arg, ArgAction, Command, crate_version};
 use serde_json;
 use webthing::{BaseActionGenerator, ThingsType, WebThingServer};
 
@@ -10,57 +10,54 @@ use vcontrol::{Optolink, VControl, Value};
 async fn main() -> std::io::Result<()> {
   env_logger::init();
 
-  let app = App::new("vcontrol")
+  let app = Command::new("vcontrol")
     .version(crate_version!())
-    .setting(ArgRequiredElseHelp)
-    .help_short("?")
+    .arg_required_else_help(true)
     .arg(
-      Arg::with_name("device")
-        .short("d")
+      Arg::new("device")
+        .short('d')
         .long("device")
-        .takes_value(true)
+        .action(ArgAction::Set)
         .conflicts_with_all(&["host", "port"])
         .help("path of the device"),
     )
     .arg(
-      Arg::with_name("host")
-        .short("h")
+      Arg::new("host")
+        .short('h')
         .long("host")
-        .takes_value(true)
+        .action(ArgAction::Set)
         .conflicts_with("device")
         .requires("port")
         .help("hostname or IP address of the device (default: localhost)"),
     )
     .arg(
-      Arg::with_name("port")
-        .short("p")
+      Arg::new("port")
+        .short('p')
         .long("port")
-        .takes_value(true)
+        .action(ArgAction::Set)
         .conflicts_with("device")
         .help("port of the device"),
     )
     .subcommand(
-      SubCommand::with_name("get")
-        .about("get value")
-        .arg(Arg::with_name("command").help("name of the command").required(true)),
+      Command::new("get").about("get value").arg(Arg::new("command").help("name of the command").required(true)),
     )
     .subcommand(
-      SubCommand::with_name("set")
+      Command::new("set")
         .about("set value")
-        .arg(Arg::with_name("command").help("name of the command").required(true))
-        .arg(Arg::with_name("value").help("value").required(true)),
+        .arg(Arg::new("command").help("name of the command").required(true))
+        .arg(Arg::new("value").help("value").required(true)),
     )
-    .subcommand(SubCommand::with_name("server").about("start web server"));
+    .subcommand(Command::new("server").about("start web server"));
 
   let matches = app.get_matches();
 
-  let mut vcontrol = if let Some(device) = matches.value_of("device") {
+  let mut vcontrol = if let Some(device) = matches.get_one::<String>("device") {
     match Optolink::open(device).await {
       Ok(device) => VControl::connect(device).await,
       Err(err) => Err(err.into()),
     }
-  } else if let Some(port) = matches.value_of("port") {
-    let host = matches.value_of("host").unwrap_or("localhost");
+  } else if let Some(port) = matches.get_one::<String>("port") {
+    let host = matches.get_one::<String>("host").map_or("localhost", |host| host);
     let port = port.parse().unwrap_or_else(|_| {
       eprintln!("Error: Could not parse port from “{}”.", port);
       exit(1);
@@ -81,7 +78,7 @@ async fn main() -> std::io::Result<()> {
   log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
 
   if let Some(matches) = matches.subcommand_matches("get") {
-    let command = matches.value_of("command").unwrap();
+    let command = matches.get_one::<String>("command").unwrap();
 
     match vcontrol.get(command).await {
       Ok(output_value) => {
@@ -95,10 +92,10 @@ async fn main() -> std::io::Result<()> {
   }
 
   if let Some(matches) = matches.subcommand_matches("set") {
-    let command = matches.value_of("command").unwrap();
-    let value = matches.value_of("value").unwrap();
+    let command = matches.get_one::<String>("command").unwrap();
+    let value = matches.get_one::<String>("value").unwrap();
 
-    let input_value: Value = serde_json::from_str(&value).unwrap_or(Value::String(value.to_string()));
+    let input_value: Value = serde_json::from_str(value).unwrap_or(Value::String(value.clone()));
 
     match vcontrol.set(command, input_value).await {
       Ok(()) => {},
