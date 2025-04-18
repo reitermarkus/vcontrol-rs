@@ -133,7 +133,7 @@ impl fmt::Display for OutputValue {
           if let Some(mapping) = mapping.get(&(*n as i32)) {
             write!(f, "{}", mapping)?;
           } else {
-            log::warn!("Missing mapping for {n}.");
+            log::warn!("Missing mapping for {n} in {mapping:?}.");
             write!(f, "{}", n)?;
           }
         } else {

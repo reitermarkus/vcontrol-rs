@@ -29,7 +29,13 @@ cli = [
 impl_json_schema = ["schemars"]
 impl_webthing = ["impl_json_schema", "serde_json", "webthing", "actix-rt"]
 cat = ["env_logger", "tokio/rt-multi-thread"]
-serde_yaml = ["dep:serde_yaml"]
+scan = [
+  "env_logger",
+  "dep:serde_yaml",
+  "tokio/fs",
+  "tokio/io-std",
+  "tokio/io-util",
+]
 
 [dependencies]
 actix-rt = { version = "2.7", optional = true }
@@ -61,7 +67,7 @@ required-features = ["cat"]
 
 [[example]]
 name = "scan"
-required-features = ["serde_yaml"]
+required-features = ["scan"]
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
