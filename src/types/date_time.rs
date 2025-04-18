@@ -65,8 +65,8 @@ impl JsonSchema for Date {
     "Date".into()
   }
 
-  fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-    let mut schema = gen.subschema_for::<String>().into_object();
+  fn json_schema(generator: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+    let mut schema = generator.subschema_for::<String>().into_object();
     schema.format = Some("date".into());
     schema.into()
   }
@@ -147,8 +147,8 @@ impl JsonSchema for DateTime {
     "DateTime".into()
   }
 
-  fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-    let mut schema = gen.subschema_for::<String>().into_object();
+  fn json_schema(generator: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+    let mut schema = generator.subschema_for::<String>().into_object();
     schema.format = Some("date-time".into());
     schema.into()
   }
