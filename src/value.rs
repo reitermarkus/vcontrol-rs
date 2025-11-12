@@ -61,7 +61,7 @@ impl Value {
       Conversion::Mul100 => convert_double!(self, *, 100.0),
       Conversion::MulOffset { factor, offset } => {
         if let Value::Double(n) = self {
-          return Ok(Value::Double(n * factor + offset))
+          return Ok(Value::Double(n * factor + offset));
         }
       },
       Conversion::SecToMinute => convert_double!(self, /, 60.0),
@@ -69,18 +69,18 @@ impl Value {
       Conversion::HexByteToAsciiByte => {
         if let Value::ByteArray(bytes) = self {
           let s = bytes.iter().filter(|b| **b != b'0').map(|b| char::from(*b)).collect::<String>();
-          return Ok(Value::String(s))
+          return Ok(Value::String(s));
         }
       },
       Conversion::HexByteToVersion => {
         if let Value::ByteArray(bytes) = self {
-          return Ok(Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join(".")))
+          return Ok(Value::String(bytes.iter().map(|b| b.to_string()).collect::<Vec<_>>().join(".")));
         }
       },
       Conversion::RotateBytes => match self {
         Value::ByteArray(ref mut array) => {
           array.reverse();
-          return Ok(self)
+          return Ok(self);
         },
         Value::Int(n) => return Ok(Value::Int(n)),
         _ => (),
@@ -104,7 +104,7 @@ impl Value {
       Conversion::Mul100 => convert_double!(self, /, 100.0),
       Conversion::MulOffset { factor, offset } => {
         if let Value::Double(n) = self {
-          return Ok(Value::Double((n - offset) / factor))
+          return Ok(Value::Double((n - offset) / factor));
         }
       },
       _ => (),
@@ -166,11 +166,11 @@ impl FromStr for Value {
 
   fn from_str(s: &str) -> Result<Value, Self::Err> {
     if let Ok(number) = s.parse::<i64>() {
-      return Ok(Value::Int(number))
+      return Ok(Value::Int(number));
     }
 
     if let Ok(number) = s.parse::<f64>() {
-      return Ok(Value::Double(number))
+      return Ok(Value::Double(number));
     }
 
     // if let Ok(cycletime) = s.parse::<[CircuitTime; 4]>() {

@@ -32,6 +32,7 @@ cat = ["dep:env_logger", "tokio/rt-multi-thread"]
 scan = [
   "dep:env_logger",
   "dep:serde_yaml",
+  "tokio/rt-multi-thread",
   "tokio/fs",
   "tokio/io-std",
   "tokio/io-util",
