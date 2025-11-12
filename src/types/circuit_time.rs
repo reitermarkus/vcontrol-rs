@@ -173,7 +173,7 @@ impl FromStr for Time {
 
     fn char_to_u8(c: char) -> Option<u8> {
       if c.is_ascii_digit() {
-        return Some(c as u8 - b'0')
+        return Some(c as u8 - b'0');
       }
 
       None
@@ -188,13 +188,13 @@ impl FromStr for Time {
     let hour = h1 * 10 + h2;
 
     if hour > 24 {
-      return Err("hour out of range")
+      return Err("hour out of range");
     }
 
     let minute = m1 * 10 + m2;
 
     if minute >= 60 {
-      return Err("minute out of range")
+      return Err("minute out of range");
     }
 
     Ok(Time { hour, minute })
