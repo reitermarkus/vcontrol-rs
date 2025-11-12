@@ -40,7 +40,7 @@ impl ValueForwarder for VcontrolValueForwarder {
       Ok(vcontrol_value) => vcontrol_value,
       Err(err) => {
         log::error!("Failed setting property {}: {}", self.command_name, err);
-        return Err("Parsing value failed")
+        return Err("Parsing value failed");
       },
     };
 

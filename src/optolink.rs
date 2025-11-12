@@ -105,7 +105,7 @@ impl Optolink {
           tokio_serial::ErrorKind::InvalidInput => Err(io::Error::new(io::ErrorKind::InvalidInput, err.description)),
           tokio_serial::ErrorKind::Unknown => Err(io::Error::other(err.description)),
           tokio_serial::ErrorKind::Io(kind) => Err(io::Error::new(kind, err.description)),
-        }
+        };
       },
     };
 
@@ -182,7 +182,7 @@ impl Optolink {
 
           if let Ok(serial_port) = serial_port {
             *tty = serial_port;
-            return Ok(())
+            return Ok(());
           }
 
           sleep(Duration::from_secs(1)).await;

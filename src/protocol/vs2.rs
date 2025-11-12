@@ -244,7 +244,7 @@ impl Vs2 {
 
     loop {
       if Self::read_status(o).await? != SYNC {
-        continue
+        continue;
       }
 
       o.write_all(&START).await?;

@@ -18,11 +18,11 @@ impl Protocol {
   /// Try detecting the protocol automatically.
   pub async fn detect(o: &mut Optolink) -> Option<Self> {
     if Vs2::negotiate(o).await.is_ok() {
-      return Some(Self::Vs2)
+      return Some(Self::Vs2);
     }
 
     if Vs1::negotiate(o).await.is_ok() {
-      return Some(Self::Vs1)
+      return Some(Self::Vs1);
     }
 
     None

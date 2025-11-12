@@ -39,7 +39,7 @@ impl Vs1 {
 
       if o.read_exact(&mut buf).await.is_ok() && buf == [SYNC] {
         o.purge().await?;
-        return Ok(())
+        return Ok(());
       }
     }
   }
@@ -90,12 +90,12 @@ impl Vs1 {
         // Return `Ok` if the response was received in a short amount of time,
         // since then they most likely are not synchronization bytes.
         if read_time < Duration::from_millis(500 * buf.len() as u64) {
-          return Ok(())
+          return Ok(());
         }
 
         o.purge().await?;
       } else {
-        return Ok(())
+        return Ok(());
       }
     }
   }
@@ -119,7 +119,7 @@ impl Vs1 {
       o.read_exact(&mut buf).await?;
 
       if buf == [0x00] {
-        return Ok(())
+        return Ok(());
       }
     }
   }
