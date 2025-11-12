@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, env, error::Error};
+use std::{env, error::Error};
 
 use tokio::{
   fs::OpenOptions,
@@ -19,32 +19,29 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     Optolink::open(optolink_port).await
   }?;
 
-  let mut file = OpenOptions::new().read(true).append(true).create(true).open("scan-cache.yml").await?;
-  let mut content = String::new();
-  BufReader::new(&mut file).read_to_string(&mut content).await?;
-  let cache: BTreeMap<u16, u8> = serde_yaml::from_str(&content).unwrap_or_default();
+  let mut file = OpenOptions::new().read(true).append(true).create(true).open("scan-cache.bin").await?;
+  let mut content = Vec::with_capacity(u16::MAX as usize);
+  BufReader::new(&mut file).read_to_end(&mut content).await?;
   let mut file = BufWriter::new(file);
 
   let protocol = Protocol::detect(&mut optolink).await.unwrap();
 
-  for i in 0..u16::MAX {
+  let mut addr = u16::try_from(content.len()).unwrap();
+  let mut buf = [0; 119]; // FIXME: `get` gets stuck with a buffer larger than 119 bytes for some reason.
+  while addr < u16::MAX {
     let mut stdout = io::stdout();
-    let output = format!("\r{}/{}", i, u16::MAX);
+    let output = format!("\r{addr}/{} ({addr:#04X})", u16::MAX);
     stdout.write_all(output.as_bytes()).await?;
     stdout.flush().await?;
 
-    if cache.contains_key(&i) {
-      continue;
-    }
+    let buf_len = buf.len().min((u16::MAX - addr) as usize);
+    let buf = &mut buf[..buf_len];
 
     loop {
-      let addr = i as u16;
-      let mut buf = [0];
-      match protocol.get(&mut optolink, addr, &mut buf).await {
+      match protocol.get(&mut optolink, addr, buf).await {
         Ok(()) => {
-          let value = buf[0];
-          let line = format!("0x{:04X}: {}", addr, value);
-          file.write_all(line.as_bytes()).await?;
+          file.write_all(buf).await?;
+          file.flush().await?;
         },
         Err(e) => {
           eprintln!("Error: {}", e);
@@ -55,6 +52,8 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
       break;
     }
+
+    addr += buf_len as u16;
   }
 
   println!();

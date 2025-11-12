@@ -35,48 +35,48 @@ impl Command {
 
   pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
-      return Ok(Value::Empty)
+      return Ok(Value::Empty);
     }
 
     let mut value = match &self.data_type {
       DataType::DeviceId => {
         if bytes.len() != 8 {
-          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+          return Err(Error::InvalidFormat("array length is not 8".to_string()));
         }
 
         Value::DeviceId(DeviceId::from_bytes(array_ref![bytes, 0, 8]))
       },
       DataType::DeviceIdF0 => {
         if bytes.len() != 2 {
-          return Err(Error::InvalidFormat("array length is not 2".to_string()))
+          return Err(Error::InvalidFormat("array length is not 2".to_string()));
         }
 
         Value::DeviceIdF0(DeviceIdF0::from_bytes(array_ref![bytes, 0, 2]))
       },
       DataType::Date => {
         if bytes.len() != 8 {
-          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+          return Err(Error::InvalidFormat("array length is not 8".to_string()));
         }
 
         Value::Date(Date::from_bytes(array_ref![bytes, 0, 8])?)
       },
       DataType::DateTime => {
         if bytes.len() != 8 {
-          return Err(Error::InvalidFormat("array length is not 8".to_string()))
+          return Err(Error::InvalidFormat("array length is not 8".to_string()));
         }
 
         Value::DateTime(DateTime::from_bytes(array_ref![bytes, 0, 8])?)
       },
       DataType::CircuitTimes => {
         if bytes.len() != 56 {
-          return Err(Error::InvalidFormat("array length is not 56".to_string()))
+          return Err(Error::InvalidFormat("array length is not 56".to_string()));
         }
 
         Value::CircuitTimes(Box::new(CircuitTimes::from_bytes(array_ref![bytes, 0, 56])))
       },
       DataType::ErrorIndex => {
         if bytes.len() != 10 {
-          return Err(Error::InvalidFormat("array length is not 10".to_string()))
+          return Err(Error::InvalidFormat("array length is not 10".to_string()));
         }
 
         let errors = bytes.iter().copied().take_while(|&b| b != 0).collect();
@@ -84,7 +84,7 @@ impl Command {
       },
       DataType::Error => {
         if bytes.len() != 9 {
-          return Err(Error::InvalidFormat("array length is not 9".to_string()))
+          return Err(Error::InvalidFormat("array length is not 9".to_string()));
         }
 
         Value::Error(types::Error::from_bytes(array_ref![bytes, 0, 9])?)
@@ -180,7 +180,7 @@ impl Command {
     log::trace!("Command::get(…)");
 
     if !self.mode.is_read() {
-      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)))
+      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)));
     }
 
     let mut buf = vec![0; self.block_len];
@@ -208,7 +208,7 @@ impl Command {
     log::trace!("Command::set(…)");
 
     if !self.mode.is_write() {
-      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)))
+      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)));
     }
 
     if let Some(conversion) = &self.conversion {
@@ -251,13 +251,13 @@ impl Command {
       (DataType::Double, Value::Double(n)) => {
         if let Some(lower_bound) = self.lower_bound {
           if n < lower_bound {
-            return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)))
+            return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)));
           }
         }
 
         if let Some(upper_bound) = self.upper_bound {
           if n > upper_bound {
-            return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)))
+            return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)));
           }
         }
 
