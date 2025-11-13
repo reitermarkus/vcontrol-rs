@@ -91,26 +91,34 @@ impl Value {
     Err(ConversionError { value: self, conversion })
   }
 
+  fn convert_number(
+    self,
+    convert: impl FnOnce(f64) -> f64,
+    conversion: &Conversion,
+  ) -> Result<Self, ConversionError<'_>> {
+    let value = match self {
+      Self::Int(n) => n as f64,
+      Self::Double(n) => n,
+      _ => return Err(ConversionError { value: self, conversion }),
+    };
+
+    Ok(Self::Double(convert(value)))
+  }
+
   pub(crate) fn convert_back(self, conversion: &Conversion) -> Result<Self, ConversionError<'_>> {
     match conversion {
-      Conversion::Div2 => convert_double!(self, *, 2.0),
-      Conversion::Div5 => convert_double!(self, *, 5.0),
-      Conversion::Div10 => convert_double!(self, *, 10.0),
-      Conversion::Div100 => convert_double!(self, *, 100.0),
-      Conversion::Div1000 => convert_double!(self, *, 1000.0),
-      Conversion::Mul2 => convert_double!(self, /, 2.0),
-      Conversion::Mul5 => convert_double!(self, /, 5.0),
-      Conversion::Mul10 => convert_double!(self, /, 10.0),
-      Conversion::Mul100 => convert_double!(self, /, 100.0),
-      Conversion::MulOffset { factor, offset } => {
-        if let Value::Double(n) = self {
-          return Ok(Value::Double((n - offset) / factor));
-        }
-      },
-      _ => (),
+      Conversion::Div2 => self.convert_number(|v| v * 2.0, conversion),
+      Conversion::Div5 => self.convert_number(|v| v * 5.0, conversion),
+      Conversion::Div10 => self.convert_number(|v| v * 10.0, conversion),
+      Conversion::Div100 => self.convert_number(|v| v * 100.0, conversion),
+      Conversion::Div1000 => self.convert_number(|v| v * 1000.0, conversion),
+      Conversion::Mul2 => self.convert_number(|v| v / 2.0, conversion),
+      Conversion::Mul5 => self.convert_number(|v| v / 5.0, conversion),
+      Conversion::Mul10 => self.convert_number(|v| v / 10.0, conversion),
+      Conversion::Mul100 => self.convert_number(|v| v / 100.0, conversion),
+      Conversion::MulOffset { factor, offset } => self.convert_number(|v| (v - offset) / factor, conversion),
+      _ => Err(ConversionError { value: self, conversion }),
     }
-
-    Err(ConversionError { value: self, conversion })
   }
 }
 
