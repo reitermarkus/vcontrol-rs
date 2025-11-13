@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Clone, PartialEq, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub enum DataType {
   DeviceId,
   DeviceIdF0,

@@ -211,69 +211,71 @@ impl Command {
       return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)));
     }
 
+    match &input {
+      Value::Int(n) => {
+        if let Some(lower_bound) = self.lower_bound
+          && (*n as f64) < lower_bound
+        {
+          return Err(Error::InvalidArgument(format!("{} is less than minimum {}.", n, lower_bound)));
+        }
+
+        if let Some(upper_bound) = self.upper_bound
+          && (*n as f64) > upper_bound
+        {
+          return Err(Error::InvalidArgument(format!("{} is greater than maximum {}.", n, upper_bound)));
+        }
+      },
+      Value::Double(n) => {
+        if let Some(lower_bound) = self.lower_bound
+          && *n < lower_bound
+        {
+          return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)));
+        }
+
+        if let Some(upper_bound) = self.upper_bound
+          && *n > upper_bound
+        {
+          return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)));
+        }
+      },
+      _ => (),
+    }
+
     if let Some(conversion) = &self.conversion {
       input = input.convert_back(conversion).unwrap();
     }
 
-    let bytes = match (&self.data_type, input) {
+    let bytes = match (self.data_type, input) {
       (DataType::DateTime, Value::DateTime(date_time)) => date_time.to_bytes().to_vec(),
       (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => cycletimes.to_bytes().to_vec(),
       (DataType::ByteArray, Value::ByteArray(bytes)) => bytes.to_vec(),
       (DataType::String, Value::String(s)) => s.as_bytes().to_vec(),
       (DataType::Error, Value::Error(error)) => error.to_bytes().to_vec(),
-      (DataType::Int | DataType::Byte, Value::Int(n)) => {
-        if let Some(lower_bound) = self.lower_bound
-          && (n as f64) < lower_bound
-        {
-          return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)));
-        }
-
-        if let Some(upper_bound) = self.upper_bound
-          && (n as f64) > upper_bound
-        {
-          return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)));
-        }
-
-        match self.parameter {
-          Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
-          Parameter::Int => (n as u16).to_le_bytes().to_vec(),
-          Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
-          Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
-          Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
-          Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
-          Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
-          Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
-          Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
-          Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
-          _ => unreachable!(),
-        }
+      (DataType::Int | DataType::Byte, Value::Int(n)) => match self.parameter {
+        Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
+        Parameter::Int => (n as u16).to_le_bytes().to_vec(),
+        Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
+        Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
+        Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
+        Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
+        Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
+        Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
+        Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
+        Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
+        _ => unreachable!(),
       },
-      (DataType::Double, Value::Double(n)) => {
-        if let Some(lower_bound) = self.lower_bound
-          && n < lower_bound
-        {
-          return Err(Error::InvalidArgument(format!("{} is less than minimum {}", n, lower_bound)));
-        }
-
-        if let Some(upper_bound) = self.upper_bound
-          && n > upper_bound
-        {
-          return Err(Error::InvalidArgument(format!("{} is greater than maximum {}", n, upper_bound)));
-        }
-
-        match self.parameter {
-          Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
-          Parameter::Int => (n as u16).to_le_bytes().to_vec(),
-          Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
-          Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
-          Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
-          Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
-          Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
-          Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
-          Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
-          Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
-          _ => unreachable!(),
-        }
+      (DataType::Double, Value::Double(n)) => match self.parameter {
+        Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
+        Parameter::Int => (n as u16).to_le_bytes().to_vec(),
+        Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
+        Parameter::Int4 => (n as u32).to_le_bytes().to_vec(),
+        Parameter::Int4HighByteFirst => (n as u32).to_be_bytes().to_vec(),
+        Parameter::SByte => (n as i8).to_le_bytes().to_vec(),
+        Parameter::SInt => (n as i16).to_le_bytes().to_vec(),
+        Parameter::SIntHighByteFirst => (n as i16).to_be_bytes().to_vec(),
+        Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
+        Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
+        _ => unreachable!(),
       },
       (data_type, input) => return Err(Error::InvalidArgument(format!("expected {:?}, got {:?}", data_type, input))),
     };
