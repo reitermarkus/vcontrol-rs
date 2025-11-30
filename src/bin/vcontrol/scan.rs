@@ -1,24 +1,12 @@
-use std::{collections::HashMap, env, error::Error};
+use std::collections::HashMap;
 
-use tokio::{
-  fs::OpenOptions,
-  io::{self, AsyncReadExt, AsyncWriteExt, BufReader, BufWriter},
-};
-use vcontrol::{Optolink, Protocol, VControl};
+use tokio::fs::OpenOptions;
+use tokio::io::{self, AsyncReadExt, AsyncWriteExt, BufReader, BufWriter};
 
-// Scan all possible addresses and save their values in `scan-cache.yml`.
-// Helpful for finding addresses for undocumented event types.
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
-  env_logger::init();
+use vcontrol::VControl;
+use vcontrol::{Optolink, Protocol};
 
-  let optolink_port = env::args().nth(1).expect("no serial port specified");
-  let mut optolink = if optolink_port.contains(':') {
-    Optolink::connect(optolink_port).await
-  } else {
-    Optolink::open(optolink_port).await
-  }?;
-
+pub async fn scan(mut optolink: Optolink) -> Result<(), Box<dyn std::error::Error>> {
   let mut file = OpenOptions::new().read(true).append(true).create(true).open("scan-cache.bin").await?;
   let mut content = Vec::with_capacity(u16::MAX as usize);
   BufReader::new(&mut file).read_to_end(&mut content).await?;
