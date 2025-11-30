@@ -1,5 +1,0 @@
-{
-  "languages": {
-    "JSON": { "formatter": "language_server" },
-  },
-}

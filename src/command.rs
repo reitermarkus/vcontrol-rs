@@ -28,9 +28,24 @@ pub struct Command {
 }
 
 impl Command {
+  /// Returns the command address.
+  pub fn addr(&self) -> u16 {
+    self.addr
+  }
+
   /// Get the command's access mode.
   pub fn access_mode(&self) -> AccessMode {
     self.mode
+  }
+
+  /// Returns the command block length.
+  pub fn block_len(&self) -> usize {
+    self.block_len
+  }
+
+  /// Returns the unit for the command value.
+  pub fn unit(&self) -> Option<&'static str> {
+    self.unit
   }
 
   pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
