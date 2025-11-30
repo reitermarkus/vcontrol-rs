@@ -1,8 +1,5 @@
 use crate::{Command, Device, Error, Optolink, OutputValue, Protocol, Value};
 
-#[cfg(feature = "webthing")]
-pub mod thing;
-
 /// Representation of an `Optolink` connection to a specific `Device` using a specific `Protocol`.
 #[derive(Debug)]
 pub struct VControl {
@@ -17,6 +14,7 @@ impl VControl {
     log::trace!("VControl::reneogiate()");
 
     if self.connected {
+      log::trace!("VControl::reneogiate(): already connected");
       return Ok(());
     }
 

@@ -17,10 +17,10 @@ const NACK: u8 = 0x15;
 #[derive(Debug, Clone, Copy, PartialEq, TryFromPrimitive)]
 #[repr(u8)]
 enum MessageType {
-  Request        = 0,
-  Response       = 1,
+  Request = 0,
+  Response = 1,
   Unacknowledged = 2,
-  Error          = 3,
+  Error = 3,
 }
 
 impl fmt::Display for MessageType {
@@ -168,6 +168,7 @@ impl Vs2 {
     let message_len = buffer[1];
 
     let checksum_index = 2 + message_len as usize;
+
     o.read_exact(&mut buffer[2..(checksum_index + 1)]).await?;
 
     let checksum = wrapping_sum(&buffer[1..checksum_index]);
@@ -328,7 +329,10 @@ impl Vs2 {
     }
 
     if header.addr != addr {
-      return Err(io::Error::new(io::ErrorKind::InvalidData, format!("expected address {}, got {}", addr, header.addr)));
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidData,
+        format!("expected address {}, got {}", addr, header.addr),
+      ));
     }
 
     Ok(())

@@ -1,16 +1,18 @@
-use std::{process::exit, sync::Arc};
+use std::{collections::HashMap, process::exit};
 
 use clap::{Arg, ArgAction, Command, crate_version};
 use serde_json;
-use webthing::{BaseActionGenerator, ThingsType, WebThingServer};
 
 use vcontrol::{Optolink, VControl, Value};
 
-#[actix_rt::main]
+mod scan;
+
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
   env_logger::init();
 
   let app = Command::new("vcontrol")
+    .disable_help_flag(true)
     .version(crate_version!())
     .arg_required_else_help(true)
     .arg(
@@ -47,15 +49,13 @@ async fn main() -> std::io::Result<()> {
         .arg(Arg::new("command").help("name of the command").required(true))
         .arg(Arg::new("value").help("value").required(true)),
     )
-    .subcommand(Command::new("server").about("start web server"));
+    .subcommand(Command::new("cat").about("get all values"))
+    .subcommand(Command::new("scan").about("scan all values"));
 
   let matches = app.get_matches();
 
-  let mut vcontrol = if let Some(device) = matches.get_one::<String>("device") {
-    match Optolink::open(device).await {
-      Ok(device) => VControl::connect(device).await,
-      Err(err) => Err(err.into()),
-    }
+  let optolink = if let Some(device) = matches.get_one::<String>("device") {
+    Optolink::open(device).await
   } else if let Some(port) = matches.get_one::<String>("port") {
     let host = matches.get_one::<String>("host").map_or("localhost", |host| host);
     let port = port.parse().unwrap_or_else(|_| {
@@ -63,10 +63,7 @@ async fn main() -> std::io::Result<()> {
       exit(1);
     });
 
-    match Optolink::connect((host, port)).await {
-      Ok(device) => VControl::connect(device).await,
-      Err(err) => Err(err.into()),
-    }
+    Optolink::connect((host, port)).await
   } else {
     unreachable!()
   }
@@ -75,9 +72,14 @@ async fn main() -> std::io::Result<()> {
     exit(1);
   });
 
-  log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
-
   if let Some(matches) = matches.subcommand_matches("get") {
+    let mut vcontrol = VControl::connect(optolink).await.unwrap_or_else(|err| {
+      eprintln!("Error: {}", err);
+      exit(1);
+    });
+
+    log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
+
     let command = matches.get_one::<String>("command").unwrap();
 
     match vcontrol.get(command).await {
@@ -89,9 +91,18 @@ async fn main() -> std::io::Result<()> {
         exit(1);
       },
     }
+
+    return Ok(());
   }
 
   if let Some(matches) = matches.subcommand_matches("set") {
+    let mut vcontrol = VControl::connect(optolink).await.unwrap_or_else(|err| {
+      eprintln!("Error: {}", err);
+      exit(1);
+    });
+
+    log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
+
     let command = matches.get_one::<String>("command").unwrap();
     let value = matches.get_one::<String>("value").unwrap();
 
@@ -104,29 +115,57 @@ async fn main() -> std::io::Result<()> {
         exit(1);
       },
     }
+
+    return Ok(());
   }
 
-  if let Some(_matches) = matches.subcommand_matches("server") {
-    let port = 8888;
+  if let Some(_) = matches.subcommand_matches("cat") {
+    let mut vcontrol = VControl::connect(optolink).await.unwrap_or_else(|err| {
+      eprintln!("Error: {}", err);
+      exit(1);
+    });
 
-    let (vcontrol, thing, commands) = vcontrol::thing::make_thing(vcontrol);
-    let weak_thing = Arc::downgrade(&thing);
+    log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
 
-    let mut server = WebThingServer::new(
-      ThingsType::Single(thing),
-      Some(port),
-      None,
-      None,
-      Box::new(BaseActionGenerator),
-      None,
-      Some(true),
-    );
+    let mut commands = HashMap::new();
 
-    let server_thread = server.start(None);
-    let update_thread = vcontrol::thing::update_thread(vcontrol, weak_thing, commands);
+    for (command_name, command) in vcontrol::commands::system_commands() {
+      commands.insert(command_name, command);
+    }
 
-    let (server, _) = tokio::join!(server_thread, update_thread);
-    server?;
+    for (command_name, command) in vcontrol.device().commands() {
+      commands.insert(command_name, command);
+    }
+
+    let mut keys = commands.keys().collect::<Vec<_>>();
+    keys.sort();
+
+    for key in keys {
+      let readable = commands.get(key).map(|c| c.access_mode().is_read()).unwrap_or(false);
+      if !readable {
+        continue;
+      }
+
+      let res = vcontrol.get(key).await;
+
+      match res {
+        Ok(value) => {
+          if !matches!(value.value, Value::Empty) {
+            println!("{}:", key);
+            println!("{}", value);
+          }
+        },
+        Err(err) => {
+          eprintln!("{} error: {:?}", key, err);
+        },
+      }
+    }
+
+    return Ok(());
+  }
+
+  if let Some(_) = matches.subcommand_matches("scan") {
+    scan::scan(optolink).await.unwrap();
   }
 
   Ok(())

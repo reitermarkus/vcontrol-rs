@@ -19,28 +19,19 @@ readme = "ReadMe.md"
 
 [features]
 cli = [
-  "dep:actix-rt",
   "dep:clap",
   "clap?/cargo",
   "dep:serde_json",
   "dep:env_logger",
-  "webthing",
   "impl_json_schema",
-]
-impl_json_schema = ["dep:schemars"]
-cat = ["dep:env_logger", "tokio/rt-multi-thread"]
-scan = [
-  "dep:env_logger",
-  "dep:serde_yaml",
   "tokio/rt-multi-thread",
   "tokio/fs",
   "tokio/io-std",
   "tokio/io-util",
 ]
-webthing = ["impl_json_schema", "dep:serde_json", "dep:webthing", "dep:actix-rt"]
+impl_json_schema = ["dep:schemars"]
 
 [dependencies]
-actix-rt = { version = "2.10", optional = true }
 clap = { version = "4.5", optional = true }
 chrono = { version = "0.4.40", features = ["serde"] }
 log = "0.4"
@@ -49,7 +40,6 @@ phf_shared = "0.11"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
 env_logger = { version = "0.11.8", optional = true }
-webthing = { version = "0.15.2", optional = true }
 schemars = { version = "0.8.22", optional = true }
 arrayref = "0.3.9"
 tokio = { version = "1.44", features = ["io-util", "macros", "net", "time"] }
@@ -57,22 +47,10 @@ tokio-serial = "5.4.5"
 pin-project = "1.1.10"
 num_enum = "0.7.3"
 serialport = { version = "4", default-features = false }
-serde_yaml = { version = "0.9", optional = true }
 
 [[bin]]
 name = "vcontrol"
 required-features = ["cli"]
-
-[[example]]
-name = "cat"
-required-features = ["cat"]
-
-[[example]]
-name = "scan"
-required-features = ["scan"]
-
-[target.'cfg(unix)'.dependencies]
-libc = "0.2"
 
 [build-dependencies]
 chrono = "0.4"
