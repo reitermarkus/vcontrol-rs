@@ -1,10 +1,10 @@
-use std::{env, error::Error};
+use std::{collections::HashMap, env, error::Error};
 
 use tokio::{
   fs::OpenOptions,
   io::{self, AsyncReadExt, AsyncWriteExt, BufReader, BufWriter},
 };
-use vcontrol::{Optolink, Protocol};
+use vcontrol::{Optolink, Protocol, VControl};
 
 // Scan all possible addresses and save their values in `scan-cache.yml`.
 // Helpful for finding addresses for undocumented event types.
@@ -40,6 +40,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     loop {
       match protocol.get(&mut optolink, addr, buf).await {
         Ok(()) => {
+          content.extend_from_slice(buf);
           file.write_all(buf).await?;
           file.flush().await?;
         },
@@ -57,6 +58,42 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
   }
 
   println!();
+
+  let vcontrol = VControl::connect(optolink).await?;
+
+  let mut commands = HashMap::new();
+
+  for (command_name, command) in vcontrol::commands::system_commands() {
+    commands.insert(command.addr(), (command_name, command.block_len()));
+  }
+
+  for (command_name, command) in vcontrol.device().commands() {
+    commands.insert(command.addr(), (command_name, command.block_len()));
+  }
+
+  let mut i = 0;
+
+  while i < content.len() {
+    if let Some((command_name, block_len)) = commands.get(&(i as u16)) {
+      let bytes = &content[i..i + block_len];
+
+      if bytes.iter().any(|&byte| byte != 0xff) {
+        println!(
+          "{i:04X} ({command_name}): {}",
+          bytes.iter().map(|byte| format!("{:02X}", byte)).collect::<Vec<String>>().join("")
+        );
+      }
+
+      i += block_len;
+    } else {
+      let byte = content[i];
+      if byte != 0xff && byte != 0x00 {
+        println!("{i:04X} (unknown): {:02X}", byte);
+      }
+
+      i += 1;
+    }
+  }
 
   Ok(())
 }
