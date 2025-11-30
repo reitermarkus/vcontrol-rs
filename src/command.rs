@@ -48,6 +48,16 @@ impl Command {
     self.unit
   }
 
+  /// Returns the lower bound for the command value.
+  pub fn lower_bound(&self) -> Option<f64> {
+    self.lower_bound
+  }
+
+  /// Returns the upper bound for the command value.
+  pub fn upper_bound(&self) -> Option<f64> {
+    self.upper_bound
+  }
+
   pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
     if bytes.iter().all(|&b| b == 0xff) {
       return Ok(Value::Empty);
