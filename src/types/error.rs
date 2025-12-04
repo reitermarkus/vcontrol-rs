@@ -1,14 +1,14 @@
 use core::fmt;
 
 use arrayref::array_ref;
-#[cfg(feature = "impl_json_schema")]
+#[cfg(feature = "schemars")]
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::DateTime;
 use crate::Device;
 
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Clone, PartialEq, Deserialize, Serialize)]
 pub struct Error {
   index: u8,

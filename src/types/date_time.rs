@@ -1,7 +1,7 @@
 use std::fmt;
 
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
-#[cfg(feature = "impl_json_schema")]
+#[cfg(feature = "schemars")]
 use schemars::JsonSchema;
 use serde::{
   de::{Deserialize, Deserializer},
@@ -59,7 +59,7 @@ impl<'de> Deserialize<'de> for Date {
   }
 }
 
-#[cfg(feature = "impl_json_schema")]
+#[cfg(feature = "schemars")]
 impl JsonSchema for Date {
   fn schema_name() -> String {
     "Date".into()
@@ -141,7 +141,7 @@ impl<'de> Deserialize<'de> for DateTime {
   }
 }
 
-#[cfg(feature = "impl_json_schema")]
+#[cfg(feature = "schemars")]
 impl JsonSchema for DateTime {
   fn schema_name() -> String {
     "DateTime".into()

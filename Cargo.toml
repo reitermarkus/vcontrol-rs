@@ -23,13 +23,13 @@ cli = [
   "clap?/cargo",
   "dep:serde_json",
   "dep:env_logger",
-  "impl_json_schema",
+  "schemars",
   "tokio/rt-multi-thread",
   "tokio/fs",
   "tokio/io-std",
   "tokio/io-util",
 ]
-impl_json_schema = ["dep:schemars"]
+schemars = ["dep:schemars"]
 
 [dependencies]
 clap = { version = "4.5", optional = true }
