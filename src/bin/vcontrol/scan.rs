@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 
-use tokio::fs::OpenOptions;
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt, BufReader, BufWriter};
+use tokio::{
+  fs::OpenOptions,
+  io::{self, AsyncReadExt, AsyncWriteExt, BufReader, BufWriter},
+};
 
-use vcontrol::VControl;
-use vcontrol::{Optolink, Protocol};
+use vcontrol::{Optolink, Protocol, VControl};
 
 pub async fn scan(mut optolink: Optolink) -> Result<(), Box<dyn std::error::Error>> {
   let mut file = OpenOptions::new().read(true).append(true).create(true).open("scan-cache.bin").await?;
