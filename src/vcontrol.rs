@@ -94,6 +94,10 @@ impl VControl {
     self.protocol
   }
 
+  pub fn optolink(&mut self) -> &mut Optolink {
+    &mut self.optolink
+  }
+
   fn command_by_name(&self, command: &str) -> Result<&'static Command, Error> {
     if let Some(system_command) = crate::commands::system_command(command) {
       Ok(system_command)

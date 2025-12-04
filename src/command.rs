@@ -8,7 +8,7 @@ use crate::{
 };
 
 /// A command which can be executed on an Optolink connection.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Command {
   pub(crate) addr: u16,
   pub(crate) mode: AccessMode,
@@ -38,6 +38,11 @@ impl Command {
     self.mode
   }
 
+  /// Get the command's data type.
+  pub fn data_type(&self) -> DataType {
+    self.data_type
+  }
+
   /// Returns the command block length.
   pub fn block_len(&self) -> usize {
     self.block_len
@@ -56,6 +61,29 @@ impl Command {
   /// Returns the upper bound for the command value.
   pub fn upper_bound(&self) -> Option<f64> {
     self.upper_bound
+  }
+
+  /// Returns the mapping for the command value.
+  pub fn mapping(&self) -> Option<&phf::map::Map<i32, &'static str>> {
+    self.mapping.as_ref()
+  }
+
+  /// Deserializes the command value from bytes.
+  pub fn deserialize(&self, bytes: &[u8]) -> Result<Value, Error> {
+    if let Some(block_count) = self.block_count {
+      let block_len = self.block_len / block_count;
+
+      let mut values = vec![];
+      for i in 0..block_count {
+        let start = i * block_len;
+        let value = self.parse_value(&bytes[(start)..(start + block_len)])?;
+        values.push(value);
+      }
+
+      Ok(Value::Array(values))
+    } else {
+      self.parse_value(bytes)
+    }
   }
 
   pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
@@ -213,20 +241,7 @@ impl Command {
 
     let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
 
-    if let Some(block_count) = self.block_count {
-      let block_len = self.block_len / block_count;
-
-      let mut values = vec![];
-      for i in 0..block_count {
-        let start = i * block_len;
-        let value = self.parse_value(&bytes[(start)..(start + block_len)])?;
-        values.push(value);
-      }
-
-      Ok(Value::Array(values))
-    } else {
-      self.parse_value(bytes)
-    }
+    self.deserialize(bytes)
   }
 
   pub async fn set(&self, o: &mut Optolink, protocol: Protocol, mut input: Value) -> Result<(), Error> {

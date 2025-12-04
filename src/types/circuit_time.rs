@@ -1,11 +1,11 @@
 use core::{fmt, str::FromStr};
 
 use arrayref::array_ref;
-#[cfg(feature = "impl_json_schema")]
+#[cfg(feature = "schemars")]
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
 
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CircuitTimes {
   mon: CircuitTime,
@@ -53,7 +53,7 @@ impl CircuitTimes {
   }
 }
 
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct CircuitTime([Option<TimeSpan>; 4]);
 
@@ -112,7 +112,7 @@ impl fmt::Debug for CircuitTime {
   }
 }
 
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 struct TimeSpan {
   from: Time,
@@ -131,7 +131,7 @@ impl fmt::Display for TimeSpan {
   }
 }
 
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct Time {
   hour: u8,

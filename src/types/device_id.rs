@@ -1,9 +1,9 @@
-#[cfg(feature = "impl_json_schema")]
+#[cfg(feature = "schemars")]
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Device identifier.
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct DeviceId {
   pub(crate) group_id: u8,
@@ -47,7 +47,7 @@ impl DeviceId {
 }
 
 /// Device F0 identifier.
-#[cfg_attr(feature = "impl_json_schema", derive(JsonSchema))]
+#[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct DeviceIdF0(pub(crate) u16);
 
