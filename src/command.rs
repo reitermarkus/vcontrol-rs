@@ -168,9 +168,9 @@ impl Command {
             Parameter::Byte => Value::Double(n as f64),
             Parameter::Int | Parameter::IntHighByteFirst => Value::Double(n as f64),
             Parameter::Int4 | Parameter::Int4HighByteFirst => Value::Double(n as f64),
-            Parameter::SByte => Value::Double(n as f64 as i8 as f64),
-            Parameter::SInt | Parameter::SIntHighByteFirst => Value::Double(n as f64 as i16 as f64),
-            Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Double(n as f64 as i32 as f64),
+            Parameter::SByte => Value::Double(n as i8 as f64),
+            Parameter::SInt | Parameter::SIntHighByteFirst => Value::Double(n as i16 as f64),
+            Parameter::SInt4 | Parameter::SInt4HighByteFirst => Value::Double(n as f64),
             parameter => unreachable!("Data type {:?} with parameter {:?}.", data_type, parameter),
           },
           _ => unreachable!(),
@@ -260,7 +260,15 @@ impl Command {
       input = input.convert_back(conversion).unwrap();
     }
 
+    if self.data_type == DataType::Int
+      && let Value::Double(n) = input
+      && n.fract() == 0.0
+    {
+      input = Value::Int(n as i64);
+    }
+
     let bytes = match (self.data_type, input) {
+      (DataType::Date, Value::Date(date)) => date.to_bytes().to_vec(),
       (DataType::DateTime, Value::DateTime(date_time)) => date_time.to_bytes().to_vec(),
       (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => cycletimes.to_bytes().to_vec(),
       (DataType::ByteArray, Value::ByteArray(bytes)) => bytes.to_vec(),
@@ -349,5 +357,30 @@ mod tests {
 
     let value = command.parse_value(&[0xb3, 0x04]).unwrap();
     assert_eq!(value, Value::Int(1203));
+  }
+
+  // Ensure `Ecotronic_Gemischte_AT` is cast to a negative number properly.
+  #[test]
+  fn parse_negative_s_int() {
+    let command = Command {
+      addr: 21801,
+      mode: AccessMode::Read,
+      data_type: DataType::Double,
+      parameter: Parameter::SInt,
+      block_count: None,
+      block_len: 2,
+      byte_len: 2,
+      byte_pos: 0,
+      bit_len: None,
+      bit_pos: 0,
+      conversion: Some(Conversion::Div10),
+      lower_bound: Some(-60.0),
+      upper_bound: Some(60.0),
+      unit: Some("°C"),
+      mapping: None,
+    };
+
+    let value = command.parse_value(&[0xfd, 0xff]).unwrap();
+    assert_eq!(value, Value::Double(-0.3));
   }
 }
