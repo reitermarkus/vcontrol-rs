@@ -67628,7 +67628,8 @@
     "mapping": 429,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM4",
-    "parameter": "byte"
+    "parameter": "byte",
+    "unit": "°C"
   },
   "10973": {
     "addr": 33538,
@@ -68502,7 +68503,8 @@
     "mapping": 429,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM3",
-    "parameter": "byte"
+    "parameter": "byte",
+    "unit": "°C"
   },
   "11050": {
     "addr": 13056,
@@ -68514,7 +68516,8 @@
     "mapping": 429,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM2",
-    "parameter": "byte"
+    "parameter": "byte",
+    "unit": "°C"
   },
   "11051": {
     "addr": 8960,
@@ -68526,7 +68529,8 @@
     "mapping": 429,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM1",
-    "parameter": "byte"
+    "parameter": "byte",
+    "unit": "°C"
   },
   "11052": {
     "addr": 17156,
