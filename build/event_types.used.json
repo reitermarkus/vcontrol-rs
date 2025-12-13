@@ -83928,7 +83928,7 @@
     "byte_pos": 0,
     "conversion": "div10",
     "data_type": "Double",
-    "mode": "read_write",
+    "mode": "read",
     "name": "Ecotronic_Puffertemperatur_Ist",
     "parameter": "int",
     "unit": "°C"
