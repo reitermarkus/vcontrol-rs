@@ -20,10 +20,15 @@ fn dec_to_byte(dec: u8) -> u8 {
   dec / 10 * 16 + dec % 10
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct Date(pub(crate) NaiveDate);
 
 impl Date {
+  /// Creates a new date from the given year, month and day.
+  pub fn new(year: u16, month: u8, day: u8) -> Option<Self> {
+    Some(Self(NaiveDate::from_ymd_opt(year.into(), month.into(), day.into())?))
+  }
+
   pub fn from_bytes(bytes: &[u8; 8]) -> Result<Self, Error> {
     let year = u16::from(byte_to_dec(bytes[0])) * 100 + u16::from(byte_to_dec(bytes[1]));
     let month = byte_to_dec(bytes[2]);
@@ -47,6 +52,21 @@ impl Date {
       0,
       0,
     ]
+  }
+
+  /// Returns the year of this data.
+  pub fn year(&self) -> u16 {
+    self.0.year() as u16
+  }
+
+  /// Returns the month of this data.
+  pub fn month(&self) -> u8 {
+    self.0.month() as u8
+  }
+
+  /// Returns the day of this data.
+  pub fn day(&self) -> u8 {
+    self.0.day() as u8
   }
 }
 
