@@ -43,6 +43,11 @@ impl Command {
     self.data_type
   }
 
+  /// Returns the command block count.
+  pub fn block_count(&self) -> Option<usize> {
+    self.block_count
+  }
+
   /// Returns the command block length.
   pub fn block_len(&self) -> usize {
     self.block_len
@@ -87,7 +92,11 @@ impl Command {
   }
 
   pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
-    if bytes.iter().all(|&b| b == 0xff) {
+    if !matches!(
+      self.parameter,
+      Parameter::SInt | Parameter::SIntHighByteFirst | Parameter::SInt4 | Parameter::SInt4HighByteFirst
+    ) && bytes.iter().all(|&b| b == 0xff)
+    {
       return Ok(Value::Empty);
     }
 

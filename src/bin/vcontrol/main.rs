@@ -150,8 +150,10 @@ async fn main() -> std::io::Result<()> {
 
       match res {
         Ok(value) => {
-          if !matches!(value.value, Value::Empty) {
-            println!("{}:", key);
+          println!("{}:", key);
+          if matches!(value.value, Value::Empty) {
+            println!("<empty>");
+          } else {
             println!("{}", value);
           }
         },
