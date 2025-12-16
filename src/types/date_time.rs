@@ -126,6 +126,10 @@ impl DateTime {
     }
   }
 
+  pub fn unix_timestamp(&self) -> u32 {
+    self.0.and_utc().timestamp() as u32
+  }
+
   pub fn from_bytes(bytes: &[u8; 8]) -> Result<Self, Error> {
     let year = u16::from(byte_to_dec(bytes[0])) * 100 + u16::from(byte_to_dec(bytes[1]));
     let month = byte_to_dec(bytes[2]);
