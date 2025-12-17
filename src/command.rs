@@ -301,6 +301,20 @@ impl Command {
       input = Value::Int(n as i64);
     }
 
+    if self.data_type == DataType::DateTime
+      && let Value::String(ref s) = input
+      && let Ok(date_time) = s.parse::<DateTime>()
+    {
+      input = Value::DateTime(date_time);
+    }
+
+    if self.data_type == DataType::Date
+      && let Value::String(ref s) = input
+      && let Ok(date) = s.parse::<Date>()
+    {
+      input = Value::Date(date);
+    }
+
     let bytes = match (self.data_type, input) {
       (DataType::Date, Value::Date(date)) => date.to_bytes().to_vec(),
       (DataType::DateTime, Value::DateTime(date_time)) => date_time.to_bytes().to_vec(),
