@@ -35,8 +35,8 @@ schemars = ["dep:schemars"]
 clap = { version = "4.5", optional = true }
 chrono = { version = "0.4.40", features = ["serde"] }
 log = "0.4"
-phf = { version = "0.11", features = ["serde"] }
-phf_shared = "0.11"
+phf = { version = "0.13", features = ["serde"] }
+phf_shared = "0.13"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", optional = true }
 env_logger = { version = "0.11.8", optional = true }
@@ -46,7 +46,7 @@ tokio = { version = "1.44", features = ["io-util", "macros", "net", "time"] }
 tokio-serial = "5.4.5"
 pin-project = "1.1.10"
 num_enum = "0.7.3"
-serialport = { version = "4", default-features = false }
+serialport = { version = "4.8.1", default-features = false }
 
 [[bin]]
 name = "vcontrol"
@@ -54,8 +54,8 @@ required-features = ["cli"]
 
 [build-dependencies]
 chrono = "0.4"
-phf_shared = "0.11"
-phf_codegen = "0.11"
+phf_shared = "0.13"
+phf_codegen = "0.13"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0"
 anyhow = "1.0.98"
