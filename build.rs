@@ -73,7 +73,7 @@ fn generate_mappings() -> anyhow::Result<()> {
     let mut map = phf_codegen::Map::new();
 
     for (k, v) in mapping {
-      map.entry(k, &format!("TRANSLATION_{}", v));
+      map.entry(k, format!("TRANSLATION_{}", v));
     }
 
     writeln!(file, "\npub const MAPPING_{}: ::phf::Map<i32, &'static str> = {};", k, map.build())?;
@@ -120,7 +120,7 @@ fn generate_system_commands() -> anyhow::Result<()> {
   for (command_name, command) in &commands {
     let constant_name = command_name.to_uppercase();
 
-    map.entry(command_name, &format!("&system::{}", constant_name));
+    map.entry(command_name, format!("&system::{}", constant_name));
 
     writeln!(file, "\npub const {}: crate::Command = {:#?};", constant_name, command)?;
   }
@@ -155,12 +155,12 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<
       f0: device.f0,
       f0_till: device.f0_till,
     };
-    device_map.entry(id_range, &format!("&{}", escape_const_name(device_id)));
+    device_map.entry(id_range, format!("&{}", escape_const_name(device_id)));
 
     let mut map = phf_codegen::Map::<&str>::new();
     for command_id in device.commands.iter() {
       let command_name = command_name_map.get(command_id).unwrap();
-      map.entry(command_name, &format!("&crate::commands::COMMAND_{}", command_id));
+      map.entry(command_name, format!("&crate::commands::COMMAND_{}", command_id));
     }
     writeln!(
       file,
