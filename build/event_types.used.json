@@ -515,7 +515,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 546,
+    "mapping": 545,
     "mode": "read_write",
     "name": "BedienBetriebsart",
     "parameter": "byte"
@@ -527,7 +527,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 447,
+    "mapping": 446,
     "mode": "read_write",
     "name": "BedienBetriebsartA1M1",
     "parameter": "byte"
@@ -539,7 +539,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 447,
+    "mapping": 446,
     "mode": "read_write",
     "name": "BedienBetriebsartM2",
     "parameter": "byte"
@@ -551,7 +551,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 447,
+    "mapping": 446,
     "mode": "read_write",
     "name": "BedienBetriebsartM3",
     "parameter": "byte"
@@ -979,7 +979,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 525,
+    "mapping": 524,
     "mode": "read_write",
     "name": "BedienteilBA_GWGA1",
     "parameter": "byte"
@@ -991,7 +991,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 524,
+    "mapping": 523,
     "mode": "read_write",
     "name": "BedienteilBA_GWGA1_Konstant",
     "parameter": "byte"
@@ -1003,7 +1003,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 525,
+    "mapping": 524,
     "mode": "read_write",
     "name": "BedienteilBA_GWGM2",
     "parameter": "byte"
@@ -1015,7 +1015,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 524,
+    "mapping": 523,
     "mode": "read_write",
     "name": "BedienteilBetriebsartA1M1",
     "parameter": "byte"
@@ -1027,7 +1027,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 524,
+    "mapping": 523,
     "mode": "read_write",
     "name": "BedienteilBetriebsartM2",
     "parameter": "byte"
@@ -1039,7 +1039,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 524,
+    "mapping": 523,
     "mode": "read_write",
     "name": "BedienteilBetriebsartM3",
     "parameter": "byte"
@@ -1257,7 +1257,7 @@
     "byte_len": 1,
     "byte_pos": 5,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read",
     "name": "Brennertyp",
     "parameter": "byte"
@@ -1269,7 +1269,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read",
     "name": "Brennertyp_aktuell",
     "parameter": "byte"
@@ -1407,7 +1407,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read_write",
     "name": "D2_ExtSicherheit",
     "parameter": "byte"
@@ -1759,7 +1759,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "DigitalEingang_ExtSicherheit",
     "parameter": "byte"
@@ -1783,7 +1783,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "DigitalEingang_STB",
     "parameter": "byte"
@@ -1809,7 +1809,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 618,
+    "mapping": 617,
     "mode": "read",
     "name": "DIPSchalterKAE0_10V_Pumpen",
     "parameter": "byte"
@@ -1822,7 +1822,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 619,
+    "mapping": 618,
     "mode": "read",
     "name": "DIPSchalterKAE0_10V_PumpenKR",
     "parameter": "byte"
@@ -2439,7 +2439,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 549,
+    "mapping": 548,
     "mode": "read",
     "name": "GWG_Codierstecker_BauartWW",
     "parameter": "byte"
@@ -2499,7 +2499,7 @@
     "byte_len": 1,
     "byte_pos": 3,
     "data_type": "Int",
-    "mapping": 489,
+    "mapping": 488,
     "mode": "read",
     "name": "GWG_Codierstecker_Brennertyp",
     "parameter": "byte"
@@ -3362,7 +3362,7 @@
     "byte_len": 1,
     "byte_pos": 4,
     "data_type": "Int",
-    "mapping": 628,
+    "mapping": 627,
     "mode": "read",
     "name": "GWG_Codierstecker_UV",
     "parameter": "byte"
@@ -3412,7 +3412,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 675,
+    "mapping": 674,
     "mode": "read",
     "name": "GWG_Kennung",
     "parameter": "byte"
@@ -3481,7 +3481,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 672,
+    "mapping": 671,
     "mode": "read",
     "name": "GWGReglerkennung",
     "parameter": "byte"
@@ -3493,7 +3493,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 534,
+    "mapping": 533,
     "mode": "read",
     "name": "HK_AktuelleBetriebsartA1M1",
     "parameter": "byte"
@@ -3505,7 +3505,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 534,
+    "mapping": 533,
     "mode": "read",
     "name": "HK_AktuelleBetriebsartM2",
     "parameter": "byte"
@@ -3517,7 +3517,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 534,
+    "mapping": 533,
     "mode": "read",
     "name": "HK_AktuelleBetriebsartM3",
     "parameter": "byte"
@@ -4410,7 +4410,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 639,
+    "mapping": 638,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaGWG_Uhr",
     "parameter": "byte"
@@ -4422,7 +4422,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 634,
+    "mapping": 633,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaGWG_W",
     "parameter": "byte"
@@ -4434,7 +4434,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 644,
+    "mapping": 643,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaHK1W",
     "parameter": "byte"
@@ -4446,7 +4446,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 645,
+    "mapping": 644,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaHK3",
     "parameter": "byte"
@@ -4470,7 +4470,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 636,
+    "mapping": 635,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV100KC2",
     "parameter": "byte"
@@ -4482,7 +4482,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 636,
+    "mapping": 635,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV150KB1",
     "parameter": "byte"
@@ -4494,7 +4494,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 633,
+    "mapping": 632,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV200",
     "parameter": "byte"
@@ -4506,7 +4506,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 637,
+    "mapping": 636,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV200_NR1",
     "parameter": "byte"
@@ -4518,7 +4518,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 636,
+    "mapping": 635,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV200_NR1_KW1",
     "parameter": "byte"
@@ -4530,7 +4530,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 638,
+    "mapping": 637,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV300_NR1",
     "parameter": "byte"
@@ -4542,7 +4542,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 608,
+    "mapping": 607,
     "mode": "read_write",
     "name": "K00_KonfiAnlagenschemaV300_V333",
     "parameter": "byte"
@@ -4566,7 +4566,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 652,
+    "mapping": 651,
     "mode": "read_write",
     "name": "K01_KonfiAnlagentyp",
     "parameter": "byte"
@@ -4578,7 +4578,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 652,
+    "mapping": 651,
     "mode": "read_write",
     "name": "K01_KonfiAnlagentyp_D",
     "parameter": "byte"
@@ -4590,7 +4590,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 653,
+    "mapping": 652,
     "mode": "read_write",
     "name": "K01_KonfiAnlagentypGWG",
     "parameter": "byte"
@@ -4602,7 +4602,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 652,
+    "mapping": 651,
     "mode": "read_write",
     "name": "K01_KonfiAnlagentypNRF",
     "parameter": "byte"
@@ -4626,7 +4626,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "K02_KonfiBrennertyp",
     "parameter": "byte"
@@ -4638,7 +4638,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "K02_KonfiBrennertyp_G",
     "parameter": "byte"
@@ -4650,7 +4650,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 487,
+    "mapping": 486,
     "mode": "read_write",
     "name": "K02_KonfiBrennertyp1",
     "parameter": "byte"
@@ -4674,7 +4674,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 499,
+    "mapping": 498,
     "mode": "read_write",
     "name": "K04_KonfiKesselSchalthysterese",
     "parameter": "byte"
@@ -4928,7 +4928,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 596,
+    "mapping": 595,
     "mode": "read_write",
     "name": "K0D_KonfiTSA_FunktionV100GC1",
     "parameter": "byte"
@@ -4940,7 +4940,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 597,
+    "mapping": 596,
     "mode": "read_write",
     "name": "K0D_KonfiTSA_FunktionV300",
     "parameter": "byte"
@@ -5401,7 +5401,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 521,
+    "mapping": 520,
     "mode": "read_write",
     "name": "K24_KonfiStatusWartung",
     "parameter": "byte"
@@ -5598,7 +5598,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 579,
+    "mapping": 578,
     "mode": "read_write",
     "name": "K2E_KonfiKennungAnschluss",
     "parameter": "byte"
@@ -5864,7 +5864,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 456,
+    "mapping": 455,
     "mode": "read_write",
     "name": "K3B_KonfiRegelungsart",
     "parameter": "byte"
@@ -5876,7 +5876,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 455,
+    "mapping": 454,
     "mode": "read_write",
     "name": "K3B_KonfiRegelungsart_MW2",
     "parameter": "byte"
@@ -6170,7 +6170,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 650,
+    "mapping": 649,
     "mode": "read_write",
     "name": "K4C_KonfiVerwendungAusgang20V100GC1",
     "parameter": "byte"
@@ -6206,7 +6206,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 651,
+    "mapping": 650,
     "mode": "read_write",
     "name": "K4D_KonfiVerwendungAusgang29",
     "parameter": "byte"
@@ -6266,7 +6266,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 647,
+    "mapping": 646,
     "mode": "read_write",
     "name": "K4E_KonfiVerwendungAusgang52V050",
     "parameter": "byte"
@@ -6352,7 +6352,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 587,
+    "mapping": 586,
     "mode": "read_write",
     "name": "K54_Solar",
     "parameter": "byte"
@@ -6400,7 +6400,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 494,
+    "mapping": 493,
     "mode": "read_write",
     "name": "K55_KonfiWW_Algorithmus",
     "parameter": "byte"
@@ -6412,7 +6412,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 492,
+    "mapping": 491,
     "mode": "read_write",
     "name": "K55_KonfiWW_Algorithmus_NR1",
     "parameter": "byte"
@@ -6424,7 +6424,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 468,
+    "mapping": 467,
     "mode": "read_write",
     "name": "K56_KonfiWW_SolltempBereichGWG",
     "parameter": "byte"
@@ -6436,7 +6436,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 467,
+    "mapping": 466,
     "mode": "read_write",
     "name": "K56_KonfiWW_SolltemperaturBereich",
     "parameter": "byte"
@@ -6498,7 +6498,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 566,
+    "mapping": 565,
     "mode": "read_write",
     "name": "K5B_KonfiAnbindungSpeicher",
     "parameter": "byte"
@@ -6524,7 +6524,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 545,
+    "mapping": 544,
     "mode": "read_write",
     "name": "K61_KonfiLpumpeKTabhaengig",
     "parameter": "byte"
@@ -6536,7 +6536,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 545,
+    "mapping": 544,
     "mode": "read_write",
     "name": "K61_KonfiLpumpeKTabhaengig_NR1",
     "parameter": "byte"
@@ -6600,7 +6600,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 586,
+    "mapping": 585,
     "mode": "read_write",
     "name": "K65_KonfibauartUmschaltventil",
     "parameter": "byte"
@@ -6612,7 +6612,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 629,
+    "mapping": 628,
     "mode": "read",
     "name": "K65_KonfibauartUmschaltventil_D",
     "parameter": "int"
@@ -6624,7 +6624,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 464,
+    "mapping": 463,
     "mode": "read_write",
     "name": "K66_KonfiZugriffWW_Solltemperatur",
     "parameter": "byte"
@@ -6819,7 +6819,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 626,
+    "mapping": 625,
     "mode": "read",
     "name": "K76_GWGiKommunikationsmodul_D",
     "parameter": "byte"
@@ -6831,7 +6831,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 581,
+    "mapping": 580,
     "mode": "read_write",
     "name": "K76_Kommunikationsmodul_GWG",
     "parameter": "byte"
@@ -6843,7 +6843,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 583,
+    "mapping": 582,
     "mode": "read_write",
     "name": "K76_KonfiKommunikationsmodul",
     "parameter": "byte"
@@ -6855,7 +6855,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 627,
+    "mapping": 626,
     "mode": "read",
     "name": "K76_KonfiKommunikationsmodul_D",
     "parameter": "byte"
@@ -6867,7 +6867,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 582,
+    "mapping": 581,
     "mode": "read_write",
     "name": "K76_KonfiKommunikationsmodul_mitHV",
     "parameter": "byte"
@@ -7051,7 +7051,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 523,
+    "mapping": 522,
     "mode": "read_write",
     "name": "K7C_KonfiResetAktiv",
     "parameter": "byte"
@@ -7063,7 +7063,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 522,
+    "mapping": 521,
     "mode": "read_write",
     "name": "K7C_KonfiResetAktiv1",
     "parameter": "byte"
@@ -7097,7 +7097,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 607,
+    "mapping": 606,
     "mode": "read_write",
     "name": "K7E_KonfiAbgaskaskade",
     "parameter": "byte"
@@ -7262,7 +7262,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 573,
+    "mapping": 572,
     "mode": "read_write",
     "name": "K89_KonfiKesselanbindung",
     "parameter": "byte"
@@ -7286,7 +7286,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 674,
+    "mapping": 673,
     "mode": "read_write",
     "name": "K8A_KonfiAnzeigebedingungenAktiv",
     "parameter": "byte"
@@ -7348,7 +7348,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 463,
+    "mapping": 462,
     "mode": "read_write",
     "name": "K8E_KonfiZugriffStoerungen",
     "parameter": "byte"
@@ -7500,7 +7500,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 593,
+    "mapping": 592,
     "mode": "read_write",
     "name": "K94_KonfiKennungAnschlusserweiterung",
     "parameter": "byte"
@@ -7524,7 +7524,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 592,
+    "mapping": 591,
     "mode": "read_write",
     "name": "K94_KonfiKennungSichSteckadapter",
     "parameter": "byte"
@@ -7536,7 +7536,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 598,
+    "mapping": 597,
     "mode": "read_write",
     "name": "K95_KennungDekatelM",
     "parameter": "byte"
@@ -7560,7 +7560,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 579,
+    "mapping": 578,
     "mode": "read_write",
     "name": "K96_KonfiKennungMischermodul",
     "parameter": "byte"
@@ -7572,7 +7572,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 454,
+    "mapping": 453,
     "mode": "read_write",
     "name": "K97_AussentemperaturSensorDuo",
     "parameter": "byte"
@@ -7620,7 +7620,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 625,
+    "mapping": 624,
     "mode": "read_write",
     "name": "K98_KonfiKommunikationsmodul_D",
     "parameter": "byte"
@@ -7734,7 +7734,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 579,
+    "mapping": 578,
     "mode": "read_write",
     "name": "K9D_KonfiKennungKAE0_10V",
     "parameter": "byte"
@@ -7796,7 +7796,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "KA0_KonfiKennungFernbedienungA1M1",
     "parameter": "byte"
@@ -7808,7 +7808,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "KA0_KonfiKennungFernbedienungM2",
     "parameter": "byte"
@@ -7820,7 +7820,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "KA0_KonfiKennungFernbedienungM3",
     "parameter": "byte"
@@ -8038,7 +8038,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "KA5_KonfSommersparSchaltschwelleA1M1",
     "parameter": "byte"
@@ -8050,7 +8050,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "KA5_KonfSommersparSchaltschwelleM2",
     "parameter": "byte"
@@ -8062,7 +8062,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "KA5_KonfSommersparSchaltschwelleM3",
     "parameter": "byte"
@@ -8116,7 +8116,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "KA7_KonfiMischersparfunktionM1",
     "parameter": "byte"
@@ -8128,7 +8128,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "KA7_KonfiMischersparfunktionM2",
     "parameter": "byte"
@@ -8140,7 +8140,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "KA7_KonfiMischersparfunktionM3",
     "parameter": "byte"
@@ -8152,7 +8152,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 580,
+    "mapping": 579,
     "mode": "read_write",
     "name": "KA8_KonfiWirkung_aufPumpe",
     "parameter": "byte"
@@ -8371,7 +8371,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "KB0_KonfiRaumaufschaltungA1M1",
     "parameter": "byte"
@@ -8383,7 +8383,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "KB0_KonfiRaumaufschaltungM2",
     "parameter": "byte"
@@ -8395,7 +8395,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "KB0_KonfiRaumaufschaltungM3",
     "parameter": "byte"
@@ -8749,7 +8749,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 609,
+    "mapping": 608,
     "mode": "read_write",
     "name": "KC2_KonfiLernenAusschaltA1M1",
     "parameter": "byte"
@@ -8761,7 +8761,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 609,
+    "mapping": 608,
     "mode": "read_write",
     "name": "KC2_KonfiLernenAusschaltM2",
     "parameter": "byte"
@@ -8773,7 +8773,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 609,
+    "mapping": 608,
     "mode": "read_write",
     "name": "KC2_KonfiLernenAusschaltM3",
     "parameter": "byte"
@@ -8827,7 +8827,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 457,
+    "mapping": 456,
     "mode": "read_write",
     "name": "KC4_KonfiMischerAnlagendynamikM1",
     "parameter": "byte"
@@ -8839,7 +8839,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 457,
+    "mapping": 456,
     "mode": "read_write",
     "name": "KC4_KonfiMischerAnlagendynamikM2",
     "parameter": "byte"
@@ -8851,7 +8851,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 457,
+    "mapping": 456,
     "mode": "read_write",
     "name": "KC4_KonfiMischerAnlagendynamikM3",
     "parameter": "byte"
@@ -9104,7 +9104,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 472,
+    "mapping": 471,
     "mode": "read_write",
     "name": "KCA_KonfiDrehrichtungHeizkreisMischerM1_HK1M",
     "parameter": "byte"
@@ -9312,7 +9312,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "KD5_KonfiWirkungExtBA_UmschaltungA1M1",
     "parameter": "byte"
@@ -9324,7 +9324,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "KD5_KonfiWirkungExtBA_UmschaltungM2",
     "parameter": "byte"
@@ -9336,7 +9336,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "KD5_KonfiWirkungExtBA_UmschaltungM3",
     "parameter": "byte"
@@ -9348,7 +9348,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "KD5_WirkungExtBA_UmschaltungA1M1",
     "parameter": "byte"
@@ -9360,7 +9360,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "KD5_WirkungExtBA_UmschaltungM2",
     "parameter": "byte"
@@ -9372,7 +9372,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "KD5_WirkungExtBA_UmschaltungM3",
     "parameter": "byte"
@@ -9384,7 +9384,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 469,
+    "mapping": 468,
     "mode": "read_write",
     "name": "KE1_KonfiOffsetRT_SolltemperaturA1M1",
     "parameter": "byte"
@@ -9396,7 +9396,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 469,
+    "mapping": 468,
     "mode": "read_write",
     "name": "KE1_KonfiOffsetRT_SolltemperaturM2",
     "parameter": "byte"
@@ -9408,7 +9408,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 469,
+    "mapping": 468,
     "mode": "read_write",
     "name": "KE1_KonfiOffsetRT_SolltemperaturM3",
     "parameter": "byte"
@@ -11566,7 +11566,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 564,
+    "mapping": 563,
     "mode": "read",
     "name": "KS_Karte_GWG_Typ1",
     "parameter": "byte"
@@ -11655,7 +11655,7 @@
     "byte_len": 1,
     "byte_pos": 8,
     "data_type": "Int",
-    "mapping": 500,
+    "mapping": 499,
     "mode": "read",
     "name": "KS_Karte_KonfiKesselschalthysterese",
     "parameter": "byte"
@@ -12629,7 +12629,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 655,
+    "mapping": 654,
     "mode": "write",
     "name": "NRF_AusgaengeNeutral",
     "parameter": "int"
@@ -12654,7 +12654,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 552,
+    "mapping": 551,
     "mode": "read",
     "name": "NRF_Aussentemperatur_Fehler",
     "parameter": "byte"
@@ -13251,7 +13251,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 534,
+    "mapping": 533,
     "mode": "read",
     "name": "NRF_HK_AktuelleBetriebsartM2",
     "parameter": "byte"
@@ -13679,7 +13679,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 571,
+    "mapping": 570,
     "mode": "read_write",
     "name": "NRF_K17_KonfiFoerdertechnik",
     "parameter": "byte"
@@ -14095,7 +14095,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 544,
+    "mapping": 543,
     "mode": "read",
     "name": "NRF_K3C_KonfiSchaltbedingungUV",
     "parameter": "byte"
@@ -14231,7 +14231,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 610,
+    "mapping": 609,
     "mode": "read_write",
     "name": "NRF_K4A_KonfiPufferladefunktion",
     "parameter": "byte"
@@ -14393,7 +14393,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 466,
+    "mapping": 465,
     "mode": "read_write",
     "name": "NRF_K56_KonfiWW_SolltemperaturBereich",
     "parameter": "byte"
@@ -14529,7 +14529,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 577,
+    "mapping": 576,
     "mode": "read_write",
     "name": "NRF_K65_KonfiWaermetraegermedium",
     "parameter": "byte"
@@ -14681,7 +14681,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 595,
+    "mapping": 594,
     "mode": "read_write",
     "name": "NRF_K76_KonfiKommunikationsmodul",
     "parameter": "byte"
@@ -14693,7 +14693,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 667,
+    "mapping": 666,
     "mode": "read_write",
     "name": "NRF_K7C_KonfiResetAktiv",
     "parameter": "byte"
@@ -14824,7 +14824,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 589,
+    "mapping": 588,
     "mode": "read_write",
     "name": "NRF_K94_KonfiKM_Mischer1",
     "parameter": "byte"
@@ -14836,7 +14836,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 589,
+    "mapping": 588,
     "mode": "read_write",
     "name": "NRF_K96_KonfiKM_Mischer2",
     "parameter": "byte"
@@ -14884,7 +14884,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 579,
+    "mapping": 578,
     "mode": "read_write",
     "name": "NRF_K9E_KonfiATSVorhanden",
     "parameter": "byte"
@@ -14896,7 +14896,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 490,
+    "mapping": 489,
     "mode": "read_write",
     "name": "NRF_KAA_KonfiAnfahrentlastungA1M1",
     "parameter": "byte"
@@ -14908,7 +14908,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 490,
+    "mapping": 489,
     "mode": "read_write",
     "name": "NRF_KAA_KonfiAnfahrentlastungM2",
     "parameter": "byte"
@@ -15152,7 +15152,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 635,
+    "mapping": 634,
     "mode": "read",
     "name": "NRF_KTInfo_KonfiAnlagenschema",
     "parameter": "byte"
@@ -15619,7 +15619,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_ATS",
     "parameter": "byte"
@@ -15631,7 +15631,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_PTSO",
     "parameter": "byte"
@@ -15643,7 +15643,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_PTSU",
     "parameter": "byte"
@@ -15655,7 +15655,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 551,
+    "mapping": 550,
     "mode": "read",
     "name": "NRF_TemperaturFehler_REF",
     "parameter": "byte"
@@ -15667,7 +15667,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 551,
+    "mapping": 550,
     "mode": "read",
     "name": "NRF_TemperaturFehler_RTS_M1",
     "parameter": "byte"
@@ -15679,7 +15679,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 551,
+    "mapping": 550,
     "mode": "read",
     "name": "NRF_TemperaturFehler_RTS_M2",
     "parameter": "byte"
@@ -15691,7 +15691,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_STS",
     "parameter": "byte"
@@ -15703,7 +15703,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_STSSOL",
     "parameter": "byte"
@@ -15715,7 +15715,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_VTSM1",
     "parameter": "byte"
@@ -15727,7 +15727,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "NRF_TemperaturFehler_VTSM2",
     "parameter": "byte"
@@ -15877,7 +15877,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 576,
+    "mapping": 575,
     "mode": "read_write",
     "name": "NRF_WW_Freigabe",
     "parameter": "byte"
@@ -16134,7 +16134,7 @@
     "byte_len": 1,
     "byte_pos": 5,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "nviBoCState_BurnerState_PM_Boiler1",
     "parameter": "byte"
@@ -16146,7 +16146,7 @@
     "byte_len": 1,
     "byte_pos": 5,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "nviBoCState_BurnerState_PM_Boiler2",
     "parameter": "byte"
@@ -16158,7 +16158,7 @@
     "byte_len": 1,
     "byte_pos": 5,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "nviBoCState_BurnerState_PM_Boiler3",
     "parameter": "byte"
@@ -16170,7 +16170,7 @@
     "byte_len": 1,
     "byte_pos": 5,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "nviBoCState_BurnerState_PM_Boiler4",
     "parameter": "byte"
@@ -17647,7 +17647,7 @@
     "byte_len": 1,
     "byte_pos": 5,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read",
     "name": "nvoBoCState_BurnerState_BLR",
     "parameter": "byte"
@@ -19753,7 +19753,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 479,
+    "mapping": 478,
     "mode": "read",
     "name": "SC100_digitale_Eingaenge1_b6",
     "parameter": "byte"
@@ -19779,7 +19779,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 460,
+    "mapping": 459,
     "mode": "read",
     "name": "SC100_digitale_Eingaenge2_b0",
     "parameter": "byte"
@@ -19792,7 +19792,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 460,
+    "mapping": 459,
     "mode": "read",
     "name": "SC100_digitale_Eingaenge2_b1",
     "parameter": "byte"
@@ -19805,7 +19805,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 460,
+    "mapping": 459,
     "mode": "read",
     "name": "SC100_digitale_Eingaenge2_b2",
     "parameter": "byte"
@@ -19818,7 +19818,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 460,
+    "mapping": 459,
     "mode": "read",
     "name": "SC100_digitale_Eingaenge2_b3",
     "parameter": "byte"
@@ -20541,7 +20541,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "Status_17_M2",
     "parameter": "byte"
@@ -20553,7 +20553,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "Status_17_M3",
     "parameter": "byte"
@@ -20565,7 +20565,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "Status_2_M2",
     "parameter": "byte"
@@ -20577,7 +20577,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "Status_2_M3",
     "parameter": "byte"
@@ -21067,7 +21067,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_17_NR1",
     "parameter": "byte"
@@ -21079,7 +21079,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_2",
     "parameter": "byte"
@@ -21091,7 +21091,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_2_M1",
     "parameter": "byte"
@@ -21103,7 +21103,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 437,
+    "mapping": 436,
     "mode": "read",
     "name": "TemperaturFehler_2_NR1",
     "parameter": "byte"
@@ -21115,7 +21115,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_AGTS",
     "parameter": "byte"
@@ -21127,7 +21127,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 436,
+    "mapping": 435,
     "mode": "read",
     "name": "TemperaturFehler_ATS",
     "parameter": "byte"
@@ -21139,7 +21139,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_KTS",
     "parameter": "byte"
@@ -21151,7 +21151,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 473,
+    "mapping": 472,
     "mode": "read",
     "name": "TemperaturFehler_REF",
     "parameter": "byte"
@@ -21163,7 +21163,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_RLTS",
     "parameter": "byte"
@@ -21175,7 +21175,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_STS1",
     "parameter": "byte"
@@ -21187,7 +21187,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_STS2",
     "parameter": "byte"
@@ -21199,7 +21199,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_VLTS",
     "parameter": "byte"
@@ -21510,7 +21510,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 559,
+    "mapping": 558,
     "mode": "read",
     "name": "Umschaltventil",
     "parameter": "byte"
@@ -21901,7 +21901,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 475,
+    "mapping": 474,
     "mode": "read_write",
     "name": "WPR_Anlagenkonfig_BA_Umschaltung_Wirkung",
     "parameter": "int"
@@ -22479,7 +22479,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 643,
+    "mapping": 642,
     "mode": "read_write",
     "name": "WPR_eHeizung_max_Stufe_Elektro",
     "parameter": "int"
@@ -23523,7 +23523,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 530,
+    "mapping": 529,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_HK1",
     "parameter": "byte"
@@ -23535,7 +23535,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 528,
+    "mapping": 527,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_HK2",
     "parameter": "byte"
@@ -23547,7 +23547,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 528,
+    "mapping": 527,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_HK3",
     "parameter": "byte"
@@ -23559,7 +23559,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 532,
+    "mapping": 531,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_HW_Pufferspeicher",
     "parameter": "byte"
@@ -23571,7 +23571,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 452,
+    "mapping": 451,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_Kuehlkreis",
     "parameter": "byte"
@@ -23583,7 +23583,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 452,
+    "mapping": 451,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_resultHeizKreisanforderung",
     "parameter": "byte"
@@ -23595,7 +23595,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 533,
+    "mapping": 532,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_Schwimmbad",
     "parameter": "byte"
@@ -23607,7 +23607,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 452,
+    "mapping": 451,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_Warmwasser",
     "parameter": "byte"
@@ -23619,7 +23619,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 533,
+    "mapping": 532,
     "mode": "read",
     "name": "WPR_GueltBetriebsart_ZentrAnforderung",
     "parameter": "byte"
@@ -23631,7 +23631,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_HK1",
     "parameter": "byte"
@@ -23643,7 +23643,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_HK2",
     "parameter": "byte"
@@ -23655,7 +23655,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_HK3",
     "parameter": "byte"
@@ -23667,7 +23667,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_HW_Pufferspeicher",
     "parameter": "byte"
@@ -23679,7 +23679,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_Kuehlkreis",
     "parameter": "byte"
@@ -23691,7 +23691,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_resultHeizKreisanforderung",
     "parameter": "byte"
@@ -23703,7 +23703,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_Schwimmbad",
     "parameter": "byte"
@@ -23715,7 +23715,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_Warmwasser",
     "parameter": "byte"
@@ -23727,7 +23727,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 451,
+    "mapping": 450,
     "mode": "read",
     "name": "WPR_GueltBetriebsmodus_ZentrAnforderung",
     "parameter": "byte"
@@ -24141,7 +24141,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 444,
+    "mapping": 443,
     "mode": "read_write",
     "name": "WPR_HeizSpeicher_Wtimer_Puffer",
     "parameter": "s_int"
@@ -24322,7 +24322,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 540,
+    "mapping": 539,
     "mode": "read_write",
     "name": "WPR_HK1_Betriebsart_Heizkreis",
     "parameter": "byte"
@@ -24569,7 +24569,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 585,
+    "mapping": 584,
     "mode": "read_write",
     "name": "WPR_HK1_Raumtemperaturaufschaltung",
     "parameter": "int"
@@ -24664,7 +24664,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 475,
+    "mapping": 474,
     "mode": "read_write",
     "name": "WPR_HK1_WTimer_HK",
     "parameter": "s_int"
@@ -24688,7 +24688,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 540,
+    "mapping": 539,
     "mode": "read_write",
     "name": "WPR_HK2_Betriebsart_Heizkreis",
     "parameter": "int"
@@ -24923,7 +24923,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 585,
+    "mapping": 584,
     "mode": "read_write",
     "name": "WPR_HK2_Raumtemperaturaufschaltung",
     "parameter": "int"
@@ -25018,7 +25018,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 475,
+    "mapping": 474,
     "mode": "read_write",
     "name": "WPR_HK2_WTimer_HK",
     "parameter": "s_int"
@@ -25042,7 +25042,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 540,
+    "mapping": 539,
     "mode": "read_write",
     "name": "WPR_HK3_Betriebsart_Heizkreis",
     "parameter": "int"
@@ -25276,7 +25276,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 585,
+    "mapping": 584,
     "mode": "read_write",
     "name": "WPR_HK3_Raumtemperaturaufschaltung",
     "parameter": "int"
@@ -25371,7 +25371,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 475,
+    "mapping": 474,
     "mode": "read_write",
     "name": "WPR_HK3_WTimer_HK",
     "parameter": "s_int"
@@ -28090,7 +28090,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_DigitalScroll",
     "parameter": "byte"
@@ -28103,7 +28103,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_ECVPosition",
     "parameter": "byte"
@@ -28116,7 +28116,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_EVIPosition",
     "parameter": "byte"
@@ -28129,7 +28129,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_EVIVentil",
     "parameter": "byte"
@@ -28142,7 +28142,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_FreigabeEEVRegelung",
     "parameter": "byte"
@@ -28155,7 +28155,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_FreigabeEVIRegelung",
     "parameter": "byte"
@@ -28168,7 +28168,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_HeizenKuehlen",
     "parameter": "byte"
@@ -28181,7 +28181,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV1_Verdichter",
     "parameter": "byte"
@@ -28194,7 +28194,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_DigitalScroll",
     "parameter": "byte"
@@ -28207,7 +28207,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_ECVPosition",
     "parameter": "byte"
@@ -28220,7 +28220,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_EVIPosition",
     "parameter": "byte"
@@ -28233,7 +28233,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_EVIVentil",
     "parameter": "byte"
@@ -28246,7 +28246,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_FreigabeEEVRegelung",
     "parameter": "byte"
@@ -28259,7 +28259,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_FreigabeEVIRegelung",
     "parameter": "byte"
@@ -28272,7 +28272,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_HeizenKuehlen",
     "parameter": "byte"
@@ -28285,7 +28285,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_EEV2_Verdichter",
     "parameter": "byte"
@@ -28337,7 +28337,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_extWaermeerzeuger_MischerZU",
     "parameter": "byte"
@@ -28350,7 +28350,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_Fernbed1_StoerLED",
     "parameter": "byte"
@@ -28363,7 +28363,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_Fernbed2_StoerLED",
     "parameter": "byte"
@@ -28376,7 +28376,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_Fernbed3_StoerLED",
     "parameter": "byte"
@@ -28389,7 +28389,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_FLGasMagnetventil_V1",
     "parameter": "byte"
@@ -28402,7 +28402,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_FLGasMagnetventil_V2",
     "parameter": "byte"
@@ -28454,7 +28454,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_FolgeWP4_Kaskade",
     "parameter": "byte"
@@ -28519,7 +28519,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_M2_MischerAUF",
     "parameter": "byte"
@@ -28545,7 +28545,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_M3_MischerAUF",
     "parameter": "byte"
@@ -28558,7 +28558,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_M3_MischerZU",
     "parameter": "byte"
@@ -28584,7 +28584,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_MischerZU_Relaistest",
     "parameter": "byte"
@@ -28610,7 +28610,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_NCueberHK_MischerAUF",
     "parameter": "byte"
@@ -28623,7 +28623,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_NCueberHK_MischerZU",
     "parameter": "byte"
@@ -28649,7 +28649,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_Sammelstoerung",
     "parameter": "byte"
@@ -28779,7 +28779,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 433,
+    "mapping": 432,
     "mode": "read",
     "name": "WPR_RelaisStatus_WW_Ladung_2terSollwert",
     "parameter": "byte"
@@ -30190,7 +30190,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 478,
+    "mapping": 477,
     "mode": "read",
     "name": "WPR_Schalter_Anode",
     "parameter": "byte"
@@ -30202,7 +30202,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_DINachladeunterdrueckungWW",
     "parameter": "byte"
@@ -30214,7 +30214,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_EEV1_DIFreigabeEEVRegelung",
     "parameter": "byte"
@@ -30226,7 +30226,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_EEV1_DIHeizen_Kuehlen",
     "parameter": "byte"
@@ -30238,7 +30238,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_EEV2_DIFreigabeEEVRegelung",
     "parameter": "byte"
@@ -30250,7 +30250,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_EEV2_DIHeizen_Kuehlen",
     "parameter": "byte"
@@ -30262,7 +30262,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Eheizstab1_Sicherheitstemperaturbegrenzer",
     "parameter": "byte"
@@ -30274,7 +30274,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Eheizstab2_Sicherheitstemperaturbegrenzer",
     "parameter": "byte"
@@ -30286,7 +30286,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Eheizstab3_Sicherheitstemperaturbegrenzer",
     "parameter": "byte"
@@ -30298,7 +30298,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_eNetz_Verdichter",
     "parameter": "byte"
@@ -30310,7 +30310,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_EVU_Sperre_eHeizstab",
     "parameter": "byte"
@@ -30322,7 +30322,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_ExtAnforderungSchwimmbadBAUmschaltung",
     "parameter": "byte"
@@ -30334,7 +30334,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_ExternSperren",
     "parameter": "byte"
@@ -30346,7 +30346,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Kaeltekreis",
     "parameter": "byte"
@@ -30358,7 +30358,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Motor1",
     "parameter": "byte"
@@ -30370,7 +30370,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Motor2",
     "parameter": "byte"
@@ -30382,7 +30382,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Niederdruck_Verdichter1",
     "parameter": "byte"
@@ -30394,7 +30394,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Niederdruck_Verdichter2",
     "parameter": "byte"
@@ -30406,7 +30406,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Phasenwaechter",
     "parameter": "byte"
@@ -30418,7 +30418,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Primaerquelle1_Soledruck",
     "parameter": "byte"
@@ -30430,7 +30430,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Primaerquelle2_Soledruck",
     "parameter": "byte"
@@ -30442,7 +30442,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Regelhochdruck_Verdichter1",
     "parameter": "byte"
@@ -30454,7 +30454,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Regelhochdruck_Verdichter2",
     "parameter": "byte"
@@ -30466,7 +30466,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_SicherheitsHochdruck_Verdichter1",
     "parameter": "byte"
@@ -30478,7 +30478,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_SicherheitsHochdruck_Verdichter2",
     "parameter": "byte"
@@ -30490,7 +30490,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Sicherheitskette",
     "parameter": "byte"
@@ -30502,7 +30502,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Stoermeldung_FolgeWP",
     "parameter": "byte"
@@ -30514,7 +30514,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Stroemungssensor",
     "parameter": "byte"
@@ -30526,7 +30526,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 477,
+    "mapping": 476,
     "mode": "read",
     "name": "WPR_Schalter_Verdichter",
     "parameter": "byte"
@@ -30538,7 +30538,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Anode",
     "parameter": "byte"
@@ -30550,7 +30550,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_DINachladeunterdrueckungWW",
     "parameter": "byte"
@@ -30562,7 +30562,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_EEV1_DIFreigabeEEVRegelung",
     "parameter": "byte"
@@ -30574,7 +30574,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_EEV1_DIHeizen_Kuehlen",
     "parameter": "byte"
@@ -30586,7 +30586,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_EEV2_DIFreigabeEEVRegelung",
     "parameter": "byte"
@@ -30598,7 +30598,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_EEV2_DIHeizen_Kuehlen",
     "parameter": "byte"
@@ -30610,7 +30610,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Eheizstab1_Sicherheitstemperaturbegrenzer",
     "parameter": "byte"
@@ -30622,7 +30622,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Eheizstab2_Sicherheitstemperaturbegrenzer",
     "parameter": "byte"
@@ -30634,7 +30634,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Eheizstab3_Sicherheitstemperaturbegrenzer",
     "parameter": "byte"
@@ -30646,7 +30646,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_eNetz_Verdichter",
     "parameter": "byte"
@@ -30658,7 +30658,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_EVU_Sperre",
     "parameter": "byte"
@@ -30670,7 +30670,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_ExtAnforderungSchwimmbadBAUmschaltung",
     "parameter": "byte"
@@ -30682,7 +30682,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_ExternSperren",
     "parameter": "byte"
@@ -30694,7 +30694,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Kaeltekreis",
     "parameter": "byte"
@@ -30706,7 +30706,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Motor1",
     "parameter": "byte"
@@ -30718,7 +30718,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Motor2",
     "parameter": "byte"
@@ -30730,7 +30730,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Niederdruck_Verdichter1",
     "parameter": "byte"
@@ -30742,7 +30742,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Niederdruck_Verdichter2",
     "parameter": "byte"
@@ -30754,7 +30754,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Phasenwaechter",
     "parameter": "byte"
@@ -30766,7 +30766,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Primaerquelle1_Soledruck",
     "parameter": "byte"
@@ -30778,7 +30778,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Primaerquelle2",
     "parameter": "byte"
@@ -30790,7 +30790,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Regelhochdruck_Verdichter1",
     "parameter": "byte"
@@ -30802,7 +30802,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Regelhochdruck_Verdichter2",
     "parameter": "byte"
@@ -30814,7 +30814,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Sicherheitshochdruck_Verdichter1",
     "parameter": "byte"
@@ -30826,7 +30826,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Sicherheitshochdruck_Verdichter2",
     "parameter": "byte"
@@ -30838,7 +30838,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Sicherheitskette",
     "parameter": "byte"
@@ -30850,7 +30850,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Stoermeldung_FolgeWP",
     "parameter": "byte"
@@ -30862,7 +30862,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Stroemungssensor",
     "parameter": "byte"
@@ -30874,7 +30874,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SchalterStatus_Verdichter",
     "parameter": "byte"
@@ -30958,7 +30958,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorDruckStatus_EEV_EVISaugdruck1",
     "parameter": "byte"
@@ -30970,7 +30970,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorDruckStatus_EEV_EVISaugdruck2",
     "parameter": "byte"
@@ -30982,7 +30982,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorDruckStatus_EEV_Kondensatordruck1",
     "parameter": "byte"
@@ -30994,7 +30994,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorDruckStatus_EEV_Kondensatordruck2",
     "parameter": "byte"
@@ -31006,7 +31006,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorDruckStatus_EEV_Saugdruck1",
     "parameter": "byte"
@@ -31018,7 +31018,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorDruckStatus_EEV_Saugdruck2",
     "parameter": "byte"
@@ -31090,7 +31090,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorPositionStatus_ECV_1",
     "parameter": "byte"
@@ -31102,7 +31102,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorPositionStatus_ECV_2",
     "parameter": "byte"
@@ -31114,7 +31114,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorPositionStatus_Eingang_ext_AE",
     "parameter": "byte"
@@ -31126,7 +31126,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorPositionStatus_EVI_1",
     "parameter": "byte"
@@ -31138,7 +31138,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorPositionStatus_EVI_2",
     "parameter": "byte"
@@ -31150,7 +31150,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Anlagenvorlauftemperatur",
     "parameter": "byte"
@@ -31162,7 +31162,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_ATS",
     "parameter": "byte"
@@ -31174,7 +31174,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_EVI_Sauggastemperatur_EEV1",
     "parameter": "byte"
@@ -31186,7 +31186,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_EVI_Sauggastemperatur_EEV2",
     "parameter": "byte"
@@ -31198,7 +31198,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Fluessiggastemperatur_EEV1",
     "parameter": "byte"
@@ -31210,7 +31210,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Fluessiggastemperatur_EEV2",
     "parameter": "byte"
@@ -31222,7 +31222,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Heissgastemperatur_EEV1",
     "parameter": "byte"
@@ -31234,7 +31234,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Heissgastemperatur_EEV2",
     "parameter": "byte"
@@ -31246,7 +31246,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Heissgastemperatur1",
     "parameter": "byte"
@@ -31258,7 +31258,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Heissgastemperatur2",
     "parameter": "byte"
@@ -31270,7 +31270,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_HeizwasserPufferspeichertemperatur",
     "parameter": "byte"
@@ -31282,7 +31282,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Kollektortemperatur_Solar",
     "parameter": "byte"
@@ -31294,7 +31294,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Mediumtemperatur_extWaermeerzeuger",
     "parameter": "byte"
@@ -31306,7 +31306,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumsolltemperatur_HK_A1_Vitocom100",
     "parameter": "byte"
@@ -31318,7 +31318,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumsolltemperatur_HK_M2_Vitocom100",
     "parameter": "byte"
@@ -31330,7 +31330,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumsolltemperatur_HK_M3_Vitocom100",
     "parameter": "byte"
@@ -31342,7 +31342,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumtemperatur_HK_A1_Vitotrol",
     "parameter": "byte"
@@ -31354,7 +31354,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumtemperatur_HK_M2_Vitotrol",
     "parameter": "byte"
@@ -31366,7 +31366,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumtemperatur_HK_M3_Vitotrol",
     "parameter": "byte"
@@ -31378,7 +31378,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Raumtemperatur_NatCooling",
     "parameter": "byte"
@@ -31390,7 +31390,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 482,
+    "mapping": 481,
     "mode": "read",
     "name": "WPR_SensorStatus_Ruecklauf_Primaer",
     "parameter": "byte"
@@ -31402,7 +31402,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Ruecklauftemperatur_Solar",
     "parameter": "byte"
@@ -31414,7 +31414,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Ruecklauftemperatur1_Sek",
     "parameter": "byte"
@@ -31426,7 +31426,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Ruecklauftemperatur2_Sek",
     "parameter": "byte"
@@ -31438,7 +31438,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Sauggastemperatur_EEV1",
     "parameter": "byte"
@@ -31450,7 +31450,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Sauggastemperatur_EEV2",
     "parameter": "byte"
@@ -31462,7 +31462,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Speichertemperatur_SolarmodulVitosolic",
     "parameter": "byte"
@@ -31474,7 +31474,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Verdampfer",
     "parameter": "byte"
@@ -31486,7 +31486,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Vorlauf_Primaer",
     "parameter": "byte"
@@ -31498,7 +31498,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Vorlauftemperatur_HK_M2",
     "parameter": "byte"
@@ -31510,7 +31510,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Vorlauftemperatur_HK_M3",
     "parameter": "byte"
@@ -31522,7 +31522,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Vorlauftemperatur_NatCoolingHKxx",
     "parameter": "byte"
@@ -31534,7 +31534,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Vorlauftemperatur_NatCoolingKreis",
     "parameter": "byte"
@@ -31546,7 +31546,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_Vorlauftemperatur_Sek",
     "parameter": "byte"
@@ -31558,7 +31558,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_WW_TemperaturAusgang",
     "parameter": "byte"
@@ -31570,7 +31570,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_WW_TemperaturMitte",
     "parameter": "byte"
@@ -31582,7 +31582,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_WW_TemperaturOben",
     "parameter": "byte"
@@ -31594,7 +31594,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_SensorStatus_WW_TemperaturUnten",
     "parameter": "byte"
@@ -31756,7 +31756,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 569,
+    "mapping": 568,
     "mode": "read_write",
     "name": "WPR_SepNCKreis_NatCooling_RaumTempSens_Rangierung",
     "parameter": "int"
@@ -31829,7 +31829,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 630,
+    "mapping": 629,
     "mode": "read_write",
     "name": "WPR_Solaranlage",
     "parameter": "int"
@@ -33338,7 +33338,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 474,
+    "mapping": 473,
     "mode": "read_write",
     "name": "WPR_WW_Betriebsart",
     "parameter": "int"
@@ -34170,7 +34170,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 678,
+    "mapping": 677,
     "mode": "read_write",
     "name": "GWG_K_Kennung",
     "parameter": "byte"
@@ -34267,7 +34267,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 640,
+    "mapping": 639,
     "mode": "read_write",
     "name": "WPR_SepNCKreis_NatCooling_Kuehlkreis",
     "parameter": "int"
@@ -34279,7 +34279,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 525,
+    "mapping": 524,
     "mode": "read_write",
     "name": "BedienteilBA_GWGM3",
     "parameter": "byte"
@@ -34494,7 +34494,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 600,
+    "mapping": 599,
     "mode": "read_write",
     "name": "K32_GWG_Kennung_AM1",
     "parameter": "byte"
@@ -34518,7 +34518,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 601,
+    "mapping": 600,
     "mode": "read_write",
     "name": "K35_GWG_Kennung_EA1",
     "parameter": "byte"
@@ -34604,7 +34604,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "K5E_GWG_Ext_Sperren_SLP",
     "parameter": "byte"
@@ -34616,7 +34616,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "K5F_GWG_Ext_Anfordern_SLP",
     "parameter": "byte"
@@ -34628,7 +34628,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "K3E_GWG_Funktion_intPumpe_ExtSperren",
     "parameter": "byte"
@@ -34640,7 +34640,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "K3F_GWG_Funktion_intPumpe_ExtAnforder",
     "parameter": "byte"
@@ -34764,7 +34764,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 588,
+    "mapping": 587,
     "mode": "read_write",
     "name": "K54_Solar_GWG_2010",
     "parameter": "byte"
@@ -34853,7 +34853,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "KD6_GWG_HKP1_Funktion_ExtSperren",
     "parameter": "byte"
@@ -34865,7 +34865,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "KD6_GWG_HKP2_Funktion_ExtSperren",
     "parameter": "byte"
@@ -34877,7 +34877,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "KD6_GWG_HKP3_Funktion_ExtSperren",
     "parameter": "byte"
@@ -34889,7 +34889,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "KD7_GWG_HKP1_Funktion_ExtAnforderung",
     "parameter": "byte"
@@ -34901,7 +34901,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "KD7_GWG_HKP2_Funktion_ExtAnforderung",
     "parameter": "byte"
@@ -34913,7 +34913,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 465,
+    "mapping": 464,
     "mode": "read_write",
     "name": "KD7_GWG_HKP3_Funktion_ExtAnforderung",
     "parameter": "byte"
@@ -34961,7 +34961,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 631,
+    "mapping": 630,
     "mode": "read_write",
     "name": "K35_Konfi_AnzahlKessel_D",
     "parameter": "byte"
@@ -35281,7 +35281,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 532,
+    "mapping": 531,
     "mode": "read",
     "name": "WPR_WO1H_GueltBetriebsmodusWW",
     "parameter": "int"
@@ -35332,7 +35332,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 532,
+    "mapping": 531,
     "mode": "read",
     "name": "WPR_WO1H_GueltBetriebsmodus_Pufferspeicher",
     "parameter": "int"
@@ -35420,7 +35420,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 533,
+    "mapping": 532,
     "mode": "read",
     "name": "WPR_WO1H_GueltBetriebsmodus_Schwimmbad",
     "parameter": "int"
@@ -35850,7 +35850,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_WO1H_RaumTempHK1_SensorStatus",
     "parameter": "byte"
@@ -35863,7 +35863,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_WO1H_RaumTempHK2_SensorStatus",
     "parameter": "byte"
@@ -35876,7 +35876,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_WO1H_RaumTempHK3_SensorStatus",
     "parameter": "byte"
@@ -35889,7 +35889,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_WO1H_RaumTemp_NatCooling_SensorStatus",
     "parameter": "byte"
@@ -35902,7 +35902,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR_WO1H_VorlaufTempKuehlung_SensorStatus",
     "parameter": "byte"
@@ -35915,7 +35915,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 623,
+    "mapping": 622,
     "mode": "read_write",
     "name": "WPR_WO1H_HK2_Betriebsart",
     "parameter": "byte"
@@ -35928,7 +35928,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 623,
+    "mapping": 622,
     "mode": "read_write",
     "name": "WPR_WO1H_HK3_Betriebsart",
     "parameter": "byte"
@@ -35941,7 +35941,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 623,
+    "mapping": 622,
     "mode": "read_write",
     "name": "WPR_WO1H_HK1_Betriebsart",
     "parameter": "byte"
@@ -35965,7 +35965,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 444,
+    "mapping": 443,
     "mode": "read_write",
     "name": "WPR_WO1H_HeizSpeicher_BasisNiveau_Puffer",
     "parameter": "int"
@@ -36143,7 +36143,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 676,
+    "mapping": 675,
     "mode": "read",
     "name": "GWGReglerkennung2010",
     "parameter": "byte"
@@ -37052,7 +37052,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 480,
+    "mapping": 479,
     "mode": "read_write",
     "name": "nci-net-config",
     "parameter": "byte"
@@ -38213,7 +38213,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 563,
+    "mapping": 562,
     "mode": "read",
     "name": "KS_Karte_GWG_Typ2",
     "parameter": "byte"
@@ -38225,7 +38225,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 677,
+    "mapping": 676,
     "mode": "read",
     "name": "GWG_2010_Kennung",
     "parameter": "byte"
@@ -38916,7 +38916,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 614,
+    "mapping": 613,
     "mode": "read",
     "name": "SC100_Auftragsflag_0",
     "parameter": "byte"
@@ -38929,7 +38929,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 616,
+    "mapping": 615,
     "mode": "read",
     "name": "SC100_Auftragsflag_2",
     "parameter": "byte"
@@ -39537,7 +39537,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 491,
+    "mapping": 490,
     "mode": "read_write",
     "name": "SM1_K02_Drehzahlsteuerung",
     "parameter": "int"
@@ -39597,7 +39597,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 624,
+    "mapping": 623,
     "mode": "read_write",
     "name": "SM1_K0E_Funktionskontrolle_Solarertrag",
     "parameter": "int"
@@ -39717,7 +39717,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 462,
+    "mapping": 461,
     "mode": "read_write",
     "name": "SM1_K26_Pendelladung",
     "parameter": "int"
@@ -39795,7 +39795,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_ATS",
     "parameter": "byte"
@@ -39821,7 +39821,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Vorlauftemp_Primaerquelle",
     "parameter": "byte"
@@ -39847,7 +39847,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 482,
+    "mapping": 481,
     "mode": "read",
     "name": "WPR3_SensorStatus_Ruecklauftemp_Primaerquelle",
     "parameter": "byte"
@@ -39873,7 +39873,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Sek_Vorlauf",
     "parameter": "byte"
@@ -39899,7 +39899,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Sek_Ruecklauf_1",
     "parameter": "byte"
@@ -39925,7 +39925,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Sek_Ruecklauf_2",
     "parameter": "byte"
@@ -39951,7 +39951,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Verdampfertemperatur",
     "parameter": "byte"
@@ -39977,7 +39977,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Heissgastemperatur_1",
     "parameter": "byte"
@@ -40003,7 +40003,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Heissgastemperatur_2",
     "parameter": "byte"
@@ -40029,7 +40029,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Anlagenvorlauf",
     "parameter": "byte"
@@ -40055,7 +40055,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Pufferspeichertemperatur",
     "parameter": "byte"
@@ -40081,7 +40081,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_WW_Temperatur_Oben",
     "parameter": "byte"
@@ -40107,7 +40107,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_WW_Temperatur_Unten",
     "parameter": "byte"
@@ -40133,7 +40133,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_WW_Temperatur_Mitte",
     "parameter": "int"
@@ -40159,7 +40159,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_WW_Temperatur_Ausgang",
     "parameter": "byte"
@@ -40185,7 +40185,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Ext_WE",
     "parameter": "byte"
@@ -40211,7 +40211,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Kollektortemperatur_Solar",
     "parameter": "byte"
@@ -40237,7 +40237,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Ruecklauftemp_Solar",
     "parameter": "byte"
@@ -40263,7 +40263,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Speichertemp_Solar",
     "parameter": "byte"
@@ -40289,7 +40289,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Vorlauftemp_HK2",
     "parameter": "byte"
@@ -40315,7 +40315,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Vorlauftemp_HK3",
     "parameter": "byte"
@@ -40341,7 +40341,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Raumsolltemp_HK1",
     "parameter": "byte"
@@ -40367,7 +40367,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Raumsolltemp_HK2",
     "parameter": "byte"
@@ -40393,7 +40393,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Raumsolltemp_HK3",
     "parameter": "byte"
@@ -40419,7 +40419,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV1_Heissgastemperatur",
     "parameter": "byte"
@@ -40445,7 +40445,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV2_Heissgastemperatur",
     "parameter": "byte"
@@ -40471,7 +40471,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV1_Sauggastemperatur",
     "parameter": "byte"
@@ -40497,7 +40497,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV2_Sauggastemperatur",
     "parameter": "byte"
@@ -40523,7 +40523,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV1_Fluessiggastemperatur",
     "parameter": "byte"
@@ -40549,7 +40549,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV2_Fluessiggastemperatur",
     "parameter": "byte"
@@ -40574,7 +40574,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV_Kondensatordruck1",
     "parameter": "byte"
@@ -40599,7 +40599,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV_Kondensatordruck2",
     "parameter": "byte"
@@ -40624,7 +40624,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV_Saugdruck1",
     "parameter": "byte"
@@ -40649,7 +40649,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_EEV_Saugdruck2",
     "parameter": "byte"
@@ -40674,7 +40674,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_OAT_ATS",
     "parameter": "byte"
@@ -40699,7 +40699,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_OMT_Verdampfertemperatur",
     "parameter": "byte"
@@ -40724,7 +40724,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_OCT_Verdampfervorlauftemp",
     "parameter": "byte"
@@ -40749,7 +40749,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_CCT_Verdichtertemperatur",
     "parameter": "byte"
@@ -40774,7 +40774,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_ICT_Kondensator_VL",
     "parameter": "byte"
@@ -40799,7 +40799,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_IRT_Kondensator_RL",
     "parameter": "byte"
@@ -40824,7 +40824,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_HST_Invertertemperatur",
     "parameter": "byte"
@@ -40849,7 +40849,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Split_SensorStatus_LWT_Kondensator_Wassertemp_VL",
     "parameter": "byte"
@@ -41012,7 +41012,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 471,
+    "mapping": 470,
     "mode": "read_write",
     "name": "WPR3_Split_Regelstrategie_Heizbetrieb",
     "parameter": "byte"
@@ -41064,7 +41064,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 580,
+    "mapping": 579,
     "mode": "read_write",
     "name": "KA8_KonfiWirkung_aufPumpeM3",
     "parameter": "byte"
@@ -41767,7 +41767,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 484,
+    "mapping": 483,
     "mode": "read",
     "name": "NRx_SensorStatus_Abgastemperatur",
     "parameter": "byte"
@@ -41779,7 +41779,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 484,
+    "mapping": 483,
     "mode": "read",
     "name": "NRx_SensorStatus_Kesseltemperatur",
     "parameter": "byte"
@@ -42029,7 +42029,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 611,
+    "mapping": 610,
     "mode": "read_write",
     "name": "K2E_NRx_KonfiKennungFunkATS",
     "parameter": "int"
@@ -42041,7 +42041,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 603,
+    "mapping": 602,
     "mode": "read_write",
     "name": "NRx_KonfiKennungDAP1",
     "parameter": "byte"
@@ -42053,7 +42053,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 604,
+    "mapping": 603,
     "mode": "read_write",
     "name": "NRx_KonfiKennungDAP2",
     "parameter": "byte"
@@ -42093,7 +42093,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 554,
+    "mapping": 553,
     "mode": "read_write",
     "name": "NRx_KonfiBereichAnalogwertEA1",
     "parameter": "int"
@@ -42145,7 +42145,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 612,
+    "mapping": 611,
     "mode": "read_write",
     "name": "K2F_NRx_KonfiKennungFunkbasis",
     "parameter": "int"
@@ -42157,7 +42157,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 601,
+    "mapping": 600,
     "mode": "read_write",
     "name": "NRx_K5B_Kennung_EA1",
     "parameter": "byte"
@@ -42181,7 +42181,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 605,
+    "mapping": 604,
     "mode": "read_write",
     "name": "K30_NRx_KonfiKennungSSM1",
     "parameter": "int"
@@ -42205,7 +42205,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 606,
+    "mapping": 605,
     "mode": "read_write",
     "name": "K31_NRx_KonfiKennungSSM2",
     "parameter": "int"
@@ -42497,7 +42497,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 599,
+    "mapping": 598,
     "mode": "read_write",
     "name": "K32_NRx_Kennung_AM1",
     "parameter": "byte"
@@ -42607,7 +42607,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 632,
+    "mapping": 631,
     "mode": "read",
     "name": "K35_NRx_Konfi_AnzahlKessel_D",
     "parameter": "byte"
@@ -42647,7 +42647,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K43_Flagtoindicateoper_shortLWT",
     "parameter": "byte"
@@ -42659,7 +42659,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K44_Flagtoindicateoper_shortICT",
     "parameter": "byte"
@@ -42671,7 +42671,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K45_Flagtoindicateoper_shortIRT",
     "parameter": "byte"
@@ -42731,7 +42731,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 495,
+    "mapping": 494,
     "mode": "read",
     "name": "WPR3_Split.K4A_RGTStatus",
     "parameter": "byte"
@@ -42743,7 +42743,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 495,
+    "mapping": 494,
     "mode": "read",
     "name": "WPR3_Split.K4B_RLTStatus",
     "parameter": "byte"
@@ -42767,7 +42767,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 497,
+    "mapping": 496,
     "mode": "read",
     "name": "WPR3_Split.K4F_Protectionreason",
     "parameter": "byte"
@@ -42779,7 +42779,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 502,
+    "mapping": 501,
     "mode": "read",
     "name": "WPR3_Split.K4E_ProtectionStatus",
     "parameter": "byte"
@@ -42916,7 +42916,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 504,
+    "mapping": 503,
     "mode": "read",
     "name": "WPR3_Split.K5b_Flag_to_indicate_open_short",
     "parameter": "byte"
@@ -43022,7 +43022,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 431,
+    "mapping": 430,
     "mode": "read",
     "name": "WPR3_Split.K63_voltagebad",
     "parameter": "byte"
@@ -43034,7 +43034,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K64_OATstatus",
     "parameter": "byte"
@@ -43046,7 +43046,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K65_OCTstatus",
     "parameter": "byte"
@@ -43058,7 +43058,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K66_HST_status",
     "parameter": "byte"
@@ -43070,7 +43070,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read",
     "name": "WPR3_Split.K67_CTT_status",
     "parameter": "byte"
@@ -43094,7 +43094,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 565,
+    "mapping": 564,
     "mode": "read",
     "name": "WPR3_Split.K69_Protection_type",
     "parameter": "byte"
@@ -43118,7 +43118,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 557,
+    "mapping": 556,
     "mode": "read",
     "name": "WPR3_Split.K6B_Valid_deice",
     "parameter": "byte"
@@ -43130,7 +43130,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 557,
+    "mapping": 556,
     "mode": "read",
     "name": "WPR3_Split.K6C_Deice_type",
     "parameter": "byte"
@@ -43550,7 +43550,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 503,
+    "mapping": 502,
     "mode": "read_write",
     "name": "WPR3_Split.KC5_Protection_code",
     "parameter": "byte"
@@ -43650,7 +43650,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 476,
+    "mapping": 475,
     "mode": "read_write",
     "name": "WPR3_Split.KC9_Main_mode",
     "parameter": "byte"
@@ -43662,7 +43662,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 476,
+    "mapping": 475,
     "mode": "read_write",
     "name": "WPR3_Split.KCD_User_setting_opr_mode",
     "parameter": "byte"
@@ -43860,7 +43860,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "TemperaturFehler_PTS",
     "parameter": "byte"
@@ -43940,7 +43940,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 462,
+    "mapping": 461,
     "mode": "read_write",
     "name": "SM1_K26_NRx_Pendelladung",
     "parameter": "int"
@@ -44042,7 +44042,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 578,
+    "mapping": 577,
     "mode": "read",
     "name": "Betriebsart",
     "parameter": "byte"
@@ -44165,7 +44165,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 550,
+    "mapping": 549,
     "mode": "read",
     "name": "WPR3_Systemstatus",
     "parameter": "byte"
@@ -44339,7 +44339,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 621,
+    "mapping": 620,
     "mode": "read_write",
     "name": "WPR3_WW_Betriebsart",
     "parameter": "byte"
@@ -44872,7 +44872,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 498,
+    "mapping": 497,
     "mode": "read_write",
     "name": "WPR3_Split.KDF_Fresh_air_control",
     "parameter": "byte"
@@ -44907,7 +44907,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Ventilstellung_EEV1_Sensorstatus",
     "parameter": "byte"
@@ -44919,7 +44919,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Ventilstellung_EEV2_Sensorstatus",
     "parameter": "int"
@@ -44931,7 +44931,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 505,
+    "mapping": 504,
     "mode": "read_write",
     "name": "WPR3_Split.KE1_IFeel_mode_status",
     "parameter": "byte"
@@ -44943,7 +44943,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read_write",
     "name": "WPR3_Split.KE2_Flag_to_indicate_open_short_PS",
     "parameter": "byte"
@@ -44955,7 +44955,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read_write",
     "name": "WPR3_Split.KE3_Flag_to_indicate_open_short_LWT",
     "parameter": "byte"
@@ -45016,7 +45016,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 496,
+    "mapping": 495,
     "mode": "read_write",
     "name": "WPR3_Split.KE8_Protection_reason",
     "parameter": "byte"
@@ -45307,7 +45307,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 506,
+    "mapping": 505,
     "mode": "read_write",
     "name": "WPR3_Split.KF0_Flag_to_indicate_open_short_ICTE",
     "parameter": "byte"
@@ -45319,7 +45319,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 450,
+    "mapping": 449,
     "mode": "read_write",
     "name": "WPR3_Split.KF1_self_test_jumper_1",
     "parameter": "byte"
@@ -45331,7 +45331,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 450,
+    "mapping": 449,
     "mode": "read_write",
     "name": "WPR3_Split.KF2_jumper_10",
     "parameter": "byte"
@@ -46124,7 +46124,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 484,
+    "mapping": 483,
     "mode": "read",
     "name": "SM1_Sensor_7_Status",
     "parameter": "byte"
@@ -46136,7 +46136,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 484,
+    "mapping": 483,
     "mode": "read",
     "name": "SM1_Sensor_10_Status",
     "parameter": "byte"
@@ -46498,7 +46498,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 560,
+    "mapping": 559,
     "mode": "read_write",
     "name": "Neptun_Umschaltventil",
     "parameter": "byte"
@@ -46892,7 +46892,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "VorlauftemperaturstatusA1M1",
     "parameter": "byte"
@@ -47607,7 +47607,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 666,
+    "mapping": 665,
     "mode": "read",
     "name": "Pellet_Kesselleistung",
     "parameter": "int"
@@ -47683,7 +47683,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 591,
+    "mapping": 590,
     "mode": "read_write",
     "name": "K2A_KonfiKennungATS1_Neptun_2012",
     "parameter": "byte"
@@ -47744,7 +47744,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 558,
+    "mapping": 557,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_0_Typ",
     "parameter": "byte"
@@ -47756,7 +47756,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 558,
+    "mapping": 557,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_1_Typ",
     "parameter": "byte"
@@ -47768,7 +47768,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 558,
+    "mapping": 557,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_2_Typ",
     "parameter": "byte"
@@ -47780,7 +47780,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 558,
+    "mapping": 557,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_3_Typ",
     "parameter": "byte"
@@ -47792,7 +47792,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 558,
+    "mapping": 557,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_4_Typ",
     "parameter": "byte"
@@ -47804,7 +47804,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 558,
+    "mapping": 557,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_5_Typ",
     "parameter": "byte"
@@ -47888,7 +47888,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 642,
+    "mapping": 641,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_0_fuer_HK",
     "parameter": "byte"
@@ -47900,7 +47900,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 642,
+    "mapping": 641,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_1_fuer_HK",
     "parameter": "byte"
@@ -47912,7 +47912,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 642,
+    "mapping": 641,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_2_fuer_HK",
     "parameter": "byte"
@@ -47924,7 +47924,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 642,
+    "mapping": 641,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_3_fuer_HK",
     "parameter": "byte"
@@ -47936,7 +47936,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 642,
+    "mapping": 641,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_4_fuer_HK",
     "parameter": "byte"
@@ -47948,7 +47948,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 642,
+    "mapping": 641,
     "mode": "read",
     "name": "RF_TeilnehmerInfo_5_fuer_HK",
     "parameter": "byte"
@@ -48106,7 +48106,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 669,
+    "mapping": 668,
     "mode": "read",
     "name": "Software_Index_GWG",
     "parameter": "int"
@@ -48119,7 +48119,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 538,
+    "mapping": 537,
     "mode": "read_write",
     "name": "WPR3_Betriebsart_Lueftung",
     "parameter": "byte"
@@ -48421,7 +48421,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 533,
+    "mapping": 532,
     "mode": "read",
     "name": "WPR3_Betriebsstatus_Anlage",
     "parameter": "byte"
@@ -48574,7 +48574,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 530,
+    "mapping": 529,
     "mode": "read",
     "name": "WPR3_Betriebsart_HK1",
     "parameter": "byte"
@@ -48586,7 +48586,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 528,
+    "mapping": 527,
     "mode": "read",
     "name": "WPR3_Betriebsart_HK2",
     "parameter": "byte"
@@ -48598,7 +48598,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 528,
+    "mapping": 527,
     "mode": "read",
     "name": "WPR3_Betriebsart_HK3",
     "parameter": "byte"
@@ -48865,7 +48865,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Solar_Sensor7",
     "parameter": "byte"
@@ -48878,7 +48878,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Solar_Sensor10",
     "parameter": "byte"
@@ -50023,7 +50023,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 470,
+    "mapping": 469,
     "mode": "read_write",
     "name": "WPR3_Anlagenkonfig_Verhalten_nach_Fehler",
     "parameter": "int"
@@ -50842,7 +50842,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Raumtemp_HK1",
     "parameter": "byte"
@@ -50855,7 +50855,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Vorlauftemp_Kuehlung",
     "parameter": "byte"
@@ -50892,7 +50892,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Sekundaer_Vorlauftemp2",
     "parameter": "byte"
@@ -50905,7 +50905,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_01F1",
     "parameter": "byte"
@@ -50918,7 +50918,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_01F2",
     "parameter": "byte"
@@ -50931,7 +50931,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_01F3",
     "parameter": "byte"
@@ -50944,7 +50944,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_01F4",
     "parameter": "byte"
@@ -50957,7 +50957,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_01F5",
     "parameter": "byte"
@@ -50970,7 +50970,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_01F6",
     "parameter": "byte"
@@ -50982,7 +50982,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 668,
+    "mapping": 667,
     "mode": "read",
     "name": "GWG2010_SWIndex",
     "parameter": "int"
@@ -51617,7 +51617,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 542,
+    "mapping": 541,
     "mode": "read_write",
     "name": "WPR3_7026",
     "parameter": "byte"
@@ -51629,7 +51629,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 542,
+    "mapping": 541,
     "mode": "read_write",
     "name": "WPR3_7027",
     "parameter": "byte"
@@ -51641,7 +51641,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 542,
+    "mapping": 541,
     "mode": "read_write",
     "name": "WPR3_7028",
     "parameter": "byte"
@@ -53950,7 +53950,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 430,
+    "mapping": 429,
     "mode": "read_write",
     "name": "Vitotwin_1030_Brenner_sperren",
     "parameter": "int"
@@ -54384,7 +54384,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 649,
+    "mapping": 648,
     "mode": "read_write",
     "name": "Vitotwin_1002_Brennerfreigabe_TWW",
     "parameter": "int"
@@ -54427,7 +54427,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 430,
+    "mapping": 429,
     "mode": "read_write",
     "name": "Vitotwin_1032_Zusatzbrenner_Sperren",
     "parameter": "int"
@@ -54558,7 +54558,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 527,
+    "mapping": 526,
     "mode": "read",
     "name": "Vitotwin_1082_Status_Stirlingbrenner",
     "parameter": "int"
@@ -54570,7 +54570,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 527,
+    "mapping": 526,
     "mode": "read",
     "name": "Vitotwin_1084_Status_Zusatzbrenner",
     "parameter": "int"
@@ -54582,7 +54582,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 443,
+    "mapping": 442,
     "mode": "read",
     "name": "Vitotwin_1086_Status_Generator",
     "parameter": "int"
@@ -55667,7 +55667,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 671,
+    "mapping": 670,
     "mode": "read",
     "name": "Vitotwin_1409_Datum_Stichtag1_Jahr",
     "parameter": "int"
@@ -55701,7 +55701,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 671,
+    "mapping": 670,
     "mode": "read",
     "name": "Vitotwin_1429_Datum_Stichtag2_Jahr",
     "parameter": "int"
@@ -55735,7 +55735,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 671,
+    "mapping": 670,
     "mode": "read",
     "name": "Vitotwin_1449_Datum_Monatswerte1_Jahr",
     "parameter": "int"
@@ -55769,7 +55769,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 671,
+    "mapping": 670,
     "mode": "read",
     "name": "Vitotwin_1469_Datum_Monatswerte2_Jahr",
     "parameter": "int"
@@ -55803,7 +55803,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 541,
+    "mapping": 540,
     "mode": "read",
     "name": "VSorp_Prozesszustand",
     "parameter": "byte"
@@ -56330,7 +56330,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 445,
+    "mapping": 444,
     "mode": "read_write",
     "name": "SR13_EETyp",
     "parameter": "byte"
@@ -56497,7 +56497,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 445,
+    "mapping": 444,
     "mode": "read_write",
     "name": "SR13_EETyp_GC1",
     "parameter": "int"
@@ -56679,7 +56679,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 445,
+    "mapping": 444,
     "mode": "read_write",
     "name": "SR13_EA2_EETyp_GC1",
     "parameter": "int"
@@ -56881,7 +56881,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 652,
+    "mapping": 651,
     "mode": "read_write",
     "name": "SR13_K01_KonfiAnlagentyp",
     "parameter": "byte"
@@ -56920,7 +56920,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 488,
+    "mapping": 487,
     "mode": "read_write",
     "name": "SR13_K02_KonfiBrennertyp",
     "parameter": "int"
@@ -56944,7 +56944,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 499,
+    "mapping": 498,
     "mode": "read_write",
     "name": "SR13_K04_KonfiKesselSchalthysterese",
     "parameter": "int"
@@ -57259,7 +57259,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 521,
+    "mapping": 520,
     "mode": "read_write",
     "name": "SR13_K24_KonfiStatusWartung",
     "parameter": "byte"
@@ -57440,7 +57440,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 543,
+    "mapping": 542,
     "mode": "read_write",
     "name": "SR13_K41_KonfiFunktion_PEP",
     "parameter": "byte"
@@ -57586,7 +57586,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_ATS",
     "parameter": "byte"
@@ -57598,7 +57598,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_VTS",
     "parameter": "byte"
@@ -57610,7 +57610,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_STS",
     "parameter": "byte"
@@ -57622,7 +57622,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_PTS1",
     "parameter": "byte"
@@ -57634,7 +57634,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_PTS2",
     "parameter": "byte"
@@ -57646,7 +57646,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_PTS3",
     "parameter": "byte"
@@ -57658,7 +57658,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_PTS4",
     "parameter": "byte"
@@ -57670,7 +57670,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "SR13_SensorStatus_PTS5",
     "parameter": "byte"
@@ -58066,7 +58066,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 486,
+    "mapping": 485,
     "mode": "read_write",
     "name": "Vitovalor_Betriebsmodus_FCU",
     "parameter": "int"
@@ -60773,7 +60773,7 @@
     "byte_len": 3,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 646,
+    "mapping": 645,
     "mode": "read",
     "name": "Vitovalor_Wartung_FCU",
     "parameter": "int"
@@ -60864,7 +60864,7 @@
     "byte_len": 20,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 485,
+    "mapping": 484,
     "mode": "read",
     "name": "SM1_Sensor_7_Status_GWG",
     "parameter": "byte"
@@ -60877,7 +60877,7 @@
     "byte_len": 20,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 485,
+    "mapping": 484,
     "mode": "read",
     "name": "SM1_Sensor_10_Status_GWG",
     "parameter": "byte"
@@ -62829,7 +62829,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 613,
+    "mapping": 612,
     "mode": "read",
     "name": "WPR3_RelaisStatus_Ausgang22",
     "parameter": "byte"
@@ -64130,7 +64130,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 491,
+    "mapping": 490,
     "mode": "read_write",
     "name": "SM1_K02_WPR3_Drehzahlsteuerung",
     "parameter": "int"
@@ -64289,7 +64289,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 624,
+    "mapping": 623,
     "mode": "read_write",
     "name": "SM1_K0E_WPR3_Funktionskontrolle_Solarertrag",
     "parameter": "int"
@@ -64424,7 +64424,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 462,
+    "mapping": 461,
     "mode": "read_write",
     "name": "SM1_K26_WPR3_Pendelladung",
     "parameter": "int"
@@ -65323,7 +65323,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 501,
+    "mapping": 500,
     "mode": "read_write",
     "name": "GW6B_K0A_KonfiSchema",
     "parameter": "int"
@@ -65349,7 +65349,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 690,
+    "mapping": 689,
     "mode": "read",
     "name": "Vitovalor_Verhaeltnis_Eigenverbrauch_Elektrische_Leistung_0W",
     "parameter": "int"
@@ -65507,7 +65507,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 654,
+    "mapping": 653,
     "mode": "read",
     "name": "Vitotwin_8000_Voreinstellung",
     "parameter": "int"
@@ -65519,7 +65519,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 430,
+    "mapping": 429,
     "mode": "read",
     "name": "Vitotwin_2016_HK1",
     "parameter": "int"
@@ -65531,7 +65531,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 430,
+    "mapping": 429,
     "mode": "read",
     "name": "Vitotwin_3016_HK2",
     "parameter": "int"
@@ -65543,7 +65543,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 430,
+    "mapping": 429,
     "mode": "read",
     "name": "Vitotwin_4016_HK3",
     "parameter": "int"
@@ -65567,7 +65567,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 665,
+    "mapping": 664,
     "mode": "read",
     "name": "Vitotwin_2050_Status_Heizkreis_1",
     "parameter": "int"
@@ -65579,7 +65579,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 665,
+    "mapping": 664,
     "mode": "read",
     "name": "Vitotwin_3050_Status_Heizkreis_2",
     "parameter": "int"
@@ -65591,7 +65591,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 665,
+    "mapping": 664,
     "mode": "read",
     "name": "Vitotwin_4050_Status_Heizkreis_3",
     "parameter": "int"
@@ -65603,7 +65603,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 459,
+    "mapping": 458,
     "mode": "read",
     "name": "Vitotwin_5050_Status_Trinkwasser",
     "parameter": "int"
@@ -65615,7 +65615,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 657,
+    "mapping": 656,
     "mode": "read",
     "name": "Vitotwin_1080_Status_Kessel",
     "parameter": "int"
@@ -65793,7 +65793,7 @@
     "byte_len": 1,
     "byte_pos": 4,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "HO2B_KollektorSensor_Status",
     "parameter": "int"
@@ -65806,7 +65806,7 @@
     "byte_len": 1,
     "byte_pos": 7,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "HO2B_CylinderSensor_Status",
     "parameter": "int"
@@ -66070,7 +66070,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 458,
+    "mapping": 457,
     "mode": "read",
     "name": "Vitotwin_6052_Status_Zusatzerzeuger",
     "parameter": "int"
@@ -66393,7 +66393,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Ueberhitzung_Ist_SensorStatus",
     "parameter": "byte"
@@ -66419,7 +66419,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Ueberhitzung_Ist_2_SensorStatus",
     "parameter": "byte"
@@ -66442,7 +66442,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "TemperaturFehler_ATS_GWG",
     "parameter": "byte"
@@ -66454,7 +66454,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "TemperaturFehler_KTS_GWG",
     "parameter": "byte"
@@ -66466,7 +66466,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "TemperaturFehler_STS1_GWG",
     "parameter": "byte"
@@ -66478,7 +66478,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "TemperaturFehler_VLTS_GWG",
     "parameter": "byte"
@@ -66490,7 +66490,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 620,
+    "mapping": 619,
     "mode": "read",
     "name": "HO2B_Geraetetyp",
     "parameter": "byte"
@@ -66550,7 +66550,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 461,
+    "mapping": 460,
     "mode": "read_write",
     "name": "K0E_HO2B_KonfiAnlagenMaximaldruck",
     "parameter": "byte"
@@ -66598,7 +66598,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 531,
+    "mapping": 530,
     "mode": "read",
     "name": "Vitotwin_1232_Status_Brenner_Zus_Sterl",
     "parameter": "int"
@@ -66890,7 +66890,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "HO2B_SensorStatus_RTS_M1",
     "parameter": "byte"
@@ -66902,7 +66902,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "HO2B_SensorStatus_RTS_M2",
     "parameter": "byte"
@@ -66927,7 +66927,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "HO2B_SensorStatus_RTS_M3",
     "parameter": "byte"
@@ -67179,7 +67179,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 430,
+    "mapping": 429,
     "mode": "read_write",
     "name": "Vitotwin_604E_Speicherzwangsladung_Stromanforderung",
     "parameter": "int"
@@ -67215,7 +67215,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 681,
+    "mapping": 680,
     "mode": "read",
     "name": "Ecotronic_Kesseltype",
     "parameter": "int"
@@ -67227,7 +67227,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 535,
+    "mapping": 534,
     "mode": "read",
     "name": "Ecotronic_Heizungstatus",
     "parameter": "int"
@@ -67267,7 +67267,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 548,
+    "mapping": 547,
     "mode": "read",
     "name": "Ecotronic_WW_Status",
     "parameter": "byte"
@@ -67510,7 +67510,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 535,
+    "mapping": 534,
     "mode": "read",
     "name": "Ecotronic_Heizungstatus_HK2",
     "parameter": "int"
@@ -67546,7 +67546,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 535,
+    "mapping": 534,
     "mode": "read",
     "name": "Ecotronic_Heizungstatus_HK3",
     "parameter": "int"
@@ -67558,7 +67558,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 535,
+    "mapping": 534,
     "mode": "read",
     "name": "Ecotronic_Heizungstatus_HK4",
     "parameter": "int"
@@ -67584,7 +67584,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 536,
+    "mapping": 535,
     "mode": "read_write",
     "name": "Ecotronic_BedienteilBA_GWGM4",
     "parameter": "byte"
@@ -67625,11 +67625,12 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 429,
+    "lower_border": 0.0,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM4",
     "parameter": "byte",
-    "unit": "°C"
+    "unit": "°C",
+    "upper_border": 37.0
   },
   "10973": {
     "addr": 33538,
@@ -67816,7 +67817,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 547,
+    "mapping": 546,
     "mode": "read",
     "name": "Ecotronic_Solar_Status",
     "parameter": "byte"
@@ -67913,7 +67914,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 442,
+    "mapping": 441,
     "mode": "read_write",
     "name": "Ecotronic_Zusätzlicher_Kessel_BA",
     "parameter": "byte"
@@ -68361,7 +68362,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 602,
+    "mapping": 601,
     "mode": "read_write",
     "name": "KA2_KonfiSpeichervorrangM4",
     "parameter": "byte"
@@ -68373,7 +68374,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "KA5_KonfSommersparSchaltschwelleM4",
     "parameter": "byte"
@@ -68500,11 +68501,12 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 429,
+    "lower_border": 0.0,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM3",
     "parameter": "byte",
-    "unit": "°C"
+    "unit": "°C",
+    "upper_border": 37.0
   },
   "11050": {
     "addr": 13056,
@@ -68513,11 +68515,12 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 429,
+    "lower_border": 0.0,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM2",
     "parameter": "byte",
-    "unit": "°C"
+    "unit": "°C",
+    "upper_border": 37.0
   },
   "11051": {
     "addr": 8960,
@@ -68526,11 +68529,12 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 429,
+    "lower_border": 0.0,
     "mode": "read_write",
     "name": "Ecotronic_BedienPartybetriebM1",
     "parameter": "byte",
-    "unit": "°C"
+    "unit": "°C",
+    "upper_border": 37.0
   },
   "11052": {
     "addr": 17156,
@@ -68865,7 +68869,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "Ecotronic_KA0_KonfiKennungFernbedienungM4",
     "parameter": "byte"
@@ -68877,7 +68881,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "Ecotronic_KA7_KonfiMischersparfunktionM4",
     "parameter": "byte"
@@ -68941,7 +68945,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "Ecotronic_KB0_KonfiRaumaufschaltungM4",
     "parameter": "byte"
@@ -70287,7 +70291,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 670,
+    "mapping": 669,
     "mode": "read",
     "name": "Ecotronic_Kessel_Gesamtstatus",
     "parameter": "int"
@@ -70356,7 +70360,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_KTS",
     "parameter": "byte"
@@ -70368,7 +70372,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_RLTS",
     "parameter": "byte"
@@ -70380,7 +70384,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_AGTS",
     "parameter": "byte"
@@ -70392,7 +70396,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_Rohrsensor",
     "parameter": "byte"
@@ -70404,7 +70408,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_Lambdasonde",
     "parameter": "byte"
@@ -70416,7 +70420,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_PTS3",
     "parameter": "byte"
@@ -70428,7 +70432,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_PTS4",
     "parameter": "byte"
@@ -70440,7 +70444,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_PTS5",
     "parameter": "byte"
@@ -70452,7 +70456,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_PTS1",
     "parameter": "byte"
@@ -70464,7 +70468,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_PTS2",
     "parameter": "byte"
@@ -70476,7 +70480,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_ATS",
     "parameter": "byte"
@@ -70488,7 +70492,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_WWTemp",
     "parameter": "byte"
@@ -70500,7 +70504,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_VTS1",
     "parameter": "byte"
@@ -70512,7 +70516,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_VTS2",
     "parameter": "byte"
@@ -70524,7 +70528,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_VTS3",
     "parameter": "byte"
@@ -70536,7 +70540,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_VTS4",
     "parameter": "byte"
@@ -70548,7 +70552,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_WWRLTS",
     "parameter": "byte"
@@ -70560,7 +70564,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_Solar_Kollektor",
     "parameter": "byte"
@@ -70572,7 +70576,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_Solar_WW",
     "parameter": "byte"
@@ -70584,7 +70588,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 440,
+    "mapping": 439,
     "mode": "read",
     "name": "Ecotronic_Status_Hallsensor",
     "parameter": "byte"
@@ -70596,7 +70600,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 441,
+    "mapping": 440,
     "mode": "read_write",
     "name": "Ecotronic_Zirkulation_BA",
     "parameter": "byte"
@@ -70656,7 +70660,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "Ecotronic_KA7_KonfiMischersparfunktionHK1",
     "parameter": "byte"
@@ -70668,7 +70672,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "Ecotronic_KA7_KonfiMischersparfunktionHK2",
     "parameter": "byte"
@@ -70680,7 +70684,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "Ecotronic_KA7_KonfiMischersparfunktionHK3",
     "parameter": "byte"
@@ -70900,7 +70904,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 536,
+    "mapping": 535,
     "mode": "read_write",
     "name": "Ecotronic_Betriebsart_HK1",
     "parameter": "byte"
@@ -70912,7 +70916,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 536,
+    "mapping": 535,
     "mode": "read_write",
     "name": "Ecotronic_Betriebsart_HK2",
     "parameter": "byte"
@@ -70924,7 +70928,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 536,
+    "mapping": 535,
     "mode": "read_write",
     "name": "Ecotronic_Betriebsart_HK3",
     "parameter": "byte"
@@ -71127,7 +71131,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 572,
+    "mapping": 571,
     "mode": "read",
     "name": "HO2B_Lueftung_Betriebsstatus",
     "parameter": "byte"
@@ -71296,7 +71300,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 537,
+    "mapping": 536,
     "mode": "read_write",
     "name": "HO2B_Lueftung_Bedienung_Programm",
     "parameter": "byte"
@@ -71446,7 +71450,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "HO2B_Lueftung_Status_Druckwaechter_AUL",
     "parameter": "byte"
@@ -71458,7 +71462,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "HO2B_Lueftung_Status_Druckwaechter_Raum",
     "parameter": "byte"
@@ -71470,7 +71474,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "HO2B_Lueftung_Status_Druckwaechter_ABL",
     "parameter": "byte"
@@ -71508,7 +71512,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 613,
+    "mapping": 612,
     "mode": "read",
     "name": "HO2B_Lueftung_Badschalter",
     "parameter": "byte"
@@ -71778,7 +71782,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 572,
+    "mapping": 571,
     "mode": "read_write",
     "name": "HO2B_Lueftung_Stufe_Soll",
     "parameter": "byte"
@@ -72770,7 +72774,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 530,
+    "mapping": 529,
     "mode": "read",
     "name": "WPR3_1187_Betriebsart_result_HK_Anforderung",
     "parameter": "byte"
@@ -72782,7 +72786,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 530,
+    "mapping": 529,
     "mode": "read",
     "name": "WPR3_1188_Betriebsart_zentrale_HK_Anforderung",
     "parameter": "byte"
@@ -72794,7 +72798,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 530,
+    "mapping": 529,
     "mode": "read",
     "name": "WPR3_1189_Betriebsart_Kuehlpuffer",
     "parameter": "byte"
@@ -72972,7 +72976,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 572,
+    "mapping": 571,
     "mode": "read",
     "name": "WPR3_701F_Wirkung_BA_Umschaltung_auf_Lueftung",
     "parameter": "byte"
@@ -72985,7 +72989,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 622,
+    "mapping": 621,
     "mode": "read_write",
     "name": "WPR3_B003_BedienBA_KK",
     "parameter": "byte"
@@ -73009,7 +73013,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1280_Guelt_BAMTL_BA_HK1",
     "parameter": "byte"
@@ -73022,7 +73026,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1281_Guelt_BAMTL_BA_HK2",
     "parameter": "byte"
@@ -73035,7 +73039,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1282_Guelt_BAMTL_BA_HK3",
     "parameter": "byte"
@@ -73048,7 +73052,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1283_Guelt_BAMTL_BA_KK",
     "parameter": "byte"
@@ -73061,7 +73065,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1284_Guelt_BAMTL_BA_Puffer",
     "parameter": "byte"
@@ -73074,7 +73078,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1285_Guelt_BAMTL_BA_WW",
     "parameter": "byte"
@@ -73087,7 +73091,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1286_Guelt_BAMTL_BA_Schwimmbad",
     "parameter": "byte"
@@ -73100,7 +73104,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1287_Guelt_BAMTL_BA_HCFDM",
     "parameter": "byte"
@@ -73113,7 +73117,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1288_Guelt_BAMTL_BA_CFDM",
     "parameter": "byte"
@@ -73126,7 +73130,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_1289_Guelt_BAMTL_BA_Kuehlpuffer",
     "parameter": "byte"
@@ -73399,7 +73403,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B010_BAVorgabe_BA_HK1",
     "parameter": "int"
@@ -73412,7 +73416,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B011_BAVorgabe_BA_HK2",
     "parameter": "int"
@@ -73425,7 +73429,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B012_BAVorgabe_BA_HK3",
     "parameter": "int"
@@ -73438,7 +73442,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B013_BAVorgabe_BA_KK",
     "parameter": "int"
@@ -73451,7 +73455,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B014_BAVorgabe_BA_WW",
     "parameter": "int"
@@ -73464,7 +73468,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B015_BAVorgabe_BA_Lueftung",
     "parameter": "int"
@@ -73477,7 +73481,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B016_BAVorgabe_BA_Puffer",
     "parameter": "int"
@@ -73490,7 +73494,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B017_BAVorgabe_BA_Kuehlpuffer",
     "parameter": "int"
@@ -73503,7 +73507,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B018_BAVorgabe_BA_Schwimmbad",
     "parameter": "int"
@@ -73516,7 +73520,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B019_BAVorgabe_BA_Anlage",
     "parameter": "int"
@@ -73529,7 +73533,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B010_BAVorgabe_BM_HK1",
     "parameter": "int"
@@ -73542,7 +73546,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B011_BAVorgabe_BM_HK2",
     "parameter": "int"
@@ -73555,7 +73559,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B012_BAVorgabe_BM_HK3",
     "parameter": "int"
@@ -73568,7 +73572,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B013_BAVorgabe_BM_KK",
     "parameter": "int"
@@ -73581,7 +73585,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B014_BAVorgabe_BM_WW",
     "parameter": "int"
@@ -73594,7 +73598,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B015_BAVorgabe_BM_Lueftung",
     "parameter": "int"
@@ -73607,7 +73611,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B016_BAVorgabe_BM_Puffer",
     "parameter": "int"
@@ -73620,7 +73624,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B017_BAVorgabe_BM_Kuehlpuffer",
     "parameter": "int"
@@ -73633,7 +73637,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B018_BAVorgabe_BM_Schwimmbad",
     "parameter": "int"
@@ -73646,7 +73650,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B019_BAVorgabe_BM_Anlage",
     "parameter": "int"
@@ -73659,7 +73663,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B010_BAVorgabe_Bedarf_HK1",
     "parameter": "int"
@@ -73672,7 +73676,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B011_BAVorgabe_Bedarf_HK2",
     "parameter": "int"
@@ -73685,7 +73689,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B012_BAVorgabe_Bedarf_HK3",
     "parameter": "int"
@@ -73698,7 +73702,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B013_BAVorgabe_Bedarf_KK",
     "parameter": "int"
@@ -73711,7 +73715,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B014_BAVorgabe_Bedarf_WW",
     "parameter": "int"
@@ -73724,7 +73728,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B015_BAVorgabe_Bedarf_Lueftung",
     "parameter": "int"
@@ -73737,7 +73741,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B016_BAVorgabe_Bedarf_Puffer",
     "parameter": "int"
@@ -73750,7 +73754,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B017_BAVorgabe_Bedarf_Kuehlpuffer",
     "parameter": "int"
@@ -73763,7 +73767,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B018_BAVorgabe_Bedarf_Schwimmbad",
     "parameter": "int"
@@ -73776,7 +73780,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read_write",
     "name": "WPR3_B019_BAVorgabe_Bedarf_Anlage",
     "parameter": "int"
@@ -74101,7 +74105,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B030_Guelt_BAMTL_BA_HK1",
     "parameter": "byte"
@@ -74114,7 +74118,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B031_Guelt_BAMTL_BA_HK2",
     "parameter": "byte"
@@ -74127,7 +74131,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B032_Guelt_BAMTL_BA_HK3",
     "parameter": "byte"
@@ -74140,7 +74144,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B033_Guelt_BAMTL_BA_KK",
     "parameter": "byte"
@@ -74153,7 +74157,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B034_Guelt_BAMTL_BA_WW",
     "parameter": "byte"
@@ -74166,7 +74170,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B035_Guelt_BAMTL_BA_Lueftung",
     "parameter": "byte"
@@ -74179,7 +74183,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B036_Guelt_BAMTL_BA_Pufferspeicher",
     "parameter": "byte"
@@ -74192,7 +74196,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B037_Guelt_BAMTL_BA_Kuehlpuffer",
     "parameter": "byte"
@@ -74205,7 +74209,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B038_Guelt_BAMTL_BA_Schwimmbad",
     "parameter": "byte"
@@ -74218,7 +74222,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 529,
+    "mapping": 528,
     "mode": "read",
     "name": "WPR3_B039_Guelt_BAMTL_BA_Anlage",
     "parameter": "byte"
@@ -75066,7 +75070,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 602,
+    "mapping": 601,
     "mode": "read_write",
     "name": "Ecotronic_KA2_KonfiSpeichervorrang_HK1",
     "parameter": "byte"
@@ -75078,7 +75082,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 602,
+    "mapping": 601,
     "mode": "read_write",
     "name": "Ecotronic_KA2_KonfiSpeichervorrang_HK2",
     "parameter": "byte"
@@ -75090,7 +75094,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 602,
+    "mapping": 601,
     "mode": "read_write",
     "name": "Ecotronic_KA2_KonfiSpeichervorrang_HK3",
     "parameter": "byte"
@@ -75102,7 +75106,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 489,
+    "mapping": 488,
     "mode": "read",
     "name": "GWG_8853_Brennertyp",
     "parameter": "byte"
@@ -75456,7 +75460,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Lueftung_Feuchte_Sensorstatus",
     "parameter": "byte"
@@ -75546,7 +75550,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 664,
+    "mapping": 663,
     "mode": "read_write",
     "name": "HO2B_Bedienteiltyp",
     "parameter": "byte"
@@ -75572,7 +75576,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Schwimmbadvorlauf",
     "parameter": "byte"
@@ -75585,7 +75589,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SensorStatus_Gemeinsamer_Vorlauf",
     "parameter": "byte"
@@ -75661,7 +75665,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 442,
+    "mapping": 441,
     "mode": "read_write",
     "name": "Ecotronic_Puffer_Betriebsart",
     "parameter": "byte"
@@ -76021,7 +76025,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 656,
+    "mapping": 655,
     "mode": "read",
     "name": "Ecotronic_Kesseltype_ohne_kW",
     "parameter": "int"
@@ -76133,7 +76137,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 615,
+    "mapping": 614,
     "mode": "read_write",
     "name": "WPR3_SGReady_Freigabe",
     "parameter": "int"
@@ -76541,7 +76545,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 432,
+    "mapping": 431,
     "mode": "read_write",
     "name": "HO2B_Lueftung_Status_VHZ_STB",
     "parameter": "byte"
@@ -76553,7 +76557,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 453,
+    "mapping": 452,
     "mode": "read_write",
     "name": "HO2B_Lueftung_Temp_Programm",
     "parameter": "byte"
@@ -76577,7 +76581,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 689,
+    "mapping": 688,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Raumsolltemperatur",
     "parameter": "int"
@@ -76589,7 +76593,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Aussenlufttemperatur",
     "parameter": "int"
@@ -76601,7 +76605,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Zuluft_Bypass",
     "parameter": "int"
@@ -76613,7 +76617,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Feuchtekonzentration",
     "parameter": "int"
@@ -76625,7 +76629,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_CO2_Konzentration",
     "parameter": "int"
@@ -76637,7 +76641,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 689,
+    "mapping": 688,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_CO2_Sollwert",
     "parameter": "int"
@@ -76649,7 +76653,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Fortlufttemperatur",
     "parameter": "int"
@@ -76661,7 +76665,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Zulufttemperatur",
     "parameter": "int"
@@ -76673,7 +76677,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Ablufttemperatur",
     "parameter": "int"
@@ -76685,7 +76689,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Fortluftventlator_Drehzahl_Prozent",
     "parameter": "int"
@@ -76697,7 +76701,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Zuluftventilator_Drehzahl_Prozent",
     "parameter": "int"
@@ -76709,7 +76713,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Luefter_Sperrzeit_Frostschutz",
     "parameter": "int"
@@ -76721,7 +76725,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Zeit_Anpassung_Stufe",
     "parameter": "int"
@@ -76733,7 +76737,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Spannung_Fortluft",
     "parameter": "int"
@@ -76745,7 +76749,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Spannung_Zuluft",
     "parameter": "int"
@@ -76757,7 +76761,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Zuluft_Bypass_geschaltet",
     "parameter": "int"
@@ -77205,7 +77209,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 690,
+    "mapping": 689,
     "mode": "read",
     "name": "Vitovalor_Verhaeltnis_Netzbezug_Elektrische_Leistung_0W",
     "parameter": "int"
@@ -77217,7 +77221,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Badschalter",
     "parameter": "int"
@@ -77229,7 +77233,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Differenzdruckschalter_Feuerstaette",
     "parameter": "int"
@@ -77241,7 +77245,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB__Volumenstrom_Grundlueftung_2",
     "parameter": "int"
@@ -77253,7 +77257,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Volumenstrom_Reduzierte_Lueftung_2",
     "parameter": "int"
@@ -77265,7 +77269,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Volumenstrom_Normale_Lueftung_2",
     "parameter": "int"
@@ -77277,7 +77281,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Volumenstrom_Intensiv_Lueftung_2",
     "parameter": "int"
@@ -77289,7 +77293,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Solltemp_Raum",
     "parameter": "int"
@@ -77313,7 +77317,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 617,
+    "mapping": 616,
     "mode": "read_write",
     "name": "Ecotronic_Kesselventil",
     "parameter": "int"
@@ -77359,7 +77363,7 @@
     "byte_len": 2,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 688,
+    "mapping": 687,
     "mode": "read",
     "name": "HO2B_Lueftung_AZB_Feuchtesollwert",
     "parameter": "int"
@@ -78632,7 +78636,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_PRIMAER_VL_Sensorstatus",
     "parameter": "byte"
@@ -78645,7 +78649,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_PRIMAER_RL_Sensorstatus",
     "parameter": "byte"
@@ -78658,7 +78662,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SEK_VL_Sensorstatus",
     "parameter": "byte"
@@ -78671,7 +78675,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SEK_RL_Sensorstatus",
     "parameter": "byte"
@@ -78684,7 +78688,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Fluessiggastemperatur_Sensorstatus",
     "parameter": "byte"
@@ -78697,7 +78701,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_FLUESSIGGAS_REV_Sensorstatus",
     "parameter": "byte"
@@ -78710,7 +78714,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_VERDAMPFUNG_SOLL_Sensorstatus",
     "parameter": "byte"
@@ -78723,7 +78727,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_VERDAMPFUNG_Sensorstatus",
     "parameter": "byte"
@@ -78736,7 +78740,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_KONDENSATION_Sensorstatus",
     "parameter": "byte"
@@ -78749,7 +78753,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_SAUGGAS_Sensorstatus",
     "parameter": "byte"
@@ -78762,7 +78766,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_HEISSGAS_Sensorstatus",
     "parameter": "byte"
@@ -78775,7 +78779,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_UEBERHITZUNG_SOLL_Sensorstatus",
     "parameter": "byte"
@@ -78788,7 +78792,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_DELTA_UNTERKUEHLUNG_Sensorstatus",
     "parameter": "byte"
@@ -78801,7 +78805,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B410_Sauggasdruck_Sensorstatus",
     "parameter": "byte"
@@ -78814,7 +78818,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B411_Heissgasdruck_Sensorstatus",
     "parameter": "byte"
@@ -78826,7 +78830,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B420_Drehzahl_Primaerquelle_Sensorstatus",
     "parameter": "byte"
@@ -78838,7 +78842,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B421_Drehzahl_Sekundaerpumpe_Sensorstatus",
     "parameter": "byte"
@@ -78850,7 +78854,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B422_Drehzahl_WW_Pumpe_Sensorstatus",
     "parameter": "byte"
@@ -78862,7 +78866,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B423_Leistung_Verdichter_Sensorstatus",
     "parameter": "byte"
@@ -78874,7 +78878,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B424_Position_ECV_Sensorstatus",
     "parameter": "byte"
@@ -78886,7 +78890,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B425_Position_AHX_Sensorstatus",
     "parameter": "byte"
@@ -78898,7 +78902,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B426_Position_PHX_Sensorstatus",
     "parameter": "byte"
@@ -78910,7 +78914,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B428_Fuellstand_Sammler_Sensorstatus",
     "parameter": "byte"
@@ -78922,7 +78926,7 @@
     "byte_len": 1,
     "byte_pos": 1,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B429_Drehzahl_SPL_Pumpe_Sensorstatus",
     "parameter": "byte"
@@ -78935,7 +78939,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_B430_Unterkuehlung_Soll_Sensorstatus",
     "parameter": "byte"
@@ -78948,7 +78952,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_Temperatur_Sammler_Sensorstatus",
     "parameter": "byte"
@@ -78961,7 +78965,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_UEBERHITZUNG_K_SOLL_Sensorstatus",
     "parameter": "byte"
@@ -78974,7 +78978,7 @@
     "byte_len": 1,
     "byte_pos": 2,
     "data_type": "Int",
-    "mapping": 483,
+    "mapping": 482,
     "mode": "read",
     "name": "WPR3_UEBERHITZUNG_K_Sensorstatus",
     "parameter": "byte"
@@ -79134,7 +79138,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 605,
+    "mapping": 604,
     "mode": "read_write",
     "name": "K14_NRP_KonfiKennungSSM1",
     "parameter": "int"
@@ -79146,7 +79150,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 606,
+    "mapping": 605,
     "mode": "read_write",
     "name": "K15_NRP_KonfiKennungSSM2",
     "parameter": "int"
@@ -79170,7 +79174,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 588,
+    "mapping": 587,
     "mode": "read_write",
     "name": "K1A_NRP_KonfiKennungSolarregelung",
     "parameter": "byte"
@@ -79247,7 +79251,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 599,
+    "mapping": 598,
     "mode": "read_write",
     "name": "K30_NRP_Kennung_AM1",
     "parameter": "byte"
@@ -79283,7 +79287,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 601,
+    "mapping": 600,
     "mode": "read_write",
     "name": "K40_NRP_Kennung_EA1",
     "parameter": "byte"
@@ -79343,7 +79347,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 553,
+    "mapping": 552,
     "mode": "read_write",
     "name": "K45_NRP_EA1_Temperatur_Leistungsanforderung",
     "parameter": "byte"
@@ -79355,7 +79359,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 555,
+    "mapping": 554,
     "mode": "read_write",
     "name": "K46_NRP_KonfiBereichAnalogwertEA1",
     "parameter": "int"
@@ -79576,7 +79580,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 561,
+    "mapping": 560,
     "mode": "read",
     "name": "NRP_SA171_LAN_State",
     "parameter": "byte"
@@ -79739,7 +79743,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 561,
+    "mapping": 560,
     "mode": "read",
     "name": "NRP_SA171_APModeEnabled",
     "parameter": "byte"
@@ -79954,7 +79958,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 493,
+    "mapping": 492,
     "mode": "read_write",
     "name": "K00_NRP_KonfiWW_Algorithmus",
     "parameter": "byte"
@@ -79966,7 +79970,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 467,
+    "mapping": 466,
     "mode": "read_write",
     "name": "K01_NRP_KonfiWW_SolltemperaturBereich",
     "parameter": "byte"
@@ -80030,7 +80034,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 545,
+    "mapping": 544,
     "mode": "read_write",
     "name": "K07_NRP_KonfiLpumpeKTabhaengig",
     "parameter": "byte"
@@ -80137,7 +80141,7 @@
     "byte_len": 1,
     "byte_pos": 6,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_ATS",
     "parameter": "byte"
@@ -80149,7 +80153,7 @@
     "byte_len": 1,
     "byte_pos": 18,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_STS_5A",
     "parameter": "byte"
@@ -80161,7 +80165,7 @@
     "byte_len": 1,
     "byte_pos": 21,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_STS_5B",
     "parameter": "byte"
@@ -80173,7 +80177,7 @@
     "byte_len": 1,
     "byte_pos": 24,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_AGTS",
     "parameter": "byte"
@@ -80185,7 +80189,7 @@
     "byte_len": 1,
     "byte_pos": 12,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_RLTS_17A",
     "parameter": "byte"
@@ -80197,7 +80201,7 @@
     "byte_len": 1,
     "byte_pos": 15,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_RLTS_17B",
     "parameter": "byte"
@@ -80209,7 +80213,7 @@
     "byte_len": 1,
     "byte_pos": 27,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_PTS",
     "parameter": "byte"
@@ -80536,7 +80540,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 484,
+    "mapping": 483,
     "mode": "read",
     "name": "NRP_SM1_Sensor_7_Status",
     "parameter": "byte"
@@ -80549,7 +80553,7 @@
     "byte_pos": 0,
     "conversion": "div10",
     "data_type": "Double",
-    "mapping": 659,
+    "mapping": 658,
     "mode": "read",
     "name": "NRP_SM1_Sensor_7",
     "parameter": "s_int"
@@ -80561,7 +80565,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 484,
+    "mapping": 483,
     "mode": "read",
     "name": "NRP_SM1_Sensor_10_Status",
     "parameter": "byte"
@@ -80761,7 +80765,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "NRP_DigitalEingang_STB",
     "parameter": "byte"
@@ -80773,7 +80777,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 434,
+    "mapping": 433,
     "mode": "read",
     "name": "NRP_DigitalEingang_ExtSicherheit",
     "parameter": "byte"
@@ -80824,7 +80828,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "K00_NRP_KonfiKennungFernbedienungA1M1",
     "parameter": "byte"
@@ -80886,7 +80890,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "K05_NRP_KonfSommersparSchaltschwelleA1M1",
     "parameter": "byte"
@@ -80912,7 +80916,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "K07_NRP_KonfiMischersparfunktionM1",
     "parameter": "byte"
@@ -80938,7 +80942,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "K0A_NRP_KonfiRaumaufschaltungA1M1",
     "parameter": "byte"
@@ -81004,7 +81008,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "K1F_NRP_KonfiWirkungExtBA_UmschaltungA1M1",
     "parameter": "byte"
@@ -81111,7 +81115,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "K00_NRP_KonfiKennungFernbedienungM2",
     "parameter": "byte"
@@ -81173,7 +81177,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "K05_KonfSommersparSchaltschwelleM2",
     "parameter": "byte"
@@ -81199,7 +81203,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "K07_KonfiMischersparfunktionM2",
     "parameter": "byte"
@@ -81225,7 +81229,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "K0A_NRP_KonfiRaumaufschaltungM2",
     "parameter": "byte"
@@ -81291,7 +81295,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "K1F_NRP_KonfiWirkungExtBA_UmschaltungM2",
     "parameter": "byte"
@@ -81398,7 +81402,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 590,
+    "mapping": 589,
     "mode": "read_write",
     "name": "K00_NRP_KonfiKennungFernbedienungM3",
     "parameter": "byte"
@@ -81460,7 +81464,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 594,
+    "mapping": 593,
     "mode": "read_write",
     "name": "K05_NRP_KonfSommersparSchaltschwelleM3",
     "parameter": "byte"
@@ -81486,7 +81490,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 584,
+    "mapping": 583,
     "mode": "read_write",
     "name": "K07_NRP_KonfiMischersparfunktionM3",
     "parameter": "byte"
@@ -81512,7 +81516,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 575,
+    "mapping": 574,
     "mode": "read_write",
     "name": "K0A_NRP_KonfiRaumaufschaltungM3",
     "parameter": "byte"
@@ -81578,7 +81582,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 539,
+    "mapping": 538,
     "mode": "read_write",
     "name": "K1F_NRP_WirkungExtBA_UmschaltungM3",
     "parameter": "byte"
@@ -81685,7 +81689,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 611,
+    "mapping": 610,
     "mode": "read_write",
     "name": "K12_NRP_KonfiKennungFunkATS",
     "parameter": "int"
@@ -81697,7 +81701,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 579,
+    "mapping": 578,
     "mode": "read_write",
     "name": "K19_NRP_KonfiKennungMischermodul",
     "parameter": "byte"
@@ -81844,7 +81848,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 464,
+    "mapping": 463,
     "mode": "read_write",
     "name": "K0B_NRP_KonfiZugriffWW_Solltemperatur",
     "parameter": "byte"
@@ -82297,7 +82301,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 456,
+    "mapping": 455,
     "mode": "read_write",
     "name": "K06_NRP_KonfiRegelungsart",
     "parameter": "byte"
@@ -82581,7 +82585,7 @@
     "byte_len": 1,
     "byte_pos": 12,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_RTS_HK1",
     "parameter": "byte"
@@ -82593,7 +82597,7 @@
     "byte_len": 1,
     "byte_pos": 12,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_RTS_HK2",
     "parameter": "byte"
@@ -82605,7 +82609,7 @@
     "byte_len": 1,
     "byte_pos": 12,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_RTS_HK3",
     "parameter": "byte"
@@ -82617,7 +82621,7 @@
     "byte_len": 1,
     "byte_pos": 6,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_VTS_HK3",
     "parameter": "byte"
@@ -82629,7 +82633,7 @@
     "byte_len": 1,
     "byte_pos": 6,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_VTS_HK2",
     "parameter": "byte"
@@ -82641,7 +82645,7 @@
     "byte_len": 1,
     "byte_pos": 6,
     "data_type": "Int",
-    "mapping": 439,
+    "mapping": 438,
     "mode": "read",
     "name": "NRP_SensorStatus_VTS_HK1",
     "parameter": "byte"
@@ -82750,7 +82754,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 449,
+    "mapping": 448,
     "mode": "read",
     "name": "NRP_BDE_HK1_Mischerstatus",
     "parameter": "byte"
@@ -82763,7 +82767,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 449,
+    "mapping": 448,
     "mode": "read",
     "name": "NRP_BDE_HK2_Mischerstatus",
     "parameter": "byte"
@@ -82776,7 +82780,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 449,
+    "mapping": 448,
     "mode": "read",
     "name": "NRP_BDE_HK3_Mischerstatus",
     "parameter": "byte"
@@ -82913,7 +82917,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 526,
+    "mapping": 525,
     "mode": "read",
     "name": "NRP_SA171_APStatus",
     "parameter": "byte"
@@ -82939,7 +82943,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 438,
+    "mapping": 437,
     "mode": "read",
     "name": "Status_17_A1M1",
     "parameter": "byte"
@@ -83251,7 +83255,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 446,
+    "mapping": 445,
     "mode": "read_write",
     "name": "KA6_KonfiNetzspannung",
     "parameter": "byte"
@@ -83373,7 +83377,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 481,
+    "mapping": 480,
     "mode": "read",
     "name": "PM1_Status_Sensor1",
     "parameter": "byte"
@@ -83385,7 +83389,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 481,
+    "mapping": 480,
     "mode": "read",
     "name": "PM1_Status_Sensor2",
     "parameter": "byte"
@@ -83397,7 +83401,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 481,
+    "mapping": 480,
     "mode": "read",
     "name": "PM1_Status_Sensor3",
     "parameter": "byte"
@@ -83409,7 +83413,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 481,
+    "mapping": 480,
     "mode": "read",
     "name": "PM1_Status_Sensor4",
     "parameter": "byte"
@@ -83717,7 +83721,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 567,
+    "mapping": 566,
     "mode": "read_write",
     "name": "KAB_KonfiAlternativeVerwSensor3",
     "parameter": "byte"
@@ -83729,7 +83733,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 568,
+    "mapping": 567,
     "mode": "read_write",
     "name": "KAC_KonfiAlternativeVerwSensor4",
     "parameter": "byte"
@@ -83879,7 +83883,7 @@
     "byte_len": 1,
     "byte_pos": 0,
     "data_type": "Int",
-    "mapping": 435,
+    "mapping": 434,
     "mode": "read",
     "name": "NRP_TemperaturFehler_KTS",
     "parameter": "byte"

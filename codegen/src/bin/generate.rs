@@ -528,6 +528,23 @@ fn main() -> anyhow::Result<()> {
             unit: None,
           }
         },
+        // Replace temperature enum mapping used.
+        "VarChar" if event_value_type.name.starts_with("@@viessmann.eventvaluetype.name.Ecotronic_Party~") => {
+          let value = event_value_type
+            .name
+            .strip_prefix("@@viessmann.eventvaluetype.name.Ecotronic_Party~")
+            .unwrap()
+            .parse::<u8>()
+            .unwrap();
+
+          cleaned::EventValueType::Single {
+            value_type: "Int",
+            lower_border: Some(value.into()),
+            upper_border: Some(value.into()),
+            stepping: Some(1.0),
+            unit: Some("°C".into()),
+          }
+        },
         "VarChar" | "NText" => {
           if let Some(address_value) = event_value_type.enum_address_value {
             let enum_replace_value =
@@ -664,7 +681,28 @@ fn main() -> anyhow::Result<()> {
             value_list.extend(other_value_list);
             Some(cleaned::EventValueType::Multiple { value_list })
           },
-          _ => unreachable!("invalid value type"),
+          (
+            Some(cleaned::EventValueType::Single { value_type, lower_border, upper_border, stepping, ref unit }),
+            cleaned::EventValueType::Single {
+              value_type: other_value_type,
+              lower_border: other_lower_border,
+              upper_border: other_upper_border,
+              stepping: other_stepping,
+              unit: ref other_unit,
+            },
+          ) if value_type == other_value_type && stepping == other_stepping && unit == other_unit => {
+            // Treat multiple identical value types as single type.
+            Some(cleaned::EventValueType::Single {
+              value_type,
+              lower_border: lower_border.zip(other_lower_border).map(|(a, b)| a.min(b)),
+              upper_border: upper_border.zip(other_upper_border).map(|(a, b)| a.max(b)),
+              stepping,
+              unit: unit.clone(),
+            })
+          },
+          (Some(acc), other) => {
+            unreachable!("invalid single value type: {acc:?} != {other:?}")
+          },
         }
       });
 
