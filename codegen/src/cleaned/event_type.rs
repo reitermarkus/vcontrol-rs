@@ -17,7 +17,7 @@ pub enum Conversion {
   M(BTreeMap<String, ConversionInner>),
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum EventValueType {
   Single {
