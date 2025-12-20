@@ -95,7 +95,9 @@ impl Command {
     if !matches!(
       self.parameter,
       Parameter::SInt | Parameter::SIntHighByteFirst | Parameter::SInt4 | Parameter::SInt4HighByteFirst
-    ) && bytes.iter().all(|&b| b == 0xff)
+    ) && self.lower_bound().is_none()
+      && self.upper_bound().is_none()
+      && bytes.iter().all(|&b| b == 0xff)
     {
       return Ok(Value::Empty);
     }
@@ -232,6 +234,46 @@ impl Command {
           log::warn!("Failed to convert 0x{:04X}: {err}", self.addr);
           err.value
         },
+      };
+    }
+
+    if let Some(lower_bound) = self.lower_bound {
+      value = match value {
+        Value::Double(n) => {
+          if n < lower_bound {
+            Value::Empty
+          } else {
+            Value::Double(n)
+          }
+        },
+        Value::Int(n) => {
+          if (n as f64) < lower_bound {
+            Value::Empty
+          } else {
+            Value::Int(n)
+          }
+        },
+        value => value,
+      };
+    }
+
+    if let Some(upper_bound) = self.upper_bound {
+      value = match value {
+        Value::Double(n) => {
+          if n > upper_bound {
+            Value::Empty
+          } else {
+            Value::Double(n)
+          }
+        },
+        Value::Int(n) => {
+          if (n as f64) > upper_bound {
+            Value::Empty
+          } else {
+            Value::Int(n)
+          }
+        },
+        value => value,
       };
     }
 
