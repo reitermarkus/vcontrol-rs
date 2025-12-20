@@ -1,14 +1,15 @@
-use std::{collections::HashMap, process::exit};
+use std::process::exit;
 
 use clap::{Arg, ArgAction, Command, crate_version};
 use serde_json;
 
 use vcontrol::{Optolink, VControl, Value};
 
+mod cat;
 mod scan;
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
   env_logger::init();
 
   let app = Command::new("vcontrol")
@@ -120,54 +121,11 @@ async fn main() -> std::io::Result<()> {
   }
 
   if let Some(_) = matches.subcommand_matches("cat") {
-    let mut vcontrol = VControl::connect(optolink).await.unwrap_or_else(|err| {
-      eprintln!("Error: {}", err);
-      exit(1);
-    });
-
-    log::info!("Connected to '{}' via {} protocol.", vcontrol.device().name(), vcontrol.protocol());
-
-    let mut commands = HashMap::new();
-
-    for (command_name, command) in vcontrol::commands::system_commands() {
-      commands.insert(command_name, command);
-    }
-
-    for (command_name, command) in vcontrol.device().commands() {
-      commands.insert(command_name, command);
-    }
-
-    let mut keys = commands.keys().collect::<Vec<_>>();
-    keys.sort();
-
-    for key in keys {
-      let readable = commands.get(key).map(|c| c.access_mode().is_read()).unwrap_or(false);
-      if !readable {
-        continue;
-      }
-
-      let res = vcontrol.get(key).await;
-
-      match res {
-        Ok(value) => {
-          println!("{}:", key);
-          if matches!(value.value, Value::Empty) {
-            println!("<empty>");
-          } else {
-            println!("{}", value);
-          }
-        },
-        Err(err) => {
-          eprintln!("{} error: {:?}", key, err);
-        },
-      }
-    }
-
-    return Ok(());
+    return cat::cat(optolink).await;
   }
 
   if let Some(_) = matches.subcommand_matches("scan") {
-    scan::scan(optolink).await.unwrap();
+    return scan::scan(optolink).await;
   }
 
   Ok(())
