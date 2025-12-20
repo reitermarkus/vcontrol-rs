@@ -1,6 +1,5 @@
 # 🔥 vcontrol-rs
 
-[![Build Status](https://travis-ci.com/reitermarkus/vcontrol-rs.svg?branch=master)](https://travis-ci.com/reitermarkus/vcontrol-rs)
 [![Crates.io](https://img.shields.io/crates/v/vcontrol.svg)](https://crates.io/crates/vcontrol)
 [![Documentation](https://docs.rs/vcontrol/badge.svg)](https://docs.rs/vcontrol)
 
