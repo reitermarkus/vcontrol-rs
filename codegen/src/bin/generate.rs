@@ -232,7 +232,6 @@ fn is_data_point_type_supported(data_point_type_address: &str, data_point_type: 
 
 fn is_event_type_supported(event_type_id: &str, event_type: &cleaned::EventType) -> bool {
   if event_type_id.starts_with("Node_")
-    || event_type_id.starts_with("nciNet")
     || event_type_id.starts_with("Ecotronic_LAN")
     || event_type_id.starts_with("HO2B_IP")
     || event_type_id.starts_with("HO2B_DynamicIP")
@@ -244,6 +243,9 @@ fn is_event_type_supported(event_type_id: &str, event_type: &cleaned::EventType)
     || event_type_id.starts_with("vcLan")
     || event_type_id.starts_with("vcNotfax")
     || event_type_id.starts_with("vlogVSNotfax")
+    || event_type_id.starts_with("resProdCmd")
+    || ((event_type_id.starts_with("nci") || event_type_id.starts_with("nvi") || event_type_id.starts_with("nvo"))
+      && event_type_id.chars().nth(3).map(|c| c.is_uppercase()).unwrap_or(false))
   {
     return false;
   }
