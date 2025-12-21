@@ -56,6 +56,30 @@ fn translation_fixes(id: &str) -> String {
   .to_owned()
 }
 
+fn canonicalize_translation_text(text: &str) -> String {
+  if text.eq_ignore_ascii_case("off") {
+    return "off".into();
+  }
+
+  if text.eq_ignore_ascii_case("on") {
+    return "on".into();
+  }
+
+  if text.eq_ignore_ascii_case("no") || text.eq_ignore_ascii_case("false") {
+    return "false".into();
+  }
+
+  if text.eq_ignore_ascii_case("yes") || text.eq_ignore_ascii_case("true") {
+    return "true".into();
+  }
+
+  if text.eq_ignore_ascii_case("auto") || text.eq_ignore_ascii_case("automatic") {
+    return "auto".into();
+  }
+
+  text.to_owned()
+}
+
 static EMPTY_VALUE_TRANSLATION: &str = "viessmann-ess.eventvaluetype.ModulBetriebsart~3";
 
 fn value_list_fixes(id: &str) -> &str {
@@ -491,8 +515,10 @@ fn main() -> anyhow::Result<()> {
     })
     .collect();
 
-  let mut translations_cleaned =
-    translations_raw.iter().map(|(k, v)| (translation_fixes(k), v.get("en").cloned().unwrap())).collect();
+  let mut translations_cleaned = translations_raw
+    .iter()
+    .map(|(k, v)| (translation_fixes(k), canonicalize_translation_text(v.get("en").unwrap())))
+    .collect();
   for event_value_type in event_value_types_raw.values_mut() {
     add_missing_enum_replace_value_translations(event_value_type, &mut translations_cleaned, &reverse_translations_raw)
   }
