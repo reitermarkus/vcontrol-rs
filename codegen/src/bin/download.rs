@@ -6,7 +6,7 @@ use std::{
 use codegen::files;
 
 // https://github.com/sarnau/InsideViessmannVitosoft/blob/main/VitosoftSoftware.md
-const ENDPOINT: &str = "https://update-vitosoft.viessmann.com/vrimaster/VRIMasterWebService.asmx";
+const ENDPOINT: &str = "https://update-vitosoft.viessmann-climatesolutions.com/vrimaster/VRIMasterWebService.asmx";
 
 fn main() -> anyhow::Result<()> {
   let mut child = Command::new("curl")
@@ -95,8 +95,6 @@ fn main() -> anyhow::Result<()> {
 
   Command::new("curl")
     .arg("-SfL")
-    .arg("--continue")
-    .arg("-")
     .arg(&url)
     .arg("--output")
     .arg("vitosoft.exe")
