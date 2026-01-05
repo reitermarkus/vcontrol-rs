@@ -80028,54 +80028,5 @@
     "mode": "read",
     "name": "NRP_TemperaturFehler_KTS",
     "parameter": "byte"
-  },
-  "32767": {
-    "addr": 22359,
-    "bit_pos": 0,
-    "block_len": 2,
-    "byte_len": 2,
-    "byte_pos": 0,
-    "data_type": "Int",
-    "mode": "read_write",
-    "name": "Ecotronic_Brennstofflager_Füllstand",
-    "parameter": "int",
-    "unit": "kg"
-  },
-  "32768": {
-    "addr": 22361,
-    "bit_pos": 0,
-    "block_len": 2,
-    "byte_len": 2,
-    "byte_pos": 0,
-    "data_type": "Int",
-    "mode": "read_write",
-    "name": "Ecotronic_Brennstofflager_Minimalbegrenzung",
-    "parameter": "int",
-    "unit": "kg"
-  },
-  "32769": {
-    "addr": 22363,
-    "bit_pos": 0,
-    "block_len": 2,
-    "byte_len": 2,
-    "byte_pos": 0,
-    "data_type": "Int",
-    "mode": "read_write",
-    "name": "Ecotronic_Brennstofflager_Maximalbegrenzung",
-    "parameter": "int",
-    "unit": "kg"
-  },
-  "32770": {
-    "addr": 20752,
-    "bit_pos": 0,
-    "block_len": 2,
-    "byte_len": 2,
-    "byte_pos": 0,
-    "conversion": "div10",
-    "data_type": "Double",
-    "mode": "read",
-    "name": "Ecotronic_Puffertemperatur_Ist",
-    "parameter": "int",
-    "unit": "°C"
   }
 }
