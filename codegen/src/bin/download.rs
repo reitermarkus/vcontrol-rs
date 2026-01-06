@@ -6,7 +6,7 @@ use std::{
 use codegen::files;
 
 // https://github.com/sarnau/InsideViessmannVitosoft/blob/main/VitosoftSoftware.md
-const ENDPOINT: &str = "https://update-vitosoft.viessmann.com/vrimaster/VRIMasterWebService.asmx";
+const ENDPOINT: &str = "https://update-vitosoft.viessmann-climatesolutions.com/vrimaster/VRIMasterWebService.asmx";
 
 fn main() -> anyhow::Result<()> {
   let mut child = Command::new("curl")
@@ -93,15 +93,7 @@ fn main() -> anyhow::Result<()> {
   let xml: serde_json::Value = quick_xml::de::from_reader(BufReader::new(child.stdout.take().unwrap()))?;
   let url = xml["Body"]["DownloadSoftwareResponse"]["DownloadSoftwareResult"]["URL"]["$text"].as_str().unwrap();
 
-  Command::new("curl")
-    .arg("-SfL")
-    .arg("--continue")
-    .arg("-")
-    .arg(&url)
-    .arg("--output")
-    .arg("vitosoft.exe")
-    .spawn()?
-    .wait()?;
+  Command::new("curl").arg("-SfL").arg(&url).arg("--output").arg("vitosoft.exe").spawn()?.wait()?;
 
   Command::new("7z").arg("x").arg("vitosoft.exe").args(files::ALL_FILES).arg("-y").spawn()?.wait()?;
 
