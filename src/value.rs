@@ -63,6 +63,13 @@ impl Value {
         if let Value::Double(n) = self {
           return Ok(Value::Double(n * factor + offset));
         }
+
+        if factor.fract() == 0.0
+          && offset.fract() == 0.0
+          && let Value::Int(n) = self
+        {
+          return Ok(Value::Int(n * (*factor as i64) + (*offset as i64)));
+        }
       },
       Conversion::SecToMinute => convert_double!(self, /, 60.0),
       Conversion::SecToHour => convert_double!(self, /, 3600.0),

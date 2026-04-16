@@ -227,6 +227,7 @@ impl Command {
       },
     };
 
+    // Conversion must happen before bounds checking.
     if let Some(conversion) = &self.conversion {
       value = match value.convert(conversion) {
         Ok(value) => value,
