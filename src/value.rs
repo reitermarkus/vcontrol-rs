@@ -161,7 +161,11 @@ impl fmt::Display for OutputValue {
       Value::Date(date) => write!(f, "{}", date)?,
       Value::DateTime(date_time) => write!(f, "{}", date_time)?,
       Value::Error(error) => {
-        write!(f, "{}", self.mapping.unwrap().get(&(error.index() as i32)).unwrap())?;
+        if let Some(description) = self.mapping.and_then(|mapping| mapping.get(&(error.index() as i32))) {
+          write!(f, "{description}")?;
+        } else {
+          write!(f, "{error}")?;
+        }
       },
       Value::CircuitTimes(cycle_times) => write!(f, "{:#?}", cycle_times)?,
       Value::String(string) => write!(f, "{}", string)?,
@@ -193,5 +197,18 @@ impl FromStr for Value {
     // }
 
     Ok(Value::String(s.to_owned()))
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn unmapped_error_has_fallback_display() {
+    let error = Error::from_bytes(&[0xff, 0x20, 0x18, 0x12, 0x23, 0x06, 0x17, 0x49, 0x31]).unwrap();
+    let output = OutputValue { value: Value::Error(error), unit: None, mapping: None };
+
+    assert_eq!(output.to_string(), "2018-12-23T17:49:31: Error FF");
   }
 }
