@@ -146,8 +146,9 @@ impl Time {
         let hour = byte >> 3;
         let minute = (byte & 0b111) * 10;
 
-        assert!(hour <= 24);
-        assert!(minute < 60);
+        if hour > 24 || minute >= 60 {
+          return None;
+        }
 
         Some(Self { hour, minute })
       },
@@ -197,6 +198,10 @@ impl FromStr for Time {
       return Err("minute out of range");
     }
 
+    if chars.next().is_some() {
+      return Err("unexpected trailing characters");
+    }
+
     Ok(Time { hour, minute })
   }
 }
@@ -227,5 +232,16 @@ mod tests {
 
     let time = serde_json::from_str::<Time>(s).unwrap();
     assert_eq!(time, Time { hour: 24, minute: 0 });
+  }
+
+  #[test]
+  fn invalid_time_bytes_are_ignored() {
+    assert_eq!(Time::from_byte(0xf8), None);
+    assert_eq!(Time::from_byte(0x06), None);
+  }
+
+  #[test]
+  fn time_from_str_rejects_trailing_characters() {
+    assert!("12:00extra".parse::<Time>().is_err());
   }
 }

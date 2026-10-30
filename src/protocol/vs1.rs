@@ -37,7 +37,9 @@ impl Vs1 {
     loop {
       log::trace!("Vs1::sync(…) loop");
 
-      if o.read_exact(&mut buf).await.is_ok() && buf == [SYNC] {
+      o.read_exact(&mut buf).await?;
+
+      if buf == [SYNC] {
         o.purge().await?;
         return Ok(());
       }
@@ -60,7 +62,9 @@ impl Vs1 {
     let mut vec = Vec::new();
     vec.extend(&[0x01, Function::VirtualRead as u8]);
     vec.extend(addr.to_be_bytes());
-    vec.extend(&[buf.len() as u8]);
+    let payload_len = u8::try_from(buf.len())
+      .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "VS1 payload exceeds 255 bytes"))?;
+    vec.extend(&[payload_len]);
 
     Self::sync(o).await?;
 
@@ -106,7 +110,9 @@ impl Vs1 {
     let mut vec = Vec::new();
     vec.extend(&[0x01, Function::VirtualWrite as u8]);
     vec.extend(addr.to_be_bytes());
-    vec.extend(&[value.len() as u8]);
+    let payload_len = u8::try_from(value.len())
+      .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "VS1 payload exceeds 255 bytes"))?;
+    vec.extend(&[payload_len]);
     vec.extend(value);
 
     Self::sync(o).await?;
