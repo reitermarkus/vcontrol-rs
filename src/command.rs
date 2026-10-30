@@ -325,7 +325,7 @@ impl Command {
     }
 
     if let Some(conversion) = &self.conversion {
-      input = input.convert_back(conversion).unwrap();
+      input = input.convert_back(conversion).map_err(|err| Error::InvalidArgument(err.to_string()))?;
     }
 
     if self.data_type == DataType::Int
