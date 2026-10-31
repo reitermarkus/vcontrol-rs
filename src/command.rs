@@ -443,6 +443,30 @@ mod tests {
   }
 
   #[test]
+  fn encode_returns_an_error_for_an_incompatible_conversion() {
+    let command = Command {
+      addr: 0x1234,
+      mode: AccessMode::Write,
+      data_type: DataType::Double,
+      parameter: Parameter::Int,
+      block_count: None,
+      block_len: 2,
+      byte_len: 2,
+      byte_pos: 0,
+      bit_len: None,
+      bit_pos: 0,
+      conversion: Some(Conversion::Div10),
+      lower_bound: None,
+      upper_bound: None,
+      unit: None,
+      mapping: None,
+    };
+
+    let error = command.encode(Value::String("not a number".to_owned())).unwrap_err();
+    assert!(matches!(error, Error::InvalidArgument(message) if message.contains("Conversion Div10")));
+  }
+
+  #[test]
   fn parse_double_from_int() {
     let command = Command {
       addr: 0x0886,

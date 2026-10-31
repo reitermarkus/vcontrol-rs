@@ -317,6 +317,13 @@ mod tests {
   }
 
   #[test]
+  fn from_unix_timestamp_round_trips() {
+    let timestamp = 1_600_000_000;
+
+    assert_eq!(DateTime::from_unix_timestamp(timestamp).unix_timestamp(), timestamp);
+  }
+
+  #[test]
   fn from_str() {
     let time = DateTime::from_str("2018-12-23T17:49:31").unwrap();
 

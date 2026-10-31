@@ -124,6 +124,19 @@ mod tests {
   }
 
   #[tokio::test]
+  async fn vs1_rejects_payloads_larger_than_one_byte_length() {
+    let (mut client, peer) = duplex(1);
+    drop(peer);
+    let mut buffer = [0; 256];
+
+    let error = Vs1::get(&mut client, 0x1234, &mut buffer).await.unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
+
+    let error = Vs1::set(&mut client, 0x1234, &buffer).await.unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
+  }
+
+  #[tokio::test]
   async fn vs2_get_runs_over_mock_transport() {
     let (mut client, mut peer) = duplex(64);
     let peer_task = tokio::spawn(async move {
