@@ -15926,6 +15926,21 @@
     "parameter": "byte",
     "upper_border": 1.0
   },
+  "4165": {
+    "addr": 41733,
+    "bit_pos": 0,
+    "block_len": 2,
+    "byte_len": 1,
+    "byte_pos": 0,
+    "conversion": "div2",
+    "data_type": "Double",
+    "lower_border": 0.0,
+    "mode": "read",
+    "name": "nvoBoilerState_BLR_value",
+    "parameter": "byte",
+    "unit": "%",
+    "upper_border": 100.0
+  },
   "4236": {
     "addr": 40975,
     "bit_pos": 0,
