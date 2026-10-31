@@ -91,6 +91,17 @@ impl Command {
     }
   }
 
+  /// Decodes a complete protocol block into this command's value.
+  pub fn decode(&self, bytes: &[u8]) -> Result<Value, Error> {
+    let end = self
+      .byte_pos
+      .checked_add(self.byte_len)
+      .filter(|&end| end <= bytes.len())
+      .ok_or_else(|| Error::InvalidFormat("protocol block is shorter than the command byte range".to_owned()))?;
+
+    self.deserialize(&bytes[self.byte_pos..end])
+  }
+
   pub(crate) fn parse_value(&self, bytes: &[u8]) -> Result<Value, Error> {
     if !matches!(
       self.parameter,
@@ -281,28 +292,8 @@ impl Command {
     Ok(value)
   }
 
-  pub async fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
-    log::trace!("Command::get(…)");
-
-    if !self.mode.is_read() {
-      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)));
-    }
-
-    let mut buf = vec![0; self.block_len];
-    protocol.get(o, self.addr, &mut buf).await?;
-
-    let bytes = &buf[self.byte_pos..(self.byte_pos + self.byte_len)];
-
-    self.deserialize(bytes)
-  }
-
-  pub async fn set(&self, o: &mut Optolink, protocol: Protocol, mut input: Value) -> Result<(), Error> {
-    log::trace!("Command::set(…)");
-
-    if !self.mode.is_write() {
-      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)));
-    }
-
+  /// Encodes a value into the bytes written for this command.
+  pub fn encode(&self, mut input: Value) -> Result<Vec<u8>, Error> {
     match &input {
       Value::Int(n) => {
         if let Some(lower_bound) = self.lower_bound
@@ -358,14 +349,14 @@ impl Command {
       input = Value::Date(date);
     }
 
-    let bytes = match (self.data_type, input) {
-      (DataType::Date, Value::Date(date)) => date.to_bytes().to_vec(),
-      (DataType::DateTime, Value::DateTime(date_time)) => date_time.to_bytes().to_vec(),
-      (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => cycletimes.to_bytes().to_vec(),
-      (DataType::ByteArray, Value::ByteArray(bytes)) => bytes.to_vec(),
-      (DataType::String, Value::String(s)) => s.as_bytes().to_vec(),
-      (DataType::Error, Value::Error(error)) => error.to_bytes().to_vec(),
-      (DataType::Int | DataType::Byte, Value::Int(n)) => match self.parameter {
+    match (self.data_type, input) {
+      (DataType::Date, Value::Date(date)) => Ok(date.to_bytes().to_vec()),
+      (DataType::DateTime, Value::DateTime(date_time)) => Ok(date_time.to_bytes().to_vec()),
+      (DataType::CircuitTimes, Value::CircuitTimes(cycletimes)) => Ok(cycletimes.to_bytes().to_vec()),
+      (DataType::ByteArray, Value::ByteArray(bytes)) => Ok(bytes),
+      (DataType::String, Value::String(s)) => Ok(s.into_bytes()),
+      (DataType::Error, Value::Error(error)) => Ok(error.to_bytes().to_vec()),
+      (DataType::Int | DataType::Byte, Value::Int(n)) => Ok(match self.parameter {
         Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
         Parameter::Int => (n as u16).to_le_bytes().to_vec(),
         Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
@@ -377,8 +368,8 @@ impl Command {
         Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
         Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
         _ => unreachable!(),
-      },
-      (DataType::Double, Value::Double(n)) => match self.parameter {
+      }),
+      (DataType::Double, Value::Double(n)) => Ok(match self.parameter {
         Parameter::Byte => (n as u8).to_le_bytes().to_vec(),
         Parameter::Int => (n as u16).to_le_bytes().to_vec(),
         Parameter::IntHighByteFirst => (n as u16).to_be_bytes().to_vec(),
@@ -390,9 +381,32 @@ impl Command {
         Parameter::SInt4 => (n as i32).to_le_bytes().to_vec(),
         Parameter::SInt4HighByteFirst => (n as i32).to_be_bytes().to_vec(),
         _ => unreachable!(),
-      },
-      (data_type, input) => return Err(Error::InvalidArgument(format!("expected {:?}, got {:?}", data_type, input))),
-    };
+      }),
+      (data_type, input) => Err(Error::InvalidArgument(format!("expected {:?}, got {:?}", data_type, input))),
+    }
+  }
+
+  pub async fn get(&self, o: &mut Optolink, protocol: Protocol) -> Result<Value, Error> {
+    log::trace!("Command::get(…)");
+
+    if !self.mode.is_read() {
+      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support reading.", self.addr)));
+    }
+
+    let mut buf = vec![0; self.block_len];
+    protocol.get(o, self.addr, &mut buf).await?;
+
+    self.decode(&buf)
+  }
+
+  pub async fn set(&self, o: &mut Optolink, protocol: Protocol, input: Value) -> Result<(), Error> {
+    log::trace!("Command::set(…)");
+
+    if !self.mode.is_write() {
+      return Err(Error::UnsupportedMode(format!("Address 0x{:04X} does not support writing.", self.addr)));
+    }
+
+    let bytes = self.encode(input)?;
 
     protocol.set(o, self.addr, &bytes).await.map_err(Into::into)
   }
@@ -401,6 +415,32 @@ impl Command {
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[test]
+  fn codec_round_trip_does_not_require_io() {
+    let command = Command {
+      addr: 0x1234,
+      mode: AccessMode::Read,
+      data_type: DataType::Double,
+      parameter: Parameter::Int,
+      block_count: None,
+      block_len: 4,
+      byte_len: 2,
+      byte_pos: 1,
+      bit_len: None,
+      bit_pos: 0,
+      conversion: Some(Conversion::Div10),
+      lower_bound: None,
+      upper_bound: None,
+      unit: None,
+      mapping: None,
+    };
+
+    let encoded = command.encode(Value::Double(12.3)).unwrap();
+    assert_eq!(encoded, [123, 0]);
+    assert_eq!(command.decode(&[0xff, 123, 0, 0xff]).unwrap(), Value::Double(12.3));
+    assert!(command.decode(&[0xff, 123]).is_err());
+  }
 
   #[test]
   fn parse_double_from_int() {
