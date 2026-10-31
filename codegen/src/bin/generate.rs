@@ -382,6 +382,11 @@ fn save_json<P: AsRef<Path>, V: Serialize>(path: P, data: V) -> anyhow::Result<(
   Ok(())
 }
 
+// These Ecotronic definitions are not present in the VitoSoft export.
+fn manually_defined_event_types() -> anyhow::Result<BTreeMap<u32, Command>> {
+  Ok(serde_json::from_str(include_str!("../../event_types.manual.json"))?)
+}
+
 fn main() -> anyhow::Result<()> {
   let translations_raw = translations_raw()?;
   let reverse_translations_raw = reverse_translations_raw(&translations_raw)?;
@@ -1125,7 +1130,9 @@ fn main() -> anyhow::Result<()> {
   let mappings_unique = UniqueMapping::create(error_mappings.into_iter().chain(mappings.into_iter()).collect());
   save_json("mappings.unique.json", &mappings_unique)?;
 
-  let devices_used: BTreeMap<_, _> = {
+  let manually_defined_event_types = manually_defined_event_types()?;
+
+  let mut devices_used: BTreeMap<_, _> = {
     let default_error_mapping = *mappings_unique.mapping.get("viessmann.errorcode").unwrap();
 
     #[derive(Debug, Serialize)]
@@ -1161,9 +1168,17 @@ fn main() -> anyhow::Result<()> {
       })
       .collect()
   };
+
+  let ecotronic = devices_used
+    .iter_mut()
+    .find(|(device_id, _)| device_id.as_str() == "Ecotronic")
+    .map(|(_, device)| device)
+    .ok_or_else(|| anyhow::anyhow!("Ecotronic device is missing from generated device data"))?;
+  ecotronic.commands.extend(manually_defined_event_types.keys().copied());
+
   save_json("devices.used.json", &devices_used)?;
 
-  let event_types_used = {
+  let mut event_types_used = {
     let used_event_type_ids = devices_used.values().fold(BTreeSet::new(), |mut acc, device| {
       acc.extend(device.commands.iter().copied());
       acc
@@ -1178,6 +1193,11 @@ fn main() -> anyhow::Result<()> {
       },
     )
   };
+
+  for (id, command) in manually_defined_event_types {
+    event_types_used.entry(id).or_insert(command);
+  }
+
   save_json("event_types.used.json", &event_types_used)?;
 
   let system_event_types_used: BTreeMap<_, _> = system_event_types_cleaned
@@ -1226,11 +1246,22 @@ fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-  use super::is_unsupported_network_variable_event_type;
+  use super::{is_unsupported_network_variable_event_type, manually_defined_event_types};
 
   #[test]
   fn boiler_state_event_type_is_not_filtered_as_unsupported() {
     assert!(!is_unsupported_network_variable_event_type("nvoBoilerState_BLR_value"));
     assert!(is_unsupported_network_variable_event_type("nvoOtherValue"));
+  }
+
+  #[test]
+  fn manually_defined_event_types_include_ecotronic_commands() {
+    let event_types = manually_defined_event_types().unwrap();
+
+    assert_eq!(event_types.len(), 4);
+    assert!(event_types.contains_key(&32767));
+    assert!(event_types.contains_key(&32768));
+    assert!(event_types.contains_key(&32769));
+    assert!(event_types.contains_key(&32770));
   }
 }
