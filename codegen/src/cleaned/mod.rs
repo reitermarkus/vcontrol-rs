@@ -5,7 +5,7 @@ use regex::Regex;
 use stringcase::snake_case;
 
 mod data_point_type;
-pub use data_point_type::DataPointType;
+pub use data_point_type::{DataPointType, EventTypeGroup};
 mod event_type;
 pub use event_type::{Conversion, ConversionInner, EventType, EventValueType};
 

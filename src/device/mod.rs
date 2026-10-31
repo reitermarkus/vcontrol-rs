@@ -24,7 +24,39 @@ pub use self::codegen::*;
 pub struct Device {
   name: &'static str,
   commands: &'static phf::Map<&'static str, &'static Command>,
+  event_categories: &'static [EventCategory],
   errors: &'static phf::Map<i32, &'static str>,
+}
+
+/// A category of event types supported by a device.
+#[derive(Debug)]
+pub struct EventCategory {
+  pub(crate) id: u32,
+  pub(crate) name: &'static str,
+  pub(crate) parent_id: Option<u32>,
+  pub(crate) event_types: &'static [(&'static str, &'static Command)],
+}
+
+impl EventCategory {
+  /// Get the category's identifier.
+  pub fn id(&self) -> u32 {
+    self.id
+  }
+
+  /// Get the category's name.
+  pub fn name(&self) -> &'static str {
+    self.name
+  }
+
+  /// Get the parent category's identifier, if it has one.
+  pub fn parent_id(&self) -> Option<u32> {
+    self.parent_id
+  }
+
+  /// Get the event types in this category, in source order.
+  pub fn event_types(&self) -> &'static [(&'static str, &'static Command)] {
+    self.event_types
+  }
 }
 
 impl Device {
@@ -36,6 +68,11 @@ impl Device {
   /// Get all supported commands for the device.
   pub fn commands(&self) -> &'static phf::Map<&'static str, &'static Command> {
     self.commands
+  }
+
+  /// Get the event categories for this device.
+  pub fn event_categories(&self) -> &'static [EventCategory] {
+    self.event_categories
   }
 
   /// Get a specific command for the device, if it is supported.
@@ -144,6 +181,26 @@ mod tests {
     let device_id = DeviceId::from_bytes(&[0x20, 0xCB, 0x03, 0x51, 0x00, 0x00, 0x01, 0x46]);
     let device = Device::detect(device_id, None).unwrap();
     assert_eq!(device.name(), "VScotHO1_72");
+  }
+
+  #[test]
+  fn event_categories_include_supported_commands() {
+    let device_id = DeviceId::from_bytes(&[0x20, 0xCB, 0x03, 0x51, 0x00, 0x00, 0x01, 0x46]);
+    let device = Device::detect(device_id, None).unwrap();
+    let categories = device.event_categories();
+
+    assert!(categories.iter().any(|category| category.name() == "Solar"));
+    assert!(categories.iter().any(|category| !category.event_types().is_empty()));
+
+    for category in categories {
+      if let Some(parent_id) = category.parent_id() {
+        assert!(categories.iter().any(|parent| parent.id() == parent_id));
+      }
+
+      for (event_type_name, command) in category.event_types() {
+        assert!(std::ptr::eq(device.command(*event_type_name).unwrap(), *command));
+      }
+    }
   }
 
   #[test]
