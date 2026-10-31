@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use stringcase::snake_case;
 
 use crate::{
@@ -8,7 +8,7 @@ use crate::{
   unique_mapping::UniqueMapping,
 };
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Command {
   pub addr: u16,
   #[serde(skip_serializing_if = "Option::is_none")]
