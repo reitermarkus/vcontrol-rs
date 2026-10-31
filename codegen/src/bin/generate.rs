@@ -254,6 +254,12 @@ fn is_data_point_type_supported(data_point_type_address: &str, data_point_type: 
   true
 }
 
+fn is_unsupported_network_variable_event_type(event_type_id: &str) -> bool {
+  (event_type_id.starts_with("nci") || event_type_id.starts_with("nvi") || event_type_id.starts_with("nvo"))
+    && event_type_id.chars().nth(3).map(|c| c.is_uppercase()).unwrap_or(false)
+    && event_type_id != "nvoBoilerState_BLR_value"
+}
+
 fn is_event_type_supported(event_type_id: &str, event_type: &cleaned::EventType) -> bool {
   if event_type_id.starts_with("Node_")
     || event_type_id.starts_with("Ecotronic_LAN")
@@ -268,8 +274,7 @@ fn is_event_type_supported(event_type_id: &str, event_type: &cleaned::EventType)
     || event_type_id.starts_with("vcNotfax")
     || event_type_id.starts_with("vlogVSNotfax")
     || event_type_id.starts_with("resProdCmd")
-    || ((event_type_id.starts_with("nci") || event_type_id.starts_with("nvi") || event_type_id.starts_with("nvo"))
-      && event_type_id.chars().nth(3).map(|c| c.is_uppercase()).unwrap_or(false))
+    || is_unsupported_network_variable_event_type(event_type_id)
   {
     return false;
   }
@@ -1217,4 +1222,15 @@ fn main() -> anyhow::Result<()> {
   save_json("translations.used.json", &translations_used)?;
 
   Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+  use super::is_unsupported_network_variable_event_type;
+
+  #[test]
+  fn boiler_state_event_type_is_not_filtered_as_unsupported() {
+    assert!(!is_unsupported_network_variable_event_type("nvoBoilerState_BLR_value"));
+    assert!(is_unsupported_network_variable_event_type("nvoOtherValue"));
+  }
 }
