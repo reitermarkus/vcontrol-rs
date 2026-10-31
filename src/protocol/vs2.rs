@@ -4,7 +4,7 @@ use std::io;
 use num_enum::TryFromPrimitive;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::{Optolink, commands::MAX_PAYLOAD_LEN};
+use crate::{commands::MAX_PAYLOAD_LEN, protocol::ProtocolTransport};
 
 const LEADIN: u8 = 0x41;
 
@@ -108,7 +108,11 @@ fn wrapping_sum<'a>(iter: impl IntoIterator<Item = &'a u8>) -> u8 {
 }
 
 impl Vs2 {
-  async fn write_telegram(o: &mut Optolink, header: &Header, payload: Option<&[u8]>) -> Result<(), std::io::Error> {
+  async fn write_telegram<T: ProtocolTransport>(
+    o: &mut T,
+    header: &Header,
+    payload: Option<&[u8]>,
+  ) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
 
     let message_type = header.message_type as u8;
@@ -153,7 +157,7 @@ impl Vs2 {
     }
   }
 
-  async fn read_telegram(o: &mut Optolink, mut payload: Option<&mut [u8]>) -> Result<Header, io::Error> {
+  async fn read_telegram<T: ProtocolTransport>(o: &mut T, mut payload: Option<&mut [u8]>) -> Result<Header, io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
     const MAX_TELEGRAM_LEN: usize = 1 + 5 + MAX_PAYLOAD_LEN + 1;
@@ -223,14 +227,14 @@ impl Vs2 {
     Ok(Header { message_type, function, addr, payload_len })
   }
 
-  async fn read_status(o: &mut Optolink) -> Result<u8, io::Error> {
+  async fn read_status<T: ProtocolTransport>(o: &mut T) -> Result<u8, io::Error> {
     log::trace!("Vs2::read_status(…)");
     let mut status = [0xff];
     o.read_exact(&mut status).await?;
     Ok(status[0])
   }
 
-  async fn reset(o: &mut Optolink) -> Result<(), io::Error> {
+  async fn reset<T: ProtocolTransport>(o: &mut T) -> Result<(), io::Error> {
     log::trace!("Vs2::reset(…)");
 
     o.purge().await?;
@@ -238,7 +242,7 @@ impl Vs2 {
     o.flush().await
   }
 
-  pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub async fn negotiate<T: ProtocolTransport>(o: &mut T) -> Result<(), io::Error> {
     log::trace!("Vs2::negotiate(…)");
 
     Self::reset(o).await?;
@@ -259,7 +263,7 @@ impl Vs2 {
     }
   }
 
-  pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub async fn get<T: ProtocolTransport>(o: &mut T, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::get(…)");
 
     let header = Header {
@@ -286,7 +290,7 @@ impl Vs2 {
     Ok(())
   }
 
-  pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub async fn set<T: ProtocolTransport>(o: &mut T, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::set(…)");
 
     let header = Header {
