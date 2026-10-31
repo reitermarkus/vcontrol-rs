@@ -22,7 +22,7 @@ mod protocol;
 pub use crate::protocol::Protocol;
 
 pub mod device;
-pub use crate::device::Device;
+pub use crate::device::{Device, EventCategory};
 
 mod vcontrol;
 pub use crate::vcontrol::*;

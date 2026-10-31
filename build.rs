@@ -157,6 +157,24 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<
     };
     device_map.entry(id_range, format!("&{}", escape_const_name(device_id)));
 
+    let event_categories_const_name = format!("{}_EVENT_CATEGORIES", escape_const_name(device_id));
+    writeln!(file, "const {event_categories_const_name}: &[crate::device::EventCategory] = &[")?;
+    for event_type_group in &device.event_type_groups {
+      writeln!(
+        file,
+        "crate::device::EventCategory {{ id: {}, name: {:?}, parent_id: {:?}, event_types: &[",
+        event_type_group.id, event_type_group.name, event_type_group.parent_id,
+      )?;
+      for event_type_id in &event_type_group.event_type_ids {
+        let command_id = u16::try_from(*event_type_id).unwrap();
+        if let Some(command_name) = command_name_map.get(&command_id) {
+          writeln!(file, "({command_name:?}, &crate::commands::COMMAND_{command_id}),")?;
+        }
+      }
+      writeln!(file, "] }},")?;
+    }
+    writeln!(file, "];")?;
+
     let mut map = phf_codegen::Map::<&str>::new();
     for command_id in device.commands.iter() {
       let command_name = command_name_map.get(command_id).unwrap();
@@ -175,12 +193,14 @@ fn generate_devices(command_name_map: &BTreeMap<u16, String>) -> anyhow::Result<
       pub const {}: Device = Device {{
         name: {:?},
         commands: &{}_COMMANDS,
+        event_categories: {},
         errors: &crate::mappings::MAPPING_{},
       }};
     "#,
       escape_const_name(device_id),
       device_id,
       escape_const_name(device_id),
+      event_categories_const_name,
       device.error_mapping
     )?;
   }
@@ -212,7 +232,16 @@ pub struct Device {
   f0: Option<u16>,
   f0_till: Option<u16>,
   commands: Vec<u16>,
+  event_type_groups: Vec<EventTypeGroup>,
   error_mapping: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EventTypeGroup {
+  id: u32,
+  name: String,
+  parent_id: Option<u32>,
+  event_type_ids: Vec<u32>,
 }
 
 /// A command which can be executed on an Optolink connection.
