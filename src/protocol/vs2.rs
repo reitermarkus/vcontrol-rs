@@ -107,6 +107,10 @@ fn wrapping_sum<'a>(iter: impl IntoIterator<Item = &'a u8>) -> u8 {
   iter.into_iter().fold(0, |acc, &x| acc.wrapping_add(x))
 }
 
+fn hex(bytes: &[u8]) -> String {
+  bytes.iter().map(|byte| format!("{byte:02X}")).collect::<Vec<_>>().join(" ")
+}
+
 impl Vs2 {
   async fn write_telegram(o: &mut Optolink, header: &Header, payload: Option<&[u8]>) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
@@ -138,6 +142,8 @@ impl Vs2 {
 
     buffer[checksum_index] = wrapping_sum(&buffer[1..checksum_index]);
     let telegram_len = checksum_index + 1;
+
+    log::debug!("Vs2::write_telegram(…) {:?}: {}", header, hex(&buffer[..telegram_len]));
 
     loop {
       o.write_all(&buffer[..telegram_len]).await?;
@@ -173,6 +179,8 @@ impl Vs2 {
 
     let checksum = wrapping_sum(&buffer[1..checksum_index]);
 
+    log::debug!("Vs2::read_telegram(…) raw: {}", hex(&buffer[..(checksum_index + 1)]));
+
     if checksum == buffer[checksum_index] {
       o.write_all(&[ACK]).await?;
       o.flush().await?;
@@ -196,6 +204,16 @@ impl Vs2 {
     let addr = u16::from_be_bytes([buffer[4], buffer[5]]);
 
     let payload_len = buffer[6];
+
+    log::debug!(
+      "Vs2::read_telegram(…) type = {}, function = {:?}, addr = 0x{:04X}, message_len = {}, payload_len = {}, expected_payload_len = {:?}",
+      message_type,
+      function,
+      addr,
+      message_len,
+      payload_len,
+      payload.as_ref().map(|payload| payload.len()),
+    );
 
     if message_type == MessageType::Error {
       let code = &buffer[7..(7 + (payload_len as usize).min(message_len as usize - 5))];
