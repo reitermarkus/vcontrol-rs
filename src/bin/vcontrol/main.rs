@@ -6,6 +6,7 @@ use serde_json;
 use vcontrol::{Optolink, VControl, Value};
 
 mod cat;
+mod diagnose;
 mod scan;
 
 #[tokio::main]
@@ -51,6 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .arg(Arg::new("value").help("value").required(true)),
     )
     .subcommand(Command::new("cat").about("get all values"))
+    .subcommand(Command::new("diagnose").about("get diagnostic event tree"))
     .subcommand(Command::new("scan").about("scan all values"));
 
   let matches = app.get_matches();
@@ -122,6 +124,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
   if let Some(_) = matches.subcommand_matches("cat") {
     return cat::cat(optolink).await;
+  }
+
+  if let Some(_) = matches.subcommand_matches("diagnose") {
+    return diagnose::diagnose(optolink).await;
   }
 
   if let Some(_) = matches.subcommand_matches("scan") {
