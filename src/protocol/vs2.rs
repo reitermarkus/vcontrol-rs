@@ -197,6 +197,14 @@ impl Vs2 {
 
     let payload_len = buffer[6];
 
+    if message_type == MessageType::Error {
+      let code = &buffer[7..(7 + (payload_len as usize).min(message_len as usize - 5))];
+      let code = code.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ");
+      return Err(io::Error::other(format!(
+        "device returned error for {function:?} at address 0x{addr:04X}, code: {code}"
+      )));
+    }
+
     if let Some(ref mut payload) = payload {
       if payload_len != (message_len - 5) {
         return Err(io::Error::new(
