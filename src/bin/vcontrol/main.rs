@@ -1,7 +1,6 @@
 use std::process::exit;
 
 use clap::{Arg, ArgAction, Command, crate_version};
-use serde_json;
 
 use vcontrol::{Optolink, VControl, Value};
 
@@ -21,7 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .short('d')
         .long("device")
         .action(ArgAction::Set)
-        .conflicts_with_all(&["host", "port"])
+        .conflicts_with_all(["host", "port"])
         .help("path of the device"),
     )
     .arg(
@@ -120,11 +119,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     return Ok(());
   }
 
-  if let Some(_) = matches.subcommand_matches("cat") {
+  if matches.subcommand_matches("cat").is_some() {
     return cat::cat(optolink).await;
   }
 
-  if let Some(_) = matches.subcommand_matches("scan") {
+  if matches.subcommand_matches("scan").is_some() {
     return scan::scan(optolink).await;
   }
 

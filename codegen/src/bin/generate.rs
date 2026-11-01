@@ -357,7 +357,7 @@ fn add_missing_enum_replace_value_translations(
 
     let enum_text = raw::clean_enum_text(Some(&enum_replace_value), None, event_value_type.description.clone());
 
-    if let Some(reverse_translation_id) = cleaned::parse_description(&enum_text, &translations, reverse_translations) {
+    if let Some(reverse_translation_id) = cleaned::parse_description(&enum_text, translations, reverse_translations) {
       event_value_type.enum_replace_value = reverse_translation_id;
       return;
     }
@@ -397,7 +397,7 @@ fn main() -> anyhow::Result<()> {
 
   let versions: BTreeMap<_, _> =
     ecn_data_set.ecn_version.into_iter().map(|version| (snake_case(&version.name), version.value)).collect();
-  save_json(format!("versions.used.json"), &versions)?;
+  save_json("versions.used.json", &versions)?;
 
   let data_point_types_raw: BTreeMap<_, _> = ecn_data_set
     .ecn_datapoint_type
@@ -476,7 +476,6 @@ fn main() -> anyhow::Result<()> {
             table_extension
               .field_name
               .strip_prefix(&format!("label.tableextension.{}.", table_extension.table_name))
-              .map(|s| s)
               .unwrap_or(&table_extension.field_name),
           ),
           internal_data_type: table_extension.internal_data_type,
@@ -487,9 +486,7 @@ fn main() -> anyhow::Result<()> {
               "" => None,
               s => Some(serde_json::Value::Number(s.parse::<u8>().unwrap().into())),
             },
-            Ok(serde_json::Value::String(s)) => match s.as_str() {
-              _ => Some(serde_json::Value::String(s)),
-            },
+            Ok(serde_json::Value::String(s)) => Some(serde_json::Value::String(s)),
             v => unreachable!("unhandled default value: {v:?}"),
           },
           options_value: table_extension
@@ -500,7 +497,7 @@ fn main() -> anyhow::Result<()> {
               (v.to_owned(), k.to_owned())
             })
             .collect(),
-          pk_fields: table_extension.pk_fields.iter().map(|field| snake_case(&field)).collect(),
+          pk_fields: table_extension.pk_fields.iter().map(|field| snake_case(field)).collect(),
           table_name: table_extension.table_name,
         },
       )
@@ -536,7 +533,7 @@ fn main() -> anyhow::Result<()> {
 
   let event_value_types_cleaned: BTreeMap<_, _> = event_value_types_raw
     .into_iter()
-    .filter_map(|(event_value_type_id, mut event_value_type)| {
+    .map(|(event_value_type_id, mut event_value_type)| {
       let unit = cleaned::parse_unit(&event_value_type.unit);
 
       let data_type = match event_value_type.data_type.as_str() {
@@ -621,7 +618,7 @@ fn main() -> anyhow::Result<()> {
         _ => unreachable!(),
       };
 
-      Some((event_value_type_id, data_type))
+      (event_value_type_id, data_type)
     })
     .collect();
 
@@ -795,7 +792,7 @@ fn main() -> anyhow::Result<()> {
         },
         Some(cleaned::EventValueType::Multiple { value_list }) => {
           event_type_cleaned.value_list =
-            event_type_cleaned.value_list.into_iter().chain(value_list.into_iter()).collect();
+            event_type_cleaned.value_list.into_iter().chain(value_list).collect();
         },
         None => (),
       }
@@ -804,7 +801,7 @@ fn main() -> anyhow::Result<()> {
     })
     .collect();
 
-  for (_, table_extension_value) in &table_extension_values_raw {
+  for table_extension_value in table_extension_values_raw.values() {
     let table_extension = table_extensions_raw.get(&table_extension_value.ref_id).unwrap();
 
     let pk: BTreeMap<_, _> = table_extension.pk_fields.iter().zip(table_extension_value.pk_value.iter()).collect();
@@ -985,23 +982,20 @@ fn main() -> anyhow::Result<()> {
     })
     .collect();
 
-  let data_point_types_cleaned: BTreeMap<_, _> = data_point_types_cleaned
-    .into_iter()
-    .filter_map(|(_, mut data_point_type_cleaned)| {
+  let data_point_types_cleaned: BTreeMap<_, _> = data_point_types_cleaned.into_values().filter_map(|mut data_point_type_cleaned| {
       let data_point_type_cleaned_address = data_point_type_cleaned.address.take().unwrap();
 
       if !is_data_point_type_supported(&data_point_type_cleaned_address, &data_point_type_cleaned) {
         return None;
       }
 
-      data_point_type_cleaned.event_types =
-        data_point_type_cleaned.event_types.into_iter().filter(|id| event_types_cleaned.contains_key(id)).collect();
+      data_point_type_cleaned.event_types.retain(|id| event_types_cleaned.contains_key(id));
 
       Some((data_point_type_cleaned_address, data_point_type_cleaned))
     })
     .collect();
 
-  let event_type_ids: BTreeSet<_> = event_types_cleaned.iter().map(|(_, event_type)| &event_type.type_id).collect();
+  let event_type_ids: BTreeSet<_> = event_types_cleaned.values().map(|event_type| &event_type.type_id).collect();
 
   let system_event_types_cleaned: BTreeMap<_, _> = system_event_types
     .into_iter()
@@ -1078,7 +1072,7 @@ fn main() -> anyhow::Result<()> {
         .event_types
         .iter()
         .filter(|event_type_id| {
-          let type_id = event_types_cleaned.get(&event_type_id).as_ref().unwrap().type_id.as_str();
+          let type_id = event_types_cleaned.get(event_type_id).as_ref().unwrap().type_id.as_str();
           !matches!(type_id, "ecnsysEventType~Error" | "ecnsysEventType~ErrorIndex")
         })
         .count()
@@ -1120,14 +1114,14 @@ fn main() -> anyhow::Result<()> {
       event_type.type_id.clone(),
       value_list
         .iter()
-        .map(|(value, translation_id)| (value.clone(), translations_unique.mapping.get(translation_id).unwrap()))
+        .map(|(value, translation_id)| (*value, translations_unique.mapping.get(translation_id).unwrap()))
         .collect(),
     );
 
     acc
   });
 
-  let mappings_unique = UniqueMapping::create(error_mappings.into_iter().chain(mappings.into_iter()).collect());
+  let mappings_unique = UniqueMapping::create(error_mappings.into_iter().chain(mappings).collect());
   save_json("mappings.unique.json", &mappings_unique)?;
 
   let manually_defined_event_types = manually_defined_event_types()?;
@@ -1184,7 +1178,7 @@ fn main() -> anyhow::Result<()> {
       acc
     });
 
-    event_types_cleaned.into_iter().filter(|(event_type_id, _)| used_event_type_ids.contains(&event_type_id)).fold(
+    event_types_cleaned.into_iter().filter(|(event_type_id, _)| used_event_type_ids.contains(event_type_id)).fold(
       BTreeMap::new(),
       |mut acc, (id, event_type)| {
         let event_type_id = event_type.type_id.clone();

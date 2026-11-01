@@ -83,7 +83,7 @@ mod tests {
   #[test]
   fn new() {
     let time = DateTime::new(2018, 12, 23, 17, 49, 31).unwrap();
-    let error = Error::new(0xAC, time.clone());
+    let error = Error::new(0xAC, time);
 
     assert_eq!(error.index, 0xAC);
     assert_eq!(error.time.as_ref().unwrap().0.year(), 2018);
