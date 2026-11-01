@@ -30,7 +30,7 @@ impl<K, V> UniqueMapping<K, V> {
     let mut id = 0;
 
     for (k, v) in reversed {
-      let id_key = (&v).iter().max_by_key(|s| s.as_ref().len()).unwrap();
+      let id_key = v.iter().max_by_key(|s| s.as_ref().len()).unwrap();
       let new_id = if let Some(existing_id) = id_map.get(id_key) {
         *existing_id
       } else {

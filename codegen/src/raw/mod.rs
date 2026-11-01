@@ -99,7 +99,7 @@ lazy_static! {
 
 pub fn parse_translation_text(text: String) -> String {
   let text = text.trim();
-  let text = WHITESPACE.replace_all(&text, " ");
+  let text = WHITESPACE.replace_all(text, " ");
   let text = text
     .replace("##ecnnewline##", "\n")
     .replace("##ecntab##", "\t")
@@ -109,7 +109,7 @@ pub fn parse_translation_text(text: String) -> String {
   text.lines().map(str::trim).collect::<Vec<_>>().join("\n")
 }
 
-pub fn clean_enum_text<'a, 'b, 'c>(translation_id: Option<&'a str>, index: Option<&'b str>, text: String) -> String {
+pub fn clean_enum_text(translation_id: Option<&str>, index: Option<&str>, text: String) -> String {
   lazy_static! {
     static ref INDEX: Regex = Regex::new(r"^(?<name>.*)~(?<index>\d+)$").unwrap();
   }
