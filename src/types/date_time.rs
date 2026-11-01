@@ -104,14 +104,14 @@ impl<'de> Deserialize<'de> for Date {
 
 #[cfg(feature = "schemars")]
 impl JsonSchema for Date {
-  fn schema_name() -> String {
+  fn schema_name() -> std::borrow::Cow<'static, str> {
     "Date".into()
   }
 
-  fn json_schema(generator: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-    let mut schema = generator.subschema_for::<String>().into_object();
-    schema.format = Some("date".into());
-    schema.into()
+  fn json_schema(generator: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    let mut schema = generator.subschema_for::<String>();
+    schema.ensure_object().insert("format".into(), "date".into());
+    schema
   }
 }
 
@@ -246,14 +246,14 @@ impl<'de> Deserialize<'de> for DateTime {
 
 #[cfg(feature = "schemars")]
 impl JsonSchema for DateTime {
-  fn schema_name() -> String {
+  fn schema_name() -> std::borrow::Cow<'static, str> {
     "DateTime".into()
   }
 
-  fn json_schema(generator: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-    let mut schema = generator.subschema_for::<String>().into_object();
-    schema.format = Some("date-time".into());
-    schema.into()
+  fn json_schema(generator: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    let mut schema = generator.subschema_for::<String>();
+    schema.ensure_object().insert("format".into(), "date-time".into());
+    schema
   }
 }
 
