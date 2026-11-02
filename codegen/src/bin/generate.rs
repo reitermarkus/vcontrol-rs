@@ -702,7 +702,7 @@ fn main() -> anyhow::Result<()> {
                 let name = name.strip_prefix("@@").unwrap_or(name);
                 cleaned::EventTypeGroup {
                   id: group.id,
-                  name: translations.get(name).cloned().unwrap_or_else(|| name.to_owned()),
+                  name: translations_cleaned.get(&translation_fixes(name)).cloned().unwrap_or_else(|| name.to_owned()),
                   parent_id: u32::try_from(group.parent_id).ok(),
                   event_type_ids: event_types.into_iter().map(|(_, event_type_id)| event_type_id).collect(),
                 }
