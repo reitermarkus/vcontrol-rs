@@ -698,7 +698,8 @@ fn main() -> anyhow::Result<()> {
               .map(|group| {
                 let mut event_types = event_type_group_event_types.remove(&group.id).unwrap_or_default();
                 event_types.sort_by_key(|(order, _)| *order);
-                let name = group.name.strip_prefix("@@").unwrap_or(&group.name);
+                let name = group.name.trim();
+                let name = name.strip_prefix("@@").unwrap_or(name);
                 cleaned::EventTypeGroup {
                   id: group.id,
                   name: translations.get(name).cloned().unwrap_or_else(|| name.to_owned()),
