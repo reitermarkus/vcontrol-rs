@@ -335,6 +335,70 @@ pub struct EcnEventTypeEventValueTypeLink {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct EcnEventTypeGroup {
+  #[serde(rename = "@id")]
+  #[allow(unused)]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  #[allow(unused)]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  #[allow(unused)]
+  pub msdata_row_order: IgnoredAny, // u16
+
+  #[serde(rename = "Id")]
+  pub id: u32,
+  #[serde(rename = "CompanyId")]
+  #[allow(unused)]
+  pub company_id: u8,
+  #[serde(rename = "Name")]
+  pub name: String,
+  #[serde(rename = "Description")]
+  #[allow(unused)]
+  pub description: String,
+  #[serde(rename = "ParentId")]
+  pub parent_id: i32,
+  #[serde(rename = "EntrancePoint")]
+  #[allow(unused)]
+  pub entrance_point: bool,
+  #[serde(rename = "Address")]
+  #[allow(unused)]
+  pub address: String,
+  #[serde(rename = "DeviceTypeId")]
+  #[allow(unused)]
+  pub device_type_id: u8,
+  #[serde(rename = "DataPointTypeId")]
+  pub data_point_type_id: u32,
+  #[serde(rename = "OrderIndex")]
+  pub order_index: u32,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EcnEventTypeEventTypeGroupLink {
+  #[serde(rename = "@id")]
+  #[allow(unused)]
+  pub diffgr_id: IgnoredAny, // String
+  #[serde(rename = "@hasChanges")]
+  #[allow(unused)]
+  pub diffgr_has_changes: IgnoredAny, // String
+  #[serde(rename = "@rowOrder")]
+  #[allow(unused)]
+  pub msdata_row_order: IgnoredAny, // u16
+
+  #[serde(rename = "CompanyId")]
+  #[allow(unused)]
+  pub company_id: u8,
+  #[serde(rename = "EventTypeId")]
+  pub event_type_id: u32,
+  #[serde(rename = "EventTypeGroupId")]
+  pub event_type_group_id: u32,
+  #[serde(rename = "EventTypeOrder")]
+  pub event_type_order: u32,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EcnEventValueType {
   #[serde(rename = "@id")]
   #[allow(unused)]
@@ -487,6 +551,10 @@ pub struct EcnDataSetInner {
   pub ecn_event_type: Vec<EcnEventType>,
   #[serde(rename = "ecnEventTypeEventValueTypeLink")]
   pub ecn_event_type_event_value_type_link: Vec<EcnEventTypeEventValueTypeLink>,
+  #[serde(default, rename = "ecnEventTypeGroup")]
+  pub ecn_event_type_group: Vec<EcnEventTypeGroup>,
+  #[serde(default, rename = "ecnEventTypeEventTypeGroupLink")]
+  pub ecn_event_type_event_type_group_link: Vec<EcnEventTypeEventTypeGroupLink>,
   #[serde(rename = "ecnEventValueType")]
   pub ecn_event_value_type: Vec<EcnEventValueType>,
   #[serde(rename = "ecnTableExtensionValue")]
