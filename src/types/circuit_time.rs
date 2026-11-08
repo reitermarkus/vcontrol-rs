@@ -1,5 +1,6 @@
 use core::{fmt, str::FromStr};
 
+use crate::Error;
 use arrayref::array_ref;
 #[cfg(feature = "schemars")]
 use schemars::JsonSchema;
@@ -19,16 +20,16 @@ pub struct CircuitTimes {
 
 impl CircuitTimes {
   #[rustfmt::skip]
-  pub fn from_bytes(bytes: &[u8; 56]) -> Self {
-    Self {
-      mon: CircuitTime::from_bytes(array_ref![bytes,  0, 8]),
-      tue: CircuitTime::from_bytes(array_ref![bytes,  8, 8]),
-      wed: CircuitTime::from_bytes(array_ref![bytes, 16, 8]),
-      thu: CircuitTime::from_bytes(array_ref![bytes, 24, 8]),
-      fri: CircuitTime::from_bytes(array_ref![bytes, 32, 8]),
-      sat: CircuitTime::from_bytes(array_ref![bytes, 40, 8]),
-      sun: CircuitTime::from_bytes(array_ref![bytes, 48, 8]),
-    }
+  pub fn from_bytes(bytes: &[u8; 56]) -> Result<Self, Error> {
+    Ok(Self {
+      mon: CircuitTime::from_bytes(array_ref![bytes,  0, 8])?,
+      tue: CircuitTime::from_bytes(array_ref![bytes,  8, 8])?,
+      wed: CircuitTime::from_bytes(array_ref![bytes, 16, 8])?,
+      thu: CircuitTime::from_bytes(array_ref![bytes, 24, 8])?,
+      fri: CircuitTime::from_bytes(array_ref![bytes, 32, 8])?,
+      sat: CircuitTime::from_bytes(array_ref![bytes, 40, 8])?,
+      sun: CircuitTime::from_bytes(array_ref![bytes, 48, 8])?,
+    })
   }
 
   #[rustfmt::skip]
@@ -58,13 +59,19 @@ impl CircuitTimes {
 pub struct CircuitTime([Option<TimeSpan>; 4]);
 
 impl CircuitTime {
-  pub fn from_bytes(bytes: &[u8; 8]) -> Self {
-    Self([
-      Time::from_byte(bytes[0]).zip(Time::from_byte(bytes[1])).map(|(from, to)| TimeSpan { from, to }),
-      Time::from_byte(bytes[2]).zip(Time::from_byte(bytes[3])).map(|(from, to)| TimeSpan { from, to }),
-      Time::from_byte(bytes[4]).zip(Time::from_byte(bytes[5])).map(|(from, to)| TimeSpan { from, to }),
-      Time::from_byte(bytes[6]).zip(Time::from_byte(bytes[7])).map(|(from, to)| TimeSpan { from, to }),
-    ])
+  pub fn from_bytes(bytes: &[u8; 8]) -> Result<Self, Error> {
+    let timespan = |from, to| -> Result<Option<TimeSpan>, Error> {
+      let from = Time::from_byte(from).map_err(|error| Error::InvalidFormat(error.into()))?;
+      let to = Time::from_byte(to).map_err(|error| Error::InvalidFormat(error.into()))?;
+      Ok(from.zip(to).map(|(from, to)| TimeSpan { from, to }))
+    };
+
+    Ok(Self([
+      timespan(bytes[0], bytes[1])?,
+      timespan(bytes[2], bytes[3])?,
+      timespan(bytes[4], bytes[5])?,
+      timespan(bytes[6], bytes[7])?,
+    ]))
   }
 
   #[rustfmt::skip]
@@ -139,18 +146,22 @@ struct Time {
 }
 
 impl Time {
-  pub const fn from_byte(byte: u8) -> Option<Self> {
+  pub const fn from_byte(byte: u8) -> Result<Option<Self>, &'static str> {
     match byte {
-      0xff => None,
+      0xff => Ok(None),
       byte => {
         let hour = byte >> 3;
         let minute = (byte & 0b111) * 10;
 
-        if hour > 24 || minute >= 60 {
-          return None;
+        if hour > 24 {
+          return Err("hour out of range");
         }
 
-        Some(Self { hour, minute })
+        if minute >= 60 {
+          return Err("minute out of range");
+        }
+
+        Ok(Some(Self { hour, minute }))
       },
     }
   }
@@ -235,9 +246,15 @@ mod tests {
   }
 
   #[test]
-  fn invalid_time_bytes_are_ignored() {
-    assert_eq!(Time::from_byte(0xf8), None);
-    assert_eq!(Time::from_byte(0x06), None);
+  fn invalid_time_bytes_return_errors() {
+    assert!(Time::from_byte(0xf8).is_err());
+    assert!(Time::from_byte(0x06).is_err());
+    assert_eq!(Time::from_byte(0xff), Ok(None));
+  }
+
+  #[test]
+  fn invalid_circuit_time_bytes_return_an_error() {
+    assert!(CircuitTime::from_bytes(&[0x06, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]).is_err());
   }
 
   #[test]
