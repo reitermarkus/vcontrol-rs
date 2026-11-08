@@ -51,7 +51,12 @@ impl Protocol {
     self.get_with_transport(o, addr, buf).await
   }
 
-  async fn get_with_transport<T: ProtocolTransport>(&self, o: &mut T, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  async fn get_with_transport<T: ProtocolTransport>(
+    &self,
+    o: &mut T,
+    addr: u16,
+    buf: &mut [u8],
+  ) -> Result<(), io::Error> {
     match self {
       Self::Vs1 => Vs1::get(o, addr, buf).await,
       Self::Vs2 => Vs2::get(o, addr, buf).await,
@@ -63,7 +68,12 @@ impl Protocol {
     self.set_with_transport(o, addr, value).await
   }
 
-  async fn set_with_transport<T: ProtocolTransport>(&self, o: &mut T, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  async fn set_with_transport<T: ProtocolTransport>(
+    &self,
+    o: &mut T,
+    addr: u16,
+    value: &[u8],
+  ) -> Result<(), io::Error> {
     match self {
       Self::Vs1 => Vs1::set(o, addr, value).await,
       Self::Vs2 => Vs2::set(o, addr, value).await,
@@ -95,7 +105,8 @@ mod tests {
   fn vs2_telegram(message_type: u8, function: u8, addr: u16, payload_len: u8, payload: Option<&[u8]>) -> Vec<u8> {
     let [addr_high, addr_low] = addr.to_be_bytes();
     let payload_bytes = payload.unwrap_or_default();
-    let mut telegram = vec![0x41, 5 + payload_bytes.len() as u8, message_type, function, addr_high, addr_low, payload_len];
+    let mut telegram =
+      vec![0x41, 5 + payload_bytes.len() as u8, message_type, function, addr_high, addr_low, payload_len];
     telegram.extend_from_slice(payload_bytes);
     let checksum = telegram[1..].iter().fold(0u8, |sum, byte| sum.wrapping_add(*byte));
     telegram.push(checksum);
