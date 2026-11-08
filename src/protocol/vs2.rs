@@ -4,7 +4,7 @@ use std::io;
 use num_enum::TryFromPrimitive;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::{Optolink, commands::MAX_PAYLOAD_LEN};
+use crate::{commands::MAX_PAYLOAD_LEN, protocol::ProtocolTransport};
 
 const LEADIN: u8 = 0x41;
 
@@ -107,17 +107,43 @@ fn wrapping_sum<'a>(iter: impl IntoIterator<Item = &'a u8>) -> u8 {
   iter.into_iter().fold(0, |acc, &x| acc.wrapping_add(x))
 }
 
+fn checked_payload_len(len: usize) -> Result<u8, io::Error> {
+  let max_payload_len = MAX_PAYLOAD_LEN.min((u8::MAX - 5) as usize);
+
+  if len > max_payload_len {
+    return Err(io::Error::new(
+      io::ErrorKind::InvalidInput,
+      format!("payload length {len} exceeds maximum {max_payload_len}"),
+    ));
+  }
+
+  Ok(len as u8)
+}
+
+fn checked_message_len(len: u8) -> Result<usize, io::Error> {
+  if len < 5 || len as usize > 5 + MAX_PAYLOAD_LEN {
+    return Err(io::Error::new(io::ErrorKind::InvalidData, format!("invalid message length: {len}")));
+  }
+
+  Ok(len as usize)
+}
+
 impl Vs2 {
-  async fn write_telegram(o: &mut Optolink, header: &Header, payload: Option<&[u8]>) -> Result<(), std::io::Error> {
+  async fn write_telegram<T: ProtocolTransport>(
+    o: &mut T,
+    header: &Header,
+    payload: Option<&[u8]>,
+  ) -> Result<(), std::io::Error> {
     log::trace!("Vs2::write_telegram(…)");
 
+    let payload_len = checked_payload_len(payload.map_or(header.payload_len as usize, |payload| payload.len()))?;
     let message_type = header.message_type as u8;
     let function = header.function as u8;
     let addr = header.addr.to_be_bytes();
 
-    let message_len = 5 + payload.map(|p| p.len() as u8).unwrap_or(0);
+    let message_len = 5 + payload.map_or(0, |_| payload_len);
 
-    const MAX_TELEGRAM_LEN: usize = 1 + 5 + MAX_PAYLOAD_LEN + 1;
+    const MAX_TELEGRAM_LEN: usize = 1 + 1 + 5 + MAX_PAYLOAD_LEN + 1;
     let mut buffer = [0; MAX_TELEGRAM_LEN];
     buffer[0] = LEADIN;
     buffer[1] = message_len;
@@ -126,11 +152,10 @@ impl Vs2 {
     buffer[4] = addr[0];
     buffer[5] = addr[1];
     let checksum_index = if let Some(payload) = payload {
-      // FIXME: Support longer payload/return error instead.
-      let payload_len = payload.len();
-      buffer[6] = payload_len.try_into().unwrap();
-      buffer[7..(7 + payload_len)].copy_from_slice(payload);
-      7 + payload_len
+      let payload_bytes_len = payload.len();
+      buffer[6] = payload_len;
+      buffer[7..(7 + payload_bytes_len)].copy_from_slice(payload);
+      7 + payload_bytes_len
     } else {
       buffer[6] = header.payload_len;
       7
@@ -153,10 +178,10 @@ impl Vs2 {
     }
   }
 
-  async fn read_telegram(o: &mut Optolink, mut payload: Option<&mut [u8]>) -> Result<Header, io::Error> {
+  async fn read_telegram<T: ProtocolTransport>(o: &mut T, mut payload: Option<&mut [u8]>) -> Result<Header, io::Error> {
     log::trace!("Vs2::read_telegram(…)");
 
-    const MAX_TELEGRAM_LEN: usize = 1 + 5 + MAX_PAYLOAD_LEN + 1;
+    const MAX_TELEGRAM_LEN: usize = 1 + 1 + 5 + MAX_PAYLOAD_LEN + 1;
     let mut buffer = [0; MAX_TELEGRAM_LEN];
 
     o.read_exact(&mut buffer[0..1]).await?;
@@ -165,9 +190,9 @@ impl Vs2 {
     }
 
     o.read_exact(&mut buffer[1..2]).await?;
-    let message_len = buffer[1];
+    let message_len = checked_message_len(buffer[1])?;
 
-    let checksum_index = 2 + message_len as usize;
+    let checksum_index = 2 + message_len;
 
     o.read_exact(&mut buffer[2..(checksum_index + 1)]).await?;
 
@@ -198,7 +223,7 @@ impl Vs2 {
     let payload_len = buffer[6];
 
     if message_type == MessageType::Error {
-      let code = &buffer[7..(7 + (payload_len as usize).min(message_len as usize - 5))];
+      let code = &buffer[7..(7 + (payload_len as usize).min(message_len - 5))];
       let code = code.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ");
       return Err(io::Error::other(format!(
         "device returned error for {function:?} at address 0x{addr:04X}, code: {code}"
@@ -206,7 +231,7 @@ impl Vs2 {
     }
 
     if let Some(ref mut payload) = payload {
-      if payload_len != (message_len - 5) {
+      if payload_len as usize != message_len - 5 {
         return Err(io::Error::new(
           io::ErrorKind::InvalidData,
           format!("message length ({0}) does not match payload length ({1}): {0} - 5 != {1}", message_len, payload_len),
@@ -231,14 +256,14 @@ impl Vs2 {
     Ok(Header { message_type, function, addr, payload_len })
   }
 
-  async fn read_status(o: &mut Optolink) -> Result<u8, io::Error> {
+  async fn read_status<T: ProtocolTransport>(o: &mut T) -> Result<u8, io::Error> {
     log::trace!("Vs2::read_status(…)");
     let mut status = [0xff];
     o.read_exact(&mut status).await?;
     Ok(status[0])
   }
 
-  async fn reset(o: &mut Optolink) -> Result<(), io::Error> {
+  async fn reset<T: ProtocolTransport>(o: &mut T) -> Result<(), io::Error> {
     log::trace!("Vs2::reset(…)");
 
     o.purge().await?;
@@ -246,7 +271,7 @@ impl Vs2 {
     o.flush().await
   }
 
-  pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub async fn negotiate<T: ProtocolTransport>(o: &mut T) -> Result<(), io::Error> {
     log::trace!("Vs2::negotiate(…)");
 
     Self::reset(o).await?;
@@ -267,14 +292,14 @@ impl Vs2 {
     }
   }
 
-  pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub async fn get<T: ProtocolTransport>(o: &mut T, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::get(…)");
 
     let header = Header {
       message_type: MessageType::Request,
       function: Function::VirtualRead,
       addr,
-      payload_len: buf.len().try_into().unwrap(),
+      payload_len: checked_payload_len(buf.len())?,
     };
 
     Self::write_telegram(o, &header, None).await?;
@@ -294,14 +319,14 @@ impl Vs2 {
     Ok(())
   }
 
-  pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub async fn set<T: ProtocolTransport>(o: &mut T, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Vs2::set(…)");
 
     let header = Header {
       message_type: MessageType::Request,
       function: Function::VirtualWrite,
       addr,
-      payload_len: value.len().try_into().unwrap(),
+      payload_len: checked_payload_len(value.len())?,
     };
 
     Self::write_telegram(o, &header, Some(value)).await?;
@@ -341,5 +366,29 @@ impl Vs2 {
     }
 
     Ok(())
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn payload_length_is_limited_to_frame_capacity() {
+    let max_payload_len = MAX_PAYLOAD_LEN.min((u8::MAX - 5) as usize);
+
+    assert_eq!(checked_payload_len(max_payload_len).unwrap(), max_payload_len as u8);
+    assert_eq!(checked_payload_len(max_payload_len + 1).unwrap_err().kind(), io::ErrorKind::InvalidInput);
+  }
+
+  #[test]
+  fn message_length_is_validated_before_buffer_access() {
+    assert_eq!(checked_message_len(5).unwrap(), 5);
+    assert_eq!(checked_message_len(4).unwrap_err().kind(), io::ErrorKind::InvalidData);
+
+    let max_message_len = (5 + MAX_PAYLOAD_LEN).min(u8::MAX as usize) as u8;
+    if max_message_len < u8::MAX {
+      assert_eq!(checked_message_len(max_message_len + 1).unwrap_err().kind(), io::ErrorKind::InvalidData);
+    }
   }
 }
