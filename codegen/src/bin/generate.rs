@@ -425,6 +425,15 @@ fn main() -> anyhow::Result<()> {
     },
   );
 
+  let mut event_type_group_event_types = ecn_data_set.ecn_event_type_event_type_group_link.into_iter().fold(
+    BTreeMap::<u32, Vec<(u32, u32)>>::new(),
+    |mut acc, link| {
+      acc.entry(link.event_type_group_id).or_default().push((link.event_type_order, link.event_type_id));
+      acc
+    },
+  );
+  let event_type_groups_raw = ecn_data_set.ecn_event_type_group;
+
   let event_types_raw: BTreeMap<_, _> =
     ecn_data_set.ecn_event_type.into_iter().map(|event_type| (event_type.id, event_type)).collect();
 
@@ -690,6 +699,26 @@ fn main() -> anyhow::Result<()> {
         cleaned::DataPointType {
           address: Some(data_point_type.address),
           event_types: data_point_type_event_types.remove(&id).unwrap(),
+          event_type_groups: {
+            let mut groups: Vec<_> =
+              event_type_groups_raw.iter().filter(|group| group.data_point_type_id == id).collect();
+            groups.sort_by_key(|group| group.order_index);
+            groups
+              .into_iter()
+              .map(|group| {
+                let mut event_types = event_type_group_event_types.remove(&group.id).unwrap_or_default();
+                event_types.sort_by_key(|(order, _)| *order);
+                let name = group.name.trim();
+                let name = name.strip_prefix("@@").unwrap_or(name);
+                cleaned::EventTypeGroup {
+                  id: group.id,
+                  name: translations_cleaned.get(&translation_fixes(name)).cloned().unwrap_or_else(|| name.to_owned()),
+                  parent_id: u32::try_from(group.parent_id).ok(),
+                  event_type_ids: event_types.into_iter().map(|(_, event_type_id)| event_type_id).collect(),
+                }
+              })
+              .collect()
+          },
           f0: None,
           f0_till: None,
           identification: None,
@@ -996,6 +1025,30 @@ fn main() -> anyhow::Result<()> {
 
       data_point_type_cleaned.event_types =
         data_point_type_cleaned.event_types.into_iter().filter(|id| event_types_cleaned.contains_key(id)).collect();
+      let supported_event_types = &data_point_type_cleaned.event_types;
+      for group in &mut data_point_type_cleaned.event_type_groups {
+        group.event_type_ids.retain(|id| supported_event_types.contains(id) && event_types_cleaned.contains_key(id));
+      }
+      let mut included_group_ids: BTreeSet<_> = data_point_type_cleaned
+        .event_type_groups
+        .iter()
+        .filter(|group| !group.event_type_ids.is_empty())
+        .map(|group| group.id)
+        .collect();
+      loop {
+        let parent_ids: Vec<_> = data_point_type_cleaned
+          .event_type_groups
+          .iter()
+          .filter(|group| included_group_ids.contains(&group.id))
+          .filter_map(|group| group.parent_id)
+          .collect();
+        let previous_count = included_group_ids.len();
+        included_group_ids.extend(parent_ids);
+        if included_group_ids.len() == previous_count {
+          break;
+        }
+      }
+      data_point_type_cleaned.event_type_groups.retain(|group| included_group_ids.contains(&group.id));
 
       Some((data_point_type_cleaned_address, data_point_type_cleaned))
     })
@@ -1139,6 +1192,7 @@ fn main() -> anyhow::Result<()> {
     struct DeviceUsed {
       pub commands: BTreeSet<u32>,
       pub error_mapping: usize,
+      pub event_type_groups: Vec<cleaned::EventTypeGroup>,
       pub f0: Option<u16>,
       pub f0_till: Option<u16>,
       pub id: u16,
@@ -1158,6 +1212,7 @@ fn main() -> anyhow::Result<()> {
               .get(&format!("viessmann.errorcode.{device_id}"))
               .cloned()
               .unwrap_or(default_error_mapping),
+            event_type_groups: device.event_type_groups.clone(),
             f0: device.f0,
             f0_till: device.f0_till,
             id: device.identification.as_deref().map(|n| u16::from_str_radix(n, 16).unwrap()).unwrap(),
