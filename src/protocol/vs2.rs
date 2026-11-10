@@ -143,7 +143,7 @@ impl Vs2 {
     buffer[checksum_index] = wrapping_sum(&buffer[1..checksum_index]);
     let telegram_len = checksum_index + 1;
 
-    log::debug!("Vs2::write_telegram(…) {:?}: {}", header, hex(&buffer[..telegram_len]));
+    log::trace!("Vs2::write_telegram(…) {:?}: {}", header, hex(&buffer[..telegram_len]));
 
     loop {
       o.write_all(&buffer[..telegram_len]).await?;
@@ -179,7 +179,7 @@ impl Vs2 {
 
     let checksum = wrapping_sum(&buffer[1..checksum_index]);
 
-    log::debug!("Vs2::read_telegram(…) raw: {}", hex(&buffer[..(checksum_index + 1)]));
+    log::trace!("Vs2::read_telegram(…) raw: {}", hex(&buffer[..(checksum_index + 1)]));
 
     if checksum == buffer[checksum_index] {
       o.write_all(&[ACK]).await?;
@@ -205,7 +205,7 @@ impl Vs2 {
 
     let payload_len = buffer[6];
 
-    log::debug!(
+    log::trace!(
       "Vs2::read_telegram(…) type = {}, function = {:?}, addr = 0x{:04X}, message_len = {}, payload_len = {}, expected_payload_len = {:?}",
       message_type,
       function,
