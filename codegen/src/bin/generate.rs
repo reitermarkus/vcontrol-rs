@@ -791,8 +791,7 @@ fn main() -> anyhow::Result<()> {
           event_type_cleaned.unit = unit;
         },
         Some(cleaned::EventValueType::Multiple { value_list }) => {
-          event_type_cleaned.value_list =
-            event_type_cleaned.value_list.into_iter().chain(value_list).collect();
+          event_type_cleaned.value_list = event_type_cleaned.value_list.into_iter().chain(value_list).collect();
         },
         None => (),
       }
@@ -982,7 +981,9 @@ fn main() -> anyhow::Result<()> {
     })
     .collect();
 
-  let data_point_types_cleaned: BTreeMap<_, _> = data_point_types_cleaned.into_values().filter_map(|mut data_point_type_cleaned| {
+  let data_point_types_cleaned: BTreeMap<_, _> = data_point_types_cleaned
+    .into_values()
+    .filter_map(|mut data_point_type_cleaned| {
       let data_point_type_cleaned_address = data_point_type_cleaned.address.take().unwrap();
 
       if !is_data_point_type_supported(&data_point_type_cleaned_address, &data_point_type_cleaned) {
