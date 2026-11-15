@@ -1171,6 +1171,17 @@ fn main() -> anyhow::Result<()> {
     .ok_or_else(|| anyhow::anyhow!("Ecotronic device is missing from generated device data"))?;
   ecotronic.commands.extend(manually_defined_event_types.keys().copied());
 
+  // VitoSoft data is wrong for KO2B (service manual 5727177): coding 1F is 1 byte, so the 2-byte
+  // `K1F_KonfiAbgastemperaturMax_Wartung_NR1` (857) reads the neighbouring address; `K1F_NRx_…` (7846) is correct.
+  // Coding 03 is fixed at 0 ("do not change") and the shared gas/oil mapping of `K03_KonfiOelGasBetrieb` (811) mislabels it.
+  let v200ko2b = devices_used
+    .iter_mut()
+    .find(|(device_id, _)| device_id.as_str() == "V200KO2B")
+    .map(|(_, device)| device)
+    .ok_or_else(|| anyhow::anyhow!("V200KO2B device is missing from generated device data"))?;
+  v200ko2b.commands.remove(&811);
+  v200ko2b.commands.remove(&857);
+
   save_json("devices.used.json", &devices_used)?;
 
   let mut event_types_used = {
