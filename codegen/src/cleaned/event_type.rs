@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ConversionInner {
   #[serde(skip_serializing_if = "Option::is_none")]
   pub factor: Option<f64>,
@@ -10,7 +10,7 @@ pub struct ConversionInner {
   pub offset: Option<f64>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum Conversion {
   S(String),

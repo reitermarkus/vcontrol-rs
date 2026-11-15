@@ -8,7 +8,7 @@ use crate::{
   unique_mapping::UniqueMapping,
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Command {
   pub addr: u16,
   #[serde(skip_serializing_if = "Option::is_none")]
