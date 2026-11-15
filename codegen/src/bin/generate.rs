@@ -1173,7 +1173,9 @@ fn main() -> anyhow::Result<()> {
 
   // VitoSoft data is wrong for KO2B (service manual 5727177): coding 1F is 1 byte, so the 2-byte
   // `K1F_KonfiAbgastemperaturMax_Wartung_NR1` (857) reads the neighbouring address; `K1F_NRx_…` (7846) is correct.
-  // Coding 03 is fixed at 0 ("do not change") and the shared gas/oil mapping of `K03_KonfiOelGasBetrieb` (811) mislabels it.
+  // Coding 03 is fixed at 0 ("do not change") and the shared gas/oil mapping of `K03_KonfiOelGasBetrieb` (811) mislabels it,
+  // so KO2B gets an unmapped copy of it instead.
+  const V200KO2B_K03_UNMAPPED: u32 = 32771;
   let v200ko2b = devices_used
     .iter_mut()
     .find(|(device_id, _)| device_id.as_str() == "V200KO2B")
@@ -1181,6 +1183,7 @@ fn main() -> anyhow::Result<()> {
     .ok_or_else(|| anyhow::anyhow!("V200KO2B device is missing from generated device data"))?;
   v200ko2b.commands.remove(&811);
   v200ko2b.commands.remove(&857);
+  v200ko2b.commands.insert(V200KO2B_K03_UNMAPPED);
 
   save_json("devices.used.json", &devices_used)?;
 
@@ -1203,6 +1206,13 @@ fn main() -> anyhow::Result<()> {
   for (id, command) in manually_defined_event_types {
     event_types_used.entry(id).or_insert(command);
   }
+
+  let mut k03_unmapped = event_types_used
+    .get(&811)
+    .cloned()
+    .ok_or_else(|| anyhow::anyhow!("K03_KonfiOelGasBetrieb (811) is missing from generated event types"))?;
+  k03_unmapped.mapping = None;
+  event_types_used.insert(V200KO2B_K03_UNMAPPED, k03_unmapped);
 
   save_json("event_types.used.json", &event_types_used)?;
 
