@@ -218,3 +218,9 @@ impl AsyncRead for Optolink {
     self.project().device.poll_read(cx, buf)
   }
 }
+
+impl crate::protocol::ProtocolTransport for Optolink {
+  async fn purge(&mut self) -> Result<(), io::Error> {
+    Optolink::purge(self).await
+  }
+}

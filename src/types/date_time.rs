@@ -153,7 +153,7 @@ impl DateTime {
   ///
   /// Note that this uses the system timezone.
   pub fn from_unix_timestamp(timestamp: u32) -> Self {
-    Self(chrono::DateTime::from_timestamp_secs(timestamp.into()).unwrap().with_timezone(&Local).naive_local())
+    Self(chrono::DateTime::from_timestamp(timestamp.into(), 0).unwrap().with_timezone(&Local).naive_local())
   }
 
   /// Returns the unix timestamp for this date-time.
@@ -314,6 +314,13 @@ mod tests {
     assert_eq!(time.hour(), 17);
     assert_eq!(time.minute(), 49);
     assert_eq!(time.second(), 31);
+  }
+
+  #[test]
+  fn from_unix_timestamp_round_trips() {
+    let timestamp = 1_600_000_000;
+
+    assert_eq!(DateTime::from_unix_timestamp(timestamp).unix_timestamp(), timestamp);
   }
 
   #[test]

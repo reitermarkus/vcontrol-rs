@@ -5,7 +5,7 @@ use std::{
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-use crate::Optolink;
+use crate::protocol::ProtocolTransport;
 
 const RESET: u8 = 0x04;
 const SYNC: u8 = 0x05;
@@ -26,7 +26,7 @@ enum Function {
 pub enum Vs1 {}
 
 impl Vs1 {
-  async fn sync(o: &mut Optolink) -> Result<(), std::io::Error> {
+  async fn sync<T: ProtocolTransport>(o: &mut T) -> Result<(), std::io::Error> {
     log::trace!("Vs1::sync(…)");
 
     let mut buf = [0xff];
@@ -37,14 +37,16 @@ impl Vs1 {
     loop {
       log::trace!("Vs1::sync(…) loop");
 
-      if o.read_exact(&mut buf).await.is_ok() && buf == [SYNC] {
+      o.read_exact(&mut buf).await?;
+
+      if buf == [SYNC] {
         o.purge().await?;
         return Ok(());
       }
     }
   }
 
-  pub async fn negotiate(o: &mut Optolink) -> Result<(), io::Error> {
+  pub async fn negotiate<T: ProtocolTransport>(o: &mut T) -> Result<(), io::Error> {
     log::trace!("Vs1::negotiate(…)");
 
     o.purge().await?;
@@ -54,13 +56,15 @@ impl Vs1 {
     Ok(())
   }
 
-  pub async fn get(o: &mut Optolink, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
+  pub async fn get<T: ProtocolTransport>(o: &mut T, addr: u16, buf: &mut [u8]) -> Result<(), io::Error> {
     log::trace!("Vs1::get(…)");
 
     let mut vec = Vec::new();
     vec.extend(&[0x01, Function::VirtualRead as u8]);
     vec.extend(addr.to_be_bytes());
-    vec.extend(&[buf.len() as u8]);
+    let payload_len = u8::try_from(buf.len())
+      .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "VS1 payload exceeds 255 bytes"))?;
+    vec.extend(&[payload_len]);
 
     Self::sync(o).await?;
 
@@ -100,13 +104,15 @@ impl Vs1 {
     }
   }
 
-  pub async fn set(o: &mut Optolink, addr: u16, value: &[u8]) -> Result<(), io::Error> {
+  pub async fn set<T: ProtocolTransport>(o: &mut T, addr: u16, value: &[u8]) -> Result<(), io::Error> {
     log::trace!("Vs1::set(…)");
 
     let mut vec = Vec::new();
     vec.extend(&[0x01, Function::VirtualWrite as u8]);
     vec.extend(addr.to_be_bytes());
-    vec.extend(&[value.len() as u8]);
+    let payload_len = u8::try_from(value.len())
+      .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "VS1 payload exceeds 255 bytes"))?;
+    vec.extend(&[payload_len]);
     vec.extend(value);
 
     Self::sync(o).await?;
